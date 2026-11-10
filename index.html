@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>BUILD & RUN — Prototype 01</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#b8dff0;font-family:ui-rounded,system-ui,-apple-system,sans-serif}canvas{display:block}
+#hud{position:fixed;inset:0;pointer-events:none;color:#203047}.top{position:absolute;top:env(safe-area-inset-top,14px);left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px}.brand{font-weight:1000;letter-spacing:.08em;font-size:13px;background:#fffdf4;border:2px solid #203047;border-radius:12px;padding:9px 12px;box-shadow:3px 4px 0 #203047}.score{font-weight:900;font-size:20px;background:#fffdf4;border:2px solid #203047;border-radius:12px;padding:8px 13px;box-shadow:3px 4px 0 #203047}.hint{position:absolute;top:76px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#fffdf4dd;border:2px solid #203047;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:800}
+#build{pointer-events:auto;position:absolute;bottom:calc(22px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(220px,58vw);height:68px;border:3px solid #203047;border-radius:18px;background:#f7bd45;color:#203047;font-size:17px;font-weight:1000;letter-spacing:.08em;box-shadow:0 7px 0 #203047;touch-action:none;user-select:none}#build:active,#build.down{transform:translate(-50%,5px);box-shadow:0 2px 0 #203047;background:#ffcf69}
+#meter{position:absolute;bottom:calc(104px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:min(220px,58vw);height:9px;border:2px solid #203047;border-radius:9px;background:#fffdf4;overflow:hidden}#fill{height:100%;width:0;background:#58a878;transition:width .08s}
+#overlay{position:fixed;inset:0;display:grid;place-items:center;background:#18304766;backdrop-filter:blur(5px);color:#203047}.panel{width:min(360px,88vw);background:#fffdf4;border:3px solid #203047;border-radius:24px;padding:26px;text-align:center;box-shadow:8px 9px 0 #203047}.panel h1{font-size:34px;line-height:1;margin:0 0 10px;font-weight:1000}.panel p{line-height:1.5;color:#526174;font-weight:650}.panel button{border:3px solid #203047;border-radius:14px;background:#f7bd45;padding:13px 24px;font-weight:1000;font-size:15px;color:#203047;box-shadow:0 5px 0 #203047}.hidden{display:none!important}
+</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
+</head>
+<body>
+<div id="hud">
+ <div class="top"><div class="brand">BUILD <span style="color:#e38c37">&</span> RUN · TEST 01</div><div class="score">★ <span id="score">0</span></div></div>
+ <div class="hint" id="hint">¡Se acerca un hueco! Construí el puente.</div>
+ <div id="meter"><div id="fill"></div></div>
+ <button id="build">MANTENER PARA CONSTRUIR</button>
+</div>
+<div id="overlay"><div class="panel"><h1>BUILD<br>& RUN</h1><p>Corré sin parar. Mantené el botón para construir un puente antes de llegar al precipicio.</p><button id="start">JUGAR</button></div></div>
+<script type="module">
+import * as THREE from 'three';
+const scene=new THREE.Scene();scene.background=new THREE.Color('#b8dff0');scene.fog=new THREE.Fog('#b8dff0',28,75);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,120);camera.position.set(0,8.5,13);camera.lookAt(0,1,-10);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffffff,0x7894a1,2));
+const sun=new THREE.DirectionalLight(0xffffff,2.3);sun.position.set(-7,12,7);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const mat=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness,flatShading:true});
+const grass=mat('#82bd83'),path=mat('#e8c99a'),edge=mat('#c58e5c'),dark=mat('#34465b'),wood=mat('#c9874b'),woodTop=mat('#edb86e'),cream=mat('#fff0d4'),blue=mat('#477fbd'),red=mat('#e98768');
+function box(w,h,d,m,x,y,z,parent=scene){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
+box(200,.4,200,grass,0,-.45,-35);
+box(7,.55,120,path,0,-.05,-37);
+box(.32,.7,120,edge,-3.65,-.03,-37);box(.32,.7,120,edge,3.65,-.03,-37);
+for(let i=0;i<22;i++){let z=-i*5-4;box(.18,.12,.35,cream,-3.3,.25,z);box(.18,.12,.35,cream,3.3,.25,z)}
+// simple paper-cut runner
+const runner=new THREE.Group();scene.add(runner);runner.position.set(0,0,4);
+const body=box(.72,1.05,.42,blue,0,1.1,0,runner);const head=new THREE.Mesh(new THREE.SphereGeometry(.43,7,6),cream);head.position.set(0,1.92,0);head.castShadow=true;runner.add(head);
+box(.12,.12,.06,dark,-.16,1.98,.38,runner);box(.12,.12,.06,dark,.16,1.98,.38,runner);
+box(.18,.42,.2,red,-.48,1.12,0,runner);box(.18,.42,.2,red,.48,1.12,0,runner);
+const legs=[box(.23,.62,.25,dark,-.2,.31,0,runner),box(.23,.62,.25,dark,.2,.31,0,runner)];
+// backpack / paper tabs
+box(.38,.46,.22,wood,0,1.18,-.32,runner);
+const gap=new THREE.Group();scene.add(gap);gap.position.set(0,0,-22);
+const gapLength=8,plankCount=12,planks=[];box(7.1,.08,gapLength,dark,0,.02,0,gap);
+for(let i=0;i<plankCount;i++){const p=box(6.75,.2,.62,woodTop,0,.22,-gapLength/2+.34+i*.66,gap);p.visible=false;planks.push(p);box(6.8,.06,.09,wood,0,.34,-gapLength/2+.34+i*.66,gap).visible=false;}
+let built=0,buildClock=0,holding=false,running=false,gameOver=false,score=0,speed=8,passed=false;
+const $=id=>document.getElementById(id),button=$('build');
+function reset(){built=0;buildClock=0;holding=false;running=true;gameOver=false;score=0;speed=8;passed=false;gap.position.z=-22;planks.forEach(p=>p.visible=false);$('score').textContent='0';$('fill').style.width='0%';$('hint').textContent='¡Se acerca un hueco! Construí el puente.';$('overlay').classList.add('hidden')}
+function end(){running=false;gameOver=true;$('overlay').classList.remove('hidden');$('overlay').querySelector('h1').innerHTML='¡UPS!';$('overlay').querySelector('p').textContent='No llegaste a completar el puente. Probá otra vez y construí antes.';$('start').textContent='REINTENTAR'}
+$('start').addEventListener('click',reset);
+function setHold(v){if(!running)return;holding=v;button.classList.toggle('down',v)}
+button.addEventListener('pointerdown',e=>{e.preventDefault();setHold(true)});window.addEventListener('pointerup',()=>setHold(false));button.addEventListener('pointercancel',()=>setHold(false));button.addEventListener('contextmenu',e=>e.preventDefault());
+let last=performance.now(),runTime=0;
+function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
+if(running){runTime+=dt;gap.position.z+=speed*dt;
+if(holding){buildClock+=dt;while(buildClock>=.13&&built<plankCount){buildClock-=.13;planks[built].visible=true;built++;}}
+$('fill').style.width=(built/plankCount*100)+'%';
+const nearEdge=gap.position.z+gapLength/2;
+if(nearEdge>-.5&&nearEdge<7){$('hint').textContent=built===plankCount?'¡Puente listo! ¡A cruzar!':'¡Construí más rápido!';}
+if(nearEdge>=3.55&&!passed){passed=true;if(built<plankCount){end()}else{$('score').textContent=String(++score);speed=Math.min(13,speed+.45);$('hint').textContent='¡Perfecto! Próximo puente...';}}
+if(gap.position.z>12){gap.position.z=-42;built=0;buildClock=0;passed=false;planks.forEach(p=>p.visible=false);$('fill').style.width='0%';$('hint').textContent='¡Se acerca otro hueco!';}
+runner.position.y=Math.abs(Math.sin(runTime*speed*.55))*.09;
+legs[0].rotation.x=Math.sin(runTime*speed*.55)*.65;legs[1].rotation.x=-legs[0].rotation.x;
+}
+renderer.render(scene,camera)}
+requestAnimationFrame(animate);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script>
+</body></html>
