@@ -65,7 +65,7 @@ window.addEventListener('keydown',e=>{if(e.repeat)return;if(e.key==='ArrowLeft'|
 let last=performance.now();
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 if(alive){runTime+=dt;speed=Math.min(23,13+runTime*.16);score+=Math.floor(speed*dt*.45);runner.position.x=THREE.MathUtils.lerp(runner.position.x,laneX[lane],Math.min(1,dt*13));jumpV-=22*dt;jumpY=Math.max(0,jumpY+jumpV*dt);if(jumpY===0)jumpV=0;runner.position.y=jumpY+Math.abs(Math.sin(runTime*speed*.65))*.07;legs[0].rotation.x=Math.sin(runTime*speed*.65)*.65;legs[1].rotation.x=-legs[0].rotation.x;
-while(nextZ>-55)spawnPattern();
+nextZ+=speed*dt;while(nextZ>-115)spawnPattern();
 for(let i=objects.length-1;i>=0;i--){const o=objects[i];o.mesh.position.z+=speed*dt;const dz=Math.abs(o.mesh.position.z-4.2),sameLane=Math.abs(o.mesh.position.x-runner.position.x)<1.15;
 if(o.kind==='gap'){if(holding&&dz<12&&dz>2&&o.built<12){o.buildClock=(o.buildClock||0)+dt;while(o.buildClock>.075&&o.built<12){o.buildClock-=.075;o.planks[o.built++].visible=true}}if(dz<1.65&&!o.passed){o.passed=true;if(o.built<12)endGame('Te faltó construir el puente.');else{score+=150;toast('¡PUENTE PERFECTO +150')}}}
 if(o.kind==='coin'&&!o.hit&&dz<1.25&&Math.abs(o.mesh.position.x-runner.position.x)<1.05&&Math.abs(o.mesh.position.y-(1.2+jumpY))<1.8){o.hit=true;coins++;score+=25;combo++;toast(combo>4?'¡COMBO x'+combo+'!':'+25');scene.remove(o.mesh)}
