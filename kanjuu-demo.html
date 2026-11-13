@@ -98,6 +98,6 @@ function placeAt(x,y){
 function selectMaterial(type){selected=type;document.querySelectorAll('.material').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const labels={water:'AGUA',grass:'PASTO',dirt:'TIERRA',sand:'ARENA',road:'PAVIMENTO',ice:'HIELO',moss:'MUSGO'};document.querySelector('.editor-head span:first-child').textContent='MATERIAL: '+labels[type];}
 document.querySelectorAll('.material').forEach(b=>b.addEventListener('click',()=>selectMaterial(b.dataset.type)));
 document.getElementById('controls').style.display='none';document.getElementById('restart').addEventListener('click',()=>location.reload());document.getElementById('ramp').style.display='none';
-function frame(){if(!runner.gameOver){const next=upcomingObstacle();if(next&&next.remaining<6.5)hint.textContent=next.obstacle==='boat'?'BARCO: COLOCÁ 3 AGUAS SEGUIDAS EN EL CENTRO':'PIEDRA: MOVÉ A HITO A OTRO CARRIL';else hint.textContent='COLOCÁ EL TILE EN LA FILA SIGUIENTE · MOVÉ UN CARRIL POR VEZ';refreshRow();}requestAnimationFrame(frame);}
+function frame(){if(!runner.gameOver){const next=upcomingObstacle();if(next&&next.remaining<6.5)hint.textContent=next.obstacle==='boat'?'BARCO: SEGUÍ UNA RUTA DE 3 AGUAS CONSECUTIVAS':'PIEDRA: COLOCÁ EL PRÓXIMO TILE EN OTRO CARRIL';else hint.textContent='COLOCÁ EL TILE EN LA FILA SIGUIENTE · MOVÉ UN CARRIL POR VEZ';refreshRow();}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 </script></body></html>
