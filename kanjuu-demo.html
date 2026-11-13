@@ -55,18 +55,30 @@ import { mountScene } from './kanjuu-demo/scene3d.js';
 import { creatureSVG } from './kanjuu-demo/creature.js';
 const COLS=5, ROWS=80, START=70;
 const player={id:'hito-runner',kind:'mon',svg:creatureSVG('人',{mood:1}),x:2,y:START,w:1,h:1,insp:false};
-const runner={playerId:player.id,startRow:START,lane:2,speed:1.1,distance:0};
+const obstacles=[
+ {id:'boat-1',kind:'obstacle',obstacle:'boat',x:2,y:54,w:1,h:1,required:'water'},
+ {id:'car-1',kind:'obstacle',obstacle:'car',x:2,y:34,w:1,h:1,required:'road-or-ice'}
+];
+const runner={playerId:player.id,startRow:START,lane:2,speed:1.1,distance:0,obstacles,onObstacle};
+function onObstacle(id,success,required,placed){
+ const o=obstacles.find(x=>x.id===id); if(!o)return;
+ o.resolved=true;
+ if(success) showToast(o.obstacle==='boat'?'¡EL BARCO NAVEGA!':'¡EL AUTO AVANZA!');
+ else {runner.hitPause=.85;showToast(o.obstacle==='boat'?'¡SIN AGUA! HITO SE DETUVO':'¡CAMINO INCORRECTO! HITO SE DETUVO');}
+ refreshRow();
+}
 const tiles={};
 for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) tiles[x+','+y]={g:'grass',h:0};
-const opts={cols:COLS,rows:ROWS,tiles,items:[player],mode:'build',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{}};
+const opts={cols:COLS,rows:ROWS,tiles,items:[player,...obstacles],mode:'build',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{}};
 const host=document.getElementById('stage');
 if(!mountScene(host,opts)) document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
 const rowLabel=document.getElementById('rowLabel');
 const toast=document.getElementById('toast');
 let toastTimer;
 function nextRow(){return Math.max(0,Math.floor(START-runner.distance)-2);}
+function upcomingObstacle(){return obstacles.filter(o=>!o.resolved).map(o=>({...o,remaining:(START-o.y)-runner.distance})).filter(o=>o.remaining>=-0.5).sort((a,b)=>a.remaining-b.remaining)[0];}
 function showToast(msg){toast.textContent=msg;toast.style.opacity='1';clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.style.opacity='0',850);}
-function refreshRow(){rowLabel.textContent='FILA SIGUIENTE · '+String(nextRow()+1).padStart(2,'0');}
+function refreshRow(){const next=upcomingObstacle();rowLabel.textContent=next&&next.remaining<9?`${next.obstacle==='boat'?'BARCO':'AUTO'} EN ${Math.max(0,Math.ceil(next.remaining))} · ${next.obstacle==='boat'?'AGUA':'PAVIMENTO / HIELO'}`:'FILA SIGUIENTE · '+String(nextRow()+1).padStart(2,'0');}
 function placeMaterial(type){
  const x=2,y=nextRow();
  if(y<1){showToast('FIN DE LA PISTA');return;}
@@ -86,7 +98,7 @@ document.getElementById('ramp').addEventListener('click',()=>{
  showToast('RAMPA CONSTRUIDA · +1 NIVEL');
  refreshRow();
 });
-function frame(){refreshRow();requestAnimationFrame(frame);}
+function frame(){refreshRow();const next=upcomingObstacle();const hint=document.querySelector('.hint');if(next&&next.remaining<10)hint.textContent=next.obstacle==='boat'?'BARCO ADELANTE: CONSTRUÍ AGUA EN SU FILA':'AUTO ADELANTE: CONSTRUÍ PAVIMENTO O HIELO';else hint.textContent='TOCÁ UN MATERIAL PARA COLOCARLO DIRECTAMENTE EN EL CAMINO DE HITO';requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 </script>
 </body>
