@@ -680,20 +680,21 @@ function sanctuary() {
     } else {
       W.az += (W.azT - W.az) * Math.min(1, dt * 7);
     }
-    const bd = baseDepth(W.N), hf = Math.tan(FOV * Math.PI / 360), asp3 = camera.aspect;
+    camera.fov = runner ? 48 : FOV; camera.updateProjectionMatrix();
+    const bd = baseDepth(W.N), hf = Math.tan(camera.fov * Math.PI / 360), asp3 = camera.aspect;
     let halfH = Math.max(W.N * .62 + 1.1 + bd * .32, (W.N * .8 + .3) / asp3) / W.zoom, el = ELEV;
     let tx = c0, ty = -.6 - bd * .3 - (W.opts.mode === 'play' ? 0 : W.N * (W.opts.preview ? .5 : .12)), tz = c0;
     const fo = W.focus && W.items.get(W.focus);
     if (runner) {
       const pz = runner.playerZ ?? 0;
-      halfH = 5.6; el = .34; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
-      ty = .25; tz = pz - 1.35;
+      halfH = 5.6; el = .25; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
+      ty = .12; tz = pz - 7.5;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
-    const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 7.2 : halfH / hf * 1.02;
+    const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 9.2 : halfH / hf * 1.02;
     const want = runner
-      ? new THREE.Vector3(tx, ty + 2.65, tz + 6.9)
+      ? new THREE.Vector3(tx, ty + 4.1, tz + 8.0)
       : new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D);
     const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };
@@ -782,7 +783,7 @@ function buildIsland(W, cols, rows, tiles, items) {
       if (!out) { const fw = .98, fh = fw * paper.artAspect('espuma'), fg2 = new THREE.PlaneGeometry(fw, fh); fg2.translate(0, fh * .3, 0); const f = new THREE.Mesh(fg2, foamMat()); f.position.set(wx + dx * .53, bottom - .04, wz + dy * .53); f.rotation.y = Math.atan2(dx, dy); f.userData.p = Math.random() * 6; island.add(f); W.foams.push(f); }
     }
     // matas de pasto de papel
-    if ((t.g === 'grass' || t.g === 'moss') && !t.r && !occ.has(x + ',' + y)) {
+    if ((t.g === 'grass' || t.g === 'moss') && !t.r && !occ.has(x + ',' + y) && !(W.opts.runner && x >= 1 && x <= 3)) {
       const n = 2 + Math.floor(hash(x, y, 21) * 3);
       for (let i = 0; i < n; i++) {
         const id = hash(x, y, 40 + i) > .86 && t.g === 'grass' ? 'florcita' : t.g === 'moss' ? 'matam' : 'mata';
