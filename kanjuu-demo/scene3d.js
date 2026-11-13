@@ -669,13 +669,15 @@ function sanctuary() {
             }
             if (ob.sailing) {
               const boatItem = W.items.get(ob.id);
+              const boarding = runner.distance >= at - .18 && runner.distance <= at + 3.2;
+              runner.ridingBoat = boarding;
               if (boatItem) {
-                boatItem.group.visible = true;
+                boatItem.group.visible = runner.distance <= at + 3.2;
                 boatItem.group.position.x = (runner.lane ?? 2) - (W.cols - 1) / 2;
-                boatItem.group.position.z = (runner.playerZ ?? 0) - 1.65;
-                boatItem.group.position.y = .12 + Math.sin(t * 3) * .035;
+                boatItem.group.position.z = (runner.playerZ ?? 0) - (boarding ? 0 : 1.55);
+                boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
               }
-              if (runner.distance > at + 3.2 && boatItem) boatItem.group.visible = false;
+              if (!boarding && runner.distance > at + 3.2) runner.ridingBoat = false;
             }
           }
           if (ob.resolved || ob.triggered) return;
@@ -716,7 +718,9 @@ function sanctuary() {
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
-        ro.group.position.y = W.tY(runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0;
+        // Durante el tramo de navegación Hito viaja visible sobre la cubierta;
+        // el barco y Hito comparten el mismo avance y la cámara sigue a Hito.
+        ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0);
         if (runner.gameOver) { runner.hitPause = 999; }
         runner.playerZ = playerZ;
       }
