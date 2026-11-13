@@ -76,7 +76,7 @@ for(let y=65;y<=74;y++)for(let x=0;x<COLS;x++)tiles[x+','+y]={g:'snow',h:0};
 for(let y=36;y<=45;y++)for(let x=0;x<COLS;x++)tiles[x+','+y]={g:'void',h:0};
 const path={};for(let y=START;y>=START-3;y--){path[y]={x:2,g:'grass'};tiles['2,'+y]={g:'grass',h:0};}
 let selected='water';
-const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:1.15,distance:0,steps:0,autoAdvance:true,obstacles,coins,path,buildRow:START-4,buildLane:2,lastBuildLane:2,ridingBoat:false,onObstacle,onCoin,onGameOver};
+const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:1.15,distance:0,steps:0,autoAdvance:true,started:false,obstacles,coins,path,buildRow:START-4,buildLane:2,lastBuildLane:2,ridingBoat:false,onObstacle,onCoin,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,...obstacles,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=document.getElementById('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
@@ -107,10 +107,10 @@ function selectMaterial(type){selected=type;document.querySelectorAll('.material
 document.querySelectorAll('.material').forEach(b=>b.addEventListener('click',()=>selectMaterial(b.dataset.type)));
 document.getElementById('controls').style.display='none';document.getElementById('restart').addEventListener('click',()=>location.reload());document.getElementById('ramp').style.display='none';
 let buildHeld=false,buildClock=0,lastFrame=performance.now();
-host.addEventListener('pointerdown',e=>{if(runner.gameOver)return;buildHeld=true;buildClock=0;laneFromPointer(e);placeNext(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
+host.addEventListener('pointerdown',e=>{if(runner.gameOver)return;runner.started=true;buildHeld=true;buildClock=0;laneFromPointer(e);placeNext(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointermove',e=>{if(!buildHeld)return;laneFromPointer(e);e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointerup',e=>{buildHeld=false;e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointercancel',()=>{buildHeld=false;},true);
-function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;if(buildHeld&&!runner.gameOver){buildClock+=dt;if(buildClock>=.86){buildClock=0;placeNext(runner.buildLane);}}if(!runner.gameOver){const next=upcomingObstacle(),rock=upcomingRock();if(rock&&rock.remaining<6){hint.textContent='PIEDRA ADELANTE · CAMBIÁ DE CARRIL';}else if(next&&next.remaining<28){const names={boat:'AGUA',bridge:'MADERA',lava:'PIEDRA',ice:'HIELO',floating:'MUSGO'};hint.textContent='PRÓXIMO RETO: '+(names[next.obstacle]||'CAMINO')+' · PREPARÁ '+(next.required||'EL CAMINO');}else hint.textContent='MANTENÉ PRESIONADO Y ARRASTRÁ PARA CONSTRUIR';refreshRow();}requestAnimationFrame(frame);}
+function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;if(buildHeld&&!runner.gameOver){buildClock+=dt;if(buildClock>=.86){buildClock=0;placeNext(runner.buildLane);}}if(!runner.gameOver){const next=upcomingObstacle(),rock=upcomingRock();if(rock&&rock.remaining<6){hint.textContent='PIEDRA ADELANTE · CAMBIÁ DE CARRIL';}else if(next&&next.remaining<28){const names={boat:'AGUA',bridge:'MADERA',lava:'PIEDRA',ice:'HIELO',floating:'MUSGO'};hint.textContent='PRÓXIMO RETO: '+(names[next.obstacle]||'CAMINO')+' · PREPARÁ '+(next.required||'EL CAMINO');}else hint.textContent=runner.started?'MANTENÉ PRESIONADO Y ARRASTRÁ PARA CONSTRUIR':'TOCÁ Y MANTENÉ PARA EMPEZAR A CORRER';refreshRow();}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 </script></body></html>
