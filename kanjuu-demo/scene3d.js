@@ -700,7 +700,7 @@ function sanctuary() {
         const w = o.wander;
         if (d.kind === 'mon' && t > w.next) { const ax = Math.max(.1, d.w / 2 - .32), az2 = Math.max(.1, d.h / 2 - .32); w.tx = (Math.random() * 2 - 1) * ax; w.tz = (Math.random() * 2 - 1) * az2; w.next = t + 2 + Math.random() * 4; }
         const vx = (w.tx - w.x) * 1.2 * dt, vz = (w.tz - w.z) * 1.2 * dt; w.x += vx; w.z += vz;
-        const moving = Math.hypot(vx, vz) > .002, side = vx * Math.cos(camAz) - vz * Math.sin(camAz); if (Math.abs(side) > .0015) o.flip = side > 0 ? 1 : -1;
+        const isRunner = W.opts.runner?.playerId === d.id; const moving = isRunner || Math.hypot(vx, vz) > .002, side = vx * Math.cos(camAz) - vz * Math.sin(camAz); if (Math.abs(side) > .0015) o.flip = side > 0 ? 1 : -1;
         animSprite(o, t, dt, moving);
         o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.rotation.y = camAz;
         o.blob.position.set(w.x, .012, w.z);
