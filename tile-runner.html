@@ -10,9 +10,10 @@
 <style>
 :root{--night:#16132A;--night2:#2A2148;--paper:#F6EBD0;--paper2:#E9DCC0;--ink:#2B1D16;--red:#E8452C;--gold:#F2B544;--green:#5DB84F;--blue:#4AA3E8;--muted:#9A8BA9;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night);font-family:'Zen Kaku Gothic New','DM Sans',system-ui,sans-serif;touch-action:none;color:white}canvas{display:block;width:100%;height:100%}
-#game{position:fixed;inset:0;overflow:hidden;background:linear-gradient(#3b2c6b,#f2a65a 48%,#8bbd72 68%,#4f8050)}
-#scene{position:absolute;inset:0}
-#vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#16132a55,transparent 22%,transparent 65%,#16132a55)}
+#game{position:fixed;inset:0;overflow:hidden;background:linear-gradient(#FFF6E4,#E3D2B4 48%,#B98D5A 85%,#8E857A)}
+#game:after{content:'';position:absolute;inset:0;pointer-events:none;background-image:var(--grain);opacity:.14;mix-blend-mode:multiply;z-index:2}
+#scene{position:absolute;inset:0;z-index:1}
+#vignette{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,#2B1D1618,transparent 20%,transparent 72%,#2B1D1626)}
 header{position:absolute;z-index:3;top:calc(9px + var(--safe-t));left:0;right:0;display:flex;align-items:flex-start;justify-content:space-between;padding:0 14px;pointer-events:none}
 .brand{font:800 15px Sora,sans-serif;letter-spacing:1.8px;text-shadow:0 2px 8px #16132a66}.brand span{color:var(--gold)}
 .stats{display:flex;gap:7px}.pill{background:#16132ae8;border:1px solid #ffffff28;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;box-shadow:0 3px 10px #16132a30}.pill b{color:var(--gold);margin-left:3px}
@@ -68,14 +69,14 @@ header{position:absolute;z-index:3;top:calc(9px + var(--safe-t));left:0;right:0;
 import * as THREE from 'three';
 import * as paper from './paper.js';
 const $=id=>document.getElementById(id);
-const scene=new THREE.Scene();scene.background=new THREE.Color('#E6CDA8');scene.fog=new THREE.Fog('#E6CDA8',34,88);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#E3D2B4');scene.fog=new THREE.Fog('#E3D2B4',34,88);document.getElementById('game').style.setProperty('--grain',`url(${paper.grainCSS})`);
 const camera=new THREE.PerspectiveCamera(24,innerWidth/innerHeight,.5,220);camera.position.set(0,8.1,15.2);camera.lookAt(0,-.2,-8);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;$('scene').appendChild(renderer.domElement);
 const hemi=new THREE.HemisphereLight('#FFF3E0','#7D6A58',2);scene.add(hemi);
 const sun=new THREE.DirectionalLight('#FFF0D2',2.6);sun.position.set(-6,12,5);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0008;sun.shadow.normalBias=.03;sun.shadow.radius=3;sun.shadow.camera.left=-8;sun.shadow.camera.right=8;sun.shadow.camera.top=22;sun.shadow.camera.bottom=-22;scene.add(sun);
 // Kanjuu's actual sanctuary tile materials, geometry and paper grain.
 const CREAM='#FFF4DC', LV=.42, SLAB=.24;
-const GROUND_C={grass:'#8DBF5E',moss:'#5F9447',dirt:'#B98D5A',sand:'#E2CE97',slate:'#AAA59B',snow:'#F3F0EA',water:'#5AA5D2'};
+const GROUND_C={grass:'#8DBF5E',moss:'#5F9447',dirt:'#B98D5A',sand:'#E2CE97',slate:'#AAA59B',snow:'#F3F0EA',water:'#5AA5D2',lava:'#E8452C'};
 const STRATA=['#A47D55','#93704C','#8A8075'];
 const groundMats=new Map();
 function gMat(col){if(!groundMats.has(col))groundMats.set(col,new THREE.MeshLambertMaterial({color:col,map:paper.grainOn()?paper.grainTex():null}));return groundMats.get(col)}
@@ -134,7 +135,7 @@ function createChallenge(def,z){
    const cell=makeKanjuuTile(col-2,-row,kind,height,null,root);cells.push(cell);
  }
  if(def.kind==='river'||def.kind==='boat'){
-   const boat=paperProp(def.kind==='boat'?'barco':'puente',def.kind==='boat'?1.25:1.5,false);
+   const boat=paperProp(def.kind==='boat'?'estanque':'puente',def.kind==='boat'?1.25:1.5,false);
    boat.position.set(0,.05,-1.05);boat.rotation.y=0;root.add(boat);obj.landmark=boat;
  }
  if(def.kind==='lava'){
@@ -159,7 +160,7 @@ function buildAt(slot){
  if(selected!==def.tile){toast('ESTE TILE NECESITA '+tileNames[def.tile].toUpperCase());return}
  if(inventory[selected]<=0){toast('NO TE QUEDAN TILES');return}
  inventory[selected]--;slot.placed=true;slot.preview.visible=false;
- const old=slot.cell;slot.root.remove(old);
+ const oldTarget=targets.indexOf(slot.mesh);if(oldTarget>=0)targets.splice(oldTarget,1);const old=slot.cell;slot.root.remove(old);
  if(def.tile==='bridge'){
    const water=makeKanjuuTile(slot.localX,slot.localZ,'water',0,null,slot.root);
    const bridge=paperProp('puente',1.45,true);bridge.position.set(slot.localX,.05,slot.localZ);slot.root.add(bridge);slot.cell=water;slot.plank=bridge;
@@ -170,7 +171,7 @@ function buildAt(slot){
  }else{
    slot.cell=makeKanjuuTile(slot.localX,slot.localZ,'grass',1,[0,-1],slot.root);
  }
- slot.mesh=slot.cell.userData.top;slot.mesh.userData.slot=slot;
+ slot.mesh=slot.cell.userData.top;slot.mesh.userData.slot=slot;targets.push(slot.mesh);
  slot.challenge.built++;$('mission-progress').textContent=slot.challenge.built+'/'+def.count;
  toast(['¡BIEN!','¡OTRO TILE!','¡CASI!'][Math.min(2,slot.challenge.built-1)]);
  if(slot.challenge.built===def.count){slot.challenge.done=true;score+=150;coins+=2;combo++;toast(def.kind==='boat'?'¡EL BARCO NAVEGA!':def.kind==='river'?'¡PUENTE CONSTRUIDO!':def.kind==='lava'?'¡CAMINO SEGURO!':'¡RUTA CONECTADA!');hud()}
