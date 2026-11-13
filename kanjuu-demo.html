@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#17152b">
+<title>KANJŪ · Santuario demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
+<style>
+:root{color-scheme:dark;--ink:#211a20;--cream:#fff4dc;--gold:#f2b937;--night:#17152b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night);font-family:'Zen Maru Gothic',sans-serif;touch-action:none}
+#stage{position:fixed;inset:0;overflow:hidden;background:#17152b}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+#stage:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--grain);opacity:.14;mix-blend-mode:multiply}
+.top{position:absolute;z-index:5;top:calc(env(safe-area-inset-top) + 12px);left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.brand{color:#fff4dc;font:900 14px 'DM Sans',sans-serif;letter-spacing:2px;text-shadow:0 2px 12px #17152b88}
+.brand small{display:block;margin-top:4px;font:700 9px 'DM Sans',sans-serif;letter-spacing:1.7px;color:#fff4dcb0}
+.time{border:1px solid #fff4dc44;border-radius:999px;background:#17152b9c;color:#fff4dc;padding:7px 11px;font:800 10px 'DM Sans',sans-serif;letter-spacing:.8px;backdrop-filter:blur(12px)}
+.bottom{position:absolute;z-index:5;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 16px);display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none}
+.hito{background:#fff4dced;color:#2b2320;border:2px solid #2b2320;border-radius:15px;padding:8px 15px;box-shadow:0 4px 0 #2b2320;display:flex;align-items:center;gap:9px}
+.hito b{font-size:13px;letter-spacing:.4px}.hito span{font:700 10px 'DM Sans',sans-serif;color:#76634f}
+.controls{display:flex;gap:9px;pointer-events:auto}
+.control{width:43px;height:43px;border:1.5px solid #fff4dc70;border-radius:50%;background:#17152bd9;color:#fff4dc;font-size:19px;font-weight:900;box-shadow:0 4px 14px #17152b40;backdrop-filter:blur(10px)}
+.control:active{transform:scale(.94)}
+.hint{color:#fff4dcc9;font:700 9px 'DM Sans',sans-serif;letter-spacing:1px;text-shadow:0 1px 5px #17152b}
+.sky-tools{position:absolute;z-index:6;top:calc(env(safe-area-inset-top) + 58px);right:14px;display:flex;gap:5px;pointer-events:auto}
+.sky-tools button{border:1px solid #fff4dc44;border-radius:999px;background:#17152b80;color:#fff4dc;padding:6px 9px;font:800 9px 'DM Sans',sans-serif;backdrop-filter:blur(10px)}
+.footer{position:absolute;z-index:5;left:12px;bottom:calc(env(safe-area-inset-bottom) + 20px);color:#fff4dc8a;font:700 8px 'DM Sans',sans-serif;letter-spacing:1px;pointer-events:none}
+@media(min-width:700px){.bottom{bottom:24px}.control{width:48px;height:48px}.hito{padding:10px 18px}}
+</style>
+</head>
+<body>
+<div id="stage"><div class="stage-ov"></div></div>
+<div class="top"><div class="brand">KANJŪ <small>SANCTUARY · ORIGINAL SCENE</small></div><div class="time" id="clock">CICLO DEL DÍA</div></div>
+<div class="sky-tools"><button data-hour="actual">AHORA</button><button data-hour="9">DÍA</button><button data-hour="18.5">ATARDECER</button><button data-hour="22">NOCHE</button></div>
+<div class="bottom">
+ <div class="hito"><b>HITO · 人</b><span>PRIMER KANJŪ · PERSONA</span></div>
+ <div class="controls">
+  <button class="control" id="rotL" aria-label="Girar a la izquierda">↶</button>
+  <button class="control" id="zOut" aria-label="Alejar">−</button>
+  <button class="control" id="zIn" aria-label="Acercar">＋</button>
+  <button class="control" id="rotR" aria-label="Girar a la derecha">↷</button>
+ </div>
+ <div class="hint">ARRASTRÁ PARA GIRAR · PINZÁ PARA ZOOM</div>
+</div>
+<div class="footer">DEMO DE FIDELIDAD · ISLA 5×5</div>
+<script type="module">
+import { mountScene, rotateCam, zoomCam } from './kanjuu-demo/scene3d.js';
+import { creatureSVG } from './kanjuu-demo/creature.js';
+const hour = new URLSearchParams(location.search).get('hora');
+const hito = {id:'hito-demo',kind:'mon',svg:creatureSVG('人',{mood:1}),x:2,y:2,w:1,h:1,insp:false};
+const opts = {
+ cols:5, rows:5, tiles:{}, items:[hito], mode:'build', preview:true,
+ rain:false, tool:'move', paints:false, valid:null, selected:null,
+ OBJS:{}, onTap:()=>{}, onCell:()=>{}, onMiss:()=>{}
+};
+const host=document.getElementById('stage');
+if(!mountScene(host,opts)) document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
+document.getElementById('rotL').onclick=()=>rotateCam(-1);
+document.getElementById('rotR').onclick=()=>rotateCam(1);
+document.getElementById('zIn').onclick=()=>zoomCam(1.2);
+document.getElementById('zOut').onclick=()=>zoomCam(1/1.2);
+document.querySelectorAll('[data-hour]').forEach(b=>b.onclick=()=>{
+ const v=b.dataset.hour, u=new URL(location.href);
+ if(v==='actual')u.searchParams.delete('hora');else u.searchParams.set('hora',v);
+ location.href=u.toString();
+});
+function clock(){const d=new Date();const hh=hour===null?d.getHours()+d.getMinutes()/60:+hour;const name=hh<5.5?'NOCHE':hh<8?'AMANECER':hh<17?'DÍA':hh<20?'ATARDECER':'NOCHE';document.getElementById('clock').textContent=name+' · '+(hour===null?d.toLocaleTimeString('es-UY',{hour:'2-digit',minute:'2-digit'}):String(Math.floor(hh)).padStart(2,'0')+':00');}
+clock();
+</script>
+</body>
+</html>
