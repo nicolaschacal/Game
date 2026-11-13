@@ -69,7 +69,7 @@ if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding
 const rowLabel=document.getElementById('rowLabel'),toast=document.getElementById('toast'),hint=document.querySelector('.hint'),gameover=document.getElementById('gameover');
 let toastTimer;
 function showToast(msg){toast.textContent=msg;toast.style.opacity='1';clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.style.opacity='0',1100);}
-function endGame(reason){if(runner.gameOver)return;runner.gameOver=true;runner.hitPause=999;document.getElementById('gameReason').textContent=reason;gameover.style.display='flex';}
+function endGame(reason){if(gameover.style.display==='flex')return;runner.gameOver=true;runner.hitPause=999;document.getElementById('gameReason').textContent=reason;gameover.style.display='flex';}
 function onGameOver(reason){endGame(reason);}
 function onCoin(){runner.score=(runner.score||0)+1;document.getElementById('clock').textContent='MONEDAS '+runner.score;showToast('＋ 1 MONEDA');}
 function onObstacle(id,success){const o=obstacles.find(x=>x.id===id);if(!o)return;if(o.obstacle==='boat'){if(success){o.sailing=true;showToast('¡EL BARCO NAVEGA!');}else{runner.boatStalled=true;showToast('¡FALTA AGUA! EL BARCO SE ATASCÓ');}}else if(!success)endGame('Hito chocó contra una piedra');else showToast('¡BUEN ESQUIVE!');}
