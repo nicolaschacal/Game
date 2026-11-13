@@ -470,7 +470,7 @@ const LV = .42, SLAB = .24, TIER_H = 1.25, FOV = 24, ELEV = .58;
 // Ancho en casillas del recorte de cada pieza de papel
 const ART_W = { farol: .5, pino: .74, bambu: .52, arbusto: .72, flores: .56, roca: .56, torii: 1.0, cerezo: 1.08, minka: .95, pagoda: .74, templo: .93, castillo: .92, casate: .96, komainu: .6, campana: .62, incienso: .5, ema: .64, nobori: .32, sagrada: .6, chochin: .42, refugio: .95, suzuri: .6, brasero: .55, cerca: .9, arbol: .9 };
 const GLOW = { farol: { c: '#FFB45A', p: 1.6 }, chochin: { c: '#FF8A5A', p: 1.3 }, brasero: { c: '#FF7A3A', p: 1.4, always: true }, incienso: { c: '#FFC27A', p: .8 } };
-const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C' };
+const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591' };
 const STRATA = ['#A47D55', '#93704C', '#8A8075'];
 // Cielo de papel: madrugada, amanecer, mañana, tarde, atardecer, noche
 const PK = [
@@ -655,17 +655,17 @@ function sanctuary() {
         if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
         else if (!runner.gameOver && runner.started) runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.25);
         const pos = runner.startRow - runner.distance;
-        // Cada fila del camino guarda por dónde entra Hito (e) y por dónde sale (x).
-        // Entre el centro de la fila y SLIDE, Hito se desliza de e a x (tiles laterales);
+        // Cada fila del camino guarda por dónde entra el corredor (e) y por dónde sale (x).
+        // Entre el centro de la fila y SLIDE, se desliza de e a x (tiles laterales);
         // el resto del tramo va de x a la entrada de la fila siguiente (recto o diagonal).
         const SLIDE = .35;
         const row = Math.ceil(pos), nextRow = row - 1, blend = Math.max(0, Math.min(1, row - pos));
         const here = runner.path?.[row], next = runner.path?.[nextRow];
         if (runner.distance > .04 && !here && !runner.gameOver) {
-          runner.gameOver = true; runner.onGameOver?.('Hito llegó al final del camino. ¡Construí un poco más adelante!');
+          runner.gameOver = true; runner.onGameOver?.('Se terminó el camino. ¡Construí un poco más adelante!');
         }
         if (blend > SLIDE && !next && !runner.gameOver) {
-          runner.gameOver = true; runner.onGameOver?.('El camino se terminó antes de que Hito pudiera avanzar');
+          runner.gameOver = true; runner.onGameOver?.('El camino se terminó antes de poder avanzar');
         }
         const entryA = here?.e ?? here?.x ?? runner.lane ?? 2, exitA = here?.x ?? entryA, entryB = next?.e ?? next?.x ?? exitA;
         const wantedLane = blend <= SLIDE
@@ -673,49 +673,34 @@ function sanctuary() {
           : exitA + (entryB - exitA) * ((blend - SLIDE) / (1 - SLIDE));
         runner.visualLane = (runner.visualLane ?? entryA) + (wantedLane - (runner.visualLane ?? entryA)) * Math.min(1, dt * 14);
         runner.lane = Math.round(wantedLane);
-        (runner.obstacles || []).forEach(ob => {
-          const at = runner.startRow - ob.y, length = ob.length || 10;
-          if (ob.obstacle === 'boat' && ob.sailing) {
-            const boatItem = W.items.get(ob.id);
-            const boarding = runner.distance >= at - .18 && runner.distance <= at + length + .2;
-            runner.ridingBoat = boarding;
-            if (boatItem) {
-              boatItem.group.visible = runner.distance <= at + length + .2;
-              boatItem.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
-              boatItem.group.position.z = (runner.playerZ ?? 0) - (boarding ? 0 : 1.55);
-              boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
-            }
-          }
-          if (ob.resolved || ob.triggered) return;
-          if (runner.distance >= at - .12) {
-            ob.triggered = true;
-            let success = false;
-            if (ob.obstacle === 'rock') success = !(ob.x in (runner.path?.[ob.y]?.lanes || {}));
-            else {
-              const required = ob.requiredMaterial || ({ boat: 'water', bridge: 'wood', lava: 'stone', ice: 'ice', floating: 'moss' }[ob.obstacle]);
-              const rowOk = r => !!r && Object.values(r.lanes || { [r.x]: r.g }).every(g => g === required);
-              success = !!required && Array.from({ length }, (_, i) => rowOk(runner.path?.[ob.y + 1 + i])).every(Boolean);
-              if (success && ob.obstacle === 'boat') ob.sailing = true;
-            }
-            ob.resolved = success;
-            runner.onObstacle?.(ob.id, success, ob.required, ob.requiredMaterial || ob.obstacle);
-          }
-        });
         (runner.coins || []).forEach(coin => {
           if (coin.collected || coin.missed) return;
-          // La moneda se junta si Hito pasa por su carril en cualquier momento de esa fila
+          // La moneda se junta si el corredor pasa por su carril en cualquier momento de esa fila
           // (también durante un desplazamiento lateral).
           if (pos <= coin.y + .5 && pos >= coin.y - .5 && Math.round(runner.visualLane ?? runner.lane ?? 2) === coin.x) {
             coin.collected = true;
             const item = W.items.get(coin.id); if (item) item.group.visible = false;
             runner.onCoin?.(coin.id);
-          } else if (pos < coin.y - .5) coin.missed = true;
+          } else if (pos < coin.y - .5) { coin.missed = true; runner.onCoinMiss?.(coin.id); }
         });
         const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
-        ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0);
+        ro.group.position.y = W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0;
+        // En el mar el personaje desaparece y navega el barco de papel (runner.boatId) en su lugar.
+        ro.group.visible = !runner.onBoat;
+        runner.lean = ((runner.lean || 0) * .8) + ((runner.visualLane - (runner.prevVisual ?? runner.visualLane)) / Math.max(dt, .001) / 4) * .2; runner.prevVisual = runner.visualLane;
+        const boat = runner.boatId ? W.items.get(runner.boatId) : null;
+        if (boat && runner.onBoat) {
+          const g = boat.group, bx = (runner.visualLane ?? 2) - ox;
+          g.position.x += (bx - g.position.x) * Math.min(1, dt * 14);
+          g.position.z += (playerZ - g.position.z) * Math.min(1, dt * 18);
+          g.position.y = -.12;
+        }
+        // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
+        const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
+        if (left) { const g = left.group; g.position.x += dt * 2.4 * (g.position.x >= 0 ? 1 : -1); g.position.y -= dt * .9; if (g.position.y < -1.4) { g.visible = false; runner.leaveBoat = null; } }
         if (runner.gameOver) runner.hitPause = 999;
         runner.playerZ = playerZ;
         // Preview: todas las casillas donde se puede construir ahora (adelante, diagonal o lateral).
@@ -782,7 +767,20 @@ function sanctuary() {
         if (d.kind === 'mon' && t > w.next) { const ax = Math.max(.1, d.w / 2 - .32), az2 = Math.max(.1, d.h / 2 - .32); w.tx = (Math.random() * 2 - 1) * ax; w.tz = (Math.random() * 2 - 1) * az2; w.next = t + 2 + Math.random() * 4; }
         const vx = (w.tx - w.x) * 1.2 * dt, vz = (w.tz - w.z) * 1.2 * dt; w.x += vx; w.z += vz;
         const isRunner = W.opts.runner?.playerId === d.id; const moving = isRunner || Math.hypot(vx, vz) > .002, side = vx * Math.cos(camAz) - vz * Math.sin(camAz); if (Math.abs(side) > .0015) o.flip = side > 0 ? 1 : -1;
-        animSprite(o, t, dt, moving);
+        animSprite(o, t, dt, moving && !d.still);
+        if (o.frames) {
+          const R = W.opts.runner, sailing = R?.boatId === d.id && R.onBoat;
+          const st = (isRunner ? R.started && !R.gameOver : sailing) ? 'run' : 'idle', set = o.frames[st] || o.frames.idle;
+          const fr = set[Math.floor(t * (d.fps || 10) * (isRunner ? (R.speed || 1.2) / 1.25 : 1)) % set.length];
+          if (o.state && o.state !== st) o.turn = 1; o.state = st;   // giro de papel al cambiar de pose
+          o.turn = Math.max(0, o.turn - dt * 4);
+          const shown = o.turn > .5 ? (o.frames[st === 'run' ? 'idle' : 'run'] || set)[0] : fr;
+          if (o.sprite.material.map !== shown) { o.sprite.material.map = o.sprite.material.emissiveMap = shown; o.sprite.customDepthMaterial.map = shown; }
+          o.sprite.scale.x *= Math.abs(Math.cos(o.turn * Math.PI));
+          const lean = THREE.MathUtils.clamp(R?.lean || 0, -1, 1);
+          if (isRunner) o.sprite.rotation.z += -lean * .35;
+          if (sailing) { o.sprite.rotation.z = Math.sin(t * 2.6) * .07 - lean * .45; o.sprite.position.y += Math.sin(t * 3.2) * .035 * o.size; }
+        }
         o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.rotation.y = camAz;
         o.blob.position.set(w.x, .012, w.z);
         o.sprite.material.emissiveIntensity = (d.insp ? .62 : .42) - night * .14 + (d.insp ? Math.sin(t * 4) * .08 : 0);
@@ -818,7 +816,7 @@ function buildIsland(W, cols, rows, tiles, items) {
   W.cols = cols; W.rows = rows; W.N = Math.max(cols, rows);
   const ox = (cols - 1) / 2, oz = (rows - 1) / 2; W.center = 0;
   const T = (x, y) => ({ g: W.opts.runner ? 'empty' : 'grass', h: 0, r: null, ...(tiles[x + ',' + y] || {}) });
-  const tY = (x, y) => { const t = T(x, y); return t.g === 'water' ? t.h * LV - .12 : t.h * LV + (t.r ? LV / 2 : (hash(x, y, 13) - .5) * .06); };
+  const tY = (x, y) => { const t = T(x, y); return t.g === 'water' ? t.h * LV - .12 : t.g === 'deep' ? t.h * LV - .2 : t.h * LV + (t.r ? LV / 2 : (hash(x, y, 13) - .5) * .06); };
   W.tY = tY;
   const occ = new Set(); items.forEach(d => { if (d.kind === 'obj') for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) occ.add((d.x + i) + ',' + (d.y + j)); });
   const slab = new THREE.BoxGeometry(1, SLAB, 1), wSlab = new THREE.BoxGeometry(.985, SLAB, .985), lvBox = new THREE.BoxGeometry(1, LV, 1);
@@ -899,6 +897,8 @@ function updateItem(W, o, d, OBJ) {
       const size = 1.0 * (1 + .34 * (Math.max(d.w, d.h) - 1) + .12 * (Math.min(d.w, d.h) - 1));
       const s = makeSprite(d.svg, size, d.id); Object.assign(o, { sprite: s.sprite, blob: s.blob, size, ph: s.ph, squash: 0, hop: 0, flip: 1, flash: 0, mon: true });
       o.group.add(s.group);
+      // Recortes animados: d.frames = { idle:[svg…], run:[svg…] } (personaje que corre, barco que navega)
+      o.frames = d.frames ? Object.fromEntries(Object.entries(d.frames).map(([k, v]) => [k, v.map(paperTexture)])) : null; o.frameKey = ''; o.turn = 0;
     } else if (d.kind === 'obstacle') { const m = runnerObstacleMesh(d.obstacle); m.traverse(n => n.userData.id = d.id); o.group.add(m); o.sprite = m; o.size = 1.2;
     } else if (d.kind === 'away') { const s = sign('旅'); s.scale.setScalar(.8); s.traverse(m => m.userData.id = d.id); o.group.add(s); o.size = .7; }
     else {
@@ -942,6 +942,12 @@ export function runnerLaneAtScreen(cx, cy) {
   E.ray.setFromCamera(new THREE.Vector2((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1), W.camera);
   const hit = E.ray.intersectObjects([...W.tops.values()], false)[0];
   return hit?.object?.userData?.x ?? null;
+}
+// Pequeñas reacciones del personaje/barco (premios): 'hop' salta, 'squash' se aplasta
+export function runnerPulse(kind = 'squash') {
+  const W = E?.worlds.sanct, R = W?.opts?.runner; if (!R) return;
+  const o = W.items.get(R.onBoat && R.boatId ? R.boatId : R.playerId); if (!o) return;
+  if (kind === 'hop') o.hop = 1; else o.squash = 1;
 }
 export function updateRunnerTile(x, y, tile) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
