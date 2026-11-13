@@ -670,9 +670,12 @@ function sanctuary() {
             ob.triggered = true;
             let success = false, placed = 'empty';
             if (ob.obstacle === 'boat') {
-              let streak = 0;
-              for (let y = ob.y + 1; y <= ob.y + 4; y++) if (W.opts.tiles?.[`2,${y}`]?.g === 'water') streak++;
-              success = streak >= 3;
+              let streak = 0, bestStreak = 0;
+              for (let y = ob.y + 1; y <= ob.y + 4; y++) {
+                if (W.opts.tiles?.[`2,${y}`]?.g === 'water') streak++; else streak = 0;
+                bestStreak = Math.max(bestStreak, streak);
+              }
+              success = bestStreak >= 3;
               if (success) ob.sailing = true;
               else { runner.boatStalled = true; runner.boatAt = at; }
             } else if (ob.obstacle === 'rock') {
