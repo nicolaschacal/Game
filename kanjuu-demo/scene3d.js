@@ -652,7 +652,20 @@ function sanctuary() {
     if (runner) {
       const ro = W.items.get(runner.playerId);
       if (ro) {
-        runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
+        if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
+        else runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
+        (runner.obstacles || []).forEach(ob => {
+          if (ob.resolved || ob.triggered) return;
+          const at = runner.startRow - ob.y;
+          if (runner.distance >= at - .12) {
+            ob.triggered = true;
+            const tile = W.opts.tiles?.[`${ob.x},${ob.y}`];
+            const placed = tile?.g || 'grass';
+            const success = ob.obstacle === 'boat' ? placed === 'water' : (placed === 'road' || placed === 'ice');
+            ob.resolved = success;
+            runner.onObstacle?.(ob.id, success, ob.required, placed);
+          }
+        });
         const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.lane ?? 2) - ox;
@@ -696,7 +709,10 @@ function sanctuary() {
     const lit = [];
     W.items.forEach(o => {
       const d = o.d;
-      if (o.mon) {
+      if (d.kind === 'obstacle') {
+        o.group.rotation.y = Math.sin(t * 1.1 + (d.y || 0)) * .035;
+        if (d.obstacle === 'boat') o.group.position.y = W.tY(d.x,d.y) + .05 + Math.sin(t * 2.2) * .035;
+      } else if (o.mon) {
         const w = o.wander;
         if (d.kind === 'mon' && t > w.next) { const ax = Math.max(.1, d.w / 2 - .32), az2 = Math.max(.1, d.h / 2 - .32); w.tx = (Math.random() * 2 - 1) * ax; w.tz = (Math.random() * 2 - 1) * az2; w.next = t + 2 + Math.random() * 4; }
         const vx = (w.tx - w.x) * 1.2 * dt, vz = (w.tz - w.z) * 1.2 * dt; w.x += vx; w.z += vz;
@@ -788,6 +804,23 @@ const toWorld = (W, d) => {
   let y = -1; for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) y = Math.max(y, W.tY(d.x + i, d.y + j));
   return [cx, y, cz];
 };
+function runnerObstacleMesh(type) {
+  const g = new THREE.Group();
+  const mat = c => new THREE.MeshStandardMaterial({color:c,roughness:.78,metalness:.04});
+  const hull = mat(type === 'boat' ? '#B94D36' : '#D94B35');
+  const trim = mat('#F5E7C8'), dark = mat('#34333B'), glass = mat('#8EC7D8'), tire = mat('#24242A');
+  if (type === 'boat') {
+    g.add(mesh(new THREE.BoxGeometry(1.15,.22,.62),hull,0,.23,0));
+    const bow=mesh(new THREE.ConeGeometry(.39,.56,4),hull,0,.23,-.48); bow.rotation.x=Math.PI/2; bow.rotation.z=Math.PI/4; g.add(bow);
+    g.add(mesh(new THREE.BoxGeometry(.48,.32,.42),trim,0,.48,.08),mesh(new THREE.BoxGeometry(.055,.55,.055),dark,0,.83,.05),mesh(new THREE.BoxGeometry(.34,.2,.035),trim,0,.95,.05),mesh(new THREE.BoxGeometry(1.12,.035,.65),trim,0,.12,0));
+  } else {
+    g.add(mesh(new THREE.BoxGeometry(1.05,.32,.62),hull,0,.38,0),mesh(new THREE.BoxGeometry(.56,.28,.53),glass,0,.66,.02),mesh(new THREE.BoxGeometry(.5,.045,.56),trim,0,.49,-.01));
+    for(const z of [-.23,.23]) for(const x of [-.34,.34]) { const w=mesh(new THREE.CylinderGeometry(.13,.13,.09,12),tire,x,.2,z); w.rotation.z=Math.PI/2; g.add(w); }
+    for(const z of [-.316,.316]) g.add(mesh(new THREE.BoxGeometry(.18,.08,.025),trim,0,.39,z));
+  }
+  g.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true;}});
+  return g;
+}
 function updateItem(W, o, d, OBJ) {
   const key = `${d.kind}|${d.svg || d.t}|${d.w}x${d.h}|${d.lv || 0}`;
   if (key !== o.key) {
@@ -796,6 +829,7 @@ function updateItem(W, o, d, OBJ) {
       const size = 1.0 * (1 + .34 * (Math.max(d.w, d.h) - 1) + .12 * (Math.min(d.w, d.h) - 1));
       const s = makeSprite(d.svg, size, d.id); Object.assign(o, { sprite: s.sprite, blob: s.blob, size, ph: s.ph, squash: 0, hop: 0, flip: 1, flash: 0, mon: true });
       o.group.add(s.group);
+    } else if (d.kind === 'obstacle') { const m = runnerObstacleMesh(d.obstacle); m.traverse(n => n.userData.id = d.id); o.group.add(m); o.sprite = m; o.size = 1.2;
     } else if (d.kind === 'away') { const s = sign('旅'); s.scale.setScalar(.8); s.traverse(m => m.userData.id = d.id); o.group.add(s); o.size = .7; }
     else {
       const def = OBJ?.[d.t] || {}, id = def.art || 'roca', lvK = 1 + ((d.lv || 1) - 1) * .05;
