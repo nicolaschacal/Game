@@ -660,7 +660,7 @@ function sanctuary() {
         if (runner.distance > .04 && !here && !runner.gameOver) {
           runner.gameOver = true; runner.onGameOver?.('Hito llegó al final del camino. ¡Construí un poco más adelante!');
         }
-        if (blend > .04 && !next && !runner.gameOver) {
+        if (blend > .25 && !next && !runner.gameOver) {
           runner.gameOver = true; runner.onGameOver?.('El camino se terminó antes de que Hito pudiera avanzar');
         }
         const laneA = here?.x ?? runner.lane ?? 2, laneB = next?.x ?? laneA;
