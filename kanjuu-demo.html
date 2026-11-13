@@ -69,8 +69,6 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 <div id="gameover"><div><h2 id="goTitle">FIN DEL RECORRIDO</h2><p id="gameReason"></p><div class="nums"><div><span id="goScore">0</span><small>PUNTOS</small></div><div><span id="goCoins">0</span><small>MONEDAS</small></div><div><span id="goBest">0</span><small>RÉCORD</small></div></div><button id="restart">VOLVER A JUGAR</button></div></div>
 <section class="bar">
  <div class="hint" id="hint">TOCÁ PARA EMPEZAR A CORRER</div>
- <button class="mat active" data-type="grass"><i style="background:#8DBF5E"></i>CAMINO</button>
- <button class="mat" data-type="water"><i style="background:#5AA5D2"></i>AGUA</button>
 </section>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse } from './kanjuu-demo/scene3d.js';
@@ -87,7 +85,7 @@ for(let y=0;y<ROWS;y++)paintRow(y,'grass');
 let cur=START-1,uid=0;
 function fill(n,kind,{gap,lead,extra}){
  let safe=2;
- for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,kind==='sea'?'deep':'empty');
+ for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
   if(i>=lead&&(i-lead)%gap===0&&i<n-1){
    const prev=safe;safe=pick([-2,-1,1,2].map(d=>prev+d).filter(x=>x>=0&&x<COLS));
    const blocked=new Set([prev]);const pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
@@ -171,6 +169,7 @@ const prevExit=y=>runner.path[y+1]?.x??runner.lastBuildLane;
 let wrongAt=0;
 function materialOk(y){
  const z=zone[y];if(z==='free')return true;
+ selected=z==='sea'?'water':'grass';return true;
  const ok=z==='sea'?selected==='water':selected!=='water';
  if(!ok){lastWrong=y;const now=performance.now();if(now-wrongAt>500){wrongAt=now;showToast(z==='sea'?'¡EN EL MAR SE CONSTRUYE CON AGUA!':'¡EN TIERRA SE CONSTRUYE CON CAMINO!');tone(160,.12,'sawtooth',.04);buzz(40);}}
  return ok;
@@ -233,9 +232,7 @@ function refreshUI(){
  // próximo tramo que hay que construir: decide qué botón llama la atención
  let nz=null;for(let q=y;q>y-7&&q>=0;q--)if(zone[q]!=='free'){nz=zone[q];break;}
  const callWater=nz==='sea'&&selected!=='water',callLand=nz==='land'&&selected==='water';
- document.querySelector('.mat[data-type=water]').classList.toggle('call',!!callWater);
- document.querySelector('.mat[data-type=grass]').classList.toggle('call',!!callLand);
- hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':callWater?'¡UN BARCO! CAMBIÁ A AGUA PARA TRAZAR TU RUTA':callLand?'¡TIERRA A LA VISTA! CAMBIÁ A CAMINO':runner.onBoat?'ARRASTRÁ PARA ESQUIVAR · EL MAR SE HACE CON AGUA':sea&&toBoard<12?'BARCO ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
+ hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':sea&&toBoard<12?'BARCO ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
 }
 
 // ── Entrada: un dedo. Mantener = construir adelante; arrastrar = costados / diagonal ──
@@ -247,7 +244,6 @@ host.addEventListener('pointercancel',()=>{buildHeld=false;},true);
 // Teclado (escritorio): ↑/W mantener = avanzar · ←/→ = lateral o diagonal · Q/E = diagonal · espacio = cambiar tile
 window.addEventListener('keydown',e=>{
  if(runner.gameOver)return;const k=e.key.toLowerCase();
- if(k===' '){e.preventDefault();if(!e.repeat)selectMaterial(selected==='water'?'grass':'water');return;}
  if(['arrowup','w','arrowleft','a','arrowright','d','q','e'].includes(k))e.preventDefault();else return;
  audio();runner.started=true;
  if(k==='arrowup'||k==='w'){keyHeld=true;if(!e.repeat){const y=targetRow(),row=runner.path[y];runner.buildLane=row?row.x:prevExit(y);if(!row)buildToward(runner.buildLane);}return;}
