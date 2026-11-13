@@ -656,14 +656,27 @@ function sanctuary() {
         else runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
         (runner.obstacles || []).forEach(ob => {
           const at = runner.startRow - ob.y;
-          if (ob.obstacle === 'boat' && ob.sailing) {
-            const boatItem = W.items.get(ob.id);
-            if (boatItem) {
-              boatItem.group.position.x = (runner.lane ?? 2) - (W.cols - 1) / 2;
-              boatItem.group.position.z = (runner.playerZ ?? 0) - 1.35;
-              boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
+          // El agua puede completar el puente incluso si el barco ya empezó a atascarse.
+          if (ob.obstacle === 'boat') {
+            let streak = 0, bestStreak = 0;
+            for (let y = ob.y + 1; y <= ob.y + 4; y++) {
+              if (W.opts.tiles?.[`2,${y}`]?.g === 'water') streak++; else streak = 0;
+              bestStreak = Math.max(bestStreak, streak);
             }
-            if (runner.distance > at + 3.2 && boatItem) boatItem.group.visible = false;
+            if (bestStreak >= 3 && runner.boatStalled && !runner.gameOver) {
+              runner.boatStalled = false; runner.boatAt = null; ob.sailing = true; ob.resolved = true;
+              runner.onObstacle?.(ob.id, true, ob.required, 'water');
+            }
+            if (ob.sailing) {
+              const boatItem = W.items.get(ob.id);
+              if (boatItem) {
+                boatItem.group.visible = true;
+                boatItem.group.position.x = (runner.lane ?? 2) - (W.cols - 1) / 2;
+                boatItem.group.position.z = (runner.playerZ ?? 0) - 1.65;
+                boatItem.group.position.y = .12 + Math.sin(t * 3) * .035;
+              }
+              if (runner.distance > at + 3.2 && boatItem) boatItem.group.visible = false;
+            }
           }
           if (ob.resolved || ob.triggered) return;
           if (runner.distance >= at - .12) {
@@ -721,8 +734,9 @@ function sanctuary() {
     const fo = W.focus && W.items.get(W.focus);
     if (runner) {
       const pz = runner.playerZ ?? 0;
-      halfH = 3.35; el = .30; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
-      ty = .08; tz = pz - 3.15;
+      // Encuadre más cercano: Hito queda dentro de cámara, por encima del panel inferior.
+      halfH = 3.0; el = .34; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
+      ty = .12; tz = pz - 1.25;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
