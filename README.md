@@ -24,3 +24,25 @@ Abrí \`index.html\` en un servidor estático (Vercel, GitHub Pages o similar). 
 Inspirada en KANJŪ: noche violeta, papel crema, coral, dorado, verdes suaves y geometría low-poly con una pequeña criatura viajera.
 
 Es un prototipo de mecánica y sensación, no una integración con el santuario ni con el progreso de la partida.
+
+## Tile Runner (`kanjuu-demo.html`) · construcción libre
+
+Hito corre solo; vos construís el camino **una fila por delante**. Esa fila objetivo queda abierta hasta que Hito llega a su centro:
+
+- **↑ Adelante:** el primer tile de la fila sigue el carril por donde sale Hito.
+- **← → Laterales:** mientras la fila esté abierta, podés extenderla hacia los costados (uno o varios carriles). Hito se desliza sobre esos tiles, como un cambio de carril en Subway Surfers.
+- **↖ ↗ Diagonal:** el primer tile de la fila también puede entrar un carril al costado.
+- Se pueden encadenar: izquierda y después adelante, adelante y después derecha, diagonal y después lateral.
+- **No se permite:** construir hacia atrás, sobre una piedra o fuera de la grilla. El preview dorado marca las casillas válidas.
+
+Controles: mantener y arrastrar con el dedo (o mouse). En escritorio: mantener ↑/W para avanzar recto, ←/→ para lateral (o diagonal si la fila todavía está vacía), Q/E para diagonal.
+
+## Tile Runner · tramo de mar
+
+- **Kami**, el viajero de papel, reemplaza a Hito: recorte original con sombrero de paja y bufanda, ciclo de carrera de 4 poses visto de espaldas y giro de papel al arrancar.
+- **Barco de papel**: al final de cada tramo de tierra hay un muelle y un barco estacionado. Al llegar, Kami desaparece y navega el barco (vela que se hincha, cabeceo y estela).
+- **El mar se construye con AGUA**: el mar profundo no es navegable; la ruta se traza con el tile de agua. En tierra se usa CAMINO. Dos botones grandes al alcance del pulgar.
+- **Respiros**: muelle, puerto y playa ya están construidos y el camino sigue solo, para poder cambiar de tile con la misma mano.
+- **Obstáculos de agua**: arrecifes, aletas y barriles que obligan a moverse; en tierra, rocas y tocones.
+- **Premios**: monedas con racha y multiplicador (hasta x5), perlas en carriles de riesgo, bono por rozar obstáculos y por cada travesía, sonido, vibración y récord guardado.
+- Cinco mares cada vez más largos y rápidos, con meta al final. El arte vive en `kanjuu-demo/runner-art.js`.
