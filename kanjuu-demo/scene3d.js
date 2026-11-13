@@ -653,7 +653,19 @@ function sanctuary() {
       const ro = W.items.get(runner.playerId);
       if (ro) {
         if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
-        else runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
+        else if (runner.autoAdvance === false) {
+          const target = runner.targetDistance ?? runner.distance ?? 0;
+          if (runner.distance < target) {
+            runner.distance = Math.min(target, runner.distance + dt * (runner.moveSpeed || 2.8));
+            const currentLane = runner.visualLane ?? runner.lane ?? 2;
+            runner.visualLane = currentLane + ((runner.lane ?? 2) - currentLane) * Math.min(1, dt * 8);
+            if (runner.distance >= target - .001) {
+              runner.distance = target;
+              runner.visualLane = runner.lane ?? 2;
+              runner.moving = false;
+            }
+          }
+        } else runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
         (runner.obstacles || []).forEach(ob => {
           const at = runner.startRow - ob.y;
           // El agua puede completar el puente incluso si el barco ya empezó a atascarse.
@@ -673,7 +685,7 @@ function sanctuary() {
               runner.ridingBoat = boarding;
               if (boatItem) {
                 boatItem.group.visible = runner.distance <= at + 3.2;
-                boatItem.group.position.x = (runner.lane ?? 2) - (W.cols - 1) / 2;
+                boatItem.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
                 boatItem.group.position.z = (runner.playerZ ?? 0) - (boarding ? 0 : 1.55);
                 boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
               }
@@ -716,11 +728,11 @@ function sanctuary() {
         }
         const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
         const playerZ = runner.startRow - oz - runner.distance;
-        ro.group.position.x = (runner.lane ?? 2) - ox;
+        ro.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
         // Durante el tramo de navegación Hito viaja visible sobre la cubierta;
         // el barco y Hito comparten el mismo avance y la cámara sigue a Hito.
-        ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0);
+        ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.visualLane ?? runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0);
         if (runner.gameOver) { runner.hitPause = 999; }
         runner.playerZ = playerZ;
       }
@@ -739,7 +751,7 @@ function sanctuary() {
     if (runner) {
       const pz = runner.playerZ ?? 0;
       // Encuadre más cercano: Hito queda dentro de cámara, por encima del panel inferior.
-      halfH = 3.0; el = .34; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
+      halfH = 3.0; el = .34; tx = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
       ty = .12; tz = pz - 1.25;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
