@@ -655,29 +655,53 @@ function sanctuary() {
         if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
         else runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
         (runner.obstacles || []).forEach(ob => {
-          if (ob.resolved || ob.triggered) return;
           const at = runner.startRow - ob.y;
+          if (ob.obstacle === 'boat' && ob.sailing) {
+            const boatItem = W.items.get(ob.id);
+            if (boatItem) {
+              boatItem.group.position.x = (runner.lane ?? 2) - (W.cols - 1) / 2;
+              boatItem.group.position.z = (runner.playerZ ?? 0) - 1.35;
+              boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
+            }
+            if (runner.distance > at + 3.2 && boatItem) boatItem.group.visible = false;
+          }
+          if (ob.resolved || ob.triggered) return;
           if (runner.distance >= at - .12) {
             ob.triggered = true;
-            const tile = W.opts.tiles?.[`${ob.x},${ob.y}`];
-            const placed = tile?.g || 'empty';
-            let success=false;
-            if(ob.obstacle==='boat') success=placed==='water';
-            else if(ob.obstacle==='rock'){
-              const left=W.opts.tiles?.[`${ob.x-1},${ob.y}`]?.g, right=W.opts.tiles?.[`${ob.x+1},${ob.y}`]?.g;
-              const usable=g=>g&&g!=='empty'&&g!=='water';
-              success=usable(left)||usable(right);
-              runner.bypassLane=usable(left)?ob.x-1:ob.x+1;
-            } else success=placed==='road'||placed==='ice';
+            let success = false, placed = 'empty';
+            if (ob.obstacle === 'boat') {
+              let streak = 0;
+              for (let y = ob.y + 1; y <= ob.y + 4; y++) if (W.opts.tiles?.[`2,${y}`]?.g === 'water') streak++;
+              success = streak >= 3;
+              if (success) ob.sailing = true;
+              else { runner.boatStalled = true; runner.boatAt = at; }
+            } else if (ob.obstacle === 'rock') {
+              success = (runner.lane ?? 2) !== ob.x;
+            }
             ob.resolved = success;
             runner.onObstacle?.(ob.id, success, ob.required, placed);
           }
         });
+        (runner.coins || []).forEach(coin => {
+          if (coin.collected || coin.missed) return;
+          const at = runner.startRow - coin.y;
+          if (runner.distance >= at - .12) {
+            if ((runner.lane ?? 2) === coin.x) {
+              coin.collected = true;
+              const item = W.items.get(coin.id); if (item) item.group.visible = false;
+              runner.onCoin?.(coin.id);
+            } else coin.missed = true;
+          }
+        });
+        if (runner.boatStalled && runner.distance > runner.boatAt + 2.15 && !runner.gameOver) {
+          runner.gameOver = true; runner.onGameOver?.('El barco se quedó sin agua y quedó atrás');
+        }
         const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
         ro.group.position.y = W.tY(runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0;
+        if (runner.gameOver) { runner.hitPause = 999; }
         runner.playerZ = playerZ;
       }
     }
@@ -838,7 +862,7 @@ function updateItem(W, o, d, OBJ) {
   const key = `${d.kind}|${d.svg || d.t}|${d.w}x${d.h}|${d.lv || 0}`;
   if (key !== o.key) {
     o.group.clear(); o.sprite = o.blob = null; o.mon = false; o.flat = false; o.glow = null; o.amp = 0; o.key = key;
-    if (d.kind === 'mon' || d.kind === 'egg') {
+    if (d.kind === 'mon' || d.kind === 'egg' || d.kind === 'paper') {
       const size = 1.0 * (1 + .34 * (Math.max(d.w, d.h) - 1) + .12 * (Math.min(d.w, d.h) - 1));
       const s = makeSprite(d.svg, size, d.id); Object.assign(o, { sprite: s.sprite, blob: s.blob, size, ph: s.ph, squash: 0, hop: 0, flip: 1, flash: 0, mon: true });
       o.group.add(s.group);
