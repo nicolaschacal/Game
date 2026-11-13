@@ -135,7 +135,7 @@ function createChallenge(def,z){
    const cell=makeKanjuuTile(col-2,-row,kind,height,null,root);cells.push(cell);
  }
  if(def.kind==='river'||def.kind==='boat'){
-   const boat=paperProp(def.kind==='boat'?'estanque':'puente',def.kind==='boat'?1.25:1.5,false);
+   const boat=paperProp(def.kind==='boat'?'boat':'puente',def.kind==='boat'?1.25:1.5,false);
    boat.position.set(0,.05,-1.05);boat.rotation.y=0;root.add(boat);obj.landmark=boat;
  }
  if(def.kind==='lava'){
@@ -185,7 +185,7 @@ $('left').addEventListener('click',()=>{if(alive&&!paused){lane=Math.max(0,lane-
 renderer.domElement.addEventListener('pointerdown',e=>{if(!alive||paused)return;pointer.x=(e.clientX/innerWidth)*2-1;pointer.y=-(e.clientY/innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(targets,false);if(hits.length){buildAt(hits[0].object.userData.slot);return}const rect=renderer.domElement.getBoundingClientRect();if(e.clientX<rect.left+rect.width*.22)lane=Math.max(0,lane-1);else if(e.clientX>rect.right-rect.width*.22)lane=Math.min(4,lane+1)});
 let swipe=null;renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length===1)swipe={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});renderer.domElement.addEventListener('touchend',e=>{if(!swipe||!alive)return;const t=e.changedTouches[0],dx=t.clientX-swipe.x,dy=t.clientY-swipe.y;if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy))lane=Math.max(0,Math.min(4,lane+(dx>0?1:-1)));swipe=null},{passive:true});
 window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')lane=Math.max(0,lane-1);if(e.key==='ArrowRight'||e.key==='d')lane=Math.min(4,lane+1);if(e.key==='Escape')pause()});
-function update(dt){if(!alive||paused)return;runTime+=dt;speed=Math.min(5.3,3.2+runTime*.018);score+=dt*speed*2.4;hero.position.x=THREE.MathUtils.lerp(hero.position.x,(lane-2)*laneW,Math.min(1,dt*8));hero.position.y=Math.abs(Math.sin(runTime*speed*1.5))*.08;hero.rotation.z=Math.sin(runTime*2)*.035;heroSprite.position.y=.78+Math.abs(Math.sin(runTime*speed*1.5))*.035;heroSprite.rotation.z=Math.sin(runTime*2)*.025;
+function update(dt){if(!alive||paused)return;runTime+=dt;speed=Math.min(5.3,3.2+runTime*.018);score+=dt*speed*2.4;hero.position.x=THREE.MathUtils.lerp(hero.position.x,(lane-2)*laneW,Math.min(1,dt*8));hero.position.y=Math.abs(Math.sin(runTime*speed*1.5))*.08;hero.rotation.z=Math.sin(runTime*2)*.035;heroSprite.position.y=.02+Math.abs(Math.sin(runTime*speed*1.5))*.035;heroSprite.rotation.z=Math.sin(runTime*2)*.025;
  for(const t of baseRows){t.position.z+=speed*dt;if(t.position.z>9)t.position.z-=56*spacing}
  for(const d of decor){d.position.z+=speed*dt;if(d.position.z>10)d.position.z-=120}
  for(const c of coins3d){c.mesh.position.z+=speed*dt;c.mesh.rotation.y+=dt*2.4;if(!c.hit&&Math.abs(c.mesh.position.z-4.2)<.65&&Math.abs(c.mesh.position.x-hero.position.x)<.65){c.hit=true;coins++;score+=25;toast('+1 MONEDA');scene.remove(c.mesh)}}
