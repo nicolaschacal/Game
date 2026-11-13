@@ -48,22 +48,29 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
   <button class="material" data-type="ice"><i style="background:#B8E3F4"></i>HIELO</button>
  </div>
  <button class="special" id="ramp">↗ CONSTRUIR RAMPA DE SUBIDA</button>
- <div class="hint">TOCÁ UN MATERIAL PARA COLOCARLO DIRECTAMENTE EN EL CAMINO DE HITO</div>
+ <div class="hint">MANTENÉ PRESIONADO Y ARRASTRÁ PARA CONSTRUIR EL CAMINO</div>
 </section>
 <script type="module">
-import { mountScene } from './kanjuu-demo/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile } from './kanjuu-demo/scene3d.js';
 import { creatureSVG } from './kanjuu-demo/creature.js';
-const COLS=5,ROWS=80,START=70;
+const COLS=5,ROWS=180,START=165;
 const player={id:'hito-runner',kind:'mon',svg:creatureSVG('人',{mood:1}),x:2,y:START,w:1,h:1};
 const boatSVG='<svg viewBox="0 0 140 110"><path d="M20 67 L120 67 L105 91 Q70 105 35 91Z" fill="#B94D36" stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"/><path d="M70 10 V66" stroke="#704332" stroke-width="6" stroke-linecap="round"/><path d="M65 16 L25 60 L65 60Z" fill="#FFF0D2" stroke="#FFF4DC" stroke-width="5" stroke-linejoin="round"/><path d="M77 23 L111 59 L77 59Z" fill="#E8A65B" stroke="#FFF4DC" stroke-width="5" stroke-linejoin="round"/><path d="M14 98 Q35 89 55 98 T96 98 T136 98" fill="none" stroke="#70C9E8" stroke-width="6" stroke-linecap="round"/></svg>';
 const rockSVG='<svg viewBox="0 0 100 100"><path d="M12 82 L18 45 L40 18 L68 24 L88 55 L82 84Z" fill="#858B91" stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"/><path d="M20 51 L42 25 L52 55 L35 72Z" fill="#B8BEC0"/><path d="M57 32 L72 38 L82 59 L63 54Z" fill="#626A72"/></svg>';
 const coinSVG='<svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#F2B937" stroke="#FFF4DC" stroke-width="7"/><circle cx="40" cy="40" r="21" fill="none" stroke="#B87922" stroke-width="4"/><path d="M45 22 Q29 18 28 34 Q28 43 42 45 Q54 47 51 58 Q48 68 31 61" fill="none" stroke="#8A551E" stroke-width="6" stroke-linecap="round"/><path d="M40 17 V64" stroke="#8A551E" stroke-width="4" stroke-linecap="round"/></svg>';
-const obstacles=[{id:'boat-1',kind:'paper',obstacle:'boat',svg:boatSVG,x:2,y:65,w:1.4,h:1.1,required:'3 tiles de agua seguidos'},...[{x:2,y:60},{x:1,y:55},{x:3,y:50},{x:2,y:45},{x:1,y:40},{x:3,y:35}].map((p,i)=>({id:'rock-'+i,kind:'paper',obstacle:'rock',svg:rockSVG,x:p.x,y:p.y,w:1,h:1,required:'cambiar de carril'}))];
-const coins=[{x:2,y:63},{x:2,y:62},{x:1,y:57},{x:0,y:54},{x:3,y:52},{x:4,y:48},{x:2,y:43},{x:1,y:38},{x:3,y:33}].map((p,i)=>({id:'coin-'+i,kind:'paper',svg:coinSVG,x:p.x,y:p.y,w:.55,h:.65}));
+const bridgeSVG='<svg viewBox="0 0 140 110"><path d="M12 76 Q70 20 128 76" fill="none" stroke="#8A5A3A" stroke-width="18" stroke-linecap="round"/><path d="M12 76 Q70 20 128 76" fill="none" stroke="#D5A16A" stroke-width="9" stroke-linecap="round"/><path d="M25 68 L33 86 M48 50 L55 72 M72 40 L77 63 M96 50 L91 72 M116 68 L108 86" stroke="#70452F" stroke-width="5"/></svg>';
+const lavaSVG='<svg viewBox="0 0 140 110"><path d="M10 72 L25 42 L47 54 L68 18 L91 49 L112 35 L132 74 L120 91 L22 91Z" fill="#55515A" stroke="#FFF4DC" stroke-width="6"/><path d="M34 68 L50 60 L62 72 L78 46 L91 67 L108 58" fill="none" stroke="#FF7A36" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 83 L62 74 L75 86 L92 78" fill="none" stroke="#FFD36A" stroke-width="5"/></svg>';
+const iceSVG='<svg viewBox="0 0 140 110"><path d="M10 88 L43 26 L63 56 L86 10 L132 88Z" fill="#A9D9E9" stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"/><path d="M43 26 L50 55 L63 56 M86 10 L93 53 L106 60" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/></svg>';
+const floatingSVG='<svg viewBox="0 0 140 110"><path d="M12 56 Q70 20 128 56 L112 83 L28 83Z" fill="#6F9E55" stroke="#FFF4DC" stroke-width="7"/><path d="M28 83 L43 101 L96 101 L112 83" fill="#8B6749" stroke="#FFF4DC" stroke-width="6"/><path d="M46 51 Q70 32 94 51" fill="none" stroke="#BDEB8D" stroke-width="6" stroke-linecap="round"/></svg>';
+const rockAt=(id,x,y)=>({id,kind:'paper',obstacle:'rock',svg:rockSVG,x,y,w:1,h:1,required:'cambiar de carril'});
+const challenge=(id,obstacle,svg,y,required)=>({id,kind:'paper',obstacle,svg,x:2,y,w:1.4,h:1.1,required,requiredMaterial:({boat:'water',bridge:'wood',lava:'stone',ice:'ice',floating:'moss'})[obstacle],length:10});
+const obstacles=[rockAt('rock-1',1,158),rockAt('rock-2',3,155),challenge('boat-1','boat',boatSVG,151,'10 tiles de agua'),rockAt('rock-3',1,145),rockAt('rock-4',3,140),challenge('bridge-1','bridge',bridgeSVG,122,'10 tiles de madera'),rockAt('rock-5',1,116),rockAt('rock-6',3,111),challenge('lava-1','lava',lavaSVG,93,'10 tiles de piedra'),rockAt('rock-7',1,87),rockAt('rock-8',3,82),challenge('ice-1','ice',iceSVG,64,'10 tiles de hielo'),rockAt('rock-9',1,58),rockAt('rock-10',3,53),challenge('floating-1','floating',floatingSVG,35,'10 tiles de musgo')];
+const coins=[{x:2,y:160},{x:1,y:153},{x:3,y:149},{x:2,y:144},{x:1,y:136},{x:3,y:127},{x:2,y:117},{x:1,y:106},{x:3,y:96},{x:2,y:86},{x:1,y:75},{x:3,y:63},{x:2,y:52},{x:1,y:43},{x:3,y:34}].map((p,i)=>({id:'coin-'+i,kind:'paper',svg:coinSVG,x:p.x,y:p.y,w:.55,h:.65}));
 const tiles={};for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)tiles[x+','+y]={g:'empty',h:0};
+const path={};for(let y=START;y>=START-3;y--){path[y]={x:2,g:'grass'};tiles['2,'+y]={g:'grass',h:0};}
 let selected='water';
-const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:1.05,distance:0,targetDistance:0,steps:0,autoAdvance:false,moveSpeed:2.8,moving:false,obstacles,coins,onObstacle,onCoin,onGameOver};
-const opts={cols:COLS,rows:ROWS,tiles,items:[player,...obstacles,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:placeAt,onMiss:()=>{},onTile:()=>{}};
+const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:1.25,distance:0,steps:0,autoAdvance:true,obstacles,coins,path,buildRow:START-4,buildLane:2,lastBuildLane:2,ridingBoat:false,onObstacle,onCoin,onGameOver};
+const opts={cols:COLS,rows:ROWS,tiles,items:[player,...obstacles,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=document.getElementById('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
 const rowLabel=document.getElementById('rowLabel'),toast=document.getElementById('toast'),hint=document.querySelector('.hint'),gameover=document.getElementById('gameover');
@@ -72,32 +79,30 @@ function showToast(msg){toast.textContent=msg;toast.style.opacity='1';clearTimeo
 function endGame(reason){if(gameover.style.display==='flex')return;runner.gameOver=true;runner.hitPause=999;document.getElementById('gameReason').textContent=reason;gameover.style.display='flex';}
 function onGameOver(reason){endGame(reason);}
 function onCoin(){runner.score=(runner.score||0)+1;document.getElementById('clock').textContent='MONEDAS '+runner.score;showToast('＋ 1 MONEDA');}
-function onObstacle(id,success){const o=obstacles.find(x=>x.id===id);if(!o)return;if(o.obstacle==='boat'){if(success){o.sailing=true;showToast('¡EL BARCO NAVEGA!');}else{runner.boatStalled=true;showToast('¡FALTA AGUA! EL BARCO SE ATASCÓ');}}else if(!success)endGame('Hito chocó contra una piedra');else showToast('¡BUEN ESQUIVE!');}
+function onObstacle(id,success,required,material){const o=obstacles.find(x=>x.id===id);if(!o)return;if(!success){const names={boat:'agua',bridge:'madera',lava:'piedra',ice:'hielo',floating:'musgo'};endGame(o.obstacle==='rock'?'Hito chocó contra una piedra':'Faltó construir el tramo de '+(names[o.obstacle]||'camino'));return;}const messages={boat:'¡EL BARCO NAVEGA!',bridge:'¡PUENTE CONSTRUIDO!',lava:'¡CRUZASTE EL VOLCÁN!',ice:'¡CRUZASTE LA MONTAÑA!',floating:'¡ISLAS CONECTADAS!',rock:'¡BUEN ESQUIVE!'};showToast(messages[o.obstacle]||'¡BUEN TRABAJO!');}
 function upcomingObstacle(){return obstacles.filter(o=>!o.resolved).map(o=>({...o,remaining:START-o.y-runner.distance})).filter(o=>o.remaining>=-.5).sort((a,b)=>a.remaining-b.remaining)[0];}
-function refreshRow(){const next=upcomingObstacle();rowLabel.textContent=next&&next.remaining<7?(next.obstacle==='boat'?'BARCO':'PIEDRA')+' · '+Math.max(0,Math.ceil(next.remaining))+' FILAS':'SIGUIENTE FILA · '+(START-runner.steps-1);}
-function bridgeReady(boat){let streak=0,best=0,prevX=null;for(let y=boat.y+4;y>=boat.y+1;y--){let lane=-1;for(let x=0;x<COLS;x++){if(tiles[x+','+y]?.g==='water'){lane=x;break;}}if(lane>=0&&(prevX===null||Math.abs(lane-prevX)<=1)){streak++;prevX=lane;}else{streak=lane>=0?1:0;prevX=lane>=0?lane:null;}best=Math.max(best,streak);}return best>=3;}
-function placeAt(x,y){
- if(runner.gameOver||runner.moving)return;
- const nextY=START-runner.steps-1;
- if(y!==nextY){showToast('SEGUÍ LA FILA SIGUIENTE · '+nextY);return;}
- if(Math.abs(x-runner.lane)>1){showToast('SOLO PODÉS MOVERTE UN CARRIL');return;}
- const boat=obstacles.find(o=>o.obstacle==='boat'&&!o.sailing);
- tiles[x+','+y]={g:selected,h:0};
- runner.lane=x;
- runner.steps++;
- runner.targetDistance=runner.steps;
- runner.moving=true;
- if(boat&&bridgeReady(boat)){
-  boat.sailing=true;boat.resolved=true;runner.boatStalled=false;runner.boatAt=null;
-  onObstacle(boat.id,true);
- }
- mountScene(host,opts);
- showToast(({water:'AGUA',grass:'PASTO',dirt:'TIERRA',sand:'ARENA',road:'CAMINO',ice:'HIELO',moss:'MUSGO'})[selected]+' · AVANZÁS UNA FILA');
+function refreshRow(){const next=upcomingObstacle();rowLabel.textContent=next&&next.remaining<25?next.obstacle.toUpperCase()+' · '+Math.max(0,Math.ceil(next.remaining))+' FILAS':'CONSTRUÍS · FILA '+runner.buildRow;}
+function placeNext(lane=runner.buildLane){
+ if(runner.gameOver||runner.buildRow<0)return;
+ const currentRow=Math.floor(START-runner.distance);
+ if(runner.buildRow>=currentRow)return;
+ let x=Math.max(0,Math.min(COLS-1,Math.round(lane??runner.lastBuildLane)));
+ if(Math.abs(x-runner.lastBuildLane)>1){x=runner.lastBuildLane+Math.sign(x-runner.lastBuildLane);showToast('UN CARRIL POR VEZ');}
+ const y=runner.buildRow,tile={g:selected,h:0};
+ tiles[x+','+y]=tile;runner.path[y]={x,g:selected};runner.lastBuildLane=x;runner.buildLane=x;runner.buildRow--;runner.steps++;
+ updateRunnerTile(x,y,tile);
+ showToast(({water:'AGUA',wood:'MADERA',stone:'PIEDRA',grass:'PASTO',dirt:'TIERRA',sand:'ARENA',road:'CAMINO',ice:'HIELO',moss:'MUSGO'})[selected]+' · CAMINO CONSTRUIDO');
  refreshRow();
 }
-function selectMaterial(type){selected=type;document.querySelectorAll('.material').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const labels={water:'AGUA',grass:'PASTO',dirt:'TIERRA',sand:'ARENA',road:'PAVIMENTO',ice:'HIELO',moss:'MUSGO'};document.querySelector('.editor-head span:first-child').textContent='MATERIAL: '+labels[type];}
+function laneFromPointer(e){const lane=runnerLaneAtScreen(e.clientX,e.clientY);if(lane!==null)runner.buildLane=lane;}
+function selectMaterial(type){selected=type;document.querySelectorAll('.material').forEach(b=>b.classList.toggle('active',b.dataset.type===type));const labels={water:'AGUA',wood:'MADERA',stone:'PIEDRA',grass:'PASTO',dirt:'TIERRA',sand:'ARENA',road:'PAVIMENTO',ice:'HIELO',moss:'MUSGO'};document.querySelector('.editor-head span:first-child').textContent='MATERIAL: '+labels[type];}
 document.querySelectorAll('.material').forEach(b=>b.addEventListener('click',()=>selectMaterial(b.dataset.type)));
 document.getElementById('controls').style.display='none';document.getElementById('restart').addEventListener('click',()=>location.reload());document.getElementById('ramp').style.display='none';
-function frame(){if(!runner.gameOver){const next=upcomingObstacle();if(next&&next.remaining<6.5)hint.textContent=next.obstacle==='boat'?'BARCO: SEGUÍ UNA RUTA DE 3 AGUAS CONSECUTIVAS':'PIEDRA: COLOCÁ EL PRÓXIMO TILE EN OTRO CARRIL';else hint.textContent='COLOCÁ EL TILE EN LA FILA SIGUIENTE · MOVÉ UN CARRIL POR VEZ';refreshRow();}requestAnimationFrame(frame);}
+let buildHeld=false,buildClock=0,lastFrame=performance.now();
+host.addEventListener('pointerdown',e=>{if(runner.gameOver)return;buildHeld=true;buildClock=0;laneFromPointer(e);placeNext(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
+host.addEventListener('pointermove',e=>{if(!buildHeld)return;laneFromPointer(e);e.preventDefault();e.stopPropagation();},true);
+host.addEventListener('pointerup',e=>{buildHeld=false;e.preventDefault();e.stopPropagation();},true);
+host.addEventListener('pointercancel',()=>{buildHeld=false;},true);
+function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;if(buildHeld&&!runner.gameOver){buildClock+=dt;if(buildClock>=.42){buildClock=0;placeNext(runner.buildLane);}}if(!runner.gameOver){const next=upcomingObstacle();if(next&&next.remaining<25){const names={boat:'AGUA',bridge:'MADERA',lava:'PIEDRA',ice:'HIELO',floating:'MUSGO',rock:'CAMBIÁ DE CARRIL'};hint.textContent='PRÓXIMO RETO: '+(names[next.obstacle]||'CAMINO')+' · '+Math.max(0,Math.ceil(next.remaining))+' FILAS';}else hint.textContent='MANTENÉ PRESIONADO Y ARRASTRÁ PARA CONSTRUIR';refreshRow();}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 </script></body></html>
