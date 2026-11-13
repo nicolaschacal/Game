@@ -653,63 +653,45 @@ function sanctuary() {
       const ro = W.items.get(runner.playerId);
       if (ro) {
         if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
-        else if (runner.autoAdvance === false) {
-          const target = runner.targetDistance ?? runner.distance ?? 0;
-          if (runner.distance < target) {
-            runner.distance = Math.min(target, runner.distance + dt * (runner.moveSpeed || 2.8));
-            const currentLane = runner.visualLane ?? runner.lane ?? 2;
-            runner.visualLane = currentLane + ((runner.lane ?? 2) - currentLane) * Math.min(1, dt * 8);
-            if (runner.distance >= target - .001) {
-              runner.distance = target;
-              runner.visualLane = runner.lane ?? 2;
-              runner.moving = false;
-            }
-          }
-        } else runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
+        else if (!runner.gameOver) runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.25);
+        const pos = runner.startRow - runner.distance;
+        const row = Math.ceil(pos), nextRow = row - 1, blend = Math.max(0, Math.min(1, row - pos));
+        const here = runner.path?.[row], next = runner.path?.[nextRow];
+        if (runner.distance > .04 && !here && !runner.gameOver) {
+          runner.gameOver = true; runner.onGameOver?.('Hito llegó al final del camino. ¡Construí un poco más adelante!');
+        }
+        if (blend > .04 && !next && !runner.gameOver) {
+          runner.gameOver = true; runner.onGameOver?.('El camino se terminó antes de que Hito pudiera avanzar');
+        }
+        const laneA = here?.x ?? runner.lane ?? 2, laneB = next?.x ?? laneA;
+        const wantedLane = laneA + (laneB - laneA) * blend;
+        runner.visualLane = (runner.visualLane ?? laneA) + (wantedLane - (runner.visualLane ?? laneA)) * Math.min(1, dt * 10);
+        runner.lane = blend < .5 ? laneA : laneB;
         (runner.obstacles || []).forEach(ob => {
-          const at = runner.startRow - ob.y;
-          // El agua puede completar el puente incluso si el barco ya empezó a atascarse.
-          if (ob.obstacle === 'boat') {
-            let streak = 0, bestStreak = 0;
-            for (let y = ob.y + 1; y <= ob.y + 4; y++) {
-              if (W.opts.tiles?.[`2,${y}`]?.g === 'water') streak++; else streak = 0;
-              bestStreak = Math.max(bestStreak, streak);
-            }
-            if (bestStreak >= 3 && runner.boatStalled && !runner.gameOver) {
-              runner.boatStalled = false; runner.boatAt = null; ob.sailing = true; ob.resolved = true;
-              runner.onObstacle?.(ob.id, true, ob.required, 'water');
-            }
-            if (ob.sailing) {
-              const boatItem = W.items.get(ob.id);
-              const boarding = runner.distance >= at - .18 && runner.distance <= at + 3.2;
-              runner.ridingBoat = boarding;
-              if (boatItem) {
-                boatItem.group.visible = runner.distance <= at + 3.2;
-                boatItem.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
-                boatItem.group.position.z = (runner.playerZ ?? 0) - (boarding ? 0 : 1.55);
-                boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
-              }
-              if (!boarding && runner.distance > at + 3.2) runner.ridingBoat = false;
+          const at = runner.startRow - ob.y, length = ob.length || 10;
+          if (ob.obstacle === 'boat' && ob.sailing) {
+            const boatItem = W.items.get(ob.id);
+            const boarding = runner.distance >= at - .18 && runner.distance <= at + length + .2;
+            runner.ridingBoat = boarding;
+            if (boatItem) {
+              boatItem.group.visible = runner.distance <= at + length + .2;
+              boatItem.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
+              boatItem.group.position.z = (runner.playerZ ?? 0) - (boarding ? 0 : 1.55);
+              boatItem.group.position.y = .08 + Math.sin(t * 3) * .035;
             }
           }
           if (ob.resolved || ob.triggered) return;
           if (runner.distance >= at - .12) {
             ob.triggered = true;
-            let success = false, placed = 'empty';
-            if (ob.obstacle === 'boat') {
-              let streak = 0, bestStreak = 0;
-              for (let y = ob.y + 1; y <= ob.y + 4; y++) {
-                if (W.opts.tiles?.[`2,${y}`]?.g === 'water') streak++; else streak = 0;
-                bestStreak = Math.max(bestStreak, streak);
-              }
-              success = bestStreak >= 3;
-              if (success) ob.sailing = true;
-              else { runner.boatStalled = true; runner.boatAt = at; }
-            } else if (ob.obstacle === 'rock') {
-              success = (runner.lane ?? 2) !== ob.x;
+            let success = false;
+            if (ob.obstacle === 'rock') success = (runner.lane ?? 2) !== ob.x;
+            else {
+              const required = ob.requiredMaterial || ({ boat: 'water', bridge: 'wood', lava: 'stone', ice: 'ice', floating: 'moss' }[ob.obstacle]);
+              success = !!required && Array.from({ length }, (_, i) => runner.path?.[ob.y + 1 + i]?.g === required).every(Boolean);
+              if (success && ob.obstacle === 'boat') ob.sailing = true;
             }
             ob.resolved = success;
-            runner.onObstacle?.(ob.id, success, ob.required, placed);
+            runner.onObstacle?.(ob.id, success, ob.required, ob.requiredMaterial || ob.obstacle);
           }
         });
         (runner.coins || []).forEach(coin => {
@@ -723,18 +705,25 @@ function sanctuary() {
             } else coin.missed = true;
           }
         });
-        if (runner.boatStalled && runner.distance > runner.boatAt + 2.15 && !runner.gameOver) {
-          runner.gameOver = true; runner.onGameOver?.('El barco se quedó sin agua y quedó atrás');
-        }
         const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
-        // Durante el tramo de navegación Hito viaja visible sobre la cubierta;
-        // el barco y Hito comparten el mismo avance y la cámara sigue a Hito.
-        ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.visualLane ?? runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0);
-        if (runner.gameOver) { runner.hitPause = 999; }
+        ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0);
+        if (runner.gameOver) runner.hitPause = 999;
         runner.playerZ = playerZ;
+        if (!W.runnerHint) {
+          const mat = new THREE.MeshBasicMaterial({ color: '#F2B937', transparent: true, opacity: .48, depthWrite: false, side: THREE.DoubleSide });
+          W.runnerHint = new THREE.Mesh(new THREE.PlaneGeometry(.88, .88), mat);
+          W.runnerHint.rotation.x = -Math.PI / 2; W.runnerHint.renderOrder = 8; W.fx.add(W.runnerHint);
+        }
+        const hintRow = runner.buildRow, hintLane = runner.buildLane ?? runner.lastBuildLane ?? 2;
+        const hintTop = W.tops.get(hintLane + ',' + hintRow);
+        W.runnerHint.visible = !runner.gameOver && hintRow >= 0 && !!hintTop;
+        if (W.runnerHint.visible) {
+          W.runnerHint.position.set(hintLane - ox, W.tY(hintLane, hintRow) + .075, hintRow - oz);
+          W.runnerHint.material.opacity = .34 + Math.sin(t * 5.5) * .16;
+        }
       }
     }
     // cámara maqueta: perspectiva angosta, giro libre, zoom
@@ -936,6 +925,20 @@ export function flashTile(x, y) {
 export function setFocus(id) { const W = E?.worlds.sanct; if (W) W.focus = id; }
 export function rotateCam(dir) { const W = E?.worlds.sanct; if (!W) return; W.azT = Math.round((W.azT - Math.PI / 4) / (Math.PI / 2)) * (Math.PI / 2) + Math.PI / 4 + dir * Math.PI / 2; }
 export function zoomCam(k) { E?.worlds.sanct?.zoomBy(k); }
+export function runnerLaneAtScreen(cx, cy) {
+  const W = E?.worlds.sanct; if (!W?.opts?.runner) return null;
+  const r = E.renderer.domElement.getBoundingClientRect();
+  E.ray.setFromCamera(new THREE.Vector2((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1), W.camera);
+  const hit = E.ray.intersectObjects([...W.tops.values()], false)[0];
+  return hit?.object?.userData?.x ?? null;
+}
+export function updateRunnerTile(x, y, tile) {
+  const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
+  W.opts.tiles ||= {}; W.opts.tiles[x + ',' + y] = tile;
+  const top = W.tops.get(x + ',' + y); if (!top) return;
+  top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
+  top.material.needsUpdate = true;
+}
 export function mountScene(host, opts) {
   if (!webgl()) return false;
   engine(); const W = sanctuary(); W.opts = opts;
