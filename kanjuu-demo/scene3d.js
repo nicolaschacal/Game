@@ -653,7 +653,7 @@ function sanctuary() {
       const ro = W.items.get(runner.playerId);
       if (ro) {
         if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
-        else if (!runner.gameOver) runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.25);
+        else if (!runner.gameOver && runner.started) runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.25);
         const pos = runner.startRow - runner.distance;
         const row = Math.ceil(pos), nextRow = row - 1, blend = Math.max(0, Math.min(1, row - pos));
         const here = runner.path?.[row], next = runner.path?.[nextRow];
