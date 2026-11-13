@@ -37,13 +37,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 <div class="top"><div class="brand">KANJŪ <small>TILE RUNNER · EDITOR</small></div><div class="pill" id="clock">AVANZANDO</div></div>
 <div id="toast">TILE COLOCADO</div>
 <section class="editor">
- <div class="editor-head"><span>EDITOR DE TERRENO</span><span id="rowLabel">FILA SIGUIENTE · —</span></div>
+ <div class="editor-head"><span>MATERIAL: AGUA</span><span id="rowLabel">FILA SIGUIENTE · —</span></div>
  <div class="materials" id="materials">
-  <button class="material active" data-type="grass"><i style="background:#8DBF5E"></i>PASTO</button>
+  <button class="material" data-type="grass"><i style="background:#8DBF5E"></i>PASTO</button>
   <button class="material" data-type="dirt"><i style="background:#B98D5A"></i>TIERRA</button>
   <button class="material" data-type="sand"><i style="background:#E2CE97"></i>ARENA</button>
   <button class="material" data-type="moss"><i style="background:#5F9447"></i>MUSGO</button>
-  <button class="material" data-type="water"><i style="background:#5AA5D2"></i>AGUA</button>
+  <button class="material active" data-type="water"><i style="background:#5AA5D2"></i>AGUA</button>
   <button class="material" data-type="road"><i style="background:#555D68"></i>PAVIMENTO</button>
   <button class="material" data-type="ice"><i style="background:#B8E3F4"></i>HIELO</button>
  </div>
@@ -73,7 +73,7 @@ function onObstacle(id,success,required,placed){
 }
 const tiles={};
 for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) tiles[x+','+y]={g:'empty',h:0};
-const opts={cols:COLS,rows:ROWS,tiles,items:[player,...obstacles],mode:'build',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,
+const opts={cols:COLS,rows:ROWS,tiles,items:[player,...obstacles],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,
  onTap:()=>{},onCell:(x,y)=>placeAt(x,y),onMiss:()=>{},onTile:()=>{}};
 const host=document.getElementById('stage');
 if(!mountScene(host,opts)) document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
