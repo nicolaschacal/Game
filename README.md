@@ -1,16 +1,26 @@
-# BUILD & RUN — Prototype 01
+# KANJŪ · Tile Trail
 
-Primer prototipo jugable del concepto de runner de construcción.
+Prototipo jugable de un runner de construcción: el personaje avanza mientras el jugador interpreta el escenario y coloca tiles para transformar el mundo.
 
 ## Probar
-Abrí `index.html` en un servidor estático (por ejemplo, GitHub Pages o Vercel). Three.js se carga desde un CDN, así que requiere conexión a internet.
 
-## Mecánica actual
-- El personaje corre automáticamente.
-- Mantené pulsado **MANTENER PARA CONSTRUIR** para colocar tablones.
-- Hay que completar el puente antes de llegar al precipicio.
-- Cada cruce exitoso suma un punto y aumenta la velocidad.
-- Si el puente queda incompleto, termina la partida.
+Abrí \`index.html\` en un servidor estático (Vercel, GitHub Pages o similar). Three.js se carga desde CDN, por lo que necesita conexión a internet.
 
-## Alcance deliberado
-Es una prueba de la sensación central, no el juego completo. Todavía no incluye carriles, saltos, rampas, obstáculos variados, audio, menús finales ni progresión.
+- **Inicio:** \`index.html\` abre el nuevo prototipo.
+- **Prototipo:** \`tile-runner.html\`.
+- **Versión anterior:** \`build-run.html\` conserva el experimento Build & Run.
+
+## Mecánica del prototipo
+
+- Movimiento automático hacia delante sobre una grilla 3D.
+- Inventario táctil de puentes, agua, piedra y rampas.
+- Selección de tile y colocación directa tocando las casillas iluminadas.
+- Cuatro situaciones: río, barco suspendido, lava y desnivel.
+- Recompensas por construir a tiempo, monedas y velocidad progresiva.
+- Controles táctiles y teclado.
+
+## Dirección visual
+
+Inspirada en KANJŪ: noche violeta, papel crema, coral, dorado, verdes suaves y geometría low-poly con una pequeña criatura viajera.
+
+Es un prototipo de mecánica y sensación, no una integración con el santuario ni con el progreso de la partida.
