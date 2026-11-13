@@ -382,6 +382,19 @@ Object.assign(DRAW, {
 Object.assign(SIZE, { fuji:[640,440], reloj:[440,404], muneco:[140,210], pinoNieve:[200,292], kitsune:[200,230], momiji:[230,290], bambuAlto:[160,600], toriiNegro:[260,300], solPalido:[220,220], chispa:[140,140] });
 Object.assign(RAD, { fuji:12, reloj:10 });
 
+// Nueva pieza para el runner: barca dibujada con el mismo recorte, borde crema, sombra y grano.
+Object.assign(DRAW, {
+  boat: x => {
+    poly(x, [18,112, 42,148, 254,148, 282,112, 244,126, 58,126], '#7A4E32');
+    poly(x, [26,108, 274,108, 246,138, 54,138], '#C8412E');
+    x.fillStyle = '#2B2320'; x.fillRect(145, 24, 8, 90);
+    poly(x, [152,30, 152,102, 238,102], '#FFF4DC');
+    poly(x, [146,48, 146,102, 82,102], '#E9DCC0');
+    x.strokeStyle = '#8F3022'; x.lineWidth = 5; x.beginPath(); x.moveTo(38,154); x.quadraticCurveTo(150,176, 262,154); x.stroke();
+    x.fillStyle = '#D9A53A'; x.fillRect(132,16,34,8);
+  }
+});
+Object.assign(SIZE, { boat:[300,190] });
 export const has = id => !!DRAW[id];
 export function art(id) { return CNV[id] || (CNV[id] = bake(id)); }
 export function artTex(id) {
