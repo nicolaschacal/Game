@@ -101,17 +101,13 @@ const worldTiles=new THREE.Group();scene.add(worldTiles);
 const underlay=new THREE.Mesh(new THREE.BoxGeometry(5.02,.42,60),gMat('#9A7550'));underlay.position.set(0,-.34,-20);underlay.receiveShadow=true;worldTiles.add(underlay);
 for(let i=0;i<cols;i++)for(let r=0;r<56;r++){const z=8-r*spacing;baseRows.push(makeKanjuuTile(i-2,z,'grass',0,null,worldTiles))}
 for(let side of [-1,1]){const border=new THREE.Mesh(new THREE.BoxGeometry(.16,.45,60),gMat('#8E857A'));border.position.set(side*2.58,-.35,-20);border.castShadow=border.receiveShadow=true;worldTiles.add(border)}
+const mats={grass:gMat('#8DBF5E'),grassTop:gMat('#8DBF5E'),soil:gMat('#A47D55'),edge:gMat('#F6EBD0'),ink:gMat('#2B1D16'),wood:gMat('#7A4E32'),woodLight:gMat('#B98D5A'),water:waterMat,stone:gMat('#AAA59B'),lava:gMat('#E8452C'),gold:gMat('#F2B544'),cream:gMat('#F6EBD0'),red:gMat('#E8452C'),leaf:gMat('#5F9447'),leaf2:gMat('#8DBF5E')};
 const box=(w,h,d,material,x,y,z,parent=scene)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
-const laneW=1.38,cols=5,spacing=1.42,roadW=cols*laneW,baseRows=[],decor=[],coins3d=[],challenges=[],targets=[],raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
-const ground=box(180,.8,180,mats.grass,0,-1,-36);ground.receiveShadow=true;
-for(let i=0;i<cols;i++){for(let r=0;r<48;r++){const z=7-r*spacing,x=(i-2)*laneW;box(laneW-.04,.34,spacing-.045,mats.soil,x,-.25,z);const tile=box(laneW-.09,.105,spacing-.095,mats.grass,x,-.025,z);const outline=new THREE.LineSegments(new THREE.EdgesGeometry(tile.geometry),new THREE.LineBasicMaterial({color:'#3B2F26',transparent:true,opacity:.28}));outline.position.copy(tile.position);scene.add(outline);baseRows.push(tile)}}
-for(let side of [-1,1]){box(.35,.5,100,mats.edge,side*(roadW/2+.18),-.28,-35)}
-function makeTree(x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);box(.25*s,1.15*s,.25*s,mats.wood,0,.35*s,0,g);const crown= new THREE.Mesh(new THREE.IcosahedronGeometry(.78*s,0),mats.leaf);crown.position.y=1.35*s;crown.castShadow=true;g.add(crown);const c2=new THREE.Mesh(new THREE.IcosahedronGeometry(.5*s,0),mats.leaf2);c2.position.set(.35*s,1.7*s,.08*s);c2.castShadow=true;g.add(c2);scene.add(g);decor.push(g)}
-for(let i=0;i<24;i++){const z=-i*5-3;makeTree(-5.2-(i%3)*.3,z,.7+(i%3)*.12);makeTree(5.2+(i%2)*.4,z-2,.72+(i%4)*.1)}
+// Vegetación: los mismos recortes de papel del santuario.
+for(let i=0;i<24;i++){const z=-i*4.8-3;for(const side of [-1,1]){const tr=paperProp('arbol',.95+(i%3)*.12,false);tr.position.set(side*3.25,0,z-(side===1?1.5:0));scene.add(tr);decor.push(tr)}}
 // El pequeño viajero: criatura de papel, no un corredor humano genérico.
 const hero=new THREE.Group();scene.add(hero);hero.position.set(0,0,4.2);
-function makeHeroPaper(){const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><path d="M60 8 C72 38 104 62 104 88 C104 112 86 126 60 126 C34 126 16 112 16 88 C16 62 48 38 60 8Z" fill="#3F8FCB"/></svg>';const img=new Image(),canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;const ctx=canvas.getContext('2d');img.onload=()=>{ctx.drawImage(img,20,12,216,232);tex.needsUpdate=true};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;const mat=new THREE.MeshLambertMaterial({map:tex,transparent:true,alphaTest:.04,side:THREE.DoubleSide,emissive:'#FFFFFF',emissiveMap:tex,emissiveIntensity:.32});const m=new THREE.Mesh(new THREE.PlaneGeometry(1.05,1.3),mat);m.position.y=.68;m.castShadow=true;hero.add(m);return m}
-const heroSprite=makeHeroPaper();
+const heroSprite=paperProp('mizu',1.12,true);heroSprite.position.y=0;hero.add(heroSprite);
 const tileMaterials={bridge:mats.woodLight,water:mats.water,stone:mats.stone,ramp:mats.woodLight};
 const tileNames={bridge:'Puente',water:'Agua',stone:'Piedra',ramp:'Rampa'};
 const tileGlyph={bridge:'▤',water:'≈',stone:'▦',ramp:'↗'};
