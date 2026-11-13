@@ -470,7 +470,7 @@ const LV = .42, SLAB = .24, TIER_H = 1.25, FOV = 24, ELEV = .58;
 // Ancho en casillas del recorte de cada pieza de papel
 const ART_W = { farol: .5, pino: .74, bambu: .52, arbusto: .72, flores: .56, roca: .56, torii: 1.0, cerezo: 1.08, minka: .95, pagoda: .74, templo: .93, castillo: .92, casate: .96, komainu: .6, campana: .62, incienso: .5, ema: .64, nobori: .32, sagrada: .6, chochin: .42, refugio: .95, suzuri: .6, brasero: .55, cerca: .9, arbol: .9 };
 const GLOW = { farol: { c: '#FFB45A', p: 1.6 }, chochin: { c: '#FF8A5A', p: 1.3 }, brasero: { c: '#FF7A3A', p: 1.4, always: true }, incienso: { c: '#FFC27A', p: .8 } };
-const GROUND_C = { grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4' };
+const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4' };
 const STRATA = ['#A47D55', '#93704C', '#8A8075'];
 // Cielo de papel: madrugada, amanecer, mañana, tarde, atardecer, noche
 const PK = [
@@ -660,8 +660,15 @@ function sanctuary() {
           if (runner.distance >= at - .12) {
             ob.triggered = true;
             const tile = W.opts.tiles?.[`${ob.x},${ob.y}`];
-            const placed = tile?.g || 'grass';
-            const success = ob.obstacle === 'boat' ? placed === 'water' : (placed === 'road' || placed === 'ice');
+            const placed = tile?.g || 'empty';
+            let success=false;
+            if(ob.obstacle==='boat') success=placed==='water';
+            else if(ob.obstacle==='rock'){
+              const left=W.opts.tiles?.[`${ob.x-1},${ob.y}`]?.g, right=W.opts.tiles?.[`${ob.x+1},${ob.y}`]?.g;
+              const usable=g=>g&&g!=='empty'&&g!=='water';
+              success=usable(left)||usable(right);
+              runner.bypassLane=usable(left)?ob.x-1:ob.x+1;
+            } else success=placed==='road'||placed==='ice';
             ob.resolved = success;
             runner.onObstacle?.(ob.id, success, ob.required, placed);
           }
@@ -687,14 +694,14 @@ function sanctuary() {
     const fo = W.focus && W.items.get(W.focus);
     if (runner) {
       const pz = runner.playerZ ?? 0;
-      halfH = 5.6; el = .25; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
-      ty = .12; tz = pz - 7.5;
+      halfH = 3.35; el = .30; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
+      ty = .08; tz = pz - 3.15;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
     const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 9.2 : halfH / hf * 1.02;
     const want = runner
-      ? new THREE.Vector3(tx, ty + 4.1, tz + 8.0)
+      ? new THREE.Vector3(tx, ty + 2.75, tz + 5.6)
       : new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D);
     const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };
@@ -753,7 +760,7 @@ function buildIsland(W, cols, rows, tiles, items) {
   island.clear(); W.tops.clear(); W.tufts = []; W.foams = []; W.waters = [];
   W.cols = cols; W.rows = rows; W.N = Math.max(cols, rows);
   const ox = (cols - 1) / 2, oz = (rows - 1) / 2; W.center = 0;
-  const T = (x, y) => ({ g: 'grass', h: 0, r: null, ...(tiles[x + ',' + y] || {}) });
+  const T = (x, y) => ({ g: W.opts.runner ? 'empty' : 'grass', h: 0, r: null, ...(tiles[x + ',' + y] || {}) });
   const tY = (x, y) => { const t = T(x, y); return t.g === 'water' ? t.h * LV - .12 : t.h * LV + (t.r ? LV / 2 : (hash(x, y, 13) - .5) * .06); };
   W.tY = tY;
   const occ = new Set(); items.forEach(d => { if (d.kind === 'obj') for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) occ.add((d.x + i) + ',' + (d.y + j)); });
@@ -810,7 +817,12 @@ function runnerObstacleMesh(type) {
   const mat = c => new THREE.MeshStandardMaterial({color:c,roughness:.78,metalness:.04});
   const hull = mat(type === 'boat' ? '#B94D36' : '#D94B35');
   const trim = mat('#F5E7C8'), dark = mat('#34333B'), glass = mat('#8EC7D8'), tire = mat('#24242A');
-  if (type === 'boat') {
+  if (type === 'rock') {
+    const stone=mat('#777B80'), shade=mat('#555B62');
+    const a=mesh(new THREE.DodecahedronGeometry(.43,0),stone,-.12,.34,0);a.scale.set(1.15,1.05,.92);
+    const b=mesh(new THREE.DodecahedronGeometry(.3,0),shade,.2,.24,-.12);b.scale.set(1.05,.8,1);
+    g.add(a,b);
+  } else if (type === 'boat') {
     g.add(mesh(new THREE.BoxGeometry(1.15,.22,.62),hull,0,.23,0));
     const bow=mesh(new THREE.ConeGeometry(.39,.56,4),hull,0,.23,-.48); bow.rotation.x=Math.PI/2; bow.rotation.z=Math.PI/4; g.add(bow);
     g.add(mesh(new THREE.BoxGeometry(.48,.32,.42),trim,0,.48,.08),mesh(new THREE.BoxGeometry(.055,.55,.055),dark,0,.83,.05),mesh(new THREE.BoxGeometry(.34,.2,.035),trim,0,.95,.05),mesh(new THREE.BoxGeometry(1.12,.035,.65),trim,0,.12,0));
