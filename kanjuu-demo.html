@@ -78,9 +78,10 @@ let toastTimer;
 function nextRow(){return Math.max(0,Math.floor(START-runner.distance)-2);}
 function upcomingObstacle(){return obstacles.filter(o=>!o.resolved).map(o=>({...o,remaining:(START-o.y)-runner.distance})).filter(o=>o.remaining>=-0.5).sort((a,b)=>a.remaining-b.remaining)[0];}
 function showToast(msg){toast.textContent=msg;toast.style.opacity='1';clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.style.opacity='0',850);}
-function refreshRow(){const next=upcomingObstacle();rowLabel.textContent=next&&next.remaining<9?`${next.obstacle==='boat'?'BARCO':'AUTO'} EN ${Math.max(0,Math.ceil(next.remaining))} · ${next.obstacle==='boat'?'AGUA':'PAVIMENTO / HIELO'}`:'FILA SIGUIENTE · '+String(nextRow()+1).padStart(2,'0');}
+function refreshRow(){const next=upcomingObstacle();rowLabel.textContent=next&&next.remaining<6?`${next.obstacle==='boat'?'BARCO':'AUTO'} EN ${Math.max(0,Math.ceil(next.remaining))} · ${next.obstacle==='boat'?'AGUA':'PAVIMENTO / HIELO'}`:'FILA SIGUIENTE · '+String(nextRow()+1).padStart(2,'0');}
 function placeMaterial(type){
- const x=2,y=nextRow();
+ const upcoming=upcomingObstacle();
+ const x=2,y=upcoming&&upcoming.remaining<5?upcoming.y:nextRow();
  if(y<1){showToast('FIN DE LA PISTA');return;}
  tiles[x+','+y]={g:type,h:0};
  mountScene(host,opts);
@@ -98,7 +99,7 @@ document.getElementById('ramp').addEventListener('click',()=>{
  showToast('RAMPA CONSTRUIDA · +1 NIVEL');
  refreshRow();
 });
-function frame(){refreshRow();const next=upcomingObstacle();const hint=document.querySelector('.hint');if(next&&next.remaining<10)hint.textContent=next.obstacle==='boat'?'BARCO ADELANTE: CONSTRUÍ AGUA EN SU FILA':'AUTO ADELANTE: CONSTRUÍ PAVIMENTO O HIELO';else hint.textContent='TOCÁ UN MATERIAL PARA COLOCARLO DIRECTAMENTE EN EL CAMINO DE HITO';requestAnimationFrame(frame);}
+function frame(){refreshRow();const next=upcomingObstacle();const hint=document.querySelector('.hint');if(next&&next.remaining<6)hint.textContent=next.obstacle==='boat'?'BARCO ADELANTE: TOCÁ AGUA CUANDO ESTÉ CERCA':'AUTO ADELANTE: TOCÁ PAVIMENTO O HIELO CUANDO ESTÉ CERCA';else hint.textContent='TOCÁ UN MATERIAL PARA COLOCARLO DIRECTAMENTE EN EL CAMINO DE HITO';requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 </script>
 </body>
