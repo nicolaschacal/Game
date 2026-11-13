@@ -655,18 +655,24 @@ function sanctuary() {
         if (runner.hitPause > 0) runner.hitPause = Math.max(0, runner.hitPause - dt);
         else if (!runner.gameOver && runner.started) runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.25);
         const pos = runner.startRow - runner.distance;
+        // Cada fila del camino guarda por dónde entra Hito (e) y por dónde sale (x).
+        // Entre el centro de la fila y SLIDE, Hito se desliza de e a x (tiles laterales);
+        // el resto del tramo va de x a la entrada de la fila siguiente (recto o diagonal).
+        const SLIDE = .35;
         const row = Math.ceil(pos), nextRow = row - 1, blend = Math.max(0, Math.min(1, row - pos));
         const here = runner.path?.[row], next = runner.path?.[nextRow];
         if (runner.distance > .04 && !here && !runner.gameOver) {
           runner.gameOver = true; runner.onGameOver?.('Hito llegó al final del camino. ¡Construí un poco más adelante!');
         }
-        if (blend > .25 && !next && !runner.gameOver) {
+        if (blend > SLIDE && !next && !runner.gameOver) {
           runner.gameOver = true; runner.onGameOver?.('El camino se terminó antes de que Hito pudiera avanzar');
         }
-        const laneA = here?.x ?? runner.lane ?? 2, laneB = next?.x ?? laneA;
-        const wantedLane = laneA + (laneB - laneA) * blend;
-        runner.visualLane = (runner.visualLane ?? laneA) + (wantedLane - (runner.visualLane ?? laneA)) * Math.min(1, dt * 10);
-        runner.lane = blend < .5 ? laneA : laneB;
+        const entryA = here?.e ?? here?.x ?? runner.lane ?? 2, exitA = here?.x ?? entryA, entryB = next?.e ?? next?.x ?? exitA;
+        const wantedLane = blend <= SLIDE
+          ? entryA + (exitA - entryA) * (blend / SLIDE)
+          : exitA + (entryB - exitA) * ((blend - SLIDE) / (1 - SLIDE));
+        runner.visualLane = (runner.visualLane ?? entryA) + (wantedLane - (runner.visualLane ?? entryA)) * Math.min(1, dt * 14);
+        runner.lane = Math.round(wantedLane);
         (runner.obstacles || []).forEach(ob => {
           const at = runner.startRow - ob.y, length = ob.length || 10;
           if (ob.obstacle === 'boat' && ob.sailing) {
@@ -684,10 +690,11 @@ function sanctuary() {
           if (runner.distance >= at - .12) {
             ob.triggered = true;
             let success = false;
-            if (ob.obstacle === 'rock') success = (runner.lane ?? 2) !== ob.x;
+            if (ob.obstacle === 'rock') success = !(ob.x in (runner.path?.[ob.y]?.lanes || {}));
             else {
               const required = ob.requiredMaterial || ({ boat: 'water', bridge: 'wood', lava: 'stone', ice: 'ice', floating: 'moss' }[ob.obstacle]);
-              success = !!required && Array.from({ length }, (_, i) => runner.path?.[ob.y + 1 + i]?.g === required).every(Boolean);
+              const rowOk = r => !!r && Object.values(r.lanes || { [r.x]: r.g }).every(g => g === required);
+              success = !!required && Array.from({ length }, (_, i) => rowOk(runner.path?.[ob.y + 1 + i])).every(Boolean);
               if (success && ob.obstacle === 'boat') ob.sailing = true;
             }
             ob.resolved = success;
@@ -696,14 +703,13 @@ function sanctuary() {
         });
         (runner.coins || []).forEach(coin => {
           if (coin.collected || coin.missed) return;
-          const at = runner.startRow - coin.y;
-          if (runner.distance >= at - .12) {
-            if ((runner.lane ?? 2) === coin.x) {
-              coin.collected = true;
-              const item = W.items.get(coin.id); if (item) item.group.visible = false;
-              runner.onCoin?.(coin.id);
-            } else coin.missed = true;
-          }
+          // La moneda se junta si Hito pasa por su carril en cualquier momento de esa fila
+          // (también durante un desplazamiento lateral).
+          if (pos <= coin.y + .5 && pos >= coin.y - .5 && Math.round(runner.visualLane ?? runner.lane ?? 2) === coin.x) {
+            coin.collected = true;
+            const item = W.items.get(coin.id); if (item) item.group.visible = false;
+            runner.onCoin?.(coin.id);
+          } else if (pos < coin.y - .5) coin.missed = true;
         });
         const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
         const playerZ = runner.startRow - oz - runner.distance;
@@ -712,18 +718,23 @@ function sanctuary() {
         ro.group.position.y = runner.ridingBoat ? .72 : (W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0);
         if (runner.gameOver) runner.hitPause = 999;
         runner.playerZ = playerZ;
-        if (!W.runnerHint) {
-          const mat = new THREE.MeshBasicMaterial({ color: '#F2B937', transparent: true, opacity: .48, depthWrite: false, side: THREE.DoubleSide });
-          W.runnerHint = new THREE.Mesh(new THREE.PlaneGeometry(.88, .88), mat);
-          W.runnerHint.rotation.x = -Math.PI / 2; W.runnerHint.renderOrder = 8; W.fx.add(W.runnerHint);
+        // Preview: todas las casillas donde se puede construir ahora (adelante, diagonal o lateral).
+        // La principal (la que se construiría con el dedo actual) late más fuerte.
+        if (!W.runnerHints) {
+          W.runnerHints = Array.from({ length: 3 }, () => {
+            const mat = new THREE.MeshBasicMaterial({ color: '#F2B937', transparent: true, opacity: .48, depthWrite: false, side: THREE.DoubleSide });
+            const m = new THREE.Mesh(new THREE.PlaneGeometry(.88, .88), mat);
+            m.rotation.x = -Math.PI / 2; m.renderOrder = 8; W.fx.add(m); return m;
+          });
         }
-        const hintRow = runner.buildRow, hintLane = runner.buildLane ?? runner.lastBuildLane ?? 2;
-        const hintTop = W.tops.get(hintLane + ',' + hintRow);
-        W.runnerHint.visible = !runner.gameOver && hintRow >= 0 && !!hintTop;
-        if (W.runnerHint.visible) {
-          W.runnerHint.position.set(hintLane - ox, W.tY(hintLane, hintRow) + .075, hintRow - oz);
-          W.runnerHint.material.opacity = .34 + Math.sin(t * 5.5) * .16;
-        }
+        const hints = runner.gameOver ? [] : (runner.hints || []);
+        W.runnerHints.forEach((m, i) => {
+          const h = hints[i], top = h && W.tops.get(h.x + ',' + h.y);
+          m.visible = !!top;
+          if (!m.visible) return;
+          m.position.set(h.x - ox, W.tY(h.x, h.y) + .075, h.y - oz);
+          m.material.opacity = h.main ? .38 + Math.sin(t * 5.5) * .16 : .16 + Math.sin(t * 5.5) * .05;
+        });
       }
     }
     // cámara maqueta: perspectiva angosta, giro libre, zoom

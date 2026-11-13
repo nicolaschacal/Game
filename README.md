@@ -24,3 +24,15 @@ Abrí \`index.html\` en un servidor estático (Vercel, GitHub Pages o similar). 
 Inspirada en KANJŪ: noche violeta, papel crema, coral, dorado, verdes suaves y geometría low-poly con una pequeña criatura viajera.
 
 Es un prototipo de mecánica y sensación, no una integración con el santuario ni con el progreso de la partida.
+
+## Tile Runner (`kanjuu-demo.html`) · construcción libre
+
+Hito corre solo; vos construís el camino **una fila por delante**. Esa fila objetivo queda abierta hasta que Hito llega a su centro:
+
+- **↑ Adelante:** el primer tile de la fila sigue el carril por donde sale Hito.
+- **← → Laterales:** mientras la fila esté abierta, podés extenderla hacia los costados (uno o varios carriles). Hito se desliza sobre esos tiles, como un cambio de carril en Subway Surfers.
+- **↖ ↗ Diagonal:** el primer tile de la fila también puede entrar un carril al costado.
+- Se pueden encadenar: izquierda y después adelante, adelante y después derecha, diagonal y después lateral.
+- **No se permite:** construir hacia atrás, sobre una piedra o fuera de la grilla. El preview dorado marca las casillas válidas.
+
+Controles: mantener y arrastrar con el dedo (o mouse). En escritorio: mantener ↑/W para avanzar recto, ←/→ para lateral (o diagonal si la fila todavía está vacía), Q/E para diagonal.
