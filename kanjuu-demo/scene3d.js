@@ -585,11 +585,11 @@ function sanctuary() {
   for (let i = 0; i < RN; i++) drop(i, true);
   let az0 = 0;
   W.dragStart = () => { az0 = W.az; W.dragging = true; };
-  W.drag = dx => { if (W.paintMode || W.focus || W.grabbing) return; W.az = W.azT = az0 - dx * .009; };
+  W.drag = dx => { if (W.opts.runner || W.paintMode || W.focus || W.grabbing) return; W.az = W.azT = az0 - dx * .009; };
   W.dragEnd = () => { W.dragging = false; };
   W.pinchStart = () => { W.z0 = W.zoom; };
-  W.pinch = k => { W.zoom = Math.min(2.6, Math.max(.6, (W.z0 || 1) * k)); };
-  W.zoomBy = k => { W.zoom = Math.min(2.6, Math.max(.6, W.zoom * k)); };
+  W.pinch = k => { if (W.opts.runner) return; W.zoom = Math.min(2.6, Math.max(.6, (W.z0 || 1) * k)); };
+  W.zoomBy = k => { if (W.opts.runner) return; W.zoom = Math.min(2.6, Math.max(.6, W.zoom * k)); };
   const tileHit = ray => { const h = ray.intersectObjects([...W.tops.values()], false)[0]; return h ? h.object.userData : null; };
   W.paint = ray => { const t = tileHit(ray); if (t) W.opts.onTile?.(t.x, t.y); };
   W.tap = ray => {
@@ -647,16 +647,42 @@ function sanctuary() {
     sun.color.copy(sk.sun); sun.intensity = sk.si * (1 - rk * .5);
     const c0 = W.center || 0; sun.position.set(c0 - 6, 12, c0 + 5); sun.target.position.set(c0, 0, c0);
     waterMat().emissiveIntensity = .22 + Math.sin(t * 1.4) * .06;
+    // Cámara runner: fija detrás del KANJŪ, mirando siempre hacia el horizonte.
+    const runner = W.opts.runner;
+    if (runner) {
+      const ro = W.items.get(runner.playerId);
+      if (ro) {
+        runner.distance = (runner.distance || 0) + dt * (runner.speed || 1.8);
+        const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2;
+        const playerZ = runner.startRow - oz - runner.distance;
+        ro.group.position.x = (runner.lane ?? 2) - ox;
+        ro.group.position.z = playerZ;
+        ro.group.position.y = W.tY(runner.lane ?? 2, Math.max(0, Math.floor(runner.startRow - runner.distance))) || 0;
+        runner.playerZ = playerZ;
+      }
+    }
     // cámara maqueta: perspectiva angosta, giro libre, zoom
-    W.az += (W.azT - W.az) * Math.min(1, dt * 7);
+    if (runner) {
+      W.az = W.azT = 0; W.zoom = 1;
+    } else {
+      W.az += (W.azT - W.az) * Math.min(1, dt * 7);
+    }
     const bd = baseDepth(W.N), hf = Math.tan(FOV * Math.PI / 360), asp3 = camera.aspect;
     let halfH = Math.max(W.N * .62 + 1.1 + bd * .32, (W.N * .8 + .3) / asp3) / W.zoom, el = ELEV;
     let tx = c0, ty = -.6 - bd * .3 - (W.opts.mode === 'play' ? 0 : W.N * (W.opts.preview ? .5 : .12)), tz = c0;
     const fo = W.focus && W.items.get(W.focus);
+    if (runner) {
+      const pz = runner.playerZ ?? 0;
+      halfH = 5.6; el = .34; tx = (runner.lane ?? 2) - (W.cols - 1) / 2;
+      ty = .25; tz = pz - 1.35;
+    }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
-    const a = W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = halfH / hf * 1.02;
-    const want = new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D), look = new THREE.Vector3(tx, ty, tz);
+    const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 7.2 : halfH / hf * 1.02;
+    const want = runner
+      ? new THREE.Vector3(tx, ty + 2.65, tz + 6.9)
+      : new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D);
+    const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };
     const k = Math.min(1, dt * (fo ? 3.2 : 6)); W.cam.p.lerp(want, k); W.cam.l.lerp(look, k);
     camera.position.copy(W.cam.p); camera.lookAt(W.cam.l); camera.far = D * 3 + 60; camera.updateProjectionMatrix();
