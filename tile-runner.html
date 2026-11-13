@@ -134,7 +134,7 @@ function update(dt){if(!alive||paused)return;runTime+=dt;speed=Math.min(5.3,3.2+
  if(c.done&&!c.passed&&c.root.position.z>4.5){c.passed=true;score+=100;toast('¡BUEN TRABAJO!');inventory[c.def.tile]=Math.min(15,inventory[c.def.tile]+2);hud()}
  }
  
- for(let i=challenges.length-1;i>=0;i--){if(challenges[i].root.position.z>12){if(activeChallenge===challenges[i])activeChallenge=null;scene.remove(challenges[i].root);challenges.splice(i,1);spawnNext()}}
+ for(let i=challenges.length-1;i>=0;i--){if(challenges[i].root.position.z>12){if(activeChallenge===challenges[i])activeChallenge=null;for(const s of challenges[i].slots){const ti=targets.indexOf(s.mesh);if(ti>=0)targets.splice(ti,1)}scene.remove(challenges[i].root);challenges.splice(i,1);spawnNext()}}
  for(let i=coins3d.length-1;i>=0;i--){if(coins3d[i].hit||coins3d[i].mesh.position.z>12){scene.remove(coins3d[i].mesh);coins3d.splice(i,1)}}
  hud()}
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;update(dt);renderer.render(scene,camera)}
