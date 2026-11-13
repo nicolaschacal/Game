@@ -718,6 +718,7 @@ function sanctuary() {
           m.visible = !!top;
           if (!m.visible) return;
           m.position.set(h.x - ox, W.tY(h.x, h.y) + .075, h.y - oz);
+          m.material.color.set(runner.hintColor || '#F2B937');
           m.material.opacity = h.main ? .38 + Math.sin(t * 5.5) * .16 : .16 + Math.sin(t * 5.5) * .05;
         });
       }
@@ -816,7 +817,7 @@ function buildIsland(W, cols, rows, tiles, items) {
   W.cols = cols; W.rows = rows; W.N = Math.max(cols, rows);
   const ox = (cols - 1) / 2, oz = (rows - 1) / 2; W.center = 0;
   const T = (x, y) => ({ g: W.opts.runner ? 'empty' : 'grass', h: 0, r: null, ...(tiles[x + ',' + y] || {}) });
-  const tY = (x, y) => { const t = T(x, y); return t.g === 'water' ? t.h * LV - .12 : t.g === 'deep' ? t.h * LV - .2 : t.h * LV + (t.r ? LV / 2 : (hash(x, y, 13) - .5) * .06); };
+  const tY = (x, y) => { const t = T(x, y); return t.g === 'water' ? t.h * LV - .12 : t.g === 'deep' ? t.h * LV - .17 : t.h * LV + (t.r ? LV / 2 : (hash(x, y, 13) - .5) * .06); };
   W.tY = tY;
   const occ = new Set(); items.forEach(d => { if (d.kind === 'obj') for (let j = 0; j < d.h; j++) for (let i = 0; i < d.w; i++) occ.add((d.x + i) + ',' + (d.y + j)); });
   const slab = new THREE.BoxGeometry(1, SLAB, 1), wSlab = new THREE.BoxGeometry(.985, SLAB, .985), lvBox = new THREE.BoxGeometry(1, LV, 1);
