@@ -75,3 +75,7 @@ Entre mares hay una cima con un globo de papel. Kami sube solo el escalón (ramp
 - **Obstáculos vivos** (desde el mundo 2): tiburones, nubarrones y gallinas en las vías van y vienen entre dos carriles; nunca pisan el carril seguro.
 - **Jugo**: chispas y moneda que vuela al contador, líneas de velocidad, sacudida al chocar, papel picado al pasar de mundo o batir récord.
 - **Música**: se quitó el bucle sintetizado. Si se agrega `kanjuu-demo/music.mp3`, suena en bucle y acompaña la velocidad.
+
+## Tile Runner · escenario por mundo
+
+El protagonista siempre tiende su propio camino de tierra; lo que cambia es el escenario. Cada mundo define el color del suelo sin construir, el material de cimas y llanuras, y un clima que cruza la pantalla: pétalos en la Pradera, viento de arena en el Desierto, nieve en la Nieve y hojas en el Bosque. El obstáculo vivo de las vías es una vagoneta suelta.

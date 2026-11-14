@@ -994,6 +994,8 @@ export function runnerPulse(kind = 'squash') {
   const o = W.items.get(R.onBoat && R.boatId ? R.boatId : R.playerId); if (!o) return;
   if (kind === 'hop') o.hop = 1; else o.squash = 1;
 }
+// Color del suelo sin construir según el mundo (llamar antes de montar la escena)
+export function setGroundColor(kind, color) { GROUND_C[kind] = color; }
 const runnerGeo = {};
 // Obstáculos vivos: van y vienen entre dos carriles (a ↔ b) con una pausa en cada extremo
 export function moverLane(mv, now = performance.now()) {

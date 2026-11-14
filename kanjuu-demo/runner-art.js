@@ -155,6 +155,7 @@ export function artFor(id) {
   return out;
 }
 
-// Gallina que cruza las vías (obstáculo vivo del tramo de tren)
-export const HEN = cut(`<path d="M30 70 C30 46 50 38 66 44 C70 30 92 30 94 48 C96 60 90 66 86 68 C88 90 72 100 56 100 C40 100 30 88 30 70Z" fill="#FFF8EE"/><path d="M30 66 L12 52 L18 74 L10 84 L32 84Z" fill="#FFF8EE"/><path d="M74 34 q4 -12 10 -2 q8 -8 8 6Z" fill="#E8452C"/><path d="M94 50 L108 54 L94 60Z" fill="#F2B937"/><path d="M52 100 L50 112 M66 100 L68 112" stroke="#F2B937" stroke-width="5" stroke-linecap="round" fill="none"/>`,
-  `<path d="M36 84 C46 96 66 98 80 86 C76 98 66 100 56 100 C46 100 40 94 36 84Z" fill="#E9DCC6"/><path d="M44 66 q12 12 26 2" stroke="#E0D2BA" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="82" cy="48" rx="3.4" ry="4.4" fill="${INK}"/><circle cx="83" cy="46.4" r="1.3" fill="#FFF"/><ellipse cx="76" cy="56" rx="3.4" ry="2" fill="#F28C8C" opacity=".7"/><path d="M88 62 q3 8 -2 10 q-4 -4 2 -10Z" fill="#E8452C"/>`);
+// Vagoneta suelta: un carrito de mina con vida propia que cruza de una vía a otra (obstáculo vivo del tramo de tren)
+export const CART = cut(`<path d="M18 50 L102 50 L92 92 L28 92Z" fill="#4E6E8E"/><path d="M34 50 q6 -16 18 -8 q8 -14 20 -2 q12 -6 14 10Z" fill="#34333B"/><circle cx="38" cy="98" r="12" fill="#34333B"/><circle cx="82" cy="98" r="12" fill="#34333B"/>`,
+  `<path d="M14 46 L106 46 L104 56 L16 56Z" fill="#7FA0BE" stroke="${CREAM}" stroke-width="0"/><path d="M26 84 L94 84 L92 92 L28 92Z" fill="#3A546E"/><circle cx="38" cy="98" r="5" fill="#C9CED6"/><circle cx="82" cy="98" r="5" fill="#C9CED6"/>`
+  + `<ellipse cx="48" cy="68" rx="4.6" ry="6" fill="${INK}"/><ellipse cx="72" cy="68" rx="4.6" ry="6" fill="${INK}"/><circle cx="49.6" cy="65.6" r="1.8" fill="#FFF"/><circle cx="73.6" cy="65.6" r="1.8" fill="#FFF"/><ellipse cx="39" cy="76" rx="4" ry="2.4" fill="#F28C8C" opacity=".75"/><ellipse cx="81" cy="76" rx="4" ry="2.4" fill="#F28C8C" opacity=".75"/><path d="M55 76 Q60 80 65 76" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="38" r="3" fill="#5E5D66"/><circle cx="66" cy="34" r="3.5" fill="#5E5D66"/>`);
