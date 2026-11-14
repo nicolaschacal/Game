@@ -211,7 +211,7 @@ body.home #hud{opacity:0}
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor } from './kanjuu-demo/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour } from './kanjuu-demo/scene3d.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
@@ -237,7 +237,7 @@ const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en es
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
 const PATH='dirt';
-const THEMES=[{name:'PRADERA',ground:'#B9D88E',hill:'grass',fx:'petals'},{name:'DESIERTO',ground:'#E8D29A',hill:'sand',fx:'sand'},{name:'NIEVE',ground:'#EDF3F6',hill:'snow',fx:'snow'},{name:'BOSQUE',ground:'#8DB36A',hill:'moss',fx:'leaves'}];
+const THEMES=[{name:'PRADERA',ground:'#B9D88E',hill:'grass',fx:'petals',hour:10},{name:'DESIERTO',ground:'#E8D29A',hill:'sand',fx:'sand',hour:13},{name:'NIEVE',ground:'#EDF3F6',hill:'snow',fx:'snow',hour:11},{name:'BOSQUE',ground:'#8DB36A',hill:'moss',fx:'leaves',hour:15.5}];
 const theme=THEMES[stage%THEMES.length];
 
 // ── Nivel ──
@@ -249,7 +249,7 @@ const pick=a=>a[Math.floor(rnd()*a.length)];
 let art=artFor(skinId);
 const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
 const paintRow=(y,t)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]=typeof t==='string'?{g:t,h:0}:{...t};};
-setGroundColor('empty',theme.ground);
+setGroundColor('empty',theme.ground);setHour(theme.hour);
 for(let y=0;y<ROWS;y++)paintRow(y,theme.hill);
 let cur=START-1,uid=0;
 const OBST={land:[ROCK,STUMP],sea:[REEF,FIN,BARREL],sky:[PEAK,PEAK,CLOUD,STORM],rail:[BARRIER,CRATE,ROCK]};
@@ -302,7 +302,7 @@ const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>Math.min(3.4,1.3+Math.min(stage,10)*.11+(.75+S*.07)*Math.pow(Math.max(0,Math.min(1,prog)),1.2));
-const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
+const runner={fx:theme.fx,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';

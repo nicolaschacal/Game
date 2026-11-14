@@ -23,7 +23,11 @@ const KEYS = [
   { h: 21.5, top: '#0B0A1E', bot: '#2A2148', sun: '#8FA3FF', si: .5, amb: .75, night: 1, tint: '#5A5A9A' },
   { h: 24, top: '#0B0A1E', bot: '#2A2148', sun: '#8FA3FF', si: .5, amb: .75, night: 1, tint: '#5A5A9A' },
 ];
+let fixedHour = null;
+// Luz fija por mundo (el runner no sigue la hora real, así nunca queda a oscuras)
+export function setHour(h) { fixedHour = h; }
 export function hourNow() {
+  if (fixedHour !== null) return fixedHour;
   const q = new URLSearchParams(location.search).get('hora');
   if (q !== null && !isNaN(+q)) return +q;
   const d = new Date(); return d.getHours() + d.getMinutes() / 60;
@@ -701,6 +705,47 @@ function sanctuary() {
           g.position.y += ((runner.vehicleY ?? -.12) - g.position.y) * Math.min(1, dt * 6);
         }
         runnerWindow(W, Math.ceil(pos));
+        // Escenario del mundo: suelo alrededor de la pista, horizonte de papel en capas, sol, bruma y recortes a los costados
+        if (runner.fx) {
+          if (!W.look) {
+            const T = {
+              sand:   { fog: '#F3DDB0', ground: '#E3C98C', far: ['#F0D7A6', '#EDD09A', '#E4C285', '#DDB877'], sun: '#FFF3CF', ridge: 'dune' },
+              petals: { fog: '#E6F4DA', ground: '#A6CC78', far: ['#D6EBBB', '#C4E0A2', '#AED488', '#97C670'], sun: '#FFF8DC', ridge: 'dune' },
+              snow:   { fog: '#F0F6FB', ground: '#E1EBF2', far: ['#F6FAFD', '#E4EEF6', '#D0E1EE', '#BFD5E5'], sun: '#FFFDF2', ridge: 'peak' },
+              leaves: { fog: '#DCEBC6', ground: '#7DA45A', far: ['#BBD69E', '#9FC47F', '#80AF62', '#69994E'], sun: '#FFE7A8', ridge: 'dune' },
+            }[runner.fx] || null; if (!T) { runner.fx = null; }
+            const L = W.look = new THREE.Group(); W.scene.add(L);
+            W.scene.fog = new THREE.Fog(T.fog, 13, 31);
+            const flat = c => new THREE.MeshBasicMaterial({ color: c, fog: false });
+            const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshStandardMaterial({ color: T.ground, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -.36; ground.receiveShadow = true; L.add(ground); L.userData.ground = ground;
+            const ridge = (w, h, c, x, z) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0);
+              if (T.ridge === 'peak') { sh.lineTo(-w * .22, h * .62); sh.lineTo(-w * .12, h * .5); sh.lineTo(0, h); sh.lineTo(w * .14, h * .55); sh.lineTo(w * .24, h * .7); }
+              else { sh.bezierCurveTo(-w / 4, 0, -w / 6, h, 0, h); sh.bezierCurveTo(w / 6, h, w / 4, 0, w / 2, 0); }
+              sh.lineTo(w / 2, 0); const m = new THREE.Mesh(new THREE.ShapeGeometry(sh, 24), flat(c)); m.position.set(x, -.4, z); L.add(m); return m; };
+            const k = T.ridge === 'peak' ? 1.5 : 1;
+            L.userData.far = [ridge(26, 5.2 * k, T.far[0], -9, -36), ridge(30, 6.4 * k, T.far[1], 10, -37), ridge(18, 3.6 * k, T.far[2], 0, -34), ridge(16, 3 * k, T.far[3], -13, -32), ridge(16, 3.2 * k, T.far[3], 14, -32)];
+            const sun = new THREE.Mesh(new THREE.CircleGeometry(2.6, 40), flat(T.sun)); sun.position.set(-5, 8.5, -39); L.add(sun); L.userData.far.push(sun);
+            const C = '#FFF4DC', wrap = inner => `<svg viewBox="0 0 120 120"><g stroke="${C}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${inner}</g>${inner}</svg>`;
+            const ARTS = {
+              sand: [wrap('<path d="M52 110 L52 40 Q60 26 68 40 L68 110Z" fill="#6FA255"/><path d="M52 78 L34 78 Q26 78 26 68 L26 54 Q32 46 38 54 L38 66 L52 66Z" fill="#6FA255"/><path d="M68 70 L84 70 Q92 70 92 60 L92 44 Q86 36 80 44 L80 58 L68 58Z" fill="#6FA255"/>'),
+                wrap('<path d="M14 110 L24 74 L46 56 L74 62 L100 84 L106 110Z" fill="#C9A566"/><path d="M26 76 L46 58 L54 82 L38 96Z" fill="#E2C68E"/>'),
+                wrap('<path d="M10 110 Q40 62 64 84 Q84 60 110 110Z" fill="#DDBF7E"/>')],
+              petals: [wrap('<rect x="54" y="66" width="12" height="44" rx="4" fill="#8A5F38"/><circle cx="60" cy="48" r="32" fill="#F7B7C8"/><circle cx="46" cy="40" r="10" fill="#FFD3DE"/><circle cx="72" cy="56" r="8" fill="#E58BA5"/>'),
+                wrap('<path d="M16 110 Q22 70 44 78 Q54 54 74 74 Q96 66 104 110Z" fill="#6FB24F"/><circle cx="40" cy="88" r="6" fill="#FFF4DC"/><circle cx="66" cy="80" r="6" fill="#F2B937"/><circle cx="84" cy="94" r="5" fill="#F29BB8"/>'),
+                wrap('<rect x="55" y="70" width="10" height="40" rx="4" fill="#8A5F38"/><circle cx="60" cy="52" r="30" fill="#5DB84F"/><circle cx="48" cy="44" r="9" fill="#86D66F"/>')],
+              snow: [wrap('<rect x="55" y="88" width="10" height="22" rx="3" fill="#8A5F38"/><path d="M60 14 L84 50 L72 50 L92 80 L28 80 L48 50 L36 50Z" fill="#3F7F6A"/><path d="M60 14 L72 32 Q60 38 48 32Z M40 62 Q60 70 80 62 L92 80 L28 80Z" fill="#FFFFFF"/>'),
+                wrap('<path d="M12 110 Q30 70 56 80 Q80 62 108 110Z" fill="#FFFFFF"/><path d="M12 110 Q40 96 108 110Z" fill="#D7E6F0"/>'),
+                wrap('<path d="M18 110 L28 78 L48 62 L74 68 L98 88 L104 110Z" fill="#9FB2C2"/><path d="M28 78 L48 62 L74 68 L64 76 L40 84Z" fill="#FFFFFF"/>')],
+              leaves: [wrap('<rect x="54" y="74" width="12" height="36" rx="4" fill="#6B4A2E"/><path d="M60 8 L86 46 L74 46 L94 78 L26 78 L46 46 L34 46Z" fill="#3E7D45"/><path d="M60 8 L72 26 L48 26Z" fill="#5DA35A"/>'),
+                wrap('<rect x="52" y="78" width="16" height="32" rx="6" fill="#F5E7C8"/><path d="M22 80 Q24 40 60 40 Q96 40 98 80Z" fill="#E8452C"/><circle cx="44" cy="62" r="6" fill="#FFF4DC"/><circle cx="70" cy="56" r="7" fill="#FFF4DC"/><circle cx="82" cy="70" r="4" fill="#FFF4DC"/>'),
+                wrap('<rect x="55" y="66" width="10" height="44" rx="4" fill="#6B4A2E"/><circle cx="60" cy="46" r="32" fill="#D9862E"/><circle cx="46" cy="38" r="10" fill="#F2B937"/><circle cx="74" cy="56" r="8" fill="#B86A1E"/>')],
+            }[runner.fx];
+            L.userData.props = Array.from({ length: 18 }, (_, i) => { const s = i % 3 === 0 ? 1.7 : i % 3 === 1 ? 1.15 : 1.9, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: paperTexture(ARTS[i % 3]), transparent: true, alphaTest: .5, roughness: 1 })); m.castShadow = true; m.userData = { base: i * 2.2, x: (i % 2 ? 1 : -1) * (3.5 + ((i * 7) % 5) * .9) }; L.add(m); return m; });
+          }
+          const U = W.look.userData; U.ground.position.z = playerZ - 20;
+          U.far.forEach(m => { if (m.userData.dz == null) m.userData.dz = m.position.z; m.position.z = playerZ + m.userData.dz; });
+          U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion); });
+        }
         // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
         const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
         if (left) { const g = left.group, mode = runner.leaveMode, dir = g.position.x >= 0 ? 1 : -1; g.position.x += dt * (mode === 'up' ? 1.4 : mode === 'side' ? 5 : 2.4) * dir; g.position.y += dt * (mode === 'up' ? 2 : mode === 'side' ? 0 : -.9); if (g.position.y < -1.4 || g.position.y > 7 || Math.abs(g.position.x) > 6) { g.visible = false; runner.leaveBoat = null; } }
@@ -741,13 +786,13 @@ function sanctuary() {
       const pz = runner.playerZ ?? 0;
       // Encuadre más cercano: Hito queda dentro de cámara, por encima del panel inferior.
       halfH = 3.0; el = .34; tx = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
-      ty = .12 + (runner.camY || 0); tz = pz - 1.25;
+      ty = .12 + (runner.camY || 0); tz = pz - 3.3;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
     const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 9.2 : halfH / hf * 1.02;
     const want = runner
-      ? new THREE.Vector3(tx, ty + 2.75, tz + 5.6)
+      ? new THREE.Vector3(tx, ty + 2.6, tz + 8.3)   // cámara más baja y mirando lejos: aparece el horizonte
       : new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D);
     const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };

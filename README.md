@@ -79,3 +79,7 @@ Entre mares hay una cima con un globo de papel. Kami sube solo el escalón (ramp
 ## Tile Runner · escenario por mundo
 
 El protagonista siempre tiende su propio camino de tierra; lo que cambia es el escenario. Cada mundo define el color del suelo sin construir, el material de cimas y llanuras, y un clima que cruza la pantalla: pétalos en la Pradera, viento de arena en el Desierto, nieve en la Nieve y hojas en el Bosque. El obstáculo vivo de las vías es una vagoneta suelta.
+
+## Tile Runner · horizonte y luz por mundo
+
+Cada mundo tiene suelo alrededor de la pista, horizonte de papel en capas (colinas, dunas o picos), sol, bruma que funde el fondo y recortes a los costados (cerezos, cactus, pinos nevados, cedros y hongos). La cámara va más baja para que se vea el horizonte y la luz es fija por mundo en vez de seguir la hora real.
