@@ -77,3 +77,24 @@ export const PEARL = cut(`<path d="M18 82 Q60 112 102 82 Q98 104 60 108 Q22 104 
   `<path d="M60 28 L60 62 M40 34 L50 66 M80 34 L70 66 M26 52 L40 72 M94 52 L80 72" stroke="#F29BB8" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="78" r="17" fill="#FDFBFF"/><path d="M60 95 A17 17 0 0 1 44 84 Q60 92 76 84 A17 17 0 0 1 60 95Z" fill="#D9D3EC"/><circle cx="54" cy="72" r="4.5" fill="#FFF"/>`);
 export const GATE = cut(`<path d="M8 30 Q60 14 112 30 L108 42 Q60 28 12 42Z" fill="#E8452C"/><rect x="26" y="34" width="11" height="76" rx="3" fill="#E8452C"/><rect x="83" y="34" width="11" height="76" rx="3" fill="#E8452C"/><rect x="20" y="52" width="80" height="9" rx="3" fill="#E8452C"/>`,
   `<path d="M8 30 Q60 14 112 30 L111 34 Q60 19 9 34Z" fill="#2B1D16"/><rect x="26" y="100" width="11" height="10" fill="#2B1D16"/><rect x="83" y="100" width="11" height="10" fill="#2B1D16"/><rect x="52" y="40" width="16" height="22" rx="3" fill="#F2B937"/>`);
+// ── Cielo: globo de papel, picos entre nubes, nubes y estrella ───────────────
+function balloonPose(k, flying) {
+  const shapes = `<path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/>`
+    + `<path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M47 88 L60 80 L73 88 Q60 93 47 88Z" fill="${C.hat}"/>`;
+  const details = `<path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/>`
+    + `<path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/>`
+    + `<path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/>`
+    + `<path d="M47 88 Q60 93 73 88 Q60 96 47 88Z" fill="${C.hatD}"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/>`
+    + (flying ? `<path d="M60 ${k ? 71 : 74} q${k ? 5 : 4} 7 0 12 q-${k ? 5 : 4} -5 0 -12Z" fill="#F2B937"/>` : '');
+  return cut(shapes, details);
+}
+export const BALLOON = { idle: [balloonPose(0, false)], run: [balloonPose(0, true), balloonPose(1, true)] };
+const puff = (y, c = '#FFFFFF') => `<path d="M8 ${y} q-2 -12 10 -12 q4 -12 18 -6 q8 -10 20 -2 q12 -8 22 2 q14 -4 16 8 q12 0 10 10 q-48 8 -96 0Z" fill="${c}"/>`;
+export const PEAK = cut(`<path d="M22 100 L50 24 L60 12 L74 30 L100 100Z" fill="#7C8794"/>`,
+  `<path d="M40 52 L50 24 L60 12 L74 30 L82 52 L70 44 L62 56 L52 44Z" fill="#FFFFFF"/><path d="M60 12 L74 30 L100 100 L72 100 L62 56Z" fill="#5C6672" opacity=".7"/>${puff(108)}`);
+export const CLOUD = cut(`<path d="M14 92 C2 92 2 72 18 70 C16 50 40 44 50 56 C58 36 90 40 90 62 C108 60 114 84 100 92Z" fill="#FFFFFF"/>`,
+  `<path d="M14 92 C6 92 4 84 8 78 Q60 90 108 76 C110 84 106 92 100 92Z" fill="#CFE3F2"/><ellipse cx="46" cy="72" rx="3" ry="4" fill="${INK}"/><ellipse cx="68" cy="72" rx="3" ry="4" fill="${INK}"/><path d="M53 80 Q57 83 61 80" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="38" cy="79" rx="3.5" ry="2" fill="#F28C8C" opacity=".7"/><ellipse cx="76" cy="79" rx="3.5" ry="2" fill="#F28C8C" opacity=".7"/>`);
+export const STORM = cut(`<path d="M14 78 C2 78 2 58 18 56 C16 36 40 30 50 42 C58 22 90 26 90 48 C108 46 114 70 100 78Z" fill="#6B7285"/><path d="M58 74 L44 94 L56 94 L48 114 L74 88 L62 88 L70 74Z" fill="#F2B937"/>`,
+  `<path d="M14 78 C6 78 4 70 8 64 Q60 76 108 62 C110 70 106 78 100 78Z" fill="#4A5062"/><path d="M40 54 l10 4 M78 54 l-10 4" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><ellipse cx="47" cy="62" rx="3" ry="3.5" fill="${INK}"/><ellipse cx="71" cy="62" rx="3" ry="3.5" fill="${INK}"/>`);
+export const STAR = cut(`<path d="M60 14 L73 44 L106 48 L81 70 L88 102 L60 86 L32 102 L39 70 L14 48 L47 44Z" fill="#F2B937"/>`,
+  `<path d="M60 86 L88 102 L81 70 L106 48 L84 60 L76 82Z" fill="#C98A1E" opacity=".8"/><path d="M48 46 Q52 36 60 30" stroke="#FFF3C4" stroke-width="5" fill="none" stroke-linecap="round"/>`);

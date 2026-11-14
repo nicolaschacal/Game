@@ -470,7 +470,7 @@ const LV = .42, SLAB = .24, TIER_H = 1.25, FOV = 24, ELEV = .58;
 // Ancho en casillas del recorte de cada pieza de papel
 const ART_W = { farol: .5, pino: .74, bambu: .52, arbusto: .72, flores: .56, roca: .56, torii: 1.0, cerezo: 1.08, minka: .95, pagoda: .74, templo: .93, castillo: .92, casate: .96, komainu: .6, campana: .62, incienso: .5, ema: .64, nobori: .32, sagrada: .6, chochin: .42, refugio: .95, suzuri: .6, brasero: .55, cerca: .9, arbol: .9 };
 const GLOW = { farol: { c: '#FFB45A', p: 1.6 }, chochin: { c: '#FF8A5A', p: 1.3 }, brasero: { c: '#FF7A3A', p: 1.4, always: true }, incienso: { c: '#FFC27A', p: .8 } };
-const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591' };
+const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591', sky: '#E6F5FF' };
 const STRATA = ['#A47D55', '#93704C', '#8A8075'];
 // Cielo de papel: madrugada, amanecer, mañana, tarde, atardecer, noche
 const PK = [
@@ -687,7 +687,9 @@ function sanctuary() {
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
-        ro.group.position.y = W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0;
+        const groundY = W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0;
+        ro.group.position.y += (groundY - ro.group.position.y) * Math.min(1, dt * 10);   // sube y baja rampas suavemente
+        runner.camY = (runner.camY || 0) + (ro.group.position.y - (runner.camY || 0)) * Math.min(1, dt * 4);
         // En el mar el personaje desaparece y navega el barco de papel (runner.boatId) en su lugar.
         ro.group.visible = !runner.onBoat;
         runner.lean = ((runner.lean || 0) * .8) + ((runner.visualLane - (runner.prevVisual ?? runner.visualLane)) / Math.max(dt, .001) / 4) * .2; runner.prevVisual = runner.visualLane;
@@ -696,11 +698,11 @@ function sanctuary() {
           const g = boat.group, bx = (runner.visualLane ?? 2) - ox;
           g.position.x += (bx - g.position.x) * Math.min(1, dt * 14);
           g.position.z += (playerZ - g.position.z) * Math.min(1, dt * 18);
-          g.position.y = -.12;
+          g.position.y += ((runner.vehicleY ?? -.12) - g.position.y) * Math.min(1, dt * 6);
         }
         // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
         const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
-        if (left) { const g = left.group; g.position.x += dt * 2.4 * (g.position.x >= 0 ? 1 : -1); g.position.y -= dt * .9; if (g.position.y < -1.4) { g.visible = false; runner.leaveBoat = null; } }
+        if (left) { const g = left.group, up = runner.leaveUp; g.position.x += dt * (up ? 1.4 : 2.4) * (g.position.x >= 0 ? 1 : -1); g.position.y += dt * (up ? 2 : -.9); if (g.position.y < -1.4 || g.position.y > 7) { g.visible = false; runner.leaveBoat = null; } }
         if (runner.gameOver) runner.hitPause = 999;
         runner.playerZ = playerZ;
         // Preview: todas las casillas donde se puede construir ahora (adelante, diagonal o lateral).
@@ -717,7 +719,7 @@ function sanctuary() {
           const h = hints[i], top = h && W.tops.get(h.x + ',' + h.y);
           m.visible = !!top;
           if (!m.visible) return;
-          m.position.set(h.x - ox, W.tY(h.x, h.y) + .075, h.y - oz);
+          m.position.set(h.x - ox, W.tY(h.x, h.y) + (h.lift || 0) + .075, h.y - oz);
           m.material.color.set(runner.hintColor || '#F2B937');
           m.material.opacity = h.main ? .38 + Math.sin(t * 5.5) * .16 : .16 + Math.sin(t * 5.5) * .05;
         });
@@ -738,7 +740,7 @@ function sanctuary() {
       const pz = runner.playerZ ?? 0;
       // Encuadre más cercano: Hito queda dentro de cámara, por encima del panel inferior.
       halfH = 3.0; el = .34; tx = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
-      ty = .12; tz = pz - 1.25;
+      ty = .12 + (runner.camY || 0); tz = pz - 1.25;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
@@ -918,7 +920,7 @@ function updateItem(W, o, d, OBJ) {
     }
   }
   o.d = d;
-  const [cx, cy, cz] = toWorld(W, d); o.group.position.set(cx, cy, cz);
+  const [cx, cy, cz] = toWorld(W, d); o.group.position.set(cx, cy + (d.lift || 0), cz);
 }
 // Casilla del santuario bajo un punto de la pantalla (para soltar objetos arrastrados desde la Mochila)
 export function tileAtScreen(cx, cy) {
@@ -941,6 +943,12 @@ export function runnerLaneAtScreen(cx, cy) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return null;
   const r = E.renderer.domElement.getBoundingClientRect();
   E.ray.setFromCamera(new THREE.Vector2((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1), W.camera);
+  const R = W.opts.runner;
+  if (R.steerY != null) { // en el aire el dedo apunta al plano del cielo, no al suelo
+    const pt = new THREE.Vector3();
+    if (E.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -R.steerY), pt)) return Math.max(0, Math.min(W.cols - 1, Math.round(pt.x + (W.cols - 1) / 2)));
+    return null;
+  }
   const hit = E.ray.intersectObjects([...W.tops.values()], false)[0];
   return hit?.object?.userData?.x ?? null;
 }
@@ -950,10 +958,17 @@ export function runnerPulse(kind = 'squash') {
   const o = W.items.get(R.onBoat && R.boatId ? R.boatId : R.playerId); if (!o) return;
   if (kind === 'hop') o.hop = 1; else o.squash = 1;
 }
+const runnerGeo = {};
 export function updateRunnerTile(x, y, tile) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
   W.opts.tiles ||= {}; W.opts.tiles[x + ',' + y] = tile;
   const top = W.tops.get(x + ',' + y); if (!top) return;
+  if (tile.float) { // tile flotante (cielo): se suma por encima sin tocar el suelo
+    W.floats ||= new Map(); if (W.floats.has(x + ',' + y)) return;
+    const m = new THREE.Mesh(runnerGeo.float ||= new THREE.BoxGeometry(.97, .1, .97), gMat(GROUND_C[tile.g] || GROUND_C.sky));
+    m.position.set(top.position.x, tile.h * LV - .05, top.position.z); m.castShadow = m.receiveShadow = true; m.userData.keepGeo = true;
+    W.island.add(m); W.floats.set(x + ',' + y, m); return;
+  }
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
   top.position.y = W.tY(x, y) - SLAB / 2;
   top.material.needsUpdate = true;

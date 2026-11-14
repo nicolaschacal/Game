@@ -46,3 +46,7 @@ Controles: mantener y arrastrar con el dedo (o mouse). En escritorio: mantener �
 - **Obstáculos de agua**: arrecifes, aletas y barriles que obligan a moverse; en tierra, rocas y tocones.
 - **Premios**: monedas con racha y multiplicador (hasta x5), perlas en carriles de riesgo, bono por rozar obstáculos y por cada travesía, sonido, vibración y récord guardado.
 - Cinco mares cada vez más largos y rápidos, con meta al final. El arte vive en `kanjuu-demo/runner-art.js`.
+
+## Tile Runner · cielo (reemplaza al puente)
+
+Entre mares hay una cima con un globo de papel. Kami sube solo el escalón (rampa ya hecha), monta el globo y vuela: el camino se traza con tiles de cielo flotantes, esquivando picos, nubes y nubarrones. Hay monedas y estrellas en el aire, y al final aterriza en otra cima con la bajada ya construida.

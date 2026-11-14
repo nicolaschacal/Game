@@ -61,7 +61,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 <body>
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="flash"></div>
-<div class="top"><div class="brand">KANJŪ <small>TILE RUNNER · MAR</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
+<div class="top"><div class="brand">KANJŪ <small>TILE RUNNER</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
 <div id="progress"><i></i></div>
 <button id="mute" aria-label="Sonido">♪</button>
 <div id="combo">x2<small>RACHA</small></div>
@@ -72,9 +72,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 </section>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse } from './kanjuu-demo/scene3d.js';
-import { HERO, BOAT, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE } from './kanjuu-demo/runner-art.js';
+import { HERO, BOAT, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, BALLOON, PEAK, CLOUD, STORM, STAR } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const COLS=5,ROWS=240,START=ROWS-12;
+const LEVELS=2,LV=.42,SKY=LEVELS*LV; // altura de la cima y del cielo (LV = alto de un nivel del motor)
 // ── Nivel: tierra → muelle → puerto (barco) → mar → playa → tierra … → meta ──
 // zone[y]: 'land' (se construye CAMINO), 'sea' (se construye AGUA), 'free' (ya está hecho: respiro para cambiar de tile)
 const rnd=(()=>{let a=(Date.now()^0x9E3779B9)>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
@@ -84,30 +85,43 @@ const paintRow=(y,g)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]={g,h:0};};
 for(let y=0;y<ROWS;y++)paintRow(y,'grass');
 let cur=START-1,uid=0;
 function fill(n,kind,{gap,lead,extra}){
- let safe=2;
+ let safe=2;const lift=kind==='sky'?SKY:0,sky=kind==='sky';
  for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
   if(i>=lead&&(i-lead)%gap===0&&i<n-1){
    const prev=safe;safe=pick([-2,-1,1,2].map(d=>prev+d).filter(x=>x>=0&&x<COLS));
    const blocked=new Set([prev]);const pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
    for(let k=0;k<extra&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
-   for(const x of blocked)blockers.push({id:'b'+uid++,kind:'paper',obstacle:'rock',sea:kind==='sea',svg:kind==='sea'?pick([REEF,FIN,BARREL]):pick([ROCK,STUMP]),x,y,w:1,h:1});
-   coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10});
-   if(pool.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:PEARL,x:pick(pool),y,w:.7,h:.7,value:50,pearl:true});
-  }else if(i>1)coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10});
+   for(const x of blocked)blockers.push({id:'b'+uid++,kind:'paper',obstacle:'rock',sea:kind==='sea',svg:kind==='sea'?pick([REEF,FIN,BARREL]):sky?pick([PEAK,PEAK,CLOUD,STORM]):pick([ROCK,STUMP]),x:sky?x-.15:x,y:sky?y-.15:y,w:sky?1.3:1,h:sky?1.3:1,lift,cx:x,cy:y});
+   coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10,lift});
+   if(pool.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:sky?STAR:PEARL,x:pick(pool),y,w:.7,h:.7,value:50,pearl:true,star:sky,lift});
+  }else if(i>1)coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10,lift});
  }
  cur-=n;
 }
 const free=(n,g)=>{for(let i=0;i<n;i++){zone[cur-i]='free';paintRow(cur-i,g);}cur-=n;};
-const SEAS=[14,20,26,30,34],LANDS=[12,10,10,10,10];
-SEAS.forEach((len,i)=>{
- fill(LANDS[i],'land',{gap:4,lead:i?3:7,extra:i?1:0});
+let rideN=0;
+function sea(len,hard){const id='ride'+rideN++;
  free(2,'wood');
  const board=cur;free(2,'water');
- boats.push({id:'boat'+i,kind:'paper',svg:BOAT.idle[0],frames:BOAT,fps:5,x:1.7,y:board-.3,w:1.6,h:1.6});
- fill(len,'sea',{gap:i<2?3:2,lead:2,extra:i<1?1:2});
+ boats.push({id,kind:'paper',svg:BOAT.idle[0],frames:BOAT,fps:5,x:1.7,y:board-.3,w:1.6,h:1.6});
+ fill(len,'sea',{gap:hard?2:3,lead:2,extra:hard?2:1});
  const land=cur;free(3,'sand');
- seas.push({board,land,boat:'boat'+i});
-});
+ seas.push({board,land,id,type:'boat'});
+}
+// Cielo: Kami sube solo un escalón hasta la cima donde espera el globo, vuela trazando tiles de cielo
+// entre picos y nubes, y aterriza en otra cima con la bajada ya hecha.
+function sky(len,hard){const id='ride'+rideN++;
+ for(let k=0;k<LEVELS;k++){zone[cur]='free';for(let x=0;x<COLS;x++)tiles[x+','+cur]={g:'grass',h:k,r:[0,-1]};cur--;} // escalón ya hecho: Kami sube solo
+ const top=x=>({g:'grass',h:LEVELS});
+ const board=cur;for(let i=0;i<2;i++){zone[cur-i]='free';for(let x=0;x<COLS;x++)tiles[x+','+(cur-i)]=top();}cur-=2;
+ boats.push({id,kind:'paper',svg:BALLOON.idle[0],frames:BALLOON,fps:6,x:1.5,y:board-.5,w:2,h:2});
+ fill(len,'sky',{gap:hard?2:3,lead:2,extra:hard?2:1});
+ const land=cur;for(let i=0;i<2;i++){zone[cur-i]='free';for(let x=0;x<COLS;x++)tiles[x+','+(cur-i)]=top();}cur-=2;
+ for(let k=LEVELS-1;k>=0;k--){zone[cur]='free';for(let x=0;x<COLS;x++)tiles[x+','+cur]={g:'grass',h:k,r:[0,1]};cur--;}
+ seas.push({board,land,id,type:'balloon'});
+}
+const land=(n,first)=>fill(n,'land',{gap:4,lead:first?7:3,extra:first?0:1});
+land(12,true);sea(14);land(8);sky(14);land(8);sea(22,true);land(8);sky(20,true);land(8);sea(26,true);land(6);
 free(6,'grass');const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:GATE,x:1,y:GOAL-1,w:3,h:3};
 const player={id:'kami',kind:'paper',svg:HERO.idle[0],frames:HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
@@ -136,7 +150,7 @@ const mult=()=>Math.min(5,1+Math.floor(streak/6));
 function addScore(n){score+=n;$('score').textContent=score;}
 function showCombo(){const c=$('combo');if(mult()>1){c.firstChild.textContent='x'+mult();c.style.opacity='1';}else c.style.opacity='0';}
 function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount++;$('coinsN').textContent=coinCount;bump('coinPill');
- if(c.pearl){pop('PERLA +'+gain,'pink');[784,988,1175,1568].forEach((f,i)=>tone(f,.12,'triangle',.05,0,i*.06));buzz([12,30,12]);runnerPulse('hop');}
+ if(c.pearl){pop((c.star?'ESTRELLA +':'PERLA +')+gain,c.star?'gold':'pink');[784,988,1175,1568].forEach((f,i)=>tone(f,.12,'triangle',.05,0,i*.06));buzz([12,30,12]);runnerPulse('hop');}
  else{pop('+'+gain,'gold');tone(520*Math.pow(2,Math.min(streak,14)/12),.09,'square',.03);buzz(8);runnerPulse('squash');}
  if(mult()>before){pop('¡RACHA x'+mult()+'!','big');[660,880,1320].forEach((f,i)=>tone(f,.1,'triangle',.05,0,i*.07));}
  showCombo();}
@@ -151,10 +165,9 @@ function endGame(title,reason,win=false){if(gameover.style.display==='flex')retu
  if(win){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.18,'triangle',.06,0,i*.11));buzz([20,40,20,40,60]);}else{tone(330,.35,'sawtooth',.05,90);buzz(120);}
  setTimeout(()=>gameover.style.display='flex',win?500:350);}
 function onGameOver(reason){
- const y=targetRow(),sea=zone[y]==='sea'||runner.onBoat;
- if(lastWrong>=y-1&&lastWrong<=y+2)endGame(sea?'EL BARCO ENCALLÓ':'SIN CAMINO',sea?'En el mar la ruta se construye con AGUA. Cambiá de tile cuando subas al barco.':'En tierra la ruta se construye con CAMINO. Cambiá de tile al llegar a la playa.');
- else if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(sea?'¡CHOQUE!':'¡TROPEZÓN!',sea?'El barco no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.':'Kami no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
- else endGame(sea?'EL MAR SE ACABÓ':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
+ const y=targetRow(),air=zone[y]==='sky'||(runner.onBoat&&runner.rideType==='balloon'),sea=!air&&(zone[y]==='sea'||runner.onBoat);
+ if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(air?'¡CHOQUE EN EL AIRE!':sea?'¡CHOQUE!':'¡TROPEZÓN!',air?'El globo no puede atravesar picos ni nubes. Arrastrá hacia un costado.':sea?'El barco no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.':'Kami no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
+ else endGame(air?'SE ACABÓ EL CIELO':sea?'EL MAR SE ACABÓ':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
 }
 
 // ── Construcción libre en la cuadrícula ──
@@ -162,19 +175,19 @@ function onGameOver(reason){
 // · su primer tile entra ADELANTE o en DIAGONAL; mientras no se llegue a su centro se extiende a IZQUIERDA o DERECHA;
 // · no se construye sobre obstáculos ni hacia atrás; en el mar solo sirve AGUA y en tierra solo CAMINO.
 const clampLane=l=>Math.max(0,Math.min(COLS-1,Math.round(l)));
-const blockSet=new Set(blockers.map(b=>b.x+','+b.y));
+const blockSet=new Set(blockers.map(b=>(b.cx??b.x)+','+(b.cy??b.y)));
 const isRockCell=(x,y)=>blockSet.has(x+','+y);
 const targetRow=()=>Math.ceil(START-runner.distance)-1;
 const prevExit=y=>runner.path[y+1]?.x??runner.lastBuildLane;
 let wrongAt=0;
 function materialOk(y){
  const z=zone[y];if(z==='free')return true;
- selected=z==='sea'?'water':'grass';return true;
+ selected=z==='sea'?'water':z==='sky'?'sky':'grass';return true;
  const ok=z==='sea'?selected==='water':selected!=='water';
  if(!ok){lastWrong=y;const now=performance.now();if(now-wrongAt>500){wrongAt=now;showToast(z==='sea'?'¡EN EL MAR SE CONSTRUYE CON AGUA!':'¡EN TIERRA SE CONSTRUYE CON CAMINO!');tone(160,.12,'sawtooth',.04);buzz(40);}}
  return ok;
 }
-function setTile(x,y){if(zone[y]==='free')return;const tile={g:selected,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);tone(selected==='water'?300:210,.04,'sine',.025);}
+function setTile(x,y){const z=zone[y];if(z==='free')return;const tile=z==='sky'?{g:'sky',h:LEVELS,float:true}:{g:selected,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);tone(selected==='water'?300:selected==='sky'?440:210,.04,'sine',.025);}
 function buildToward(lane){
  if(runner.gameOver)return false;
  const y=targetRow();if(y<0)return false;
@@ -202,10 +215,11 @@ function buildToward(lane){
 }
 function refreshHints(){
  const y=targetRow();if(y<0||runner.gameOver||zone[y]==='free'){runner.hints=[];return;}
- runner.hintColor=zone[y]==='sea'?'#FFFFFF':'#F2B937';
+ runner.hintColor=zone[y]==='sea'?'#FFFFFF':zone[y]==='sky'?'#7FC8FF':'#F2B937';
+ const z=zone[y],liftOf=x=>{const t=tiles[x+','+y];return z==='sky'&&!t?.float?SKY:0;};
  const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),out=[];
- if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y))out.push({x,y,main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}
- else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y))out.push({x,y,main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});
+ if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y))out.push({x,y,lift:liftOf(x),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}
+ else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y))out.push({x,y,lift:liftOf(x),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});
  runner.hints=out;
 }
 function laneFromPointer(e){const lane=runnerLaneAtScreen(e.clientX,e.clientY);if(lane!==null)runner.buildLane=lane;}
@@ -218,13 +232,16 @@ let lastRow=START,seaIndex=0;
 function enterRow(r){
  addScore(1);
  const sea=seas[seaIndex];
- if(sea&&r===sea.board){runner.boatId=sea.boat;runner.onBoat=true;splash();buzz([15,40,25]);pop('¡A NAVEGAR!','big');$('flash').style.opacity='.5';setTimeout(()=>$('flash').style.opacity='0',120);runnerPulse('hop');}
- if(sea&&r===sea.land+1){runner.onBoat=false;runner.leaveBoat=sea.boat;seaIndex++;const bonus=200*seaIndex;addScore(bonus);bump('scorePill');pop('¡TIERRA! +'+bonus,'big');[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.06,0,i*.08));buzz([20,30,20,30,40]);runnerPulse('hop');}
+ const air=sea?.type==='balloon';
+ if(sea&&r===sea.board){runner.boatId=sea.id;runner.onBoat=true;runner.rideType=sea.type;runner.vehicleY=air?SKY+.12:-.12;runner.steerY=air?SKY:null;buzz([15,40,25]);runnerPulse('hop');
+  if(air){pop('¡A VOLAR!','big');[392,523,659,880].forEach((f,i)=>tone(f,.16,'sine',.06,0,i*.07));}
+  else{splash();pop('¡A NAVEGAR!','big');$('flash').style.opacity='.5';setTimeout(()=>$('flash').style.opacity='0',120);}}
+ if(sea&&r===sea.land+1){runner.onBoat=false;runner.leaveBoat=sea.id;runner.leaveUp=air;runner.steerY=null;seaIndex++;const bonus=200*seaIndex;addScore(bonus);bump('scorePill');pop((air?'¡ATERRIZAJE! +':'¡TIERRA! +')+bonus,'big');[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.06,0,i*.08));buzz([20,30,20,30,40]);runnerPulse('hop');}
  // roce: pasar pegado a un obstáculo
  const row=runner.path[r];if(row&&zone[r]!=='free'){const ls=Object.keys(row.lanes).map(Number);if(ls.some(x=>isRockCell(x-1,r)||isRockCell(x+1,r))){addScore(5*mult());pop('¡CASI! +'+5*mult());tone(880,.05,'sine',.03);}}
  const prog=(START-r)/(START-GOAL);$('progress').firstElementChild.style.width=Math.min(100,prog*100)+'%';
  runner.speed=(1.42+Math.min(1,prog)*.95)*(runner.onBoat?1.18:1);
- if(r<=GOAL){addScore(500);endGame('', 'Cruzaste los cinco mares.',true);}
+ if(r<=GOAL){addScore(500);endGame('', 'Cruzaste los mares y los cielos.',true);}
 }
 function refreshUI(){
  const y=targetRow(),sea=seas[seaIndex];
@@ -232,7 +249,7 @@ function refreshUI(){
  // próximo tramo que hay que construir: decide qué botón llama la atención
  let nz=null;for(let q=y;q>y-7&&q>=0;q--)if(zone[q]!=='free'){nz=zone[q];break;}
  const callWater=nz==='sea'&&selected!=='water',callLand=nz==='land'&&selected==='water';
- hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':sea&&toBoard<12?'BARCO ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
+ hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':sea&&toBoard<12?(sea.type==='balloon'?'GLOBO ADELANTE · PREPARATE':'BARCO ADELANTE · PREPARATE'):'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
 }
 
 // ── Entrada: un dedo. Mantener = construir adelante; arrastrar = costados / diagonal ──
