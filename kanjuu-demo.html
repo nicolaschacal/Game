@@ -56,138 +56,209 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 #mute{position:absolute;z-index:7;left:14px;top:calc(env(safe-area-inset-top) + 70px);width:32px;height:32px;border-radius:50%;border:1px solid #fff4dc55;background:#17152b9c;color:#fff4dc;font-size:14px}
 #gameover h2 em{font-style:normal;color:#f2b937}#gameover .nums{display:flex;justify-content:center;gap:18px;margin:14px 0 6px;font:900 22px 'DM Sans',sans-serif}#gameover .nums small{display:block;font-size:9px;letter-spacing:1px;color:#fff4dc99}
 @media(min-width:700px){.bar{max-width:520px;left:50%;right:auto;width:calc(100% - 32px);transform:translateX(-50%)}}
+
+#menu{position:absolute;inset:0;z-index:30;display:none;align-items:flex-end;justify-content:center;background:linear-gradient(#17152b22 30%,#17152bd9 78%);padding:0 0 calc(env(safe-area-inset-bottom) + 14px)}
+#menu .sheet{width:min(100%,520px);padding:0 14px;color:#fff4dc;text-align:center}
+#menu h1{margin:0;font:900 34px 'DM Sans',sans-serif;letter-spacing:1px;text-shadow:0 4px 0 #17152b}#menu h1 em{font-style:normal;color:#f2b937}
+#menu .sub{display:flex;justify-content:center;gap:18px;margin:6px 0 12px;font:800 11px 'DM Sans',sans-serif;letter-spacing:1px}#menu .sub b{color:#f2b937;font-size:14px}
+#skins{touch-action:pan-x;display:flex;gap:10px;overflow-x:auto;padding:6px 2px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.skin{flex:0 0 104px;scroll-snap-align:center;border:2.5px solid #fff4dc33;border-radius:18px;background:#211d39e8;color:#fff4dc;padding:8px 6px 9px;font-family:'DM Sans',sans-serif;box-shadow:0 5px 0 #0b0918}
+.skin svg{width:78px;height:78px;display:block;margin:0 auto}
+.skin b{display:block;font-size:12px;font-weight:900}.skin small{display:block;font-size:8px;letter-spacing:.5px;color:#fff4dc99;margin-bottom:6px}
+.skin span{display:inline-block;border-radius:99px;padding:4px 10px;font-size:10px;font-weight:900;letter-spacing:.6px;background:#fff4dc;color:#2b1d16}
+.skin.locked svg{filter:saturate(.55) brightness(.8)}.skin.locked span{background:#f2b937}
+.skin.on{border-color:#f2b937;background:#2d2850}.skin.on span{background:#5db84f;color:#fff}
+.skin.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#play{width:100%;height:60px;border:2.5px solid #2b1d16;border-radius:18px;background:#f2b937;color:#2b1d16;font:900 18px 'DM Sans',sans-serif;letter-spacing:2px;box-shadow:0 6px 0 #0b0918}
+#gameover #goNudge{margin:6px 0 14px;font:800 11px 'DM Sans',sans-serif;color:#f2b937;min-height:14px}
+#gameover #restart{display:block;width:100%}
+#gameover #toShop{display:block;width:100%;margin-top:10px;padding:12px;border-radius:14px;background:transparent;color:#fff4dc;border:2px solid #fff4dc66;font:900 11px 'DM Sans',sans-serif;letter-spacing:1px}
+.bar{display:block}
 </style>
 </head>
 <body>
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="flash"></div>
-<div class="top"><div class="brand">KANJŪ <small>TILE RUNNER</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
+<div class="top"><div class="brand">KANJŪ <small id="worldName">TILE RUNNER</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
 <div id="progress"><i></i></div>
 <button id="mute" aria-label="Sonido">♪</button>
 <div id="combo">x2<small>RACHA</small></div>
-<div id="toast">TILE COLOCADO</div>
-<div id="gameover"><div><h2 id="goTitle">FIN DEL RECORRIDO</h2><p id="gameReason"></p><div class="nums"><div><span id="goScore">0</span><small>PUNTOS</small></div><div><span id="goCoins">0</span><small>MONEDAS</small></div><div><span id="goBest">0</span><small>RÉCORD</small></div></div><button id="restart">VOLVER A JUGAR</button></div></div>
-<section class="bar">
- <div class="hint" id="hint">TOCÁ PARA EMPEZAR A CORRER</div>
-</section>
+<div id="toast"></div>
+<div id="menu"><div class="sheet">
+ <h1>KANJŪ <em>RUN</em></h1>
+ <p class="sub"><span>RÉCORD <b id="mBest">0</b></span><span>◉ <b id="mWallet">0</b></span></p>
+ <div id="skins"></div>
+ <button id="play">JUGAR</button>
+</div></div>
+<div id="gameover"><div><h2 id="goTitle">FIN DEL RECORRIDO</h2><p id="gameReason"></p><div class="nums"><div><span id="goScore">0</span><small>PUNTOS</small></div><div><span id="goCoins">0</span><small>MONEDAS</small></div><div><span id="goBest">0</span><small>RÉCORD</small></div></div><p id="goNudge"></p><button id="restart">VOLVER A JUGAR</button><button id="toShop" class="ghost">PERSONAJES · ◉ <span id="goWallet">0</span></button></div></div>
+<section class="bar"><div class="hint" id="hint">TOCÁ PARA EMPEZAR A CORRER</div></section>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse } from './kanjuu-demo/scene3d.js';
-import { HERO, BOAT, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, BALLOON, PEAK, CLOUD, STORM, STAR } from './kanjuu-demo/runner-art.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats } from './kanjuu-demo/scene3d.js';
+import { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, SKINS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
-const COLS=5,ROWS=240,START=ROWS-12;
+const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
+
+// ── Guardado: monedero, personajes, récord (queda en el dispositivo) ──
+const store={get(k,d){try{const v=localStorage.getItem('kanjuu.run.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('kanjuu.run.'+k,JSON.stringify(v));}catch{}}};
+let wallet=store.get('wallet',0),owned=store.get('owned',['kami']),skinId=store.get('skin','kami'),best=store.get('best',0),muted=store.get('mute',false);
+if(!owned.includes(skinId))skinId='kami';
+// Lo que se arrastra de un mundo al siguiente dentro de la misma partida
+let carry=null,autostart=false;
+try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
+const stage=carry?.stage||0;
+const THEMES=[{name:'PRADERA',path:'grass'},{name:'DESIERTO',path:'sand'},{name:'NIEVE',path:'snow'},{name:'BOSQUE',path:'moss'}];
+const theme=THEMES[stage%THEMES.length];
+$('worldName').textContent='MUNDO '+(stage+1)+' · '+theme.name;
+
+// ── Nivel ──
+// zone[y]: 'land' | 'sea' | 'sky' | 'rail' (se construye al pasar) · 'free' (ya hecho: muelles, cimas, estaciones)
+const COLS=5,ROWS=QUICK?130:240,START=ROWS-12;
 const LEVELS=2,LV=.42,SKY=LEVELS*LV; // altura de la cima y del cielo (LV = alto de un nivel del motor)
-// ── Nivel: tierra → muelle → puerto (barco) → mar → playa → tierra … → meta ──
-// zone[y]: 'land' (se construye CAMINO), 'sea' (se construye AGUA), 'free' (ya está hecho: respiro para cambiar de tile)
 const rnd=(()=>{let a=(Date.now()^0x9E3779B9)>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
 const pick=a=>a[Math.floor(rnd()*a.length)];
-const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],boats=[],seas=[];
-const paintRow=(y,g)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]={g,h:0};};
-for(let y=0;y<ROWS;y++)paintRow(y,'grass');
+let art=artFor(skinId);
+const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
+const paintRow=(y,t)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]=typeof t==='string'?{g:t,h:0}:{...t};};
+for(let y=0;y<ROWS;y++)paintRow(y,theme.path);
 let cur=START-1,uid=0;
+const OBST={land:[ROCK,STUMP],sea:[REEF,FIN,BARREL],sky:[PEAK,PEAK,CLOUD,STORM],rail:[BARRIER,CRATE,ROCK]};
+const PRIZE={land:[GEM,'JOYA'],sea:[PEARL,'PERLA'],sky:[STAR,'ESTRELLA'],rail:[GEM,'JOYA']};
 function fill(n,kind,{gap,lead,extra}){
- let safe=2;const lift=kind==='sky'?SKY:0,sky=kind==='sky';
+ let safe=2;const air=kind==='sky',lift=air?SKY:0;
  for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
+  const coin=x=>coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift});
   if(i>=lead&&(i-lead)%gap===0&&i<n-1){
    const prev=safe;safe=pick([-2,-1,1,2].map(d=>prev+d).filter(x=>x>=0&&x<COLS));
-   const blocked=new Set([prev]);const pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
+   const blocked=new Set([prev]),pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
    for(let k=0;k<extra&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
-   for(const x of blocked)blockers.push({id:'b'+uid++,kind:'paper',obstacle:'rock',sea:kind==='sea',svg:kind==='sea'?pick([REEF,FIN,BARREL]):sky?pick([PEAK,PEAK,CLOUD,STORM]):pick([ROCK,STUMP]),x:sky?x-.15:x,y:sky?y-.15:y,w:sky?1.3:1,h:sky?1.3:1,lift,cx:x,cy:y});
-   coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10,lift});
-   if(pool.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:sky?STAR:PEARL,x:pick(pool),y,w:.7,h:.7,value:50,pearl:true,star:sky,lift});
-  }else if(i>1)coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10,lift});
+   for(const x of blocked)blockers.push({id:'b'+uid++,kind:'paper',svg:pick(OBST[kind]),x:air?x-.15:x,y:air?y-.15:y,w:air?1.3:1,h:air?1.3:1,lift,cx:x,cy:y});
+   coin(safe);
+   if(pool.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:PRIZE[kind][0],label:PRIZE[kind][1],x:pick(pool),y,w:.7,h:.7,value:50,prize:true,lift});
+  }else if(i>1)coin(safe);
  }
  cur-=n;
 }
-const free=(n,g)=>{for(let i=0;i<n;i++){zone[cur-i]='free';paintRow(cur-i,g);}cur-=n;};
-let rideN=0;
-function sea(len,hard){const id='ride'+rideN++;
- free(2,'wood');
- const board=cur;free(2,'water');
- boats.push({id,kind:'paper',svg:BOAT.idle[0],frames:BOAT,fps:5,x:1.7,y:board-.3,w:1.6,h:1.6});
- fill(len,'sea',{gap:hard?2:3,lead:2,extra:hard?2:1});
- const land=cur;free(3,'sand');
- seas.push({board,land,id,type:'boat'});
-}
-// Cielo: Kami sube solo un escalón hasta la cima donde espera el globo, vuela trazando tiles de cielo
-// entre picos y nubes, y aterriza en otra cima con la bajada ya hecha.
-function sky(len,hard){const id='ride'+rideN++;
- for(let k=0;k<LEVELS;k++){zone[cur]='free';for(let x=0;x<COLS;x++)tiles[x+','+cur]={g:'grass',h:k,r:[0,-1]};cur--;} // escalón ya hecho: Kami sube solo
- const top=x=>({g:'grass',h:LEVELS});
- const board=cur;for(let i=0;i<2;i++){zone[cur-i]='free';for(let x=0;x<COLS;x++)tiles[x+','+(cur-i)]=top();}cur-=2;
- boats.push({id,kind:'paper',svg:BALLOON.idle[0],frames:BALLOON,fps:6,x:1.5,y:board-.5,w:2,h:2});
- fill(len,'sky',{gap:hard?2:3,lead:2,extra:hard?2:1});
- const land=cur;for(let i=0;i<2;i++){zone[cur-i]='free';for(let x=0;x<COLS;x++)tiles[x+','+(cur-i)]=top();}cur-=2;
- for(let k=LEVELS-1;k>=0;k--){zone[cur]='free';for(let x=0;x<COLS;x++)tiles[x+','+cur]={g:'grass',h:k,r:[0,1]};cur--;}
- seas.push({board,land,id,type:'balloon'});
-}
+const free=(n,t)=>{for(let i=0;i<n;i++){zone[cur-i]='free';paintRow(cur-i,t);}cur-=n;};
+const park=(type,frames,board,size)=>{const id='ride'+rides.length;vehicles.push({id,type,kind:'paper',svg:frames.idle[0],frames,fps:type==='boat'?5:6,x:2-(size-1)/2,y:board-(size-1)/2,w:size,h:size});return id;};
+const diff=hard=>({gap:hard?2:3,lead:2,extra:hard?2:1});
+const RIDE={
+ // Mar: muelle → barco → ruta de agua → playa
+ sea(len,hard){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);fill(len,'sea',diff(hard));const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
+ // Cielo: escalón ya hecho → cima con globo → tiles de cielo → otra cima y bajada
+ sky(len,hard){
+  for(let k=0;k<LEVELS;k++)free(1,{g:'grass',h:k,r:[0,-1]});
+  const board=cur;free(2,{g:'grass',h:LEVELS});const id=park('balloon',art.BALLOON,board,2);
+  fill(len,'sky',diff(hard));
+  const land=cur;free(2,{g:'grass',h:LEVELS});for(let k=LEVELS-1;k>=0;k--)free(1,{g:'grass',h:k,r:[0,1]});
+  rides.push({board,land,id,type:'balloon'});},
+ // Vías: estación → tren → rieles → estación
+ rail(len,hard){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.7);fill(len,'rail',diff(hard));const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
+};
 const land=(n,first)=>fill(n,'land',{gap:4,lead:first?7:3,extra:first?0:1});
-land(12,true);sea(14);land(8);sky(14);land(8);sea(22,true);land(8);sky(20,true);land(8);sea(26,true);land(6);
-free(6,'grass');const GOAL=cur+2;
+{const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
+ if(QUICK){land(8,true);order.forEach(k=>{RIDE[k](6,false);land(4);});}
+ else{land(12,stage===0);order.forEach((k,i)=>{RIDE[k](k==='rail'?16:14,stage>1);land(8);});order.forEach((k,i)=>{RIDE[k](k==='rail'?20:18,true);land(i<2?8:6);});}}
+free(6,theme.path);const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:GATE,x:1,y:GOAL-1,w:3,h:3};
-const player={id:'kami',kind:'paper',svg:HERO.idle[0],frames:HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
-const path={[START]:{x:2,e:2,g:'grass',lanes:{2:'grass'}}};
-let selected='grass';
-const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:1.42,distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
-const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...boats,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
+const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
+const path={[START]:{x:2,e:2,lanes:{2:1}}};
+const speedAt=prog=>Math.min(3.3,1.42+stage*.22+Math.max(0,Math.min(1,prog))*1.0);
+const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
+const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
 const toast=$('toast'),hint=$('hint'),gameover=$('gameover');
 
-// ── Sonido, vibración y premios visuales ──
-let ac=null,muted=false;try{muted=localStorage.getItem('kanjuu.runner.mute')==='1'}catch{}
-const audio=()=>{if(muted)return null;try{ac??=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();}catch{}return ac;};
-function tone(f,d=.09,type='triangle',v=.05,to=0,delay=0){const a=audio();if(!a)return;const t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02);}
-function splash(){const a=audio();if(!a)return;const n=a.sampleRate*.45,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();f.type='lowpass';f.frequency.value=1400;g.gain.value=.22;s.buffer=b;s.connect(f).connect(g).connect(a.destination);s.start();}
+// ── Sonido: cada tile es una nota, así la carrera suena como una cajita de música que se acelera ──
+let ac=null,out=null;
+function audio(){if(muted)return null;try{if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();const comp=ac.createDynamicsCompressor();out=ac.createGain();out.gain.value=.9;out.connect(comp).connect(ac.destination);}if(ac.state==='suspended')ac.resume();}catch{}return ac;}
+function tone(f,d=.09,type='triangle',v=.05,to=0,delay=0){const a=audio();if(!a)return;const t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(out);o.start(t);o.stop(t+d+.02);}
+let noiseBuf=null;
+function noise(d=.1,{f=1200,to=0,q=1,v=.08,type='bandpass',delay=0}={}){const a=audio();if(!a)return;if(!noiseBuf){noiseBuf=a.createBuffer(1,a.sampleRate*.6,a.sampleRate);const c=noiseBuf.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.random()*2-1;}
+ const t=a.currentTime+delay,s=a.createBufferSource(),fl=a.createBiquadFilter(),g=a.createGain();s.buffer=noiseBuf;fl.type=type;fl.Q.value=q;fl.frequency.setValueAtTime(f,t);if(to)fl.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl).connect(g).connect(out);s.start(t);s.stop(t+d+.02);}
+const PENTA=[0,2,4,7,9],TUNE=[0,1,2,1,3,2,4,2,3,1,2,0,1,2,4,3];let tuneAt=0;
+const semi=n=>Math.pow(2,n/12);
+const SFX={
+ // tile colocado: una nota de la melodía con el timbre del tramo; extra = tile lateral (suena una octava arriba)
+ tile(kind,extra){const n=PENTA[TUNE[tuneAt++%TUNE.length]]+(extra?12:0);
+  if(kind==='water'){tone(196*semi(n),.11,'sine',.07,392*semi(n));noise(.05,{f:900,v:.02});}
+  else if(kind==='sky'){tone(523*semi(n),.32,'triangle',.035);tone(1046*semi(n),.2,'sine',.02,0,.01);}
+  else if(kind==='rail'){noise(.03,{f:3200,q:3,v:.07});noise(.03,{f:2600,q:3,v:.05,delay:.075});tone(98,.07,'sine',.07,70);tone(262*semi(n),.08,'triangle',.02);}
+  else{tone(262*semi(n),.13,'sine',.075);tone(1048*semi(n),.03,'sine',.03);noise(.015,{f:2200,v:.025});}},
+ whoosh(){noise(.13,{f:500,to:2600,q:.8,v:.045});},
+ coin(streak){const s=semi(Math.min(streak,12));tone(988*s,.07,'square',.028);tone(1319*s,.16,'square',.028,0,.065);},
+ prize(){[784,988,1175,1568,1976].forEach((f,i)=>tone(f,.14,'triangle',.05,0,i*.055));},
+ streak(){[660,880,1109,1320].forEach((f,i)=>tone(f,.12,'triangle',.05,0,i*.06));},
+ near(){noise(.07,{f:1800,to:4200,q:2,v:.04});tone(1200,.06,'sine',.03,1900);},
+ faster(){tone(300,.32,'sawtooth',.03,950);noise(.3,{f:400,to:3000,v:.03});},
+ board(type){if(type==='boat'){noise(.45,{f:1400,to:300,type:'lowpass',v:.2});tone(392,.2,'sine',.05,523,.1);}
+  else if(type==='balloon'){noise(.5,{f:300,to:1800,v:.05});[392,523,659,880].forEach((f,i)=>tone(f,.18,'sine',.06,0,i*.07));}
+  else{tone(880,.28,'square',.03);tone(1109,.28,'square',.03);tone(880,.2,'square',.03,0,.34);tone(1109,.2,'square',.03,0,.34);}},
+ arrive(){[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.06,0,i*.08));},
+ win(){[523,659,784,1047,1319,1568].forEach((f,i)=>tone(f,.2,'triangle',.06,0,i*.1));},
+ lose(){tone(330,.4,'sawtooth',.05,80);noise(.25,{f:600,to:120,type:'lowpass',v:.12});},
+ tap(){tone(660,.05,'triangle',.04);},
+ buy(){noise(.06,{f:5000,q:4,v:.06});tone(1568,.1,'square',.03,0,.05);tone(2093,.3,'square',.03,0,.13);},
+ nope(){tone(180,.12,'sawtooth',.04);},
+};
 const buzz=p=>{try{navigator.vibrate?.(p)}catch{}};
 const setMuteIcon=()=>{$('mute').textContent=muted?'×':'♪';};setMuteIcon();
-$('mute').addEventListener('click',()=>{muted=!muted;try{localStorage.setItem('kanjuu.runner.mute',muted?'1':'0')}catch{}setMuteIcon();});
+$('mute').addEventListener('click',()=>{muted=!muted;store.set('mute',muted);setMuteIcon();});
+
+// ── Premios visuales y puntaje ──
 let toastTimer;
 function showToast(msg){toast.textContent=msg;toast.style.opacity='1';clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.style.opacity='0',1100);}
 function pop(text,cls=''){const el=document.createElement('div');el.className='pop '+cls;el.textContent=text;el.style.left=(50+(Math.random()*24-12))+'%';el.style.top=(48+Math.random()*6)+'%';document.body.appendChild(el);setTimeout(()=>el.remove(),820);}
 const bump=id=>{const el=$(id);el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');};
-let score=0,coinCount=0,streak=0,best=0;try{best=+localStorage.getItem('kanjuu.runner.best')||0}catch{}
+let score=carry?.score||0,coinCount=carry?.coins||0,banked=carry?.coins||0,streak=carry?.streak||0;
+$('score').textContent=score;$('coinsN').textContent=coinCount;
 const mult=()=>Math.min(5,1+Math.floor(streak/6));
 function addScore(n){score+=n;$('score').textContent=score;}
 function showCombo(){const c=$('combo');if(mult()>1){c.firstChild.textContent='x'+mult();c.style.opacity='1';}else c.style.opacity='0';}
-function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount++;$('coinsN').textContent=coinCount;bump('coinPill');
- if(c.pearl){pop((c.star?'ESTRELLA +':'PERLA +')+gain,c.star?'gold':'pink');[784,988,1175,1568].forEach((f,i)=>tone(f,.12,'triangle',.05,0,i*.06));buzz([12,30,12]);runnerPulse('hop');}
- else{pop('+'+gain,'gold');tone(520*Math.pow(2,Math.min(streak,14)/12),.09,'square',.03);buzz(8);runnerPulse('squash');}
- if(mult()>before){pop('¡RACHA x'+mult()+'!','big');[660,880,1320].forEach((f,i)=>tone(f,.1,'triangle',.05,0,i*.07));}
+showCombo();
+// las monedas se guardan en el monedero al terminar cada mundo y al perder
+function bank(){wallet+=coinCount-banked;banked=coinCount;store.set('wallet',wallet);}
+function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=c.prize?5:1;$('coinsN').textContent=coinCount;bump('coinPill');
+ if(c.prize){pop(c.label+' +'+gain,'pink');SFX.prize();buzz([12,30,12]);runnerPulse('hop');}
+ else{pop('+'+gain,'gold');SFX.coin(streak);buzz(8);runnerPulse('squash');}
+ if(mult()>before){pop('¡RACHA x'+mult()+'!','big');SFX.streak();}
  showCombo();}
-function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.pearl)return;if(streak>=6)showToast('SE CORTÓ LA RACHA');streak=0;showCombo();}
+function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize)return;if(streak>=6)showToast('SE CORTÓ LA RACHA');streak=0;showCombo();}
 
-// ── Fin de partida ──
-let lastWrong=-99;
-function endGame(title,reason,win=false){if(gameover.style.display==='flex')return;runner.gameOver=true;runner.hitPause=999;
- const record=score>best;if(record){best=score;try{localStorage.setItem('kanjuu.runner.best',best)}catch{}}
- $('goTitle').innerHTML=win?'¡LLEGASTE AL <em>SANTUARIO</em>!':title;$('gameReason').textContent=reason+(record&&score>0?' ¡Nuevo récord!':'');
- $('goScore').textContent=score;$('goCoins').textContent=coinCount;$('goBest').textContent=best;
- if(win){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.18,'triangle',.06,0,i*.11));buzz([20,40,20,40,60]);}else{tone(330,.35,'sawtooth',.05,90);buzz(120);}
- setTimeout(()=>gameover.style.display='flex',win?500:350);}
-function onGameOver(reason){
- const y=targetRow(),air=zone[y]==='sky'||(runner.onBoat&&runner.rideType==='balloon'),sea=!air&&(zone[y]==='sea'||runner.onBoat);
- if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(air?'¡CHOQUE EN EL AIRE!':sea?'¡CHOQUE!':'¡TROPEZÓN!',air?'El globo no puede atravesar picos ni nubes. Arrastrá hacia un costado.':sea?'El barco no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.':'Kami no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
- else endGame(air?'SE ACABÓ EL CIELO':sea?'EL MAR SE ACABÓ':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
+// ── Fin de partida y paso de mundo ──
+let ended=false;
+function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;bank();
+ const record=score>best;if(record){best=score;store.set('best',best);}
+ $('goTitle').textContent=title;$('gameReason').textContent=reason+(record&&score>0?' ¡Nuevo récord!':'');
+ $('goScore').textContent=score;$('goCoins').textContent='+'+coinCount;$('goBest').textContent=best;$('goWallet').textContent=wallet;
+ const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0];
+ $('goNudge').textContent=!next?'':wallet>=next.price?'¡Ya podés desbloquear a '+next.name+'!':'Te faltan ◉ '+(next.price-wallet)+' para '+next.name;
+ SFX.lose();buzz(120);setTimeout(()=>gameover.style.display='flex',350);}
+function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();if(score>best){best=score;store.set('best',best);}
+ SFX.win();buzz([20,40,20,40,60]);pop('¡MUNDO '+(stage+1)+' COMPLETADO! +'+bonus,'big');
+ try{sessionStorage.setItem('kanjuu.run.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak}));}catch{}
+ setTimeout(()=>location.reload(),1700);}
+function onGameOver(){
+ const y=targetRow(),t=runner.onBoat?runner.rideType:null,z=zone[y];
+ const air=t==='balloon'||z==='sky',sea=!air&&(t==='boat'||z==='sea'),rail=!air&&!sea&&(t==='train'||z==='rail');
+ if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(air?'¡CHOQUE EN EL AIRE!':sea?'¡CHOQUE!':rail?'¡DESCARRILÓ!':'¡TROPEZÓN!',air?'El globo no atraviesa picos ni nubes. Arrastrá hacia un costado.':sea?'El barco no pasa por encima de un obstáculo. Arrastrá hacia un costado.':rail?'El tren no pasa por encima de un obstáculo. Cambiá de vía a tiempo.':'No se puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
+ else endGame(air?'SE ACABÓ EL CIELO':sea?'EL MAR SE ACABÓ':rail?'SE ACABARON LAS VÍAS':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
 }
+$('restart').addEventListener('click',()=>{try{sessionStorage.setItem('kanjuu.run.auto','1');}catch{}location.reload();});
+$('toShop').addEventListener('click',()=>location.reload());
 
-// ── Construcción libre en la cuadrícula ──
-// · la fila objetivo es siempre la siguiente (un tile por delante);
-// · su primer tile entra ADELANTE o en DIAGONAL; mientras no se llegue a su centro se extiende a IZQUIERDA o DERECHA;
-// · no se construye sobre obstáculos ni hacia atrás; en el mar solo sirve AGUA y en tierra solo CAMINO.
+// ── Construcción: el camino avanza solo; tocar o arrastrar cambia de carril ──
+// La fila objetivo es siempre la siguiente. Su primer tile entra adelante o en diagonal y, mientras no se llegue
+// a su centro, se puede extender a los costados. El tile se elige solo según el tramo. No se construye sobre obstáculos.
 const clampLane=l=>Math.max(0,Math.min(COLS-1,Math.round(l)));
-const blockSet=new Set(blockers.map(b=>(b.cx??b.x)+','+(b.cy??b.y)));
+const blockSet=new Set(blockers.map(b=>b.cx+','+b.cy));
 const isRockCell=(x,y)=>blockSet.has(x+','+y);
 const targetRow=()=>Math.ceil(START-runner.distance)-1;
 const prevExit=y=>runner.path[y+1]?.x??runner.lastBuildLane;
-let wrongAt=0;
-function materialOk(y){
- const z=zone[y];if(z==='free')return true;
- selected=z==='sea'?'water':z==='sky'?'sky':'grass';return true;
- const ok=z==='sea'?selected==='water':selected!=='water';
- if(!ok){lastWrong=y;const now=performance.now();if(now-wrongAt>500){wrongAt=now;showToast(z==='sea'?'¡EN EL MAR SE CONSTRUYE CON AGUA!':'¡EN TIERRA SE CONSTRUYE CON CAMINO!');tone(160,.12,'sawtooth',.04);buzz(40);}}
- return ok;
-}
-function setTile(x,y){const z=zone[y];if(z==='free')return;const tile=z==='sky'?{g:'sky',h:LEVELS,float:true}:{g:selected,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);tone(selected==='water'?300:selected==='sky'?440:210,.04,'sine',.025);}
+const MAT={land:theme.path,sea:'water',sky:'sky',rail:'rail'};
+let lastWhoosh=0;
+function setTile(x,y,extra){const z=zone[y];if(z==='free')return;const g=MAT[z],tile=z==='sky'?{g,h:LEVELS,float:true}:{g,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);SFX.tile(g,extra);}
+function moved(){const now=performance.now();if(now-lastWhoosh>90){lastWhoosh=now;SFX.whoosh();buzz(6);}}
 function buildToward(lane){
  if(runner.gameOver)return false;
  const y=targetRow();if(y<0)return false;
@@ -195,96 +266,101 @@ function buildToward(lane){
  lane=clampLane(lane??runner.buildLane);
  const row=runner.path[y];
  if(!row){
-  if(!materialOk(y))return false;
   const from=prevExit(y);
   let x=Math.abs(lane-from)>1?from+Math.sign(lane-from):lane;
   if(isRockCell(x,y)){
    if(x!==from&&!isRockCell(from,y))x=from;
    else{runner.blockedByRock=y;return false;}
   }
-  setTile(x,y);runner.path[y]={x,e:x,g:selected,lanes:{[x]:selected}};
-  runner.lastBuildLane=x;runner.steps++;
+  setTile(x,y,false);runner.path[y]={x,e:x,lanes:{[x]:1}};
+  runner.lastBuildLane=x;runner.steps++;if(x!==from)moved();
   return true;
  }
  if(lane===row.x)return false;
  const nx=row.x+Math.sign(lane-row.x);
  if(isRockCell(nx,y))return false;
- if(!(nx in row.lanes)){if(!materialOk(y))return false;setTile(nx,y);row.lanes[nx]=selected;runner.steps++;}
- row.x=nx;runner.lastBuildLane=nx;
+ if(!(nx in row.lanes)){setTile(nx,y,true);row.lanes[nx]=1;runner.steps++;}
+ row.x=nx;runner.lastBuildLane=nx;moved();
  return true;
 }
 function refreshHints(){
  const y=targetRow();if(y<0||runner.gameOver||zone[y]==='free'){runner.hints=[];return;}
- runner.hintColor=zone[y]==='sea'?'#FFFFFF':zone[y]==='sky'?'#7FC8FF':'#F2B937';
- const z=zone[y],liftOf=x=>{const t=tiles[x+','+y];return z==='sky'&&!t?.float?SKY:0;};
- const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),out=[];
- if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y))out.push({x,y,lift:liftOf(x),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}
- else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y))out.push({x,y,lift:liftOf(x),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});
- runner.hints=out;
+ const z=zone[y];runner.hintColor=z==='sea'?'#FFFFFF':z==='sky'?'#7FC8FF':'#F2B937';
+ const liftOf=x=>z==='sky'&&!tiles[x+','+y]?.float?SKY:0;
+ const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),o=[];
+ if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y))o.push({x,y,lift:liftOf(x),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}
+ else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y))o.push({x,y,lift:liftOf(x),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});
+ runner.hints=o;
 }
 function laneFromPointer(e){const lane=runnerLaneAtScreen(e.clientX,e.clientY);if(lane!==null)runner.buildLane=lane;}
-function selectMaterial(type){if(selected===type)return;selected=type;document.querySelectorAll('.mat').forEach(b=>{b.classList.toggle('active',b.dataset.type===type);b.classList.remove('call');});tone(type==='water'?520:392,.07,'triangle',.05);buzz(10);}
-document.querySelectorAll('.mat').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();audio();selectMaterial(b.dataset.type);}));
-$('restart').addEventListener('click',()=>location.reload());
 
 // ── Eventos al entrar a cada fila ──
-let lastRow=START,seaIndex=0;
+const RIDES={boat:{y:-.12,boost:1.15,on:'¡A NAVEGAR!',off:'¡TIERRA!'},balloon:{y:SKY+.12,boost:1.15,on:'¡A VOLAR!',off:'¡ATERRIZAJE!',steer:SKY,leave:'up'},train:{y:.03,boost:1.3,on:'¡TODOS A BORDO!',off:'¡ESTACIÓN!',leave:'side'}};
+let lastRow=START,rideIndex=0,ridesDone=carry?.rides||0,gear=0;
 function enterRow(r){
  addScore(1);
- const sea=seas[seaIndex];
- const air=sea?.type==='balloon';
- if(sea&&r===sea.board){runner.boatId=sea.id;runner.onBoat=true;runner.rideType=sea.type;runner.vehicleY=air?SKY+.12:-.12;runner.steerY=air?SKY:null;buzz([15,40,25]);runnerPulse('hop');
-  if(air){pop('¡A VOLAR!','big');[392,523,659,880].forEach((f,i)=>tone(f,.16,'sine',.06,0,i*.07));}
-  else{splash();pop('¡A NAVEGAR!','big');$('flash').style.opacity='.5';setTimeout(()=>$('flash').style.opacity='0',120);}}
- if(sea&&r===sea.land+1){runner.onBoat=false;runner.leaveBoat=sea.id;runner.leaveUp=air;runner.steerY=null;seaIndex++;const bonus=200*seaIndex;addScore(bonus);bump('scorePill');pop((air?'¡ATERRIZAJE! +':'¡TIERRA! +')+bonus,'big');[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.06,0,i*.08));buzz([20,30,20,30,40]);runnerPulse('hop');}
+ const ride=rides[rideIndex];
+ if(ride&&r===ride.board){const R=RIDES[ride.type];runner.boatId=ride.id;runner.onBoat=true;runner.rideType=ride.type;runner.vehicleY=R.y;runner.steerY=R.steer??null;
+  SFX.board(ride.type);buzz([15,40,25]);pop(R.on,'big');runnerPulse('hop');if(ride.type==='boat'){$('flash').style.opacity='.5';setTimeout(()=>$('flash').style.opacity='0',120);}}
+ if(ride&&r===ride.land+1){const R=RIDES[ride.type];runner.onBoat=false;runner.leaveBoat=ride.id;runner.leaveMode=R.leave;runner.steerY=null;rideIndex++;ridesDone++;
+  const bonus=200*Math.min(ridesDone,10);addScore(bonus);bump('scorePill');pop(R.off+' +'+bonus,'big');SFX.arrive();buzz([20,30,20,30,40]);runnerPulse('hop');}
  // roce: pasar pegado a un obstáculo
- const row=runner.path[r];if(row&&zone[r]!=='free'){const ls=Object.keys(row.lanes).map(Number);if(ls.some(x=>isRockCell(x-1,r)||isRockCell(x+1,r))){addScore(5*mult());pop('¡CASI! +'+5*mult());tone(880,.05,'sine',.03);}}
+ const row=runner.path[r];if(row&&zone[r]!=='free'){const ls=Object.keys(row.lanes).map(Number);if(ls.some(x=>isRockCell(x-1,r)||isRockCell(x+1,r))){addScore(5*mult());pop('¡CASI! +'+5*mult());SFX.near();}}
+ // la velocidad sube de a poco durante todo el mundo (y cada mundo arranca más rápido)
  const prog=(START-r)/(START-GOAL);$('progress').firstElementChild.style.width=Math.min(100,prog*100)+'%';
- runner.speed=(1.42+Math.min(1,prog)*.95)*(runner.onBoat?1.18:1);
- if(r<=GOAL){addScore(500);endGame('', 'Cruzaste los mares y los cielos.',true);}
+ const base=speedAt(prog);runner.speed=base*(runner.onBoat?RIDES[runner.rideType].boost:1);
+ const g=Math.floor((base-speedAt(0))/.25);if(g>gear){gear=g;pop('¡MÁS RÁPIDO!','big');SFX.faster();buzz(25);}
+ if(r<=GOAL)nextWorld();
 }
 function refreshUI(){
- const y=targetRow(),sea=seas[seaIndex];
- const toBoard=sea&&!runner.onBoat?y-sea.board:99;
- // próximo tramo que hay que construir: decide qué botón llama la atención
- let nz=null;for(let q=y;q>y-7&&q>=0;q--)if(zone[q]!=='free'){nz=zone[q];break;}
- const callWater=nz==='sea'&&selected!=='water',callLand=nz==='land'&&selected==='water';
- hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':sea&&toBoard<12?(sea.type==='balloon'?'GLOBO ADELANTE · PREPARATE':'BARCO ADELANTE · PREPARATE'):'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
+ const y=targetRow(),ride=rides[rideIndex],toBoard=ride&&!runner.onBoat?y-ride.board:99;
+ const name={boat:'BARCO',balloon:'GLOBO',train:'TREN'}[ride?.type];
+ hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':toBoard<12?name+' ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
 }
 
-// ── Entrada: un dedo. Mantener = construir adelante; arrastrar = costados / diagonal ──
-let buildHeld=false,keyHeld=false,lateralClock=0,lastFrame=performance.now();
-host.addEventListener('pointerdown',e=>{if(runner.gameOver)return;audio();runner.started=true;buildHeld=true;lateralClock=0;laneFromPointer(e);buildToward(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
+// ── Entrada: un dedo. Tocar = un carril hacia ese lado; mantener y arrastrar = seguir al dedo ──
+let buildHeld=false,lateralClock=0,lastFrame=performance.now();
+function begin(){if(!runner.started){runner.started=true;audio();}}
+host.addEventListener('pointerdown',e=>{if(runner.gameOver||menuOpen)return;begin();buildHeld=true;lateralClock=0;laneFromPointer(e);buildToward(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointermove',e=>{if(!buildHeld)return;laneFromPointer(e);e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointerup',e=>{buildHeld=false;e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointercancel',()=>{buildHeld=false;},true);
-// Teclado (escritorio): ↑/W mantener = avanzar · ←/→ = lateral o diagonal · Q/E = diagonal · espacio = cambiar tile
+// Teclado (escritorio): ←/→ o A/D cambian de carril
 window.addEventListener('keydown',e=>{
- if(runner.gameOver)return;const k=e.key.toLowerCase();
- if(['arrowup','w','arrowleft','a','arrowright','d','q','e'].includes(k))e.preventDefault();else return;
- audio();runner.started=true;
- if(k==='arrowup'||k==='w'){keyHeld=true;if(!e.repeat){const y=targetRow(),row=runner.path[y];runner.buildLane=row?row.x:prevExit(y);if(!row)buildToward(runner.buildLane);}return;}
- if(e.repeat)return;
+ if(runner.gameOver||menuOpen)return;const k=e.key.toLowerCase();
+ if(!['arrowup','w','arrowleft','a','arrowright','d',' '].includes(k))return;e.preventDefault();begin();
+ if(e.repeat||k==='arrowup'||k==='w'||k===' ')return;
  const y=targetRow(),row=runner.path[y],base=row?row.x:prevExit(y);
- if(k==='q'||k==='e'){if(!row){runner.buildLane=base+(k==='q'?-1:1);buildToward(runner.buildLane);}return;}
  runner.buildLane=clampLane(base+(k==='arrowleft'||k==='a'?-1:1));buildToward(runner.buildLane);
 });
-window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='arrowup'||k==='w')keyHeld=false;});
 function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
  const y=targetRow();runner.buildRow=y;
  if(!runner.gameOver&&y>=0&&runner.started){
-  // tramos ya hechos (muelle, puerto, playa): el camino sigue solo, así el pulgar queda libre para cambiar de tile
-  // El camino avanza solo hacia adelante: no hace falta mantener nada apretado.
-  // Solo se pierde por no esquivar un obstáculo o por no cambiar de tile a tiempo.
   if(!runner.path[y])buildToward(buildHeld?runner.buildLane:prevExit(y));
-  if(buildHeld){
-   if(runner.path[y]&&clampLane(runner.buildLane)!==runner.path[y].x){lateralClock-=dt;if(lateralClock<=0){lateralClock=.07;buildToward(runner.buildLane);}}
-  }
+  if(buildHeld&&runner.path[y]&&clampLane(runner.buildLane)!==runner.path[y].x){lateralClock-=dt;if(lateralClock<=0){lateralClock=.07;buildToward(runner.buildLane);}}
   const r=Math.ceil(START-runner.distance);while(lastRow>r){lastRow--;enterRow(lastRow);if(runner.gameOver)break;}
  }
  refreshHints();if(!runner.gameOver)refreshUI();
  requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
-if(new URLSearchParams(location.search).has('debug'))window.__dbg={runner,zone,seas,blockers,coins,get score(){return score},select:selectMaterial,GOAL,START};
+window.addEventListener('pagehide',bank);
+
+// ── Menú inicial y tienda de personajes ──
+let menuOpen=!autostart&&!carry;
+function applySkin(){art=artFor(skinId);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
+function drawShop(){
+ $('mBest').textContent=best;$('mWallet').textContent=wallet;
+ $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId;return `<button class="skin${on?' on':''}${has?'':' locked'}" data-id="${k.id}">${artFor(k.id).HERO.idle[0]}<b>${k.name}</b><small>${k.tag}</small><span>${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
+}
+$('skins').addEventListener('click',e=>{const b=e.target.closest('.skin');if(!b)return;const k=SKINS.find(s=>s.id===b.dataset.id);audio();
+ if(!owned.includes(k.id)){
+  if(wallet<k.price){SFX.nope();buzz(40);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast('TE FALTAN ◉ '+(k.price-wallet)+' PARA '+k.name.toUpperCase());return;}
+  wallet-=k.price;owned.push(k.id);store.set('wallet',wallet);store.set('owned',owned);SFX.buy();buzz([15,40,15]);pop('¡'+k.name.toUpperCase()+' DESBLOQUEADO!','big');
+ }else SFX.tap();
+ skinId=k.id;store.set('skin',skinId);applySkin();drawShop();});
+$('play').addEventListener('click',()=>{audio();SFX.tap();menuOpen=false;$('menu').style.display='none';begin();});
+if(menuOpen){drawShop();$('menu').style.display='flex';}
+else setTimeout(()=>pop('MUNDO '+(stage+1)+' · '+theme.name,'big'),400);
+if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},GOAL,START,stage};
 </script>
 </body></html>

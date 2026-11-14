@@ -700,9 +700,10 @@ function sanctuary() {
           g.position.z += (playerZ - g.position.z) * Math.min(1, dt * 18);
           g.position.y += ((runner.vehicleY ?? -.12) - g.position.y) * Math.min(1, dt * 6);
         }
+        runnerWindow(W, Math.ceil(pos));
         // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
         const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
-        if (left) { const g = left.group, up = runner.leaveUp; g.position.x += dt * (up ? 1.4 : 2.4) * (g.position.x >= 0 ? 1 : -1); g.position.y += dt * (up ? 2 : -.9); if (g.position.y < -1.4 || g.position.y > 7) { g.visible = false; runner.leaveBoat = null; } }
+        if (left) { const g = left.group, mode = runner.leaveMode, dir = g.position.x >= 0 ? 1 : -1; g.position.x += dt * (mode === 'up' ? 1.4 : mode === 'side' ? 5 : 2.4) * dir; g.position.y += dt * (mode === 'up' ? 2 : mode === 'side' ? 0 : -.9); if (g.position.y < -1.4 || g.position.y > 7 || Math.abs(g.position.x) > 6) { g.visible = false; runner.leaveBoat = null; } }
         if (runner.gameOver) runner.hitPause = 999;
         runner.playerZ = playerZ;
         // Preview: todas las casillas donde se puede construir ahora (adelante, diagonal o lateral).
@@ -761,6 +762,7 @@ function sanctuary() {
     seaClouds.forEach(m => { const u = m.userData; u.a += u.v * dt * .1; const R = W.N * .9 + 3; m.position.set(c0 + Math.cos(u.a) * R, -bd * .75 - 1 - u.y * 1.4, c0 + Math.sin(u.a) * R); m.rotation.y = camAz; m.material.color.copy(cc); });
     const lit = [];
     W.items.forEach(o => {
+      if (W.opts.runner && !o.group.visible) return;
       const d = o.d;
       if (d.kind === 'obstacle') {
         o.group.rotation.y = Math.sin(t * 1.1 + (d.y || 0)) * .035;
@@ -782,7 +784,8 @@ function sanctuary() {
           o.sprite.scale.x *= Math.abs(Math.cos(o.turn * Math.PI));
           const lean = THREE.MathUtils.clamp(R?.lean || 0, -1, 1);
           if (isRunner) o.sprite.rotation.z += -lean * .35;
-          if (sailing) { o.sprite.rotation.z = Math.sin(t * 2.6) * .07 - lean * .45; o.sprite.position.y += Math.sin(t * 3.2) * .035 * o.size; }
+          if (sailing && R.rideType === 'train') { o.sprite.rotation.z = -lean * .22; o.sprite.position.y += Math.abs(Math.sin(t * 20)) * .014 * o.size; }
+          else if (sailing) { o.sprite.rotation.z = Math.sin(t * 2.6) * .07 - lean * .45; o.sprite.position.y += Math.sin(t * 3.2) * .035 * o.size; }
         }
         o.sprite.position.x = w.x; o.sprite.position.z = w.z; o.sprite.rotation.y = camAz;
         o.blob.position.set(w.x, .012, w.z);
@@ -953,6 +956,37 @@ export function runnerLaneAtScreen(cx, cy) {
   return hit?.object?.userData?.x ?? null;
 }
 // Pequeñas reacciones del personaje/barco (premios): 'hop' salta, 'squash' se aplasta
+// ── Ventana de render del runner ──
+// Solo se dibujan las filas cercanas: lo que queda detrás se saca de la escena y lo lejano espera oculto.
+const RUN_AHEAD = 34, RUN_BEHIND = 7;
+function runnerIndex(W) {
+  const oz = (W.rows - 1) / 2, B = W.rowB = new Map(), I = W.rowItems = new Map();
+  const put = (M, row, o) => { let a = M.get(row); if (!a) M.set(row, a = []); a.push(o); };
+  W.island.children.forEach(o => {
+    const g = o.geometry; if (!g) return; if (!g.boundingBox) g.computeBoundingBox();
+    if (g.boundingBox.max.z - g.boundingBox.min.z > 3 || g.boundingBox.max.x - g.boundingBox.min.x > 3) return;   // base de la isla
+    put(B, Math.round(o.position.z + oz), o); o.visible = false;
+  });
+  W.ov.children.forEach(o => { if (o.userData.row != null) { put(B, o.userData.row, o); o.visible = false; } });
+  W.items.forEach((o, id) => { if (id === W.opts.runner.playerId) return; put(I, Math.round(o.group.position.z + oz), id); o.group.visible = false; });
+  W.showLo = W.rows; W.cullHi = W.rows;
+}
+function runnerWindow(W, cur) {
+  if (!W.rowB) return;
+  const lo = Math.max(0, cur - RUN_AHEAD), hi = cur + RUN_BEHIND;
+  while (W.showLo > lo) {
+    const r = --W.showLo;
+    W.rowB.get(r)?.forEach(o => { o.visible = true; });
+    W.rowItems.get(r)?.forEach(id => { const o = W.items.get(id); if (o) o.group.visible = true; });
+  }
+  while (W.cullHi > hi + 1) {
+    const r = --W.cullHi;
+    W.rowB.get(r)?.forEach(o => o.parent?.remove(o)); W.rowB.delete(r);
+    for (let x = 0; x < W.cols; x++) { W.tops.delete(x + ',' + r); W.floats?.delete(x + ',' + r); }
+    W.rowItems.get(r)?.forEach(id => { const o = W.items.get(id); if (o && !o.d.frames) { W.world.remove(o.group); W.items.delete(id); } }); W.rowItems.delete(r);
+  }
+}
+export function runnerStats() { const W = E?.worlds.sanct; return { calls: E.renderer.info.render.calls, tris: E.renderer.info.render.triangles, tiles: W.tops.size, items: W.items.size }; }
 export function runnerPulse(kind = 'squash') {
   const W = E?.worlds.sanct, R = W?.opts?.runner; if (!R) return;
   const o = W.items.get(R.onBoat && R.boatId ? R.boatId : R.playerId); if (!o) return;
@@ -967,7 +1001,19 @@ export function updateRunnerTile(x, y, tile) {
     W.floats ||= new Map(); if (W.floats.has(x + ',' + y)) return;
     const m = new THREE.Mesh(runnerGeo.float ||= new THREE.BoxGeometry(.97, .1, .97), gMat(GROUND_C[tile.g] || GROUND_C.sky));
     m.position.set(top.position.x, tile.h * LV - .05, top.position.z); m.castShadow = m.receiveShadow = true; m.userData.keepGeo = true;
-    W.island.add(m); W.floats.set(x + ',' + y, m); return;
+    W.island.add(m); W.floats.set(x + ',' + y, m); W.rowB?.get(y)?.push(m); return;
+  }
+  if (tile.g === 'rail') { // vía: balasto + rieles y durmientes pintados encima
+    if (!runnerGeo.railMat) {
+      const c = document.createElement('canvas'); c.width = c.height = 128; const k = c.getContext('2d');
+      k.fillStyle = '#7A5636'; for (const y of [8, 40, 72, 104]) k.fillRect(10, y, 108, 16);
+      k.fillStyle = '#4A4F58'; k.fillRect(30, 0, 10, 128); k.fillRect(88, 0, 10, 128);
+      k.fillStyle = '#C9CED6'; k.fillRect(32, 0, 3, 128); k.fillRect(90, 0, 3, 128);
+      const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
+      runnerGeo.railMat = new THREE.MeshStandardMaterial({ map: tx, transparent: true, roughness: .9 }); runnerGeo.rail = new THREE.PlaneGeometry(1, 1);
+    }
+    if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail, runnerGeo.railMat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, top.position.y + .014, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; }
+    top.material = gMat('#B9A27E'); return;
   }
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
   top.position.y = W.tY(x, y) - SLAB / 2;
@@ -990,6 +1036,7 @@ export function mountScene(host, opts) {
   });
   [...W.items.keys()].forEach(id => { if (!seen.has(id)) { W.world.remove(W.items.get(id).group); W.items.delete(id); } });
   drawEditor(W);
+  if (opts.runner) { runnerIndex(W); E.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); }
   attach(host, W);
   return true;
 }
@@ -997,6 +1044,16 @@ function drawEditor(W) {
   W.ov.clear();
   const { mode, valid, items } = W.opts; if (mode === 'play') return;
   const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2, sq = new THREE.BufferGeometry().setFromPoints([[-.5, -.5], [.5, -.5], [.5, .5], [-.5, .5], [-.5, -.5]].map(([a, b]) => new THREE.Vector3(a, 0, b)));
+  if (W.opts.runner) { // runner: unión sutil entre casillas (como en KANJŪ), un solo objeto por fila
+    const lmR = new THREE.LineBasicMaterial({ color: '#3B2F26', transparent: true, opacity: .16 });
+    for (let y = 0; y < W.rows; y++) {
+      const pts = [];
+      for (let x = 0; x < W.cols; x++) { const h = W.tY(x, y) + .03, a = x - ox - .5, b = x - ox + .5, c = y - oz - .5, d = y - oz + .5; pts.push(a, h, c, b, h, c, b, h, c, b, h, d, b, h, d, a, h, d, a, h, d, a, h, c); }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+      const l = new THREE.LineSegments(g, lmR); l.userData.row = y; W.ov.add(l);
+    }
+    return;
+  }
   const lm = new THREE.LineBasicMaterial({ color: '#FFFDF6', transparent: true, opacity: .85 });
   for (let y = 0; y < W.rows; y++) for (let x = 0; x < W.cols; x++) { const l = new THREE.Line(sq, lm); l.position.set(x - ox, W.tY(x, y) + .03, y - oz); W.ov.add(l); }
   const quad = (x, y, col, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.92, .92), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(x - ox, W.tY(x, y) + .04, y - oz); W.ov.add(m); };
