@@ -691,8 +691,12 @@ function sanctuary() {
         const playerZ = runner.startRow - oz - runner.distance;
         ro.group.position.x = (runner.visualLane ?? runner.lane ?? 2) - ox;
         ro.group.position.z = playerZ;
-        const groundY = W.tY(runner.lane ?? 2, Math.max(0, Math.min(W.rows - 1, row))) || 0;
-        ro.group.position.y += (groundY - ro.group.position.y) * Math.min(1, dt * 10);   // sube y baja rampas suavemente
+        // Altura exacta del suelo bajo el corredor: en una rampa depende de cuánto avanzó dentro del tile,
+        // así nunca queda hundido ni flotando al subir o bajar.
+        const gRow = Math.max(0, Math.min(W.rows - 1, blend < .5 ? row : nextRow)), gFrac = blend < .5 ? blend : blend - 1;
+        const gLane = Math.round(runner.visualLane ?? runner.lane ?? 2), gTile = W.opts.tiles[gLane + ',' + gRow];
+        const groundY = gTile?.r ? gTile.h * LV + (.5 + (gTile.r[1] < 0 ? gFrac : -gFrac)) * LV : (W.tY(gLane, gRow) || 0);
+        ro.group.position.y += (groundY - ro.group.position.y) * Math.min(1, dt * 26);
         runner.camY = (runner.camY || 0) + (ro.group.position.y - (runner.camY || 0)) * Math.min(1, dt * 4);
         // En el mar el personaje desaparece y navega el barco de papel (runner.boatId) en su lugar.
         ro.group.visible = !runner.onBoat;
