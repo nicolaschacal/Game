@@ -485,7 +485,7 @@ function buildToward(lane){
  return true;
 }
 function refreshHints(){
- const y=targetRow();if(y<0||runner.gameOver||zone[y]==='free'){runner.hints=[];return;}
+ const y=targetRow();if(y<0||runner.gameOver||!runner.started||zone[y]==='free'){runner.hints=[];return;}
  const z=zone[y];runner.hintColor=z==='sea'?'#FFFFFF':z==='sky'?'#7FC8FF':'#F2B937';
  const liftOf=x=>z==='sky'&&!tiles[x+','+y]?.float?SKY:0;
  const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),o=[];
