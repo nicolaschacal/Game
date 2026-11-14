@@ -46,3 +46,7 @@ Controles: mantener y arrastrar con el dedo (o mouse). En escritorio: mantener �
 - **Obstáculos de agua**: arrecifes, aletas y barriles que obligan a moverse; en tierra, rocas y tocones.
 - **Premios**: monedas con racha y multiplicador (hasta x5), perlas en carriles de riesgo, bono por rozar obstáculos y por cada travesía, sonido, vibración y récord guardado.
 - Cinco mares cada vez más largos y rápidos, con meta al final. El arte vive en `kanjuu-demo/runner-art.js`.
+
+## Tile Runner · puentes
+
+Entre mares aparecen barrancos marcados por dos postes. El camino se tiende solo con tablones de madera; las estacas y agujas de roca dejan pasos angostos (2 carriles en el primer puente, 1 en los siguientes) y los tablones caen detrás de Kami. Cruzarlo da un bono que crece con cada puente.

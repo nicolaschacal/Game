@@ -77,3 +77,11 @@ export const PEARL = cut(`<path d="M18 82 Q60 112 102 82 Q98 104 60 108 Q22 104 
   `<path d="M60 28 L60 62 M40 34 L50 66 M80 34 L70 66 M26 52 L40 72 M94 52 L80 72" stroke="#F29BB8" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="78" r="17" fill="#FDFBFF"/><path d="M60 95 A17 17 0 0 1 44 84 Q60 92 76 84 A17 17 0 0 1 60 95Z" fill="#D9D3EC"/><circle cx="54" cy="72" r="4.5" fill="#FFF"/>`);
 export const GATE = cut(`<path d="M8 30 Q60 14 112 30 L108 42 Q60 28 12 42Z" fill="#E8452C"/><rect x="26" y="34" width="11" height="76" rx="3" fill="#E8452C"/><rect x="83" y="34" width="11" height="76" rx="3" fill="#E8452C"/><rect x="20" y="52" width="80" height="9" rx="3" fill="#E8452C"/>`,
   `<path d="M8 30 Q60 14 112 30 L111 34 Q60 19 9 34Z" fill="#2B1D16"/><rect x="26" y="100" width="11" height="10" fill="#2B1D16"/><rect x="83" y="100" width="11" height="10" fill="#2B1D16"/><rect x="52" y="40" width="16" height="22" rx="3" fill="#F2B937"/>`);
+// ── Puente ──────────────────────────────────────────────────────────────────
+// Estaca con cuerda (bloquea un carril del puente), aguja de roca y poste de entrada
+export const STAKE = cut(`<path d="M46 110 L48 40 L60 26 L72 40 L74 110Z" fill="#A9794D"/>`,
+  `<path d="M48 40 L60 26 L72 40 L71.5 52 L48.5 52Z" fill="#E8452C"/><path d="M47.4 62 Q60 68 72.6 62 L72.9 71 Q60 77 47.1 71Z M47 80 Q60 86 73 80 L73.2 86 Q60 92 46.8 86Z" fill="#F5E7C8"/><path d="M62 52 L62 110 L74 110 L72 52Z" fill="#7D5636" opacity=".55"/><path d="M46 110 L46.4 100 Q60 105 73.6 100 L74 110Z" fill="#6B4A2E"/>`);
+export const SPIRE = cut(`<path d="M30 110 L42 58 L56 22 L70 50 L88 110Z" fill="#858B91"/>`,
+  `<path d="M42 60 L56 24 L58 70 L46 92Z" fill="#B8BEC0"/><path d="M62 44 L70 52 L86 104 L66 86Z" fill="#626A72"/><path d="M30 110 L32 100 Q60 106 86 100 L88 110Z" fill="#5E656D"/>`);
+export const POST = cut(`<rect x="50" y="18" width="20" height="92" rx="4" fill="#A9794D"/><path d="M40 20 Q60 6 80 20 L78 30 Q60 18 42 30Z" fill="#E8452C"/>`,
+  `<path d="M40 20 Q60 6 80 20 L79.4 23.5 Q60 10 40.6 23.5Z" fill="#2B1D16"/><path d="M50 44 Q60 50 70 44 L70 56 Q60 62 50 56Z" fill="#F5E7C8"/><rect x="56" y="58" width="8" height="14" rx="2" fill="#F2B937"/><path d="M61 30 L61 110 L70 110 L70 30Z" fill="#7D5636" opacity=".55"/><rect x="50" y="100" width="20" height="10" fill="#6B4A2E"/>`);

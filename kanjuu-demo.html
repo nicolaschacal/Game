@@ -61,7 +61,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 <body>
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="flash"></div>
-<div class="top"><div class="brand">KANJŪ <small>TILE RUNNER · MAR</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
+<div class="top"><div class="brand">KANJŪ <small>TILE RUNNER</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
 <div id="progress"><i></i></div>
 <button id="mute" aria-label="Sonido">♪</button>
 <div id="combo">x2<small>RACHA</small></div>
@@ -72,7 +72,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 </section>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse } from './kanjuu-demo/scene3d.js';
-import { HERO, BOAT, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE } from './kanjuu-demo/runner-art.js';
+import { HERO, BOAT, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, POST, STAKE, SPIRE } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const COLS=5,ROWS=240,START=ROWS-12;
 // ── Nivel: tierra → muelle → puerto (barco) → mar → playa → tierra … → meta ──
@@ -83,14 +83,20 @@ const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],boats=[],s
 const paintRow=(y,g)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]={g,h:0};};
 for(let y=0;y<ROWS;y++)paintRow(y,'grass');
 let cur=START-1,uid=0;
-function fill(n,kind,{gap,lead,extra}){
+function fill(n,kind,{gap,lead,extra=0,open=0}){
  let safe=2;
- for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
+ for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,kind==='bridge'?'gap':'empty');
   if(i>=lead&&(i-lead)%gap===0&&i<n-1){
-   const prev=safe;safe=pick([-2,-1,1,2].map(d=>prev+d).filter(x=>x>=0&&x<COLS));
-   const blocked=new Set([prev]);const pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
-   for(let k=0;k<extra&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
-   for(const x of blocked)blockers.push({id:'b'+uid++,kind:'paper',obstacle:'rock',sea:kind==='sea',svg:kind==='sea'?pick([REEF,FIN,BARREL]):pick([ROCK,STUMP]),x,y,w:1,h:1});
+   const prev=safe;safe=pick((open?[-1,1]:[-2,-1,1,2]).map(d=>prev+d).filter(x=>x>=0&&x<COLS));
+   let blocked,pool;
+   if(open){ // puente: estacas en todos los carriles menos el paso (1 o 2 carriles abiertos)
+    const keep=new Set([safe]);if(open>1)keep.add(safe+(safe<COLS-1&&(safe===0||rnd()<.5)?1:-1));
+    blocked=new Set([0,1,2,3,4].filter(x=>!keep.has(x)));pool=[];
+   }else{
+    blocked=new Set([prev]);pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
+    for(let k=0;k<extra&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
+   }
+   for(const x of blocked)blockers.push({id:'b'+uid++,kind:'paper',obstacle:'rock',sea:kind==='sea',svg:kind==='sea'?pick([REEF,FIN,BARREL]):kind==='bridge'?pick([STAKE,STAKE,SPIRE]):pick([ROCK,STUMP]),x,y,w:1,h:1});
    coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10});
    if(pool.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:PEARL,x:pick(pool),y,w:.7,h:.7,value:50,pearl:true});
   }else if(i>1)coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x:safe,y,w:.62,h:.62,value:10});
@@ -98,23 +104,31 @@ function fill(n,kind,{gap,lead,extra}){
  cur-=n;
 }
 const free=(n,g)=>{for(let i=0;i<n;i++){zone[cur-i]='free';paintRow(cur-i,g);}cur-=n;};
-const SEAS=[14,20,26,30,34],LANDS=[12,10,10,10,10];
-SEAS.forEach((len,i)=>{
- fill(LANDS[i],'land',{gap:4,lead:i?3:7,extra:i?1:0});
+const decor=[];let seaN=0,bridgeN=0;
+function sea(len){const i=seaN++;
  free(2,'wood');
  const board=cur;free(2,'water');
  boats.push({id:'boat'+i,kind:'paper',svg:BOAT.idle[0],frames:BOAT,fps:5,x:1.7,y:board-.3,w:1.6,h:1.6});
- fill(len,'sea',{gap:i<2?3:2,lead:2,extra:i<1?1:2});
+ fill(len,'sea',{gap:i<1?3:2,lead:2,extra:i<1?1:2});
  const land=cur;free(3,'sand');
  seas.push({board,land,boat:'boat'+i});
-});
+}
+// Puente: un barranco que se cruza tendiendo tablones; las estacas dejan pasos angostos y los tablones caen detrás.
+function bridge(len){const i=bridgeN++;
+ free(1,'grass');
+ for(const x of [0,4])decor.push({id:'post'+uid++,kind:'paper',svg:POST,x:x-.2,y:cur+1-.2,w:1.4,h:1.4});
+ fill(len,'bridge',{gap:i<1?3:2,lead:2,open:i<1?2:1});
+ free(1,'grass');
+}
+const land=(n,first)=>fill(n,'land',{gap:4,lead:first?7:3,extra:first?0:1});
+land(12,true);sea(14);land(8);bridge(12);land(8);sea(22);land(8);bridge(16);land(8);sea(28);land(8);bridge(20);land(6);
 free(6,'grass');const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:GATE,x:1,y:GOAL-1,w:3,h:3};
 const player={id:'kami',kind:'paper',svg:HERO.idle[0],frames:HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
 const path={[START]:{x:2,e:2,g:'grass',lanes:{2:'grass'}}};
 let selected='grass';
 const runner={playerId:player.id,startRow:START,lane:2,visualLane:2,speed:1.42,distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
-const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...boats,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
+const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...boats,...decor,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
 const toast=$('toast'),hint=$('hint'),gameover=$('gameover');
@@ -151,10 +165,9 @@ function endGame(title,reason,win=false){if(gameover.style.display==='flex')retu
  if(win){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.18,'triangle',.06,0,i*.11));buzz([20,40,20,40,60]);}else{tone(330,.35,'sawtooth',.05,90);buzz(120);}
  setTimeout(()=>gameover.style.display='flex',win?500:350);}
 function onGameOver(reason){
- const y=targetRow(),sea=zone[y]==='sea'||runner.onBoat;
- if(lastWrong>=y-1&&lastWrong<=y+2)endGame(sea?'EL BARCO ENCALLÓ':'SIN CAMINO',sea?'En el mar la ruta se construye con AGUA. Cambiá de tile cuando subas al barco.':'En tierra la ruta se construye con CAMINO. Cambiá de tile al llegar a la playa.');
- else if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(sea?'¡CHOQUE!':'¡TROPEZÓN!',sea?'El barco no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.':'Kami no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
- else endGame(sea?'EL MAR SE ACABÓ':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
+ const y=targetRow(),sea=zone[y]==='sea'||runner.onBoat,br=!sea&&(zone[y]==='bridge'||zone[y+1]==='bridge');
+ if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(sea?'¡CHOQUE!':br?'¡SIN PASO!':'¡TROPEZÓN!',sea?'El barco no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.':br?'El puente solo pasa por el hueco entre las estacas. Apuntá al carril libre.':'Kami no puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
+ else endGame(sea?'EL MAR SE ACABÓ':br?'SE ACABÓ EL PUENTE':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
 }
 
 // ── Construcción libre en la cuadrícula ──
@@ -169,12 +182,12 @@ const prevExit=y=>runner.path[y+1]?.x??runner.lastBuildLane;
 let wrongAt=0;
 function materialOk(y){
  const z=zone[y];if(z==='free')return true;
- selected=z==='sea'?'water':'grass';return true;
+ selected=z==='sea'?'water':z==='bridge'?'wood':'grass';return true;
  const ok=z==='sea'?selected==='water':selected!=='water';
  if(!ok){lastWrong=y;const now=performance.now();if(now-wrongAt>500){wrongAt=now;showToast(z==='sea'?'¡EN EL MAR SE CONSTRUYE CON AGUA!':'¡EN TIERRA SE CONSTRUYE CON CAMINO!');tone(160,.12,'sawtooth',.04);buzz(40);}}
  return ok;
 }
-function setTile(x,y){if(zone[y]==='free')return;const tile={g:selected,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);tone(selected==='water'?300:210,.04,'sine',.025);}
+function setTile(x,y){if(zone[y]==='free')return;const tile={g:selected,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);tone(selected==='water'?300:selected==='wood'?150:210,selected==='wood'?.05:.04,selected==='wood'?'square':'sine',selected==='wood'?.02:.025);}
 function buildToward(lane){
  if(runner.gameOver)return false;
  const y=targetRow();if(y<0)return false;
@@ -214,17 +227,22 @@ document.querySelectorAll('.mat').forEach(b=>b.addEventListener('pointerdown',e=
 $('restart').addEventListener('click',()=>location.reload());
 
 // ── Eventos al entrar a cada fila ──
-let lastRow=START,seaIndex=0;
+let lastRow=START,seaIndex=0,bridgesDone=0;
 function enterRow(r){
  addScore(1);
  const sea=seas[seaIndex];
  if(sea&&r===sea.board){runner.boatId=sea.boat;runner.onBoat=true;splash();buzz([15,40,25]);pop('¡A NAVEGAR!','big');$('flash').style.opacity='.5';setTimeout(()=>$('flash').style.opacity='0',120);runnerPulse('hop');}
  if(sea&&r===sea.land+1){runner.onBoat=false;runner.leaveBoat=sea.boat;seaIndex++;const bonus=200*seaIndex;addScore(bonus);bump('scorePill');pop('¡TIERRA! +'+bonus,'big');[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.06,0,i*.08));buzz([20,30,20,30,40]);runnerPulse('hop');}
+ // puente: aviso al entrar, premio al salir y tablones que caen detrás
+ if(zone[r]==='bridge'&&zone[r+1]!=='bridge'){pop('¡AL PUENTE!','big');tone(196,.18,'square',.04,130);buzz([10,30,10]);}
+ if(zone[r]!=='bridge'&&zone[r+1]==='bridge'){bridgesDone++;const bonus=150*bridgesDone;addScore(bonus);bump('scorePill');pop('¡PUENTE CRUZADO! +'+bonus,'big');[392,523,659,784].forEach((f,i)=>tone(f,.13,'triangle',.06,0,i*.08));buzz([20,30,20]);runnerPulse('hop');}
+ const fallY=r+2,fall=runner.path[fallY];
+ if(fall&&zone[fallY]==='bridge'){for(const x of Object.keys(fall.lanes)){const t={g:'gap',h:0};tiles[x+','+fallY]=t;updateRunnerTile(+x,fallY,t);}tone(110,.06,'square',.015);}
  // roce: pasar pegado a un obstáculo
  const row=runner.path[r];if(row&&zone[r]!=='free'){const ls=Object.keys(row.lanes).map(Number);if(ls.some(x=>isRockCell(x-1,r)||isRockCell(x+1,r))){addScore(5*mult());pop('¡CASI! +'+5*mult());tone(880,.05,'sine',.03);}}
  const prog=(START-r)/(START-GOAL);$('progress').firstElementChild.style.width=Math.min(100,prog*100)+'%';
  runner.speed=(1.42+Math.min(1,prog)*.95)*(runner.onBoat?1.18:1);
- if(r<=GOAL){addScore(500);endGame('', 'Cruzaste los cinco mares.',true);}
+ if(r<=GOAL){addScore(500);endGame('', 'Cruzaste todos los mares y puentes.',true);}
 }
 function refreshUI(){
  const y=targetRow(),sea=seas[seaIndex];
@@ -232,7 +250,8 @@ function refreshUI(){
  // próximo tramo que hay que construir: decide qué botón llama la atención
  let nz=null;for(let q=y;q>y-7&&q>=0;q--)if(zone[q]!=='free'){nz=zone[q];break;}
  const callWater=nz==='sea'&&selected!=='water',callLand=nz==='land'&&selected==='water';
- hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':sea&&toBoard<12?'BARCO ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
+ const bz=zone[y]==='bridge'||zone[y+1]==='bridge';
+ hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':bz?'PUENTE · PASÁ POR EL HUECO ENTRE LAS ESTACAS':nz==='bridge'||zone[y-3]==='bridge'?'PUENTE ADELANTE':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':sea&&toBoard<12?'BARCO ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
 }
 
 // ── Entrada: un dedo. Mantener = construir adelante; arrastrar = costados / diagonal ──
