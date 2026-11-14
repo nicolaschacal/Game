@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#1B1730">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>TILE RUN</title>
+<title>Paper Voyager</title>
+<link rel="icon" href="./kanjuu-demo/icon-512.png">
+<link rel="apple-touch-icon" href="./kanjuu-demo/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
@@ -71,10 +73,12 @@ body.home #hud{opacity:0}
 .logo{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);text-align:center;transform:rotate(-3deg);pointer-events:none;animation:float 3.2s ease-in-out infinite}
 @keyframes float{50%{transform:rotate(-3deg) translateY(-6px)}}
 .logo b{display:block;font:400 62px/56px 'Lilita One',sans-serif;color:var(--cream);letter-spacing:2px;text-shadow:0 5px 0 var(--red),0 9px 0 var(--ink),3px 0 0 var(--ink),-3px 0 0 var(--ink),0 -3px 0 var(--ink),3px 9px 0 var(--ink),-3px 9px 0 var(--ink)}
-.logo b+b{color:var(--gold);font-size:74px;line-height:70px}
+.logo b{font-size:60px;line-height:54px}
+.logo b+b{color:var(--gold);font-size:56px;line-height:58px;letter-spacing:1px}
+.logo .slogan{display:inline-block;margin-top:10px;padding:4px 14px 5px;border-radius:9px;background:var(--ink);border:2.5px solid var(--cream);font:900 11px Nunito;letter-spacing:2.5px;color:var(--cream);box-shadow:0 3px 0 #0006}
 .logo .u{position:relative}.logo .u:before{content:'';position:absolute;left:5px;right:5px;top:-6px;height:9px;border-radius:5px;background:var(--cream);box-shadow:0 0 0 3px var(--ink)}
-.seal i{display:block;width:22px;height:22px;margin:9px auto 0;border:4.5px solid var(--cream);border-radius:6px}
-.seal{position:absolute;left:50%;margin-left:64px;top:66px;width:46px;height:46px;border-radius:10px;background:var(--red);border:3px solid var(--ink);color:var(--cream);font:400 27px/40px 'Yuji Syuku',serif;transform:rotate(9deg);box-shadow:0 3px 0 var(--ink)}
+.seal svg{display:block;width:50px;height:50px;margin:2px auto 0}
+.seal{position:absolute;left:50%;margin-left:92px;top:-20px;width:58px;height:58px;border-radius:13px;background:var(--red);border:3px solid var(--ink);transform:rotate(9deg);box-shadow:0 4px 0 var(--ink)}
 .arrow{position:absolute;bottom:calc(var(--sb) + 252px);width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 26px/36px 'Lilita One',sans-serif;text-align:center}
 #prevSkin{left:30px}#nextSkin{right:30px}
 #skinName{bottom:calc(var(--sb) + 182px)}
@@ -88,11 +92,11 @@ body.home #hud{opacity:0}
 #nav button.on{color:var(--ink)}#nav button.on i{color:var(--red)}#nav button.on:before{content:"";position:absolute;left:22%;right:22%;top:-3.5px;height:6px;border-radius:0 0 6px 6px;background:var(--red)}
 #nav .dot{position:absolute;top:5px;left:50%;margin-left:12px;width:17px;height:17px;border-radius:50%;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 9px/12px Nunito;display:none}
 /* Botones alrededor del inicio (sin barra inferior: el juego es el protagonista) */
-.side{position:absolute;top:calc(var(--st) + 250px);width:66px;padding:8px 0 7px;border-radius:18px;background:var(--cream);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);color:var(--ink);font:900 9px Nunito;letter-spacing:.8px;text-align:center}
+.side{position:absolute;top:calc(var(--st) + 262px);width:66px;padding:8px 0 7px;border-radius:18px;background:var(--cream);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);color:var(--ink);font:900 9px Nunito;letter-spacing:.8px;text-align:center}
 .side i{display:block;font:400 26px/28px 'Lilita One',sans-serif;font-style:normal;color:var(--red)}
 .side:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
 .side .dot{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 10px/15px Nunito;display:none}
-#worldChip{top:calc(var(--st) + 236px);background:var(--ink);border-color:var(--cream);box-shadow:0 4px 0 #0008;font-size:14px;padding:5px 18px 6px}
+#worldChip{top:calc(var(--st) + 250px);background:var(--ink);border-color:var(--cream);box-shadow:0 4px 0 #0008;font-size:14px;padding:5px 18px 6px}
 #worldChip small{display:inline;margin-left:6px;color:var(--gold);font:900 9px Nunito}
 .close{position:absolute;right:16px;top:calc(var(--st) + 14px);width:38px;height:38px;border-radius:50%;line-height:30px;font-size:17px;z-index:3}
 .head .chip{right:66px}
@@ -170,7 +174,7 @@ body.home #hud{opacity:0}
 <body class="home">
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="wx"></div><div id="frost"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
-<div id="splash"><div class="logo"><b>TILE</b><b>RUN</b><div class="seal"><i></i></div></div><div class="load"><i></i></div></div>
+<div id="splash"><div class="logo"><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><span data-ico="boat"></span></div></div><div class="load"><i></i></div></div>
 <div id="hud">
  <div id="progress"><i></i></div>
  <div id="score" class="L out">0</div>
@@ -186,7 +190,7 @@ body.home #hud{opacity:0}
 <div id="menu">
  <button class="round" id="mute" aria-label="Sonido">♪</button>
  <div class="chip" id="walletChip"><span data-ico="coin"></span><b id="mWallet" class="L">0</b></div>
- <div class="logo"><b>TILE</b><b>RUN</b><div class="seal"><i></i></div></div>
+ <div class="logo"><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><span data-ico="boat"></span></div></div>
  <button class="side" id="openShop" style="left:14px"><i>♜</i>TIENDA<span class="dot" id="shopDot">!</span></button>
  <button class="side" id="openScores" style="right:14px"><i>♛</i>RÉCORDS</button>
  <button class="ribbon" id="worldChip"></button>

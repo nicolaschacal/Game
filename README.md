@@ -93,3 +93,7 @@ Los mundos rotan entre ocho biomas: Pradera, Desierto, Costa, Nieve, Bosque, Vol
 El runner pasa a llamarse **TILE RUN** (logo, título y pantalla de carga); es un juego aparte de KANJŪ. Las claves de guardado conservan su prefijo para no perder el progreso.
 
 Nuevo ítem **Congelar** (◉90): durante la carrera aparece un botón ❄ que detiene 8 segundos a los obstáculos que se mueven.
+
+## Paper Voyager
+
+El runner se llama **Paper Voyager** ("Build your way"). Logo en dos líneas con la tipografía del juego, cinta con el eslogan y un ícono de tile rojo con el barco de papel del juego (`kanjuu-demo/icon-512.png`, también versión 1024 para las tiendas).
