@@ -66,3 +66,12 @@ Entre mares hay una cima con un globo de papel. Kami sube solo el escalón (ramp
 - **Misión del día** (rota entre 4, premio ◉100) y **tus 5 mejores partidas**, guardadas en el dispositivo.
 - **Música generada en vivo** (bajo, arpegio, bombo y platillo) que acelera con la carrera; un solo botón silencia música y efectos.
 - **Vías con curvas**: cada tile de vía se pinta según por dónde entra y sale el tren (recta, curva lateral o diagonal).
+
+## Tile Runner · inicio sin barra, mundos guardados y obstáculos vivos
+
+- **Inicio**: sin barra inferior; Tienda y Récords son botones a los costados. Pantalla de carga con el logo.
+- **Mundo guardado**: la partida retoma en el último mundo alcanzado (`kanjuu.run.world`); la etiqueta del mundo permite volver a uno anterior.
+- **Dificultad por mundo**: la velocidad sube suave dentro del mundo y cada mundo arranca más rápido, con obstáculos más seguidos, más carriles cerrados y tramos más largos.
+- **Obstáculos vivos** (desde el mundo 2): tiburones, nubarrones y gallinas en las vías van y vienen entre dos carriles; nunca pisan el carril seguro.
+- **Jugo**: chispas y moneda que vuela al contador, líneas de velocidad, sacudida al chocar, papel picado al pasar de mundo o batir récord.
+- **Música**: se quitó el bucle sintetizado. Si se agrega `kanjuu-demo/music.mp3`, suena en bucle y acompaña la velocidad.

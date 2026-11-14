@@ -763,6 +763,7 @@ function sanctuary() {
     const lit = [];
     W.items.forEach(o => {
       if (W.opts.runner && !o.group.visible) return;
+      if (o.d.mv) o.group.position.x = moverLane(o.d.mv) - (W.cols - 1) / 2;
       const d = o.d;
       if (d.kind === 'obstacle') {
         o.group.rotation.y = Math.sin(t * 1.1 + (d.y || 0)) * .035;
@@ -994,6 +995,11 @@ export function runnerPulse(kind = 'squash') {
   if (kind === 'hop') o.hop = 1; else o.squash = 1;
 }
 const runnerGeo = {};
+// Obstáculos vivos: van y vienen entre dos carriles (a ↔ b) con una pausa en cada extremo
+export function moverLane(mv, now = performance.now()) {
+  const u = ((now / 1000 + mv.phase) / mv.period) % 1, tri = u < .5 ? u * 2 : 2 - u * 2, k = Math.max(0, Math.min(1, (tri - .28) / .44));
+  return mv.a + (mv.b - mv.a) * k * k * (3 - 2 * k);
+}
 // Textura de vía entre dos "puertas" del tile. Arriba de la imagen = adelante (N); derecha = carril mayor (E).
 const RAIL_PORT = { S: [64, 128], N: [64, 0], E: [128, 64], W: [0, 64], NE: [128, 0], NW: [0, 0], SE: [128, 128], SW: [0, 128] };
 function railMaterial(a, b) {
