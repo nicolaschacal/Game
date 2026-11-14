@@ -3,112 +3,182 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#17152b">
-<title>KANJŪ · Tile Runner</title>
+<meta name="theme-color" content="#1B1730">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>KANJŪ RUN</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800;900&family=Zen+Maru+Gothic:wght@500;700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
 <style>
-:root{color-scheme:dark;--ink:#211a20;--cream:#fff4dc;--gold:#f2b937;--night:#17152b}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night);font-family:'Zen Maru Gothic',sans-serif;touch-action:none}
-#stage{position:fixed;inset:0;overflow:hidden;background:#17152b}
+/* GUI de papel recortado: piezas crema, borde de tinta grueso, sombra dura, botones con volumen */
+:root{color-scheme:dark;--ink:#1B1730;--cream:#FFF4DC;--paper:#F1E3C2;--gold:#F2B937;--goldD:#C98A1E;--red:#E8452C;--redD:#A92E1B;--green:#5DB84F;--greenD:#3A8A30;--mute:#8a8069;--st:env(safe-area-inset-top);--sb:env(safe-area-inset-bottom)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:Nunito,system-ui,sans-serif;color:var(--cream);touch-action:none}
+button{font:inherit;color:inherit;padding:0;margin:0;cursor:pointer}
+#stage{position:fixed;inset:0;overflow:hidden;background:var(--ink)}
 #stage canvas{display:block;width:100%;height:100%;touch-action:none}
 #stage:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--grain);opacity:.14;mix-blend-mode:multiply}
-.top{position:absolute;z-index:5;top:calc(env(safe-area-inset-top) + 12px);left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
-.brand{color:#fff4dc;font:900 14px 'DM Sans',sans-serif;letter-spacing:2px;text-shadow:0 2px 12px #17152b88}
-.brand small{display:block;margin-top:4px;font:700 9px 'DM Sans',sans-serif;letter-spacing:1.7px;color:#fff4dcb0}
-.pill{border:1px solid #fff4dc44;border-radius:999px;background:#17152b9c;color:#fff4dc;padding:7px 11px;font:800 10px 'DM Sans',sans-serif;letter-spacing:.8px;backdrop-filter:blur(12px)}
-.editor{position:absolute;z-index:6;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);padding:12px;border:1px solid #fff4dc35;border-radius:20px;background:#17152be8;backdrop-filter:blur(16px);box-shadow:0 8px 32px #09081770;color:var(--cream)}
-.editor-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font:900 10px 'DM Sans',sans-serif;letter-spacing:1px}
-.editor-head span:last-child{color:#f2b937}
-.materials{display:flex;gap:7px;overflow-x:auto;padding:2px 0 9px;scrollbar-width:none}
-.material{flex:1;min-width:57px;border:1px solid #fff4dc35;border-radius:12px;background:#ffffff0b;color:var(--cream);padding:8px 5px;font:800 10px 'DM Sans',sans-serif}
-.material.active{border-color:#f2b937;background:#f2b93722;color:#ffd46b}
-.material i{display:block;width:19px;height:19px;border-radius:6px;margin:0 auto 5px;border:1px solid #fff4dc50}
-.special{width:100%;border:1px solid #E5B75B66;border-radius:12px;background:#F2B9371C;color:#FFD46B;padding:10px;font:900 10px 'DM Sans',sans-serif;letter-spacing:.8px}
-.hint{margin-top:8px;color:#fff4dc99;text-align:center;font:700 8px 'DM Sans',sans-serif;letter-spacing:.8px}
-#toast{position:absolute;z-index:8;top:calc(env(safe-area-inset-top) + 58px);left:50%;transform:translateX(-50%);border-radius:999px;background:#fff4dc;color:#2b2320;padding:7px 12px;font:900 9px 'DM Sans',sans-serif;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
-@media(min-width:700px){.editor{max-width:520px;left:50%;right:auto;width:calc(100% - 32px);transform:translateX(-50%);bottom:18px}.materials{justify-content:center}}
- .lane-controls{position:absolute;z-index:7;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 204px);display:flex;justify-content:space-between;pointer-events:none}.lane-controls button{pointer-events:auto;width:54px;height:54px;border:1px solid #fff4dc66;border-radius:50%;background:#17152bbd;color:#fff4dc;font-size:24px;font-weight:900;backdrop-filter:blur(10px)}#gameover{display:none;position:fixed;z-index:20;inset:0;background:#100e20dd;align-items:center;justify-content:center;padding:24px;text-align:center;color:#fff4dc}#gameover>div{max-width:320px;padding:28px 22px;border:1px solid #fff4dc44;border-radius:24px;background:#211d39}#gameover h2{font:900 25px 'DM Sans',sans-serif;margin:0 0 10px}#gameover p{color:#fff4dcaa;font-size:13px;line-height:1.5}#restart{border:0;border-radius:12px;background:#f2b937;color:#211a20;padding:13px 24px;font:900 12px 'DM Sans',sans-serif;margin-top:10px}
-.top{align-items:center}
-.stats{display:flex;gap:6px;pointer-events:none}
-.pill b{color:#f2b937;margin-left:3px;font-size:12px}
-.pill.bump{animation:bump .28s}
-@keyframes bump{40%{transform:scale(1.28)}}
-#progress{position:absolute;z-index:5;top:calc(env(safe-area-inset-top) + 54px);left:14px;right:14px;height:7px;border-radius:99px;background:#17152b88;border:1px solid #fff4dc40;overflow:hidden;pointer-events:none}
-#progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f2b937,#e8452c);border-radius:99px}
-#combo{position:absolute;z-index:7;top:calc(env(safe-area-inset-top) + 70px);right:14px;color:#fff4dc;font:900 22px 'DM Sans',sans-serif;text-shadow:0 3px 0 #17152b;opacity:0;transition:opacity .2s;pointer-events:none}
-#combo small{display:block;font-size:9px;letter-spacing:1px;text-align:right;color:#f2b937}
-#toast{top:calc(env(safe-area-inset-top) + 74px);font-size:11px;padding:8px 14px;box-shadow:0 3px 0 #2b2320}
-.pop{position:absolute;z-index:8;left:50%;top:52%;font:900 20px 'DM Sans',sans-serif;color:#fff4dc;text-shadow:0 2px 0 #17152b,0 0 10px #17152b66;white-space:nowrap;pointer-events:none;animation:pop .8s ease-out forwards}
-.pop.gold{color:#ffd46b}.pop.big{font-size:30px;color:#fff;text-shadow:0 3px 0 #e8452c,0 6px 14px #17152b88}.pop.pink{color:#ffc4d6;font-size:24px}
-@keyframes pop{0%{transform:translate(-50%,0) scale(.5);opacity:0}18%{transform:translate(-50%,-14px) scale(1.2);opacity:1}100%{transform:translate(-50%,-90px) scale(1);opacity:0}}
-#flash{position:absolute;inset:0;z-index:4;pointer-events:none;background:#bfe8ff;opacity:0;transition:opacity .35s}
-.bar{position:absolute;z-index:6;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.bar .hint{grid-column:1/3;margin:0;color:#fff4dcd0;text-align:center;font:800 9px 'DM Sans',sans-serif;letter-spacing:.8px;text-shadow:0 1px 4px #17152b}
-.mat{height:66px;border:2.5px solid #2b1d16;border-radius:18px;background:#211d39e8;color:#fff4dc;font:900 13px 'DM Sans',sans-serif;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 5px 0 #0b0918;touch-action:none;transition:transform .1s}
-.mat i{width:26px;height:26px;border-radius:8px;border:2.5px solid #fff4dc}
-.mat.active{background:#fff4dc;color:#2b1d16;border-color:#f2b937;transform:translateY(-4px);box-shadow:0 9px 0 #0b0918}
-.mat.active i{border-color:#2b1d16}
-.mat.call{animation:call .5s infinite alternate}
-@keyframes call{to{box-shadow:0 5px 0 #0b0918,0 0 0 5px #f2b937;transform:scale(1.04)}}
-#mute{position:absolute;z-index:7;left:14px;top:calc(env(safe-area-inset-top) + 70px);width:32px;height:32px;border-radius:50%;border:1px solid #fff4dc55;background:#17152b9c;color:#fff4dc;font-size:14px}
-#gameover h2 em{font-style:normal;color:#f2b937}#gameover .nums{display:flex;justify-content:center;gap:18px;margin:14px 0 6px;font:900 22px 'DM Sans',sans-serif}#gameover .nums small{display:block;font-size:9px;letter-spacing:1px;color:#fff4dc99}
-@media(min-width:700px){.bar{max-width:520px;left:50%;right:auto;width:calc(100% - 32px);transform:translateX(-50%)}}
-
-#menu{position:absolute;inset:0;z-index:30;display:none;align-items:flex-end;justify-content:center;background:linear-gradient(#17152b22 30%,#17152bd9 78%);padding:0 0 calc(env(safe-area-inset-bottom) + 14px)}
-#menu .sheet{width:min(100%,520px);padding:0 14px;color:#fff4dc;text-align:center}
-#menu h1{margin:0;font:900 34px 'DM Sans',sans-serif;letter-spacing:1px;text-shadow:0 4px 0 #17152b}#menu h1 em{font-style:normal;color:#f2b937}
-#menu .sub{display:flex;justify-content:center;gap:18px;margin:6px 0 12px;font:800 11px 'DM Sans',sans-serif;letter-spacing:1px}#menu .sub b{color:#f2b937;font-size:14px}
-#skins{touch-action:pan-x;display:flex;gap:10px;overflow-x:auto;padding:6px 2px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.skin{flex:0 0 104px;scroll-snap-align:center;border:2.5px solid #fff4dc33;border-radius:18px;background:#211d39e8;color:#fff4dc;padding:8px 6px 9px;font-family:'DM Sans',sans-serif;box-shadow:0 5px 0 #0b0918}
-.skin svg{width:78px;height:78px;display:block;margin:0 auto}
-.skin b{display:block;font-size:12px;font-weight:900}.skin small{display:block;font-size:8px;letter-spacing:.5px;color:#fff4dc99;margin-bottom:6px}
-.skin span{display:inline-block;border-radius:99px;padding:4px 10px;font-size:10px;font-weight:900;letter-spacing:.6px;background:#fff4dc;color:#2b1d16}
-.skin.locked svg{filter:saturate(.55) brightness(.8)}.skin.locked span{background:#f2b937}
-.skin.on{border-color:#f2b937;background:#2d2850}.skin.on span{background:#5db84f;color:#fff}
-.skin.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-#items{touch-action:pan-x;display:flex;gap:8px;overflow-x:auto;padding:0 2px 12px}
-.item{flex:1 0 78px;border:2px solid #fff4dc33;border-radius:14px;background:#211d39e8;color:#fff4dc;padding:7px 4px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 0 #0b0918}
-.item i{display:block;font:900 18px 'DM Sans',sans-serif;font-style:normal;color:#f2b937;height:22px}.item b{display:block;font-size:11px;font-weight:900}.item u{text-decoration:none;color:#5db84f}.item small{display:block;font-size:7.5px;color:#fff4dc99;margin:1px 0 5px;line-height:1.2}
-.item span{display:inline-block;border-radius:99px;padding:3px 8px;font-size:9px;font-weight:900;background:#f2b937;color:#2b1d16}.item.shake{animation:shake .3s}
-#boosts{position:absolute;z-index:6;left:54px;right:80px;top:calc(env(safe-area-inset-top) + 78px);color:#fff4dc;font:900 9px 'DM Sans',sans-serif;letter-spacing:1px;text-shadow:0 1px 4px #17152b;pointer-events:none}
-#revive{position:absolute;inset:0;z-index:28;display:none;align-items:center;justify-content:center;background:#17152bb8}
-#revive>div{width:min(84%,340px);padding:22px 20px;border-radius:24px;background:#211d39;border:2px solid #fff4dc44;color:#fff4dc;text-align:center;font-family:'DM Sans',sans-serif}
-#revive h2{margin:0 0 4px;font-size:24px;font-weight:900}#revive p{margin:0 0 12px;font-size:13px;color:#fff4dccc}
-.rvbar{height:8px;border-radius:99px;background:#fff4dc22;overflow:hidden;margin-bottom:14px}.rvbar i{display:block;height:100%;width:100%;background:#f2b937}
-#rvBtn{display:block;width:100%;height:58px;border:2.5px solid #2b1d16;border-radius:16px;background:#5db84f;color:#fff;font:900 17px 'DM Sans',sans-serif;letter-spacing:1px;box-shadow:0 5px 0 #0b0918}#rvBtn small{font-size:11px;opacity:.9;margin-left:6px}
-#rvNo{display:block;width:100%;margin-top:10px;padding:10px;background:transparent;border:0;color:#fff4dc99;font:800 11px 'DM Sans',sans-serif;letter-spacing:1px}
-#play{width:100%;height:60px;border:2.5px solid #2b1d16;border-radius:18px;background:#f2b937;color:#2b1d16;font:900 18px 'DM Sans',sans-serif;letter-spacing:2px;box-shadow:0 6px 0 #0b0918}
-#gameover #goNudge{margin:6px 0 14px;font:800 11px 'DM Sans',sans-serif;color:#f2b937;min-height:14px}
-#gameover #restart{display:block;width:100%}
-#gameover #toShop{display:block;width:100%;margin-top:10px;padding:12px;border-radius:14px;background:transparent;color:#fff4dc;border:2px solid #fff4dc66;font:900 11px 'DM Sans',sans-serif;letter-spacing:1px}
-.bar{display:block}
+#vig{position:fixed;inset:0;pointer-events:none;z-index:3;background:radial-gradient(ellipse at 50% 55%,#0000 55%,#1b173066 100%)}
+#flash{position:fixed;inset:0;z-index:4;pointer-events:none;background:#bfe8ff;opacity:0;transition:opacity .35s}
+.L{font-family:'Lilita One',Nunito,sans-serif;font-weight:400}
+.out{text-shadow:0 3px 0 var(--ink),2px 0 0 var(--ink),-2px 0 0 var(--ink),0 -2px 0 var(--ink),2px 2px 0 var(--ink),-2px 2px 0 var(--ink)}
+svg.ico{display:block}
+/* piezas */
+.chip{position:absolute;height:38px;padding:0 14px 0 40px;border-radius:99px;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 19px/32px 'Lilita One',sans-serif;display:flex;align-items:center}
+.chip svg{position:absolute;left:-8px;top:-9px;width:50px;height:50px}
+.chip.bump{animation:bump .28s}@keyframes bump{40%{transform:scale(1.22)}}
+.round{position:absolute;width:42px;height:42px;border-radius:14px;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 20px/34px 'Lilita One',sans-serif;text-align:center}
+.round:active,.arrow:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:66px;border-radius:20px;border:3.5px solid var(--ink);background:linear-gradient(#FFD46B 0 46%,var(--gold) 46%);box-shadow:0 7px 0 var(--goldD),0 7px 0 3.5px var(--ink),0 14px 18px #0006;color:var(--ink);font:400 27px 'Lilita One',sans-serif;letter-spacing:1.5px;transition:transform .06s,box-shadow .06s}
+.btn:before{content:"";position:absolute;left:10px;right:10px;top:5px;height:9px;border-radius:9px;background:#fff7}
+.btn:active{transform:translateY(5px);box-shadow:0 2px 0 var(--goldD),0 2px 0 3.5px var(--ink)}
+.btn.green{background:linear-gradient(#86D66F 0 46%,var(--green) 46%);box-shadow:0 7px 0 var(--greenD),0 7px 0 3.5px var(--ink),0 14px 18px #0006;color:#fff;text-shadow:0 2px 0 var(--greenD)}
+.btn.green:active{box-shadow:0 2px 0 var(--greenD),0 2px 0 3.5px var(--ink)}
+.btn.sm{height:50px;font-size:18px;border-radius:16px}
+.btn.plain{background:var(--cream);box-shadow:0 5px 0 #CDBE9A,0 5px 0 3.5px var(--ink)}.btn.plain:before{display:none}
+.btn.locked{background:linear-gradient(#fff 0 46%,var(--cream) 46%);font-size:21px}
+.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.ribbon{position:absolute;left:50%;transform:translateX(-50%);padding:6px 26px 7px;background:var(--red);border:3px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);font:400 20px 'Lilita One',sans-serif;letter-spacing:1px;color:var(--cream);white-space:nowrap;text-align:center}
+.ribbon small{display:block;font:900 9px Nunito;letter-spacing:1.5px;color:#ffe3b0;margin-top:-1px}
+.bar{height:9px;border-radius:9px;background:#fff4dc26;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--gold),#FFD46B);transition:width .4s}
+/* HUD de carrera */
+#hud{position:fixed;inset:0;z-index:5;pointer-events:none;transition:opacity .25s}
+body.home #hud{opacity:0}
+#progress{position:absolute;left:18px;right:18px;top:calc(var(--st) + 18px);height:12px;border-radius:9px;background:#1B1730B0;border:2.5px solid var(--ink)}
+#progress i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--gold),var(--red))}
+#progress svg{position:absolute;top:-13px;width:30px;height:30px;margin-left:-15px}
+#score{position:absolute;left:18px;top:calc(var(--st) + 46px);font-size:44px;line-height:44px;color:var(--cream);transform-origin:left center}
+#score.bump{animation:bump .28s}
+#combo{position:absolute;left:20px;top:calc(var(--st) + 96px);padding:2px 10px 3px;border-radius:9px;background:var(--red);border:3px solid var(--ink);font:400 17px 'Lilita One',sans-serif;transform:rotate(-5deg);box-shadow:0 3px 0 var(--ink);opacity:0;transition:opacity .2s}
+#coinPill{right:16px;top:calc(var(--st) + 46px)}
+#pause{right:16px;top:calc(var(--st) + 98px);border-radius:50%;pointer-events:auto}
+#boosts{position:absolute;left:16px;top:calc(var(--st) + 140px);display:flex;flex-direction:column;gap:9px}
+.pw{width:48px;height:48px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);position:relative}
+.pw span{position:absolute;inset:4px;border-radius:50%;background:var(--cream);color:var(--ink);font:400 18px/34px 'Lilita One',sans-serif;text-align:center}
+#hint{position:absolute;left:0;right:0;bottom:calc(var(--sb) + 18px);text-align:center;font:900 10px Nunito;letter-spacing:1.2px;color:#fff4dcd9;text-shadow:0 1px 5px var(--ink)}
+#toast{position:fixed;z-index:9;left:50%;top:calc(var(--st) + 150px);transform:translateX(-50%);padding:8px 16px;border-radius:12px;background:var(--ink);border:2.5px solid var(--cream);font:900 11px Nunito;letter-spacing:1px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.pop{position:fixed;z-index:8;left:50%;top:50%;font:400 26px 'Lilita One',sans-serif;color:var(--cream);white-space:nowrap;pointer-events:none;animation:pop .85s cubic-bezier(.2,.9,.3,1) forwards;text-shadow:0 3px 0 var(--ink),2px 0 0 var(--ink),-2px 0 0 var(--ink),0 -2px 0 var(--ink),2px 2px 0 var(--ink),-2px 2px 0 var(--ink)}
+.pop.gold{color:#FFD46B}.pop.pink{color:#FFC4D6;font-size:30px}.pop.big{font-size:40px;color:var(--gold)}
+@keyframes pop{0%{transform:translate(-50%,0) scale(.4) rotate(-8deg);opacity:0}18%{transform:translate(-50%,-16px) scale(1.25) rotate(-5deg);opacity:1}30%{transform:translate(-50%,-22px) scale(1) rotate(-5deg)}100%{transform:translate(-50%,-96px) scale(1) rotate(-5deg);opacity:0}}
+#banner{position:fixed;z-index:9;top:calc(var(--st) + 190px);opacity:0;pointer-events:none;font-size:24px;padding:8px 30px 9px}
+#banner.show{animation:banner 2.2s ease both}@keyframes banner{0%{opacity:0;transform:translateX(-50%) scale(.6)}12%{opacity:1;transform:translateX(-50%) scale(1.08)}20%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
+/* Inicio */
+#menu{position:fixed;inset:0;z-index:30;display:none}
+#menu:before{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(#1b173000,#1b1730cc 70%);pointer-events:none}
+#mute{left:16px;top:calc(var(--st) + 16px)}
+#walletChip{right:16px;top:calc(var(--st) + 16px)}
+.logo{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);text-align:center;transform:rotate(-3deg);pointer-events:none;animation:float 3.2s ease-in-out infinite}
+@keyframes float{50%{transform:rotate(-3deg) translateY(-6px)}}
+.logo b{display:block;font:400 62px/56px 'Lilita One',sans-serif;color:var(--cream);letter-spacing:2px;text-shadow:0 5px 0 var(--red),0 9px 0 var(--ink),3px 0 0 var(--ink),-3px 0 0 var(--ink),0 -3px 0 var(--ink),3px 9px 0 var(--ink),-3px 9px 0 var(--ink)}
+.logo b+b{color:var(--gold);font-size:74px;line-height:70px}
+.logo .u{position:relative}.logo .u:before{content:'';position:absolute;left:5px;right:5px;top:-6px;height:9px;border-radius:5px;background:var(--cream);box-shadow:0 0 0 3px var(--ink)}
+.seal{position:absolute;left:50%;margin-left:64px;top:66px;width:46px;height:46px;border-radius:10px;background:var(--red);border:3px solid var(--ink);color:var(--cream);font:400 27px/40px 'Yuji Syuku',serif;transform:rotate(9deg);box-shadow:0 3px 0 var(--ink)}
+.arrow{position:absolute;bottom:calc(var(--sb) + 328px);width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 26px/36px 'Lilita One',sans-serif;text-align:center}
+#prevSkin{left:30px}#nextSkin{right:30px}
+#skinName{bottom:calc(var(--sb) + 258px)}
+#mission{position:absolute;left:18px;right:18px;bottom:calc(var(--sb) + 182px);padding:9px 12px 10px 54px;border-radius:16px;background:#1B1730E6;border:3px solid var(--ink);box-shadow:0 0 0 2px #fff4dc30 inset;text-align:left}
+#mission svg{position:absolute;left:6px;top:5px;width:42px;height:42px}#mission b{font:900 12px Nunito;letter-spacing:.3px}#mission em{float:right;font:400 14px 'Lilita One',sans-serif;color:var(--gold);font-style:normal}
+#mission.done{box-shadow:0 0 0 2px var(--green) inset}#mission.done em{color:#86D66F}
+#playWrap{position:absolute;left:18px;right:18px;bottom:calc(var(--sb) + 100px)}
+#nav{position:fixed;z-index:33;left:0;right:0;bottom:0;height:calc(var(--sb) + 76px);padding-bottom:var(--sb);background:var(--cream);border-top:3.5px solid var(--ink);display:none}
+#nav button{flex:1;background:none;border:0;text-align:center;padding-top:8px;color:#7c7460;font:900 10px Nunito;letter-spacing:.8px;position:relative}
+#nav button i{display:block;font:400 25px/28px 'Lilita One',sans-serif;font-style:normal;color:#a39a82}
+#nav button.on{color:var(--ink)}#nav button.on i{color:var(--red)}#nav button.on:before{content:"";position:absolute;left:22%;right:22%;top:-3.5px;height:6px;border-radius:0 0 6px 6px;background:var(--red)}
+#nav .dot{position:absolute;top:5px;left:50%;margin-left:12px;width:17px;height:17px;border-radius:50%;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 9px/12px Nunito;display:none}
+/* Paneles: tienda y récords */
+.panel{position:fixed;inset:0;z-index:31;display:none;background:var(--paper);color:var(--ink);overflow-y:auto;touch-action:pan-y;padding-bottom:calc(var(--sb) + 96px)}
+.head{position:sticky;top:0;z-index:2;height:calc(var(--st) + 84px);background:var(--red);border-bottom:3.5px solid var(--ink)}
+.head h2{margin:0;position:absolute;left:18px;bottom:12px;font:400 30px 'Lilita One',sans-serif;color:var(--cream);text-shadow:0 3px 0 var(--ink)}
+.head .chip{right:16px;bottom:14px}
+.tabs{display:flex;gap:8px;padding:14px 14px 4px}.tabs button{flex:1;height:40px;border-radius:14px;border:3px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 15px 'Lilita One',sans-serif}.tabs .on{background:var(--ink);color:var(--cream)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 14px}
+.sk{position:relative;border-radius:20px;border:3.5px solid var(--ink);box-shadow:0 6px 0 var(--ink);padding:8px 8px 10px;text-align:center;color:var(--ink);background:var(--cream)}
+.sk:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.sk.on{background:#FFF9E8;box-shadow:0 6px 0 var(--ink),0 0 0 4px var(--gold)}
+.sk .art{height:112px;border-radius:14px;background:radial-gradient(circle at 50% 60%,#fff 0,var(--bg) 70%);border:2.5px solid var(--ink);margin-bottom:6px;overflow:hidden}
+.sk .art svg{width:112px;height:112px}.sk.locked .art svg{filter:saturate(.75)}
+.sk b{display:block;font:400 18px 'Lilita One',sans-serif}.sk small{display:block;font:900 8.5px Nunito;letter-spacing:1.4px;color:var(--rc);margin-bottom:7px}
+.price{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:99px;border:2.5px solid var(--ink);background:var(--gold);font:400 15px 'Lilita One',sans-serif;box-shadow:0 3px 0 var(--ink);color:var(--ink)}.price.use{background:var(--green);color:#fff}.price.own{background:#EADBB8}
+.tag{position:absolute;left:-3.5px;top:10px;padding:2px 8px 2px 10px;background:var(--rc);color:#fff;font:900 8px Nunito;letter-spacing:1px;border:2.5px solid var(--ink);border-left:0;border-radius:0 8px 8px 0}
+.it{position:relative;display:flex;align-items:center;gap:12px;text-align:left;border-radius:18px;border:3.5px solid var(--ink);background:var(--cream);box-shadow:0 5px 0 var(--ink);padding:10px 12px;color:var(--ink);grid-column:1/3}
+.it:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.it i{flex:0 0 48px;height:48px;border-radius:50%;border:3px solid var(--ink);font:400 21px/42px 'Lilita One',sans-serif;font-style:normal;color:#fff;text-align:center}
+.it b{display:block;font:400 18px 'Lilita One',sans-serif}.it small{font:700 11px Nunito;color:var(--mute)}.it u{text-decoration:none;font:900 10px Nunito;background:var(--green);color:#fff;border-radius:99px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+.it .price{margin-left:auto;flex:none}
+.note{padding:4px 18px 0;font:700 11px Nunito;color:var(--mute)}
+.top5{padding:14px}.top5 div{display:flex;align-items:center;gap:12px;border-radius:16px;border:3px solid var(--ink);background:var(--cream);box-shadow:0 4px 0 var(--ink);padding:10px 14px;margin-bottom:12px;font:400 24px 'Lilita One',sans-serif}
+.top5 i{flex:0 0 36px;height:36px;border-radius:50%;background:var(--ink);color:var(--cream);font:400 17px/36px 'Lilita One',sans-serif;font-style:normal;text-align:center}.top5 div:first-child i{background:var(--gold);color:var(--ink)}
+.top5 small{margin-left:auto;font:900 10px Nunito;letter-spacing:1px;color:var(--mute);text-align:right}
+/* Tarjetas: caída, revivir, pausa */
+.dim{position:fixed;inset:0;z-index:28;display:none;align-items:center;justify-content:center;background:#1B1730B8}
+.card{position:relative;width:min(88%,350px);border-radius:26px;background:var(--cream);border:3.5px solid var(--ink);box-shadow:0 8px 0 var(--ink),0 22px 30px #0007;color:var(--ink);padding:40px 18px 20px;text-align:center;animation:cardIn .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes cardIn{0%{transform:scale(.7) translateY(30px);opacity:0}}
+.card .ribbon{top:-22px}
+.card .lbl{font:900 10px Nunito;letter-spacing:1.6px;color:var(--mute)}.card .big{font:400 58px/56px 'Lilita One',sans-serif}
+.card p{margin:4px 0 12px;font:700 12.5px Nunito;color:#5d5546;line-height:1.35}
+.rec{display:none;margin-top:6px;padding:3px 12px;border-radius:99px;background:var(--gold);border:2.5px solid var(--ink);font:900 10px Nunito;letter-spacing:1px}
+.stats{display:flex;gap:8px;margin:14px 0 4px}.stats div{flex:1;border-radius:14px;background:var(--paper);border:2.5px solid var(--ink);padding:7px 4px 6px;font:400 20px 'Lilita One',sans-serif}.stats small{display:block;font:900 8.5px Nunito;letter-spacing:1px;color:var(--mute)}
+.nudge{margin-top:14px;padding:8px 10px 9px 58px;border-radius:14px;background:var(--ink);color:var(--cream);text-align:left;position:relative;font:900 11px Nunito;display:none}.nudge svg{position:absolute;left:4px;top:-12px;width:54px;height:54px}
+.row2{display:flex;gap:10px;margin-top:16px}.row2 .btn{flex:1}.row2 .btn+.btn{flex:1.6}
+#rvBtn .ring{position:absolute;right:12px;top:8px;width:44px;height:44px;border-radius:50%;background:#ffffff40;overflow:hidden}
+#rvBtn .ring:before{content:"";position:absolute;inset:0;background:#fff;transform-origin:left;animation:drain 5s linear forwards}@keyframes drain{to{transform:scaleX(0)}}
+#rvBtn .ring span{position:absolute;inset:5px;border-radius:50%;background:var(--green);font:400 21px/34px 'Lilita One',sans-serif;color:#fff}
+#rvSub{font:900 10px Nunito;letter-spacing:1px;color:var(--mute);margin-top:14px}
+.link{display:block;width:100%;margin-top:12px;padding:8px;background:none;border:0;color:var(--mute);font:900 11px Nunito;letter-spacing:1.2px}
+@media(min-width:600px){#menu,.panel,#nav,#hud{max-width:480px;left:50%;right:auto;width:100%;transform:translateX(-50%)}}
 </style>
 </head>
-<body>
+<body class="home">
 <div id="stage"><div class="stage-ov"></div></div>
-<div id="flash"></div>
-<div class="top"><div class="brand">KANJŪ <small id="worldName">TILE RUNNER</small></div><div class="stats"><div class="pill" id="scorePill">✦<b id="score">0</b></div><div class="pill" id="coinPill">◉<b id="coinsN">0</b></div></div></div>
-<div id="progress"><i></i></div>
-<button id="mute" aria-label="Sonido">♪</button>
-<div id="combo">x2<small>RACHA</small></div>
-<div id="boosts"></div>
-<div id="revive"><div><h2 id="rvTitle"></h2><p>¿Seguís desde acá?</p><div class="rvbar"><i id="rvBar"></i></div><button id="rvBtn"></button><button id="rvNo">NO, GRACIAS</button></div></div>
+<div id="vig"></div><div id="flash"></div>
+<div id="hud">
+ <div id="progress"><i></i></div>
+ <div id="score" class="L out">0</div>
+ <div id="combo"></div>
+ <div class="chip" id="coinPill"><span data-ico="coin"></span><b id="coinsN" class="L">0</b></div>
+ <button class="round" id="pause" aria-label="Pausa">Ⅱ</button>
+ <div id="boosts"></div>
+ <div id="hint"></div>
+</div>
 <div id="toast"></div>
-<div id="menu"><div class="sheet">
- <h1>KANJŪ <em>RUN</em></h1>
- <p class="sub"><span>RÉCORD <b id="mBest">0</b></span><span>◉ <b id="mWallet">0</b></span></p>
- <div id="skins"></div>
- <div id="items"></div>
- <button id="play">JUGAR</button>
-</div></div>
-<div id="gameover"><div><h2 id="goTitle">FIN DEL RECORRIDO</h2><p id="gameReason"></p><div class="nums"><div><span id="goScore">0</span><small>PUNTOS</small></div><div><span id="goCoins">0</span><small>MONEDAS</small></div><div><span id="goBest">0</span><small>RÉCORD</small></div></div><p id="goNudge"></p><button id="restart">VOLVER A JUGAR</button><button id="toShop" class="ghost">PERSONAJES · ◉ <span id="goWallet">0</span></button></div></div>
-<section class="bar"><div class="hint" id="hint">TOCÁ PARA EMPEZAR A CORRER</div></section>
+<div id="banner" class="ribbon"></div>
+<div id="menu">
+ <button class="round" id="mute" aria-label="Sonido">♪</button>
+ <div class="chip" id="walletChip"><span data-ico="coin"></span><b id="mWallet" class="L">0</b></div>
+ <div class="logo"><b>KANJ<span class="u">U</span></b><b>RUN</b><div class="seal">獣</div></div>
+ <button class="arrow" id="prevSkin" aria-label="Anterior">‹</button><button class="arrow" id="nextSkin" aria-label="Siguiente">›</button>
+ <div class="ribbon" id="skinName"></div>
+ <div id="mission"></div>
+ <div id="playWrap"><button class="btn" id="play">JUGAR</button></div>
+</div>
+<div id="shop" class="panel">
+ <div class="head"><h2>TIENDA</h2><div class="chip"><span data-ico="coin"></span><b id="sWallet" class="L">0</b></div></div>
+ <div class="tabs"><button class="on" data-t="skins">PERSONAJES</button><button data-t="items">ÍTEMS</button></div>
+ <div class="grid" id="skins"></div>
+ <div class="grid" id="items" style="display:none"></div>
+</div>
+<div id="scores" class="panel">
+ <div class="head"><h2>TUS RÉCORDS</h2></div>
+ <div class="top5" id="top5"></div>
+</div>
+<nav id="nav"><button data-tab="home" class="on"><i>▶</i>JUGAR</button><button data-tab="shop"><i>♜</i>TIENDA<span class="dot" id="shopDot">!</span></button><button data-tab="scores"><i>♛</i>RÉCORDS</button></nav>
+<div id="revive" class="dim"><div class="card"><div class="ribbon" id="rvTitle"></div>
+ <p style="font-size:15px;margin:0 0 14px">¿Seguís desde acá?</p>
+ <button class="btn green" id="rvBtn"></button><div id="rvSub"></div>
+ <button class="link" id="rvNo">NO, GRACIAS</button></div></div>
+<div id="gameover" class="dim"><div class="card"><div class="ribbon" id="goTitle"></div>
+ <div class="lbl">PUNTAJE</div><div class="big" id="goScore">0</div><div class="rec" id="goRec">★ NUEVO RÉCORD</div>
+ <div class="stats"><div><span id="goCoins">0</span><small>MONEDAS</small></div><div><span id="goStreak">x1</span><small>MEJOR RACHA</small></div><div><span id="goWorlds">1</span><small>MUNDO</small></div></div>
+ <p id="gameReason" style="margin-top:12px"></p>
+ <div class="nudge" id="goNudge"></div>
+ <div class="row2"><button class="btn sm plain" id="toShop">⌂ INICIO</button><button class="btn sm" id="restart">↻ OTRA VEZ</button></div></div></div>
+<div id="paused" class="dim"><div class="card"><div class="ribbon">PAUSA</div>
+ <button class="btn green" id="resume">▶ SEGUIR</button>
+ <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems } from './kanjuu-demo/scene3d.js';
-import { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, SKINS, artFor } from './kanjuu-demo/runner-art.js';
+import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, SKINS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -131,7 +201,6 @@ const stage=carry?.stage||0;
 const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
 const THEMES=[{name:'PRADERA',path:'grass'},{name:'DESIERTO',path:'sand'},{name:'NIEVE',path:'snow'},{name:'BOSQUE',path:'moss'}];
 const theme=THEMES[stage%THEMES.length];
-$('worldName').textContent='MUNDO '+(stage+1)+' · '+theme.name;
 
 // ── Nivel ──
 // zone[y]: 'land' | 'sea' | 'sky' | 'rail' (se construye al pasar) · 'free' (ya hecho: muelles, cimas, estaciones)
@@ -224,9 +293,26 @@ const SFX={
  buy(){noise(.06,{f:5000,q:4,v:.06});tone(1568,.1,'square',.03,0,.05);tone(2093,.3,'square',.03,0,.13);},
  nope(){tone(180,.12,'sawtooth',.04);},
 };
+// Música: un bucle generado en el momento (bajo, arpegio tipo koto, bombo y platillo) que acelera con la carrera
+const Music={timer:0,next:0,step:0,g:null,mode:'menu',
+ start(){const a=audio();if(!a||this.timer)return;noise(.01,{v:.0001});this.g=a.createGain();this.g.gain.value=.5;this.g.connect(out);this.next=a.currentTime+.08;this.timer=setInterval(()=>this.tick(),40);},
+ stop(){clearInterval(this.timer);this.timer=0;if(this.g){try{this.g.disconnect();}catch{}this.g=null;}},
+ v(f,t,d,type,vol,to){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(this.g);o.start(t);o.stop(t+d+.02);},
+ n(t,d,f,vol){if(!noiseBuf)return;const s=ac.createBufferSource(),fl=ac.createBiquadFilter(),g=ac.createGain();s.buffer=noiseBuf;fl.type='highpass';fl.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl).connect(g).connect(this.g);s.start(t);s.stop(t+d+.02);},
+ tick(){if(!ac||!this.g)return;if(ac.currentTime>this.next+.5)this.next=ac.currentTime+.05;
+  const run=this.mode==='run',bpm=run?Math.min(152,104+(runner.speed-1.4)*20):88,dt=60/bpm/4;
+  while(this.next<ac.currentTime+.14){const s=this.step++,i=s%16,bar=(s>>4)%4,t=this.next,root=[130.81,110,87.31,98][bar];
+   const tri=[[1,1.26,1.5],[1,1.189,1.498],[1,1.26,1.5],[1,1.26,1.5]][bar];
+   if(i%8===0||(run&&i===6))this.v(root/2,t,.22,'triangle',.16);                               // bajo
+   if(i%2===0){const k=[0,1,2,1,0,2,1,2][i/2];this.v(root*2*tri[k],t,.2,'triangle',run?.055:.07);}  // arpegio
+   if(bar%2===1&&i%4===2)this.v(root*4*tri[(i>>2)%3],t,.3,'sine',.04);                         // respuesta aguda
+   if(run){if(i%8===0)this.v(120,t,.14,'sine',.3,45);if(i%8===4)this.n(t,.09,1800,.07);if(i%2===0)this.n(t,.03,6000,i%4===2?.035:.018);}
+   this.next+=dt;}}
+};
 const buzz=p=>{try{navigator.vibrate?.(p)}catch{}};
-const setMuteIcon=()=>{$('mute').textContent=muted?'×':'♪';};setMuteIcon();
-$('mute').addEventListener('click',()=>{muted=!muted;store.set('mute',muted);setMuteIcon();});
+const setMuteIcon=()=>{$('mute').textContent=muted?'×':'♪';$('mute2').textContent=muted?'× SONIDO':'♪ SONIDO';};setMuteIcon();
+function toggleMute(){muted=!muted;store.set('mute',muted);setMuteIcon();if(muted)Music.stop();else{audio();Music.start();SFX.tap();}}
+$('mute').addEventListener('click',toggleMute);$('mute2').addEventListener('click',toggleMute);
 
 // ── Premios visuales y puntaje ──
 let toastTimer;
@@ -234,14 +320,17 @@ function showToast(msg){toast.textContent=msg;toast.style.opacity='1';clearTimeo
 function pop(text,cls=''){const el=document.createElement('div');el.className='pop '+cls;el.textContent=text;el.style.left=(50+(Math.random()*24-12))+'%';el.style.top=(48+Math.random()*6)+'%';document.body.appendChild(el);setTimeout(()=>el.remove(),820);}
 const bump=id=>{const el=$(id);el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');};
 let score=carry?.score||0,coinCount=carry?.coins||0,banked=carry?.coins||0,streak=carry?.streak||0;
-$('score').textContent=score;$('coinsN').textContent=coinCount;
+$('score').textContent=score.toLocaleString('es');$('coinsN').textContent=coinCount;
 const mult=()=>Math.min(5,1+Math.floor(streak/6));
-function addScore(n){score+=n;$('score').textContent=score;}
-function showCombo(){const c=$('combo');if(mult()>1){c.firstChild.textContent='x'+mult();c.style.opacity='1';}else c.style.opacity='0';}
+const fmt=n=>n.toLocaleString('es');
+function addScore(n){score+=n;$('score').textContent=fmt(score);}
+let maxMult=carry?.maxMult||1;
+function showCombo(){const c=$('combo'),m=mult();maxMult=Math.max(maxMult,m);if(m>1){c.textContent='x'+m+' RACHA';c.style.opacity='1';}else c.style.opacity='0';}
 showCombo();
 // las monedas se guardan en el monedero al terminar cada mundo y al perder
 function bank(){wallet+=coinCount-banked;banked=coinCount;store.set('wallet',wallet);}
 function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(boost.double?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
+ missionAdd(c.prize?'prize':'coin',1);
  if(c.prize){pop(c.label+' +'+gain,'pink');SFX.prize();buzz([12,30,12]);runnerPulse('hop');}
  else{pop('+'+gain,'gold');SFX.coin(streak);buzz(8);runnerPulse('squash');}
  if(mult()>before){pop('¡RACHA x'+mult()+'!','big');SFX.streak();}
@@ -250,16 +339,17 @@ function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize)return;if(s
 
 // ── Fin de partida y paso de mundo ──
 let ended=false;
-function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;bank();
- const record=score>best;if(record){best=score;store.set('best',best);}
- $('goTitle').textContent=title;$('gameReason').textContent=reason+(record&&score>0?' ¡Nuevo récord!':'');
- $('goScore').textContent=score;$('goCoins').textContent='+'+coinCount;$('goBest').textContent=best;$('goWallet').textContent=wallet;
- const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0];
- $('goNudge').textContent=!next?'':wallet>=next.price?'¡Ya podés desbloquear a '+next.name+'!':'Te faltan ◉ '+(next.price-wallet)+' para '+next.name;
+function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;bank();Music.mode='menu';
+ const record=score>best&&score>0;if(record){best=score;store.set('best',best);}
+ tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
+ $('goTitle').textContent=title;$('gameReason').textContent=reason;$('goRec').style.display=record?'inline-block':'none';
+ $('goScore').textContent=fmt(score);$('goCoins').textContent='+'+coinCount;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
+ const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0],nd=$('goNudge');
+ if(next){nd.style.display='block';nd.innerHTML=artFor(next.id).HERO.idle[0]+(wallet>=next.price?'¡Ya podés desbloquear a '+next.name.toUpperCase()+'!':'Te faltan ◉ '+(next.price-wallet)+' para '+next.name.toUpperCase())+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
  SFX.lose();buzz(120);setTimeout(()=>gameover.style.display='flex',350);}
-function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();if(score>best){best=score;store.set('best',best);}
+function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;Music.mode='menu';runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();if(score>best){best=score;store.set('best',best);}
  SFX.win();buzz([20,40,20,40,60]);pop('¡MUNDO '+(stage+1)+' COMPLETADO! +'+bonus,'big');
- try{sessionStorage.setItem('kanjuu.run.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak,shield:boost.shield,revives}));}catch{}
+ try{sessionStorage.setItem('kanjuu.run.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak,shield:boost.shield,revives,maxMult,rides:ridesDone}));}catch{}
  setTimeout(()=>location.reload(),1700);}
 function deathText(){
  const y=targetRow(),t=runner.onBoat?runner.rideType:null,z=zone[y];
@@ -281,9 +371,8 @@ function onGameOver(){
  if(boost.shield){boost.shield=false;rescue();pop('¡ESCUDO!','big');return;}
  bank();
  if(revives<2&&(stock.revive>0||wallet>=revivePrice())){
-  const own=stock.revive>0;$('rvTitle').textContent=title;$('rvBtn').innerHTML=own?'♥ REVIVIR <small>tenés '+stock.revive+'</small>':'♥ REVIVIR <small>◉ '+revivePrice()+'</small>';
-  $('revive').style.display='flex';const bar=$('rvBar');bar.style.transition='none';bar.style.width='100%';void bar.offsetWidth;bar.style.transition='width 5s linear';bar.style.width='0%';
-  SFX.nope();clearTimeout(reviveTimer);reviveTimer=setTimeout(()=>{$('revive').style.display='none';endGame(title,reason);},5000);
+  const own=stock.revive>0;$('rvTitle').textContent=title;$('rvBtn').innerHTML='♥ REVIVIR<div class="ring"><span id="rvN">5</span></div>';$('rvSub').textContent=own?'TENÉS '+stock.revive:'CUESTA ◉ '+revivePrice()+' · TENÉS ◉ '+wallet;
+  $('revive').style.display='flex';SFX.nope();clearTimeout(reviveTimer);let left=5;const tickR=()=>{left--;if($('rvN'))$('rvN').textContent=Math.max(1,left);if(left<=0){$('revive').style.display='none';endGame(title,reason);}else reviveTimer=setTimeout(tickR,1000);};reviveTimer=setTimeout(tickR,1000);
   $('rvBtn').onclick=()=>{clearTimeout(reviveTimer);$('revive').style.display='none';if(own)stock.revive--;else{wallet-=revivePrice();store.set('wallet',wallet);}store.set('items',stock);revives++;rescue();pop('¡DE VUELTA!','big');};
   $('rvNo').onclick=()=>{clearTimeout(reviveTimer);$('revive').style.display='none';endGame(title,reason);};
   return;
@@ -303,7 +392,10 @@ const targetRow=()=>Math.ceil(START-runner.distance)-1;
 const prevExit=y=>runner.path[y+1]?.x??runner.lastBuildLane;
 const MAT={land:theme.path,sea:'water',sky:'sky',rail:'rail'};
 let lastWhoosh=0;
-function setTile(x,y,extra){const z=zone[y];if(z==='free')return;const g=MAT[z],tile=z==='sky'?{g,h:LEVELS,float:true}:{g,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);SFX.tile(g,extra);}
+// Vías: cada tile recuerda por dónde entra y por dónde sale el riel, así las curvas y diagonales se pintan solas
+const railT={};
+function railPort(x,y,patch){const k=x+','+y,t=railT[k];if(!t)return;Object.assign(t,patch);updateRunnerTile(x,y,t);}
+function setTile(x,y,extra){const z=zone[y];if(z==='free')return;const g=MAT[z],tile=z==='sky'?{g,h:LEVELS,float:true}:z==='rail'?(railT[x+','+y]||={g,h:0,in:'S',out:'N'}):{g,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);SFX.tile(g,extra);}
 function moved(){const now=performance.now();if(now-lastWhoosh>90){lastWhoosh=now;SFX.whoosh();buzz(6);}}
 function buildToward(lane){
  if(runner.gameOver)return false;
@@ -318,6 +410,7 @@ function buildToward(lane){
    if(x!==from&&!isRockCell(from,y))x=from;
    else{runner.blockedByRock=y;return false;}
   }
+  if(zone[y]==='rail'){railT[x+','+y]={g:'rail',h:0,in:x===from?'S':x>from?'SW':'SE',out:'N'};railPort(from,y+1,{out:x===from?'N':x>from?'NE':'NW'});}
   setTile(x,y,false);runner.path[y]={x,e:x,lanes:{[x]:1}};
   runner.lastBuildLane=x;runner.steps++;if(x!==from)moved();
   return true;
@@ -325,6 +418,7 @@ function buildToward(lane){
  if(lane===row.x)return false;
  const nx=row.x+Math.sign(lane-row.x);
  if(isRockCell(nx,y))return false;
+ if(zone[y]==='rail'){const east=nx>row.x;railPort(row.x,y,{out:east?'E':'W'});if(nx in row.lanes)railPort(nx,y,{out:'N'});else railT[nx+','+y]={g:'rail',h:0,in:east?'W':'E',out:'N'};}
  if(!(nx in row.lanes)){setTile(nx,y,true);row.lanes[nx]=1;runner.steps++;}
  row.x=nx;runner.lastBuildLane=nx;moved();
  return true;
@@ -348,10 +442,10 @@ function enterRow(r){
  const ride=rides[rideIndex];
  if(ride&&r===ride.board){const R=RIDES[ride.type];runner.boatId=ride.id;runner.onBoat=true;runner.rideType=ride.type;runner.vehicleY=R.y;runner.steerY=R.steer??null;
   SFX.board(ride.type);buzz([15,40,25]);pop(R.on,'big');runnerPulse('hop');if(ride.type==='boat'){$('flash').style.opacity='.5';setTimeout(()=>$('flash').style.opacity='0',120);}}
- if(ride&&r===ride.land+1){const R=RIDES[ride.type];runner.onBoat=false;runner.leaveBoat=ride.id;runner.leaveMode=R.leave;runner.steerY=null;rideIndex++;ridesDone++;
-  const bonus=200*Math.min(ridesDone,10);addScore(bonus);bump('scorePill');pop(R.off+' +'+bonus,'big');SFX.arrive();buzz([20,30,20,30,40]);runnerPulse('hop');}
+ if(ride&&r===ride.land+1){const R=RIDES[ride.type];runner.onBoat=false;runner.leaveBoat=ride.id;runner.leaveMode=R.leave;runner.steerY=null;rideIndex++;ridesDone++;missionAdd('ride');
+  const bonus=200*Math.min(ridesDone,10);addScore(bonus);bump('score');pop(R.off+' +'+bonus,'big');SFX.arrive();buzz([20,30,20,30,40]);runnerPulse('hop');}
  // roce: pasar pegado a un obstáculo
- const row=runner.path[r];if(row&&zone[r]!=='free'){const ls=Object.keys(row.lanes).map(Number);if(ls.some(x=>isRockCell(x-1,r)||isRockCell(x+1,r))){addScore(5*mult());pop('¡CASI! +'+5*mult());SFX.near();}}
+ const row=runner.path[r];if(row&&zone[r]!=='free'){const ls=Object.keys(row.lanes).map(Number);if(ls.some(x=>isRockCell(x-1,r)||isRockCell(x+1,r))){missionAdd('near');addScore(5*mult());pop('¡CASI! +'+5*mult());SFX.near();}}
  // la velocidad sube de a poco durante todo el mundo (y cada mundo arranca más rápido)
  const prog=(START-r)/(START-GOAL);$('progress').firstElementChild.style.width=Math.min(100,prog*100)+'%';
  const base=speedAt(prog);runner.speed=base*(runner.onBoat?RIDES[runner.rideType].boost:1);
@@ -361,19 +455,20 @@ function enterRow(r){
 function refreshUI(){
  const y=targetRow(),ride=rides[rideIndex],toBoard=ride&&!runner.onBoat?y-ride.board:99;
  const name={boat:'BARCO',balloon:'GLOBO',train:'TREN'}[ride?.type];
- hint.textContent=!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':toBoard<12?name+' ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
+ hint.textContent=paused?'':!runner.started?'TOCÁ PARA EMPEZAR A CORRER':runner.onBoat?'TOCÁ O ARRASTRÁ PARA ESQUIVAR':toBoard<12?name+' ADELANTE · PREPARATE':'TOCÁ O ARRASTRÁ PARA CAMBIAR DE CARRIL';
 }
 
 // ── Entrada: un dedo. Tocar = un carril hacia ese lado; mantener y arrastrar = seguir al dedo ──
 let buildHeld=false,lateralClock=0,lastFrame=performance.now();
-function begin(){if(!runner.started){runner.started=true;audio();}}
-host.addEventListener('pointerdown',e=>{if(runner.gameOver||menuOpen)return;begin();buildHeld=true;lateralClock=0;laneFromPointer(e);buildToward(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
+let paused=false;
+function begin(){if(!runner.started&&!paused){runner.started=true;audio();Music.start();Music.mode='run';document.body.classList.remove('home');}}
+host.addEventListener('pointerdown',e=>{if(runner.gameOver||menuOpen||paused)return;begin();buildHeld=true;lateralClock=0;laneFromPointer(e);buildToward(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointermove',e=>{if(!buildHeld)return;laneFromPointer(e);e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointerup',e=>{buildHeld=false;e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointercancel',()=>{buildHeld=false;},true);
 // Teclado (escritorio): ←/→ o A/D cambian de carril
 window.addEventListener('keydown',e=>{
- if(runner.gameOver||menuOpen)return;const k=e.key.toLowerCase();
+ if(runner.gameOver||menuOpen||paused)return;const k=e.key.toLowerCase();
  if(!['arrowup','w','arrowleft','a','arrowright','d',' '].includes(k))return;e.preventDefault();begin();
  if(e.repeat||k==='arrowup'||k==='w'||k===' ')return;
  const y=targetRow(),row=runner.path[y],base=row?row.x:prevExit(y);
@@ -391,28 +486,61 @@ function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
 requestAnimationFrame(frame);
 window.addEventListener('pagehide',bank);
 
-// ── Menú inicial y tienda de personajes ──
-let menuOpen=!autostart&&!carry;
-function applySkin(){art=artFor(skinId);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
-function drawBoosts(){$('boosts').textContent=[boost.shield&&'◈ ESCUDO',boost.magnet&&'∩ IMÁN',boost.double&&'x2 MONEDAS'].filter(Boolean).join('  ·  ');}
+// ── Íconos, misión del día y récords ──
+const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:GATE};
+const ico=(k,style='')=>ICO[k].replace('<svg','<svg class="ico" style="'+style+'"');
+document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ico(e.dataset.ico));
+const MISSIONS=[{id:'prize',text:'Juntá 5 tesoros',goal:5,ico:'pearl'},{id:'ride',text:'Completá 4 travesías',goal:4,ico:'boat'},{id:'coin',text:'Juntá 120 monedas',goal:120,ico:'coin'},{id:'near',text:'Rozá 12 obstáculos',goal:12,ico:'rock'}];
+const today=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),MIS=MISSIONS[today%MISSIONS.length];
+let mis=store.get('mission',null);if(!mis||mis.day!==today)mis={day:today,n:0,done:false};
+function missionAdd(kind,n=1){if(kind!==MIS.id||mis.done)return;mis.n=Math.min(MIS.goal,mis.n+n);
+ if(mis.n>=MIS.goal){mis.done=true;wallet+=100;store.set('wallet',wallet);setTimeout(()=>{pop('¡MISIÓN CUMPLIDA! +◉100','big');SFX.win();},500);}
+ store.set('mission',mis);}
+function drawMission(){const m=$('mission');m.className=mis.done?'done':'';m.innerHTML=ico(MIS.ico)+'<b>MISIÓN DEL DÍA · '+MIS.text+'</b><em>'+(mis.done?'✓ +◉100':mis.n+'/'+MIS.goal)+'</em><div class="bar"><i style="width:'+mis.n/MIS.goal*100+'%"></i></div>';}
+const tops=store.get('tops',[]);
+// marcas de los vehículos sobre la barra de avance
+{const pr=$('progress');rides.forEach(r=>pr.insertAdjacentHTML('beforeend',ico({boat:'boat',balloon:'balloon',train:'train'}[r.type],'left:'+((START-r.board)/(START-GOAL)*100)+'%')));pr.insertAdjacentHTML('beforeend',ico('gate','left:100%'));}
+
+// ── Inicio, tienda y pausa ──
+let menuOpen=!autostart&&!carry,browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
+const RARITY={kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
+function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
+function drawBoosts(){$('boosts').innerHTML=[boost.shield&&'◈',boost.magnet&&'∩',boost.double&&'x2'].filter(Boolean).map(t=>'<div class="pw"><span>'+t+'</span></div>').join('');}
 function useItems(){for(const k of ['shield','magnet','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);runner.magnet=boost.magnet;drawBoosts();}
-function drawShop(){
- $('items').innerHTML=ITEMS.map(k=>`<button class="item" data-id="${k.id}"><i>${k.icon}</i><b>${k.name}${stock[k.id]?' <u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small><span>◉ ${k.price}</span></button>`).join('');
- $('mBest').textContent=best;$('mWallet').textContent=wallet;
- $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId;return `<button class="skin${on?' on':''}${has?'':' locked'}" data-id="${k.id}">${artFor(k.id).HERO.idle[0]}<b>${k.name}</b><small>${k.tag}</small><span>${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
+function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast('TE FALTAN ◉ '+(price-wallet)+' PARA '+name.toUpperCase());return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
+function drawHome(){
+ const k=SKINS[browse],has=owned.includes(k.id);
+ $('mWallet').textContent=fmt(wallet);$('sWallet').textContent=fmt(wallet);
+ $('skinName').innerHTML=k.name.toUpperCase()+'<small>'+(has?k.tag.toUpperCase():RARITY[k.id][0]+' · BLOQUEADO')+'</small>';
+ const p=$('play');p.className='btn'+(has?'':' locked');p.textContent=has?'JUGAR':'DESBLOQUEAR ◉ '+k.price;
+ $('shopDot').style.display=SKINS.some(s=>!owned.includes(s.id)&&wallet>=s.price)?'block':'none';
+ drawMission();
 }
-$('skins').addEventListener('click',e=>{const b=e.target.closest('.skin');if(!b)return;const k=SKINS.find(s=>s.id===b.dataset.id);audio();
- if(!owned.includes(k.id)){
-  if(wallet<k.price){SFX.nope();buzz(40);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast('TE FALTAN ◉ '+(k.price-wallet)+' PARA '+k.name.toUpperCase());return;}
-  wallet-=k.price;owned.push(k.id);store.set('wallet',wallet);store.set('owned',owned);SFX.buy();buzz([15,40,15]);pop('¡'+k.name.toUpperCase()+' DESBLOQUEADO!','big');
- }else SFX.tap();
- skinId=k.id;store.set('skin',skinId);applySkin();drawShop();});
-$('items').addEventListener('click',e=>{const b=e.target.closest('.item');if(!b)return;const k=ITEMS.find(i=>i.id===b.dataset.id);audio();
- if(wallet<k.price){SFX.nope();buzz(40);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast('TE FALTAN ◉ '+(k.price-wallet)+' PARA '+k.name.toUpperCase());return;}
- wallet-=k.price;stock[k.id]++;store.set('wallet',wallet);store.set('items',stock);SFX.buy();buzz([15,40,15]);drawShop();});
-$('play').addEventListener('click',()=>{audio();SFX.tap();useItems();menuOpen=false;$('menu').style.display='none';begin();});
-if(menuOpen){drawShop();$('menu').style.display='flex';}
-else{if(!carry)useItems();else drawBoosts();setTimeout(()=>pop('MUNDO '+(stage+1)+' · '+theme.name,'big'),400);}
+function drawShop(){
+ $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
+ const COL={revive:'#E8452C',shield:'#3E5BA9',magnet:'#7B5CC4',double:'#5DB84F'};
+ $('items').innerHTML=ITEMS.map(k=>`<button class="it" data-id="${k.id}"><i style="background:${COL[k.id]}">${k.icon}</i><div><b>${k.name}${stock[k.id]?'<u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small></div><span class="price">◉ ${k.price}</span></button>`).join('')+'<div class="note" style="grid-column:1/3">Revivir se usa cuando caés. Escudo, Imán y Doble se gastan solos al empezar tu próxima partida.</div>';
+ $('top5').innerHTML=tops.length?tops.map((t,i)=>`<div><i>${i+1}</i>${fmt(t.s)}<small>MUNDO ${t.w}<br>${new Date(t.t).toLocaleDateString('es')}</small></div>`).join(''):'<p class="note">Todavía no hay partidas. ¡Jugá la primera!</p>';
+}
+function pickSkin(i){browse=(i+SKINS.length)%SKINS.length;const k=SKINS[browse];if(owned.includes(k.id)){skinId=k.id;store.set('skin',skinId);}applySkin(k.id);drawHome();drawShop();}
+$('prevSkin').addEventListener('click',()=>{audio();SFX.tap();Music.start();pickSkin(browse-1);});
+$('nextSkin').addEventListener('click',()=>{audio();SFX.tap();Music.start();pickSkin(browse+1);});
+$('skins').addEventListener('click',e=>{const b=e.target.closest('.sk');if(!b)return;const k=SKINS.find(s=>s.id===b.dataset.id);audio();
+ if(!owned.includes(k.id)){if(!buy(k.price,k.name)){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);pop('¡'+k.name.toUpperCase()+'!','big');}else SFX.tap();
+ pickSkin(SKINS.indexOf(k));});
+$('items').addEventListener('click',e=>{const b=e.target.closest('.it');if(!b)return;const k=ITEMS.find(i=>i.id===b.dataset.id);audio();
+ if(!buy(k.price,k.name)){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');return;}stock[k.id]++;store.set('items',stock);drawHome();drawShop();});
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{audio();SFX.tap();document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));$('skins').style.display=b.dataset.t==='skins'?'grid':'none';$('items').style.display=b.dataset.t==='items'?'grid':'none';}));
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>{audio();SFX.tap();Music.start();const t=b.dataset.tab;document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));$('shop').style.display=t==='shop'?'block':'none';$('scores').style.display=t==='scores'?'block':'none';if(t==='home'){const k=SKINS[browse];if(!owned.includes(k.id))pickSkin(SKINS.findIndex(s=>s.id===skinId));}drawHome();drawShop();}));
+$('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
+ if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
+ SFX.tap();useItems();menuOpen=false;$('menu').style.display='none';$('nav').style.display='none';banner('MUNDO '+(stage+1)+' · '+theme.name);begin();});
+function banner(t){const b=$('banner');b.textContent=t;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
+$('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
+$('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
+$('quit').addEventListener('click',()=>{bank();location.reload();});
+if(menuOpen){drawHome();drawShop();$('menu').style.display='block';$('nav').style.display='flex';}
+else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner('MUNDO '+(stage+1)+' · '+theme.name),300);}
 if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},GOAL,START,stage};
 </script>
 </body></html>

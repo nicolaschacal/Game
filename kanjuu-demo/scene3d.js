@@ -994,6 +994,22 @@ export function runnerPulse(kind = 'squash') {
   if (kind === 'hop') o.hop = 1; else o.squash = 1;
 }
 const runnerGeo = {};
+// Textura de vía entre dos "puertas" del tile. Arriba de la imagen = adelante (N); derecha = carril mayor (E).
+const RAIL_PORT = { S: [64, 128], N: [64, 0], E: [128, 64], W: [0, 64], NE: [128, 0], NW: [0, 0], SE: [128, 128], SW: [0, 128] };
+function railMaterial(a, b) {
+  const cache = runnerGeo.rails ||= {}, key = a + '>' + b; if (cache[key]) return cache[key];
+  const c = document.createElement('canvas'); c.width = c.height = 128; const k = c.getContext('2d');
+  k.fillStyle = '#CDBB97'; k.fillRect(0, 0, 128, 128);
+  k.fillStyle = '#B9A680'; for (let i = 0; i < 70; i++) k.fillRect((i * 37) % 124, (i * 53) % 124, 4, 3);
+  const [x0, y0] = RAIL_PORT[a], [x1, y1] = RAIL_PORT[b], N = 28, pts = [];
+  for (let i = -3; i <= N + 3; i++) { const t = i / N, u = 1 - t; pts.push([u * u * x0 + 2 * u * t * 64 + t * t * x1, u * u * y0 + 2 * u * t * 64 + t * t * y1, 2 * u * (64 - x0) + 2 * t * (x1 - 64), 2 * u * (64 - y0) + 2 * t * (y1 - 64)]); }
+  const nrm = p => { const l = Math.hypot(p[2], p[3]) || 1; return [-p[3] / l, p[2] / l]; };
+  let acc = 9;                                                    // durmientes perpendiculares a la curva
+  for (let i = 1; i < pts.length; i++) { acc += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); if (acc < 21) continue; acc = 0; const [nx, ny] = nrm(pts[i]); k.strokeStyle = '#6B4A2E'; k.lineWidth = 12; k.beginPath(); k.moveTo(pts[i][0] - nx * 46, pts[i][1] - ny * 46); k.lineTo(pts[i][0] + nx * 46, pts[i][1] + ny * 46); k.stroke(); }
+  for (const [col, w] of [['#3E434B', 11], ['#D5DAE2', 3.5]]) for (const side of [-28, 28]) { k.strokeStyle = col; k.lineWidth = w; k.lineJoin = 'round'; k.beginPath(); pts.forEach((p, i) => { const [nx, ny] = nrm(p); k[i ? 'lineTo' : 'moveTo'](p[0] + nx * side, p[1] + ny * side); }); k.stroke(); }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
+  return cache[key] = new THREE.MeshStandardMaterial({ map: tx, roughness: .9 });
+}
 export function updateRunnerTile(x, y, tile) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
   W.opts.tiles ||= {}; W.opts.tiles[x + ',' + y] = tile;
@@ -1004,20 +1020,11 @@ export function updateRunnerTile(x, y, tile) {
     m.position.set(top.position.x, tile.h * LV - .05, top.position.z); m.castShadow = m.receiveShadow = true; m.userData.keepGeo = true;
     W.island.add(m); W.floats.set(x + ',' + y, m); W.rowB?.get(y)?.push(m); return;
   }
-  if (tile.g === 'rail') { // vía: balasto + rieles y durmientes pintados encima
-    if (!runnerGeo.railMat) {
-      const c = document.createElement('canvas'); c.width = c.height = 128; const k = c.getContext('2d');
-      k.fillStyle = '#CDBB97'; k.fillRect(0, 0, 128, 128);                                   // balasto
-      k.fillStyle = '#B9A680'; for (let i = 0; i < 70; i++) k.fillRect((i * 37) % 124, (i * 53) % 124, 4, 3);
-      k.fillStyle = '#6B4A2E'; for (const y of [6, 38, 70, 102]) k.fillRect(8, y, 112, 20);   // durmientes
-      k.fillStyle = '#8A6240'; for (const y of [6, 38, 70, 102]) k.fillRect(8, y, 112, 5);
-      k.fillStyle = '#3E434B'; k.fillRect(26, 0, 14, 128); k.fillRect(88, 0, 14, 128);        // rieles
-      k.fillStyle = '#D5DAE2'; k.fillRect(30, 0, 4, 128); k.fillRect(92, 0, 4, 128);
-      const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
-      runnerGeo.railMat = new THREE.MeshStandardMaterial({ map: tx, roughness: .9 }); runnerGeo.rail = new THREE.PlaneGeometry(1, 1);
-    }
-    if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail, runnerGeo.railMat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, W.tY(x, y) + .012, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; }
-    top.material = gMat('#B9A27E'); return;
+  if (tile.g === 'rail') { // vía pintada: el dibujo sigue la entrada y la salida del tile (recta, curva o diagonal)
+    const mat = railMaterial(tile.in || 'S', tile.out || 'N');
+    if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail ||= new THREE.PlaneGeometry(1, 1), mat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, W.tY(x, y) + .012, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; top.material = gMat('#B9A27E'); }
+    else top.userData.rail.material = mat;
+    return;
   }
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
   top.position.y = W.tY(x, y) - SLAB / 2;

@@ -59,3 +59,10 @@ Entre mares hay una cima con un globo de papel. Kami sube solo el escalón (ramp
 - **Sonido**: cada tile es una nota de una melodía pentatónica con el timbre del tramo (marimba en tierra, burbuja en agua, campanita en el cielo, clac-clac en las vías); monedas que suben de tono con la racha, silbato, zumbido al rozar, subida al acelerar.
 - **Rendimiento**: solo se dibujan las filas cercanas (34 adelante, 7 atrás); lo que queda atrás se saca de la escena. La grilla es una línea tenue por fila y la resolución se limita a 1.5×.
 - Pruebas: `?debug` expone `window.__dbg`; `?debug&quick` genera un mundo corto.
+
+## Tile Runner · GUI de papel, música y vías con curvas
+
+- **GUI nueva**: piezas crema con borde de tinta y sombra dura, botones con volumen, tipografía Lilita One + Nunito. Inicio con logo, personaje en vivo con flechas, misión del día y barra inferior (Jugar · Tienda · Récords); HUD limpio con barra de avance y marcas de vehículos; tarjetas de revivir, caída y pausa; tienda con rarezas y pestañas.
+- **Misión del día** (rota entre 4, premio ◉100) y **tus 5 mejores partidas**, guardadas en el dispositivo.
+- **Música generada en vivo** (bajo, arpegio, bombo y platillo) que acelera con la carrera; un solo botón silencia música y efectos.
+- **Vías con curvas**: cada tile de vía se pinta según por dónde entra y sale el tren (recta, curva lateral o diagonal).
