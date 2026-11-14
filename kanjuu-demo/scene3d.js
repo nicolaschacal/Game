@@ -677,7 +677,7 @@ function sanctuary() {
           if (coin.collected || coin.missed) return;
           // La moneda se junta si el corredor pasa por su carril en cualquier momento de esa fila
           // (también durante un desplazamiento lateral).
-          if (pos <= coin.y + .5 && pos >= coin.y - .5 && Math.round(runner.visualLane ?? runner.lane ?? 2) === coin.x) {
+          if (pos <= coin.y + .5 && pos >= coin.y - .5 && Math.abs(Math.round(runner.visualLane ?? runner.lane ?? 2) - coin.x) <= (runner.magnet ? 1 : 0)) {
             coin.collected = true;
             const item = W.items.get(coin.id); if (item) item.group.visible = false;
             runner.onCoin?.(coin.id);
@@ -986,6 +986,7 @@ function runnerWindow(W, cur) {
     W.rowItems.get(r)?.forEach(id => { const o = W.items.get(id); if (o && !o.d.frames) { W.world.remove(o.group); W.items.delete(id); } }); W.rowItems.delete(r);
   }
 }
+export function runnerHideItems(ids) { const W = E?.worlds.sanct; ids.forEach(id => { const o = W?.items.get(id); if (o) o.group.visible = false; }); }
 export function runnerStats() { const W = E?.worlds.sanct; return { calls: E.renderer.info.render.calls, tris: E.renderer.info.render.triangles, tiles: W.tops.size, items: W.items.size }; }
 export function runnerPulse(kind = 'squash') {
   const W = E?.worlds.sanct, R = W?.opts?.runner; if (!R) return;
@@ -1006,13 +1007,16 @@ export function updateRunnerTile(x, y, tile) {
   if (tile.g === 'rail') { // vía: balasto + rieles y durmientes pintados encima
     if (!runnerGeo.railMat) {
       const c = document.createElement('canvas'); c.width = c.height = 128; const k = c.getContext('2d');
-      k.fillStyle = '#7A5636'; for (const y of [8, 40, 72, 104]) k.fillRect(10, y, 108, 16);
-      k.fillStyle = '#4A4F58'; k.fillRect(30, 0, 10, 128); k.fillRect(88, 0, 10, 128);
-      k.fillStyle = '#C9CED6'; k.fillRect(32, 0, 3, 128); k.fillRect(90, 0, 3, 128);
+      k.fillStyle = '#CDBB97'; k.fillRect(0, 0, 128, 128);                                   // balasto
+      k.fillStyle = '#B9A680'; for (let i = 0; i < 70; i++) k.fillRect((i * 37) % 124, (i * 53) % 124, 4, 3);
+      k.fillStyle = '#6B4A2E'; for (const y of [6, 38, 70, 102]) k.fillRect(8, y, 112, 20);   // durmientes
+      k.fillStyle = '#8A6240'; for (const y of [6, 38, 70, 102]) k.fillRect(8, y, 112, 5);
+      k.fillStyle = '#3E434B'; k.fillRect(26, 0, 14, 128); k.fillRect(88, 0, 14, 128);        // rieles
+      k.fillStyle = '#D5DAE2'; k.fillRect(30, 0, 4, 128); k.fillRect(92, 0, 4, 128);
       const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
-      runnerGeo.railMat = new THREE.MeshStandardMaterial({ map: tx, transparent: true, roughness: .9 }); runnerGeo.rail = new THREE.PlaneGeometry(1, 1);
+      runnerGeo.railMat = new THREE.MeshStandardMaterial({ map: tx, roughness: .9 }); runnerGeo.rail = new THREE.PlaneGeometry(1, 1);
     }
-    if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail, runnerGeo.railMat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, top.position.y + .014, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; }
+    if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail, runnerGeo.railMat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, W.tY(x, y) + .012, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; }
     top.material = gMat('#B9A27E'); return;
   }
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);

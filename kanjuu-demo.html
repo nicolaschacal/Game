@@ -69,6 +69,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 .skin.locked svg{filter:saturate(.55) brightness(.8)}.skin.locked span{background:#f2b937}
 .skin.on{border-color:#f2b937;background:#2d2850}.skin.on span{background:#5db84f;color:#fff}
 .skin.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#items{touch-action:pan-x;display:flex;gap:8px;overflow-x:auto;padding:0 2px 12px}
+.item{flex:1 0 78px;border:2px solid #fff4dc33;border-radius:14px;background:#211d39e8;color:#fff4dc;padding:7px 4px;font-family:'DM Sans',sans-serif;box-shadow:0 4px 0 #0b0918}
+.item i{display:block;font:900 18px 'DM Sans',sans-serif;font-style:normal;color:#f2b937;height:22px}.item b{display:block;font-size:11px;font-weight:900}.item u{text-decoration:none;color:#5db84f}.item small{display:block;font-size:7.5px;color:#fff4dc99;margin:1px 0 5px;line-height:1.2}
+.item span{display:inline-block;border-radius:99px;padding:3px 8px;font-size:9px;font-weight:900;background:#f2b937;color:#2b1d16}.item.shake{animation:shake .3s}
+#boosts{position:absolute;z-index:6;left:54px;right:80px;top:calc(env(safe-area-inset-top) + 78px);color:#fff4dc;font:900 9px 'DM Sans',sans-serif;letter-spacing:1px;text-shadow:0 1px 4px #17152b;pointer-events:none}
+#revive{position:absolute;inset:0;z-index:28;display:none;align-items:center;justify-content:center;background:#17152bb8}
+#revive>div{width:min(84%,340px);padding:22px 20px;border-radius:24px;background:#211d39;border:2px solid #fff4dc44;color:#fff4dc;text-align:center;font-family:'DM Sans',sans-serif}
+#revive h2{margin:0 0 4px;font-size:24px;font-weight:900}#revive p{margin:0 0 12px;font-size:13px;color:#fff4dccc}
+.rvbar{height:8px;border-radius:99px;background:#fff4dc22;overflow:hidden;margin-bottom:14px}.rvbar i{display:block;height:100%;width:100%;background:#f2b937}
+#rvBtn{display:block;width:100%;height:58px;border:2.5px solid #2b1d16;border-radius:16px;background:#5db84f;color:#fff;font:900 17px 'DM Sans',sans-serif;letter-spacing:1px;box-shadow:0 5px 0 #0b0918}#rvBtn small{font-size:11px;opacity:.9;margin-left:6px}
+#rvNo{display:block;width:100%;margin-top:10px;padding:10px;background:transparent;border:0;color:#fff4dc99;font:800 11px 'DM Sans',sans-serif;letter-spacing:1px}
 #play{width:100%;height:60px;border:2.5px solid #2b1d16;border-radius:18px;background:#f2b937;color:#2b1d16;font:900 18px 'DM Sans',sans-serif;letter-spacing:2px;box-shadow:0 6px 0 #0b0918}
 #gameover #goNudge{margin:6px 0 14px;font:800 11px 'DM Sans',sans-serif;color:#f2b937;min-height:14px}
 #gameover #restart{display:block;width:100%}
@@ -83,17 +94,20 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night
 <div id="progress"><i></i></div>
 <button id="mute" aria-label="Sonido">♪</button>
 <div id="combo">x2<small>RACHA</small></div>
+<div id="boosts"></div>
+<div id="revive"><div><h2 id="rvTitle"></h2><p>¿Seguís desde acá?</p><div class="rvbar"><i id="rvBar"></i></div><button id="rvBtn"></button><button id="rvNo">NO, GRACIAS</button></div></div>
 <div id="toast"></div>
 <div id="menu"><div class="sheet">
  <h1>KANJŪ <em>RUN</em></h1>
  <p class="sub"><span>RÉCORD <b id="mBest">0</b></span><span>◉ <b id="mWallet">0</b></span></p>
  <div id="skins"></div>
+ <div id="items"></div>
  <button id="play">JUGAR</button>
 </div></div>
 <div id="gameover"><div><h2 id="goTitle">FIN DEL RECORRIDO</h2><p id="gameReason"></p><div class="nums"><div><span id="goScore">0</span><small>PUNTOS</small></div><div><span id="goCoins">0</span><small>MONEDAS</small></div><div><span id="goBest">0</span><small>RÉCORD</small></div></div><p id="goNudge"></p><button id="restart">VOLVER A JUGAR</button><button id="toShop" class="ghost">PERSONAJES · ◉ <span id="goWallet">0</span></button></div></div>
 <section class="bar"><div class="hint" id="hint">TOCÁ PARA EMPEZAR A CORRER</div></section>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats } from './kanjuu-demo/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems } from './kanjuu-demo/scene3d.js';
 import { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, SKINS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
@@ -102,10 +116,19 @@ const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('q
 const store={get(k,d){try{const v=localStorage.getItem('kanjuu.run.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('kanjuu.run.'+k,JSON.stringify(v));}catch{}}};
 let wallet=store.get('wallet',0),owned=store.get('owned',['kami']),skinId=store.get('skin','kami'),best=store.get('best',0),muted=store.get('mute',false);
 if(!owned.includes(skinId))skinId='kami';
+// Ítems consumibles: se compran con monedas. Revivir se usa al perder; los demás se gastan al empezar la próxima partida.
+const ITEMS=[
+ {id:'revive',name:'Revivir',icon:'♥',price:120,tag:'Seguís donde caíste'},
+ {id:'shield',name:'Escudo',icon:'◈',price:80,tag:'Te salva de un choque'},
+ {id:'magnet',name:'Imán',icon:'∩',price:60,tag:'Atrae monedas vecinas'},
+ {id:'double',name:'Doble',icon:'x2',price:100,tag:'Monedas x2'},
+];
+const stock={revive:0,shield:0,magnet:0,double:0,...store.get('items',{})};
 // Lo que se arrastra de un mundo al siguiente dentro de la misma partida
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
 const stage=carry?.stage||0;
+const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
 const THEMES=[{name:'PRADERA',path:'grass'},{name:'DESIERTO',path:'sand'},{name:'NIEVE',path:'snow'},{name:'BOSQUE',path:'moss'}];
 const theme=THEMES[stage%THEMES.length];
 $('worldName').textContent='MUNDO '+(stage+1)+' · '+theme.name;
@@ -139,7 +162,7 @@ function fill(n,kind,{gap,lead,extra}){
  cur-=n;
 }
 const free=(n,t)=>{for(let i=0;i<n;i++){zone[cur-i]='free';paintRow(cur-i,t);}cur-=n;};
-const park=(type,frames,board,size)=>{const id='ride'+rides.length;vehicles.push({id,type,kind:'paper',svg:frames.idle[0],frames,fps:type==='boat'?5:6,x:2-(size-1)/2,y:board-(size-1)/2,w:size,h:size});return id;};
+const park=(type,frames,board,size,lift=0)=>{const id='ride'+rides.length;vehicles.push({id,type,kind:'paper',svg:frames.idle[0],frames,fps:type==='boat'?5:6,x:2-(size-1)/2,y:board-(size-1)/2,w:size,h:size,lift});return id;};
 const diff=hard=>({gap:hard?2:3,lead:2,extra:hard?2:1});
 const RIDE={
  // Mar: muelle → barco → ruta de agua → playa
@@ -147,7 +170,7 @@ const RIDE={
  // Cielo: escalón ya hecho → cima con globo → tiles de cielo → otra cima y bajada
  sky(len,hard){
   for(let k=0;k<LEVELS;k++)free(1,{g:'grass',h:k,r:[0,-1]});
-  const board=cur;free(2,{g:'grass',h:LEVELS});const id=park('balloon',art.BALLOON,board,2);
+  const board=cur;free(2,{g:'grass',h:LEVELS});const id=park('balloon',art.BALLOON,board,2,SKY); // el globo espera parado sobre la cima
   fill(len,'sky',diff(hard));
   const land=cur;free(2,{g:'grass',h:LEVELS});for(let k=LEVELS-1;k>=0;k--)free(1,{g:'grass',h:k,r:[0,1]});
   rides.push({board,land,id,type:'balloon'});},
@@ -218,7 +241,7 @@ function showCombo(){const c=$('combo');if(mult()>1){c.firstChild.textContent='x
 showCombo();
 // las monedas se guardan en el monedero al terminar cada mundo y al perder
 function bank(){wallet+=coinCount-banked;banked=coinCount;store.set('wallet',wallet);}
-function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=c.prize?5:1;$('coinsN').textContent=coinCount;bump('coinPill');
+function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(boost.double?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
  if(c.prize){pop(c.label+' +'+gain,'pink');SFX.prize();buzz([12,30,12]);runnerPulse('hop');}
  else{pop('+'+gain,'gold');SFX.coin(streak);buzz(8);runnerPulse('squash');}
  if(mult()>before){pop('¡RACHA x'+mult()+'!','big');SFX.streak();}
@@ -236,13 +259,36 @@ function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;r
  SFX.lose();buzz(120);setTimeout(()=>gameover.style.display='flex',350);}
 function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();if(score>best){best=score;store.set('best',best);}
  SFX.win();buzz([20,40,20,40,60]);pop('¡MUNDO '+(stage+1)+' COMPLETADO! +'+bonus,'big');
- try{sessionStorage.setItem('kanjuu.run.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak}));}catch{}
+ try{sessionStorage.setItem('kanjuu.run.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak,shield:boost.shield,revives}));}catch{}
  setTimeout(()=>location.reload(),1700);}
-function onGameOver(){
+function deathText(){
  const y=targetRow(),t=runner.onBoat?runner.rideType:null,z=zone[y];
  const air=t==='balloon'||z==='sky',sea=!air&&(t==='boat'||z==='sea'),rail=!air&&!sea&&(t==='train'||z==='rail');
- if(runner.blockedByRock!=null&&runner.blockedByRock>=y)endGame(air?'¡CHOQUE EN EL AIRE!':sea?'¡CHOQUE!':rail?'¡DESCARRILÓ!':'¡TROPEZÓN!',air?'El globo no atraviesa picos ni nubes. Arrastrá hacia un costado.':sea?'El barco no pasa por encima de un obstáculo. Arrastrá hacia un costado.':rail?'El tren no pasa por encima de un obstáculo. Cambiá de vía a tiempo.':'No se puede pasar por encima de un obstáculo. Arrastrá hacia un costado.');
- else endGame(air?'SE ACABÓ EL CIELO':sea?'EL MAR SE ACABÓ':rail?'SE ACABARON LAS VÍAS':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.');
+ if(runner.blockedByRock!=null&&runner.blockedByRock>=y)return [air?'¡CHOQUE EN EL AIRE!':sea?'¡CHOQUE!':rail?'¡DESCARRILÓ!':'¡TROPEZÓN!',air?'El globo no atraviesa picos ni nubes. Arrastrá hacia un costado.':sea?'El barco no pasa por encima de un obstáculo. Arrastrá hacia un costado.':rail?'El tren no pasa por encima de un obstáculo. Cambiá de vía a tiempo.':'No se puede pasar por encima de un obstáculo. Arrastrá hacia un costado.'];
+ return [air?'SE ACABÓ EL CIELO':sea?'EL MAR SE ACABÓ':rail?'SE ACABARON LAS VÍAS':'SE ACABÓ EL CAMINO','No quedó lugar para seguir avanzando.'];
+}
+// Rescate (escudo o revivir): despeja los obstáculos cercanos y la carrera sigue desde el mismo lugar
+function rescue(){
+ const y=targetRow(),ids=[];
+ for(const b of blockers)if(b.cy<=y+1&&b.cy>=y-6&&blockSet.delete(b.cx+','+b.cy))ids.push(b.id);
+ runnerHideItems(ids);runner.blockedByRock=null;runner.hitPause=0;runner.gameOver=false;buildToward(prevExit(y));
+ $('flash').style.opacity='.6';setTimeout(()=>$('flash').style.opacity='0',160);SFX.streak();buzz([20,40,20]);runnerPulse('hop');drawBoosts();
+}
+let revives=carry?.revives||0,reviveTimer=0;
+const revivePrice=()=>120*(revives+1);
+function onGameOver(){
+ const [title,reason]=deathText();
+ if(boost.shield){boost.shield=false;rescue();pop('¡ESCUDO!','big');return;}
+ bank();
+ if(revives<2&&(stock.revive>0||wallet>=revivePrice())){
+  const own=stock.revive>0;$('rvTitle').textContent=title;$('rvBtn').innerHTML=own?'♥ REVIVIR <small>tenés '+stock.revive+'</small>':'♥ REVIVIR <small>◉ '+revivePrice()+'</small>';
+  $('revive').style.display='flex';const bar=$('rvBar');bar.style.transition='none';bar.style.width='100%';void bar.offsetWidth;bar.style.transition='width 5s linear';bar.style.width='0%';
+  SFX.nope();clearTimeout(reviveTimer);reviveTimer=setTimeout(()=>{$('revive').style.display='none';endGame(title,reason);},5000);
+  $('rvBtn').onclick=()=>{clearTimeout(reviveTimer);$('revive').style.display='none';if(own)stock.revive--;else{wallet-=revivePrice();store.set('wallet',wallet);}store.set('items',stock);revives++;rescue();pop('¡DE VUELTA!','big');};
+  $('rvNo').onclick=()=>{clearTimeout(reviveTimer);$('revive').style.display='none';endGame(title,reason);};
+  return;
+ }
+ endGame(title,reason);
 }
 $('restart').addEventListener('click',()=>{try{sessionStorage.setItem('kanjuu.run.auto','1');}catch{}location.reload();});
 $('toShop').addEventListener('click',()=>location.reload());
@@ -348,7 +394,10 @@ window.addEventListener('pagehide',bank);
 // ── Menú inicial y tienda de personajes ──
 let menuOpen=!autostart&&!carry;
 function applySkin(){art=artFor(skinId);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
+function drawBoosts(){$('boosts').textContent=[boost.shield&&'◈ ESCUDO',boost.magnet&&'∩ IMÁN',boost.double&&'x2 MONEDAS'].filter(Boolean).join('  ·  ');}
+function useItems(){for(const k of ['shield','magnet','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);runner.magnet=boost.magnet;drawBoosts();}
 function drawShop(){
+ $('items').innerHTML=ITEMS.map(k=>`<button class="item" data-id="${k.id}"><i>${k.icon}</i><b>${k.name}${stock[k.id]?' <u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small><span>◉ ${k.price}</span></button>`).join('');
  $('mBest').textContent=best;$('mWallet').textContent=wallet;
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId;return `<button class="skin${on?' on':''}${has?'':' locked'}" data-id="${k.id}">${artFor(k.id).HERO.idle[0]}<b>${k.name}</b><small>${k.tag}</small><span>${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
 }
@@ -358,9 +407,12 @@ $('skins').addEventListener('click',e=>{const b=e.target.closest('.skin');if(!b)
   wallet-=k.price;owned.push(k.id);store.set('wallet',wallet);store.set('owned',owned);SFX.buy();buzz([15,40,15]);pop('¡'+k.name.toUpperCase()+' DESBLOQUEADO!','big');
  }else SFX.tap();
  skinId=k.id;store.set('skin',skinId);applySkin();drawShop();});
-$('play').addEventListener('click',()=>{audio();SFX.tap();menuOpen=false;$('menu').style.display='none';begin();});
+$('items').addEventListener('click',e=>{const b=e.target.closest('.item');if(!b)return;const k=ITEMS.find(i=>i.id===b.dataset.id);audio();
+ if(wallet<k.price){SFX.nope();buzz(40);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast('TE FALTAN ◉ '+(k.price-wallet)+' PARA '+k.name.toUpperCase());return;}
+ wallet-=k.price;stock[k.id]++;store.set('wallet',wallet);store.set('items',stock);SFX.buy();buzz([15,40,15]);drawShop();});
+$('play').addEventListener('click',()=>{audio();SFX.tap();useItems();menuOpen=false;$('menu').style.display='none';begin();});
 if(menuOpen){drawShop();$('menu').style.display='flex';}
-else setTimeout(()=>pop('MUNDO '+(stage+1)+' · '+theme.name,'big'),400);
+else{if(!carry)useItems();else drawBoosts();setTimeout(()=>pop('MUNDO '+(stage+1)+' · '+theme.name,'big'),400);}
 if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},GOAL,START,stage};
 </script>
 </body></html>
