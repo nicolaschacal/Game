@@ -1059,7 +1059,10 @@ export function runnerPulse(kind = 'squash') {
 export function setGroundColor(kind, color) { GROUND_C[kind] = color; }
 const runnerGeo = {};
 // Obstáculos vivos: van y vienen entre dos carriles (a ↔ b) con una pausa en cada extremo
-export function moverLane(mv, now = performance.now()) {
+let mvShift = 0, mvFrozen = null;   // reloj propio de los obstáculos vivos: se puede congelar
+const moverNow = () => (mvFrozen ?? performance.now()) - mvShift;
+export function freezeMovers(on) { if (on && mvFrozen === null) mvFrozen = performance.now(); else if (!on && mvFrozen !== null) { mvShift += performance.now() - mvFrozen; mvFrozen = null; } }
+export function moverLane(mv, now = moverNow()) {
   const u = ((now / 1000 + mv.phase) / mv.period) % 1, tri = u < .5 ? u * 2 : 2 - u * 2, k = Math.max(0, Math.min(1, (tri - .28) / .44));
   return mv.a + (mv.b - mv.a) * k * k * (3 - 2 * k);
 }

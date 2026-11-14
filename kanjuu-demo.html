@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#1B1730">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>KANJŪ RUN</title>
+<title>TILE RUN</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
@@ -73,6 +73,7 @@ body.home #hud{opacity:0}
 .logo b{display:block;font:400 62px/56px 'Lilita One',sans-serif;color:var(--cream);letter-spacing:2px;text-shadow:0 5px 0 var(--red),0 9px 0 var(--ink),3px 0 0 var(--ink),-3px 0 0 var(--ink),0 -3px 0 var(--ink),3px 9px 0 var(--ink),-3px 9px 0 var(--ink)}
 .logo b+b{color:var(--gold);font-size:74px;line-height:70px}
 .logo .u{position:relative}.logo .u:before{content:'';position:absolute;left:5px;right:5px;top:-6px;height:9px;border-radius:5px;background:var(--cream);box-shadow:0 0 0 3px var(--ink)}
+.seal i{display:block;width:22px;height:22px;margin:9px auto 0;border:4.5px solid var(--cream);border-radius:6px}
 .seal{position:absolute;left:50%;margin-left:64px;top:66px;width:46px;height:46px;border-radius:10px;background:var(--red);border:3px solid var(--ink);color:var(--cream);font:400 27px/40px 'Yuji Syuku',serif;transform:rotate(9deg);box-shadow:0 3px 0 var(--ink)}
 .arrow{position:absolute;bottom:calc(var(--sb) + 252px);width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 26px/36px 'Lilita One',sans-serif;text-align:center}
 #prevSkin{left:30px}#nextSkin{right:30px}
@@ -117,6 +118,11 @@ body.home #hud{opacity:0}
 @keyframes wxfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--sway),55vh) rotate(180deg)}100%{transform:translate(calc(var(--sway)*-.4),112vh) rotate(360deg)}}
 .wxp.rise{top:auto;bottom:-24px;animation-name:wxrise}@keyframes wxrise{0%{transform:translate(0,0)}50%{transform:translate(var(--sway),-55vh) rotate(40deg)}100%{transform:translate(calc(var(--sway)*-.4),-112vh) rotate(-30deg)}}
 .wxp.grain{top:auto;left:-12px;animation-name:grain}@keyframes grain{to{transform:translate(115vw,var(--sway)) rotate(300deg)}}
+/* Congelar: botón al alcance del pulgar y escarcha en los bordes mientras dura */
+#freezeBtn{display:none;right:16px;bottom:calc(var(--sb) + 64px);width:58px;height:58px;border-radius:50%;font-size:28px;line-height:50px;color:#2C8FB8;pointer-events:auto}
+#freezeBtn b{position:absolute;right:-6px;top:-6px;min-width:22px;height:22px;padding:0 4px;border-radius:99px;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 11px/17px Nunito}
+#freezeBtn.on{background:#BFE8FF;animation:bump .5s infinite alternate}
+#frost{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .4s;box-shadow:inset 0 0 70px 26px #bfe8ffcc,inset 0 0 0 6px #e8f8ff}
 /* Paneles: tienda y récords */
 .panel{position:fixed;inset:0;z-index:31;display:none;background:var(--paper);color:var(--ink);overflow-y:auto;touch-action:pan-y;padding-bottom:calc(var(--sb) + 30px);animation:panelIn .28s cubic-bezier(.2,1,.3,1)}
 @keyframes panelIn{0%{transform:translateY(40px);opacity:0}}
@@ -163,8 +169,8 @@ body.home #hud{opacity:0}
 </head>
 <body class="home">
 <div id="stage"><div class="stage-ov"></div></div>
-<div id="wx"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
-<div id="splash"><div class="logo"><b>KANJ<span class="u">U</span></b><b>RUN</b><div class="seal">獣</div></div><div class="load"><i></i></div></div>
+<div id="wx"></div><div id="frost"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
+<div id="splash"><div class="logo"><b>TILE</b><b>RUN</b><div class="seal"><i></i></div></div><div class="load"><i></i></div></div>
 <div id="hud">
  <div id="progress"><i></i></div>
  <div id="score" class="L out">0</div>
@@ -172,6 +178,7 @@ body.home #hud{opacity:0}
  <div class="chip" id="coinPill"><span data-ico="coin"></span><b id="coinsN" class="L">0</b></div>
  <button class="round" id="pause" aria-label="Pausa">Ⅱ</button>
  <div id="boosts"></div>
+ <button class="round" id="freezeBtn" aria-label="Congelar">❄<b id="freezeN"></b></button>
  <div id="hint"></div>
 </div>
 <div id="toast"></div>
@@ -179,7 +186,7 @@ body.home #hud{opacity:0}
 <div id="menu">
  <button class="round" id="mute" aria-label="Sonido">♪</button>
  <div class="chip" id="walletChip"><span data-ico="coin"></span><b id="mWallet" class="L">0</b></div>
- <div class="logo"><b>KANJ<span class="u">U</span></b><b>RUN</b><div class="seal">獣</div></div>
+ <div class="logo"><b>TILE</b><b>RUN</b><div class="seal"><i></i></div></div>
  <button class="side" id="openShop" style="left:14px"><i>♜</i>TIENDA<span class="dot" id="shopDot">!</span></button>
  <button class="side" id="openScores" style="right:14px"><i>♛</i>RÉCORDS</button>
  <button class="ribbon" id="worldChip"></button>
@@ -212,7 +219,7 @@ body.home #hud{opacity:0}
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour } from './kanjuu-demo/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
@@ -227,8 +234,9 @@ const ITEMS=[
  {id:'shield',name:'Escudo',icon:'◈',price:80,tag:'Te salva de un choque'},
  {id:'magnet',name:'Imán',icon:'∩',price:60,tag:'Atrae monedas vecinas'},
  {id:'double',name:'Doble',icon:'x2',price:100,tag:'Monedas x2'},
+ {id:'freeze',name:'Congelar',icon:'❄',price:90,tag:'Frena 8 s a los enemigos que se mueven'},
 ];
-const stock={revive:0,shield:0,magnet:0,double:0,...store.get('items',{})};
+const stock={revive:0,shield:0,magnet:0,double:0,freeze:0,...store.get('items',{})};
 // Lo que se arrastra de un mundo al siguiente dentro de la misma partida
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
@@ -561,7 +569,7 @@ const tops=store.get('tops',[]);
 let menuOpen=!autostart&&!carry,browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
 const RARITY={kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
 function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
-function drawBoosts(){$('boosts').innerHTML=[boost.shield&&'◈',boost.magnet&&'∩',boost.double&&'x2'].filter(Boolean).map(t=>'<div class="pw"><span>'+t+'</span></div>').join('');}
+function drawBoosts(){drawFreeze();$('boosts').innerHTML=[boost.shield&&'◈',boost.magnet&&'∩',boost.double&&'x2'].filter(Boolean).map(t=>'<div class="pw"><span>'+t+'</span></div>').join('');}
 function useItems(){for(const k of ['shield','magnet','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);runner.magnet=boost.magnet;drawBoosts();}
 function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast('TE FALTAN ◉ '+(price-wallet)+' PARA '+name.toUpperCase());return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
 function drawHome(){
@@ -574,8 +582,8 @@ function drawHome(){
 }
 function drawShop(){
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
- const COL={revive:'#E8452C',shield:'#3E5BA9',magnet:'#7B5CC4',double:'#5DB84F'};
- $('items').innerHTML=ITEMS.map(k=>`<button class="it" data-id="${k.id}"><i style="background:${COL[k.id]}">${k.icon}</i><div><b>${k.name}${stock[k.id]?'<u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small></div><span class="price">◉ ${k.price}</span></button>`).join('')+'<div class="note" style="grid-column:1/3">Revivir se usa cuando caés. Escudo, Imán y Doble se gastan solos al empezar tu próxima partida.</div>';
+ const COL={revive:'#E8452C',shield:'#3E5BA9',magnet:'#7B5CC4',double:'#5DB84F',freeze:'#4FB3D9'};
+ $('items').innerHTML=ITEMS.map(k=>`<button class="it" data-id="${k.id}"><i style="background:${COL[k.id]}">${k.icon}</i><div><b>${k.name}${stock[k.id]?'<u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small></div><span class="price">◉ ${k.price}</span></button>`).join('')+'<div class="note" style="grid-column:1/3">Revivir se usa cuando caés. Congelar tiene su botón ❄ durante la carrera. Escudo, Imán y Doble se gastan solos al empezar tu próxima partida.</div>';
  $('top5').innerHTML=tops.length?tops.map((t,i)=>`<div><i>${i+1}</i>${fmt(t.s)}<small>MUNDO ${t.w}<br>${new Date(t.t).toLocaleDateString('es')}</small></div>`).join(''):'<p class="note">Todavía no hay partidas. ¡Jugá la primera!</p>';
 }
 function pickSkin(i){browse=(i+SKINS.length)%SKINS.length;const k=SKINS[browse];if(owned.includes(k.id)){skinId=k.id;store.set('skin',skinId);}applySkin(k.id);drawHome();drawShop();}
@@ -601,6 +609,12 @@ $('worldChip').addEventListener('click',()=>{if(maxWorld<1)return;SFX.tap();stor
  if(theme.wx==='sand'){for(let i=0;i<9;i++)add('gust',`top:${R(4,96)}%;height:${R(2,5)}px;opacity:${R(.35,.85)};animation-duration:${R(1.1,2.4)}s;animation-delay:${-R(0,3)}s`);
   for(let i=0;i<16;i++)add('wxp grain',`top:${R(0,100)}%;width:${R(3,6)}px;height:${R(3,6)}px;border-radius:50%;background:#f3e2b2;--sway:${R(-60,60)}px;animation-duration:${R(.9,2)}s;animation-delay:${-R(0,2)}s`);}
  else if(W)for(let i=0;i<W[2];i++){const w=R(...W[4]);add('wxp '+W[0],`left:${R(0,100)}%;width:${w}px;height:${W[5]?R(...W[5]):w}px;border-radius:${W[3]};background:${W[1][i%W[1].length]};opacity:${R(.6,.95)};--sway:${R(-70,70)}px;animation-duration:${R(...W[6])}s;animation-delay:${-R(0,W[6][1])}s`);}}
+// Congelar: detiene 8 s a los obstáculos vivos (tiburones, nubarrones, vagonetas)
+let frozenUntil=0;
+function drawFreeze(){const b=$('freezeBtn');b.style.display=stock.freeze>0||frozenUntil?'block':'none';$('freezeN').textContent=stock.freeze||'';}
+$('freezeBtn').addEventListener('click',()=>{if(frozenUntil||stock.freeze<1||ended||!runner.started)return;stock.freeze--;store.set('items',stock);frozenUntil=1;freezeMovers(true);
+ $('frost').style.opacity=1;$('freezeBtn').classList.add('on');pop('¡CONGELADOS!','big');[1568,1319,1047,784].forEach((f,i)=>tone(f,.18,'sine',.05,0,i*.05));noise(.3,{f:6000,q:2,v:.05});buzz([10,30,10]);drawFreeze();
+ setTimeout(()=>{frozenUntil=0;freezeMovers(false);$('frost').style.opacity=0;$('freezeBtn').classList.remove('on');drawFreeze();},8000);});
 // jugo visual
 function sparks(n){for(let i=0;i<n;i++){const e=document.createElement('div');e.className='spark';const a=Math.random()*6.28,d=50+Math.random()*60;e.style.left='50%';e.style.top='54%';document.body.appendChild(e);e.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d-4}px,${Math.sin(a)*d-40}px) scale(.2) rotate(180deg)`,opacity:0}],{duration:420+Math.random()*200,easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish=()=>e.remove();}}
 function flyCoin(){const t=$('coinPill').getBoundingClientRect(),e=document.createElement('div');e.className='fly';e.innerHTML=ico('coin');e.style.left=innerWidth/2-17+'px';e.style.top=innerHeight*.5+'px';document.body.appendChild(e);e.animate([{transform:'translate(0,0) scale(1)'},{transform:`translate(${t.left+8-innerWidth/2}px,${t.top-innerHeight*.5}px) scale(.6)`}],{duration:380,easing:'cubic-bezier(.5,-.3,.7,1)'}).onfinish=()=>{e.remove();bump('coinPill');};}

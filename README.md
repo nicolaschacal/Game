@@ -87,3 +87,9 @@ Cada mundo tiene suelo alrededor de la pista, horizonte de papel en capas (colin
 ## Tile Runner · ocho biomas y más velocidad
 
 Los mundos rotan entre ocho biomas: Pradera, Desierto, Costa, Nieve, Bosque, Volcán, Bambú y Pueblo. Cada uno tiene su suelo, horizonte, recortes a los costados, clima (pétalos, arena, burbujas, nieve, hojas, brasas, hojas de bambú, farolitos) y luz. Desde el mundo 2 la velocidad base es más alta y la aceleración dentro del mundo crece con cada mundo (tope 3,8 filas/s).
+
+## TILE RUN
+
+El runner pasa a llamarse **TILE RUN** (logo, título y pantalla de carga); es un juego aparte de KANJŪ. Las claves de guardado conservan su prefijo para no perder el progreso.
+
+Nuevo ítem **Congelar** (◉90): durante la carrera aparece un botón ❄ que detiene 8 segundos a los obstáculos que se mueven.
