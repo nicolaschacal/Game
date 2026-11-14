@@ -83,3 +83,7 @@ El protagonista siempre tiende su propio camino de tierra; lo que cambia es el e
 ## Tile Runner · horizonte y luz por mundo
 
 Cada mundo tiene suelo alrededor de la pista, horizonte de papel en capas (colinas, dunas o picos), sol, bruma que funde el fondo y recortes a los costados (cerezos, cactus, pinos nevados, cedros y hongos). La cámara va más baja para que se vea el horizonte y la luz es fija por mundo en vez de seguir la hora real.
+
+## Tile Runner · ocho biomas y más velocidad
+
+Los mundos rotan entre ocho biomas: Pradera, Desierto, Costa, Nieve, Bosque, Volcán, Bambú y Pueblo. Cada uno tiene su suelo, horizonte, recortes a los costados, clima (pétalos, arena, burbujas, nieve, hojas, brasas, hojas de bambú, farolitos) y luz. Desde el mundo 2 la velocidad base es más alta y la aceleración dentro del mundo crece con cada mundo (tope 3,8 filas/s).

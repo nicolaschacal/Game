@@ -713,6 +713,10 @@ function sanctuary() {
               petals: { fog: '#E6F4DA', ground: '#A6CC78', far: ['#D6EBBB', '#C4E0A2', '#AED488', '#97C670'], sun: '#FFF8DC', ridge: 'dune' },
               snow:   { fog: '#F0F6FB', ground: '#E1EBF2', far: ['#F6FAFD', '#E4EEF6', '#D0E1EE', '#BFD5E5'], sun: '#FFFDF2', ridge: 'peak' },
               leaves: { fog: '#DCEBC6', ground: '#7DA45A', far: ['#BBD69E', '#9FC47F', '#80AF62', '#69994E'], sun: '#FFE7A8', ridge: 'dune' },
+              costa:  { fog: '#DDF3F5', ground: '#F2E3B5', far: ['#C4E8EC', '#A9DCE2', '#8FCED6', '#F0D9A0'], sun: '#FFF6D0', ridge: 'dune' },
+              volcan: { fog: '#F0CDB0', ground: '#6E5A58', far: ['#D29A7C', '#B06A52', '#8E4C3E', '#6E3A32'], sun: '#FFB05A', ridge: 'peak' },
+              bambu:  { fog: '#E3F0C8', ground: '#9FBF6A', far: ['#D2E4AA', '#BAD68E', '#A0C672', '#88B55C'], sun: '#FFF4C4', ridge: 'dune' },
+              pueblo: { fog: '#F6DFC8', ground: '#D9C4A0', far: ['#EFD2C2', '#E2B9A6', '#D0A08E', '#BE8A78'], sun: '#FFD08A', ridge: 'dune' },
             }[runner.fx] || null; if (!T) { runner.fx = null; }
             const L = W.look = new THREE.Group(); W.scene.add(L);
             W.scene.fog = new THREE.Fog(T.fog, 13, 31);
@@ -739,6 +743,18 @@ function sanctuary() {
               leaves: [wrap('<rect x="54" y="74" width="12" height="36" rx="4" fill="#6B4A2E"/><path d="M60 8 L86 46 L74 46 L94 78 L26 78 L46 46 L34 46Z" fill="#3E7D45"/><path d="M60 8 L72 26 L48 26Z" fill="#5DA35A"/>'),
                 wrap('<rect x="52" y="78" width="16" height="32" rx="6" fill="#F5E7C8"/><path d="M22 80 Q24 40 60 40 Q96 40 98 80Z" fill="#E8452C"/><circle cx="44" cy="62" r="6" fill="#FFF4DC"/><circle cx="70" cy="56" r="7" fill="#FFF4DC"/><circle cx="82" cy="70" r="4" fill="#FFF4DC"/>'),
                 wrap('<rect x="55" y="66" width="10" height="44" rx="4" fill="#6B4A2E"/><circle cx="60" cy="46" r="32" fill="#D9862E"/><circle cx="46" cy="38" r="10" fill="#F2B937"/><circle cx="74" cy="56" r="8" fill="#B86A1E"/>')],
+              costa: [wrap('<path d="M56 110 Q52 70 62 40 L70 42 Q62 72 66 110Z" fill="#B98D5A"/><path d="M64 40 Q40 22 18 36 Q40 34 60 46Z M64 40 Q88 20 108 38 Q86 34 68 46Z M64 40 Q56 14 34 10 Q54 22 60 42Z M64 40 Q76 14 96 12 Q78 24 70 42Z" fill="#4FA85A"/><circle cx="62" cy="46" r="5" fill="#8A5F38"/>'),
+                wrap('<rect x="57" y="40" width="6" height="70" rx="3" fill="#8A5F38"/><path d="M12 52 Q60 -4 108 52 Q84 44 60 52 Q36 44 12 52Z" fill="#E8452C"/><path d="M36 40 Q60 8 84 40 Q72 38 60 46 Q48 38 36 40Z" fill="#FFF4DC"/>'),
+                wrap('<path d="M60 40 L70 66 L98 68 L76 86 L84 112 L60 96 L36 112 L44 86 L22 68 L50 66Z" fill="#F29B6A"/><circle cx="60" cy="78" r="5" fill="#FFD3B0"/>')],
+              volcan: [wrap('<path d="M14 110 L26 72 L48 52 L76 60 L100 84 L106 110Z" fill="#4A3F45"/><path d="M40 110 L50 84 L44 70 L58 78 L66 62 L70 86 L84 92 L74 110Z" fill="#FF8A2B"/><path d="M52 110 L56 92 L62 100 L66 88 L68 110Z" fill="#FFD46B"/>'),
+                wrap('<path d="M56 110 L58 64 L44 40 L52 38 L60 54 L66 28 L74 30 L68 58 L84 46 L88 52 L68 72 L66 110Z" fill="#3D3438"/>'),
+                wrap('<path d="M22 110 Q30 78 60 78 Q90 78 98 110Z" fill="#5B4A4A"/><ellipse cx="60" cy="80" rx="18" ry="6" fill="#FF8A2B"/><circle cx="52" cy="54" r="12" fill="#D9D3EC"/><circle cx="68" cy="36" r="9" fill="#D9D3EC"/>')],
+              bambu: [wrap('<rect x="34" y="18" width="10" height="92" rx="4" fill="#7DB04A"/><rect x="56" y="6" width="11" height="104" rx="4" fill="#8FC25A"/><rect x="79" y="26" width="9" height="84" rx="4" fill="#6FA044"/><path d="M44 40 Q60 30 66 42 Q54 42 44 46Z M67 30 Q84 18 92 30 Q78 30 67 36Z M34 60 Q18 52 12 62 Q24 62 34 66Z" fill="#5E9A3C"/><path d="M34 48 h10 M34 78 h10 M56 40 h11 M56 74 h11 M79 56 h9 M79 86 h9" stroke="#4E7F32" stroke-width="3"/>'),
+                wrap('<rect x="50" y="84" width="20" height="26" rx="3" fill="#9AA1A6"/><rect x="42" y="56" width="36" height="30" rx="4" fill="#B8BEC0"/><path d="M30 58 Q60 30 90 58Z" fill="#7C8388"/><rect x="52" y="64" width="16" height="14" rx="2" fill="#FFD46B"/><circle cx="60" cy="34" r="6" fill="#7C8388"/>'),
+                wrap('<path d="M60 110 Q30 96 16 66 Q40 76 56 100 Q48 64 60 36 Q72 64 64 100 Q80 76 104 66 Q90 96 60 110Z" fill="#5E9A3C"/>')],
+              pueblo: [wrap('<rect x="56" y="20" width="7" height="90" rx="3" fill="#6B4A2E"/><path d="M60 24 L88 24 L88 30 L60 30Z" fill="#6B4A2E"/><rect x="72" y="34" width="24" height="34" rx="11" fill="#E8452C"/><rect x="76" y="30" width="16" height="6" rx="2" fill="#2B1D16"/><rect x="76" y="66" width="16" height="6" rx="2" fill="#2B1D16"/><rect x="80" y="44" width="8" height="14" rx="3" fill="#FFD46B"/>'),
+                wrap('<rect x="26" y="62" width="68" height="48" rx="4" fill="#FFF0D2"/><path d="M12 64 Q60 22 108 64 L100 70 Q60 40 20 70Z" fill="#3E4A6E"/><rect x="52" y="80" width="16" height="30" rx="2" fill="#8A5F38"/><rect x="32" y="76" width="12" height="12" rx="2" fill="#8EC7D8"/><rect x="76" y="76" width="12" height="12" rx="2" fill="#8EC7D8"/>'),
+                wrap('<path d="M10 34 Q60 18 110 34 L106 46 Q60 32 14 46Z" fill="#E8452C"/><rect x="28" y="38" width="11" height="72" rx="3" fill="#E8452C"/><rect x="81" y="38" width="11" height="72" rx="3" fill="#E8452C"/><rect x="22" y="56" width="76" height="9" rx="3" fill="#E8452C"/>')],
             }[runner.fx];
             L.userData.props = Array.from({ length: 18 }, (_, i) => { const s = i % 3 === 0 ? 1.7 : i % 3 === 1 ? 1.15 : 1.9, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: paperTexture(ARTS[i % 3]), transparent: true, alphaTest: .5, roughness: 1 })); m.castShadow = true; m.userData = { base: i * 2.2, x: (i % 2 ? 1 : -1) * (3.5 + ((i * 7) % 5) * .9) }; L.add(m); return m; });
           }
