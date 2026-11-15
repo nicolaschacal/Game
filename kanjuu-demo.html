@@ -275,7 +275,7 @@ body.home #hud{opacity:0}
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
-import { DESTINOS } from './kanjuu-demo/destinos.js';
+import { DESTINOS, NUEVOS } from './kanjuu-demo/destinos.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -296,14 +296,15 @@ const stock={revive:0,shield:0,magnet:0,double:0,freeze:0,...store.get('items',{
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
 const stage=carry?.stage??(Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):store.get('world',0)); // ?world=N abre directo el destino N (para probar) // se retoma en el mundo donde quedaste
-const NW=DESTINOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
+const TODOS=Q.has('nuevos')?[...DESTINOS,...NUEVOS]:DESTINOS; // ?nuevos suma la segunda tanda en prueba (destinos 21 en adelante)
+const NW=TODOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
 const S=Math.min(8,Math.round(WI*6/(NW-1))+LAP*2);   // dificultad 0…8: sube de a poco en los 20 destinos y cada vuelta arranca dos escalones más arriba
 const SP=Math.min(16,WI*10/(NW-1)+LAP*3);            // escalón de velocidad
 const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
 const PATH='dirt';
-const THEMES=DESTINOS; // destinos reales (kanjuu-demo/destinos.js); al terminar la vuelta se repiten, cada vez más difíciles
+const THEMES=TODOS; // destinos reales (kanjuu-demo/destinos.js); al terminar la vuelta se repiten, cada vez más difíciles
 const theme=THEMES[stage%THEMES.length];
 
 // ── Nivel ──
