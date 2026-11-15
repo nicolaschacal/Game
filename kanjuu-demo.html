@@ -69,7 +69,7 @@ body.home #hud{opacity:0}
 .pop{position:fixed;z-index:8;left:50%;top:50%;font:400 26px 'Lilita One',sans-serif;color:var(--cream);white-space:nowrap;pointer-events:none;animation:pop .85s cubic-bezier(.2,.9,.3,1) forwards;text-shadow:0 3px 0 var(--ink),2px 0 0 var(--ink),-2px 0 0 var(--ink),0 -2px 0 var(--ink),2px 2px 0 var(--ink),-2px 2px 0 var(--ink)}
 .pop.gold{color:#FFD46B}.pop.pink{color:#FFC4D6;font-size:30px}.pop.big{font-size:40px;color:var(--gold)}
 @keyframes pop{0%{transform:translate(-50%,0) scale(.4) rotate(-8deg);opacity:0}18%{transform:translate(-50%,-16px) scale(1.25) rotate(-5deg);opacity:1}30%{transform:translate(-50%,-22px) scale(1) rotate(-5deg)}100%{transform:translate(-50%,-96px) scale(1) rotate(-5deg);opacity:0}}
-#banner{position:fixed;z-index:9;top:calc(var(--st) + 190px);opacity:0;pointer-events:none;font-size:24px;padding:8px 30px 9px}
+#banner{position:fixed;z-index:9;top:calc(var(--st) + 190px);opacity:0;pointer-events:none;font-size:24px;padding:8px 30px 9px;max-width:86vw;box-sizing:border-box;text-align:center;line-height:1.05}#banner small{display:block;font-size:12px;letter-spacing:2.5px;opacity:.85;margin-bottom:3px}#banner.long{font-size:20px}
 #banner.show{animation:banner 2.2s ease both}@keyframes banner{0%{opacity:0;transform:translateX(-50%) scale(.6)}12%{opacity:1;transform:translateX(-50%) scale(1.08)}20%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
 /* Inicio */
 #menu{position:fixed;inset:0;z-index:30;display:none}
@@ -481,6 +481,7 @@ function takeoff(){
  SFX.whoosh();setTimeout(()=>noise(.1,{f:2400,to:900,v:.08}),300);
  setTimeout(()=>{SFX.stamp();buzz([70,40,25]);},840); // ¡TUMP! el sello
  setTimeout(()=>noise(.09,{f:900,to:2200,v:.07}),1480);setTimeout(()=>SFX.whoosh(),1780);
+ $('hint').style.visibility='hidden';
  const sk=document.createElement('div');sk.id='skip';sk.textContent='TOCÁ PARA SEGUIR';document.body.appendChild(sk);
  setTimeout(()=>window.addEventListener('pointerdown',()=>location.reload(),{once:true,capture:true}),350);
  setTimeout(()=>{const j=document.createElement('div');j.id='jet';j.innerHTML=JET;document.body.appendChild(j);SFX.jet();buzz([60,30,90,30,140,40,60]);
@@ -490,7 +491,7 @@ function takeoff(){
   setTimeout(()=>{clearInterval(trail);j.remove();const s=document.createElement('div');s.id='twinkle';s.textContent='✦';document.body.appendChild(s);[1568,2093,2637].forEach((f,i)=>tone(f,.22,'sine',.06,0,i*.07));confetti();buzz([20,30,40]);},2400);
  },P);
  setTimeout(()=>pop('¡DESPEGUE!','big'),P+320);
- setTimeout(()=>{banner('PRÓXIMO DESTINO · '+next.place.toUpperCase());SFX.arrive();},P+1500);
+ setTimeout(()=>{banner(next.place.toUpperCase(),'PRÓXIMO DESTINO');SFX.arrive();},P+1500);
 }
 function deathText(){
  const y=targetRow(),t=runner.onBoat?runner.rideType:null,z=zone[y];
@@ -746,7 +747,7 @@ function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
  SFX.tap();useItems();menuOpen=false;$('menu').style.display='none';banner(theme.place.toUpperCase());begin();});
-function banner(t){const b=$('banner');b.textContent=t;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
+function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
 $('quit').addEventListener('click',()=>{bank();location.reload();});
