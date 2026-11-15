@@ -1,4 +1,4 @@
-// Los 20 destinos del viaje, en orden de vuelta al mundo hacia el oeste (Kioto → … → Sídney → y de nuevo Kioto). Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
+// Los destinos del viaje, en orden de vuelta al mundo hacia el oeste (Kioto → … → Sídney → y de nuevo Kioto). Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
 // y tres adornos de costado. Cada destino trae su monumento (art), su escenario (look) y el piso de la pista.
 import { LANDMARKS } from './runner-art.js';
 const CREAM = '#FFF4DC';
@@ -73,7 +73,7 @@ L.obelisco = cut(
   + `<path d="M52 110 L55.5 22 L60 8 L64.5 22 L68 110Z" fill="#F6F2EA"/><path d="M44 110 L46 102 L74 102 L76 110Z" fill="#F6F2EA"/>`,
   `<path d="M60 8 L64.5 22 L68 110 L60 110Z" fill="#D9D3C6"/><rect x="58" y="34" width="4" height="6" fill="#8E97A3"/><path d="M22 80 q6 -6 12 -2 M78 82 q6 -6 12 -2" stroke="#B79BE6" stroke-width="3" fill="none" stroke-linecap="round"/>` + win(7, 67, 2, 5, '#8E7F6A') + win(103, 59, 2, 6, '#8E7F6A'));
 
-// ── Segunda tanda de destinos (en prueba: se ven con ?nuevos&world=21…48) ──
+// ── Segunda tanda de destinos ──
 const poly = pts => `M${pts.map(p => p.join(' ')).join(' L')}Z`;
 const tube = (a, b, w, c) => { const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy), nx = -dy / l * w / 2, ny = dx / l * w / 2; return `<path d="${poly([[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]])}" fill="${c}"/>`; };
 const battle = (x0, x1, y, h = 5, w = 5) => { let d = `M${x0} ${y + h}`, x = x0, up = true; while (x < x1) { const nx = Math.min(x1, x + w); d += up ? ` L${x} ${y} L${nx} ${y} L${nx} ${y + h}` : ` L${nx} ${y + h}`; x = nx; up = !up; } return d; };
@@ -86,16 +86,6 @@ L.chichen = cut(
 L.capitolio = cut(
   `<rect x="8" y="78" width="104" height="32" fill="#F1E9DA"/><rect x="40" y="68" width="40" height="42" fill="#F1E9DA"/><path d="M38 68 L60 58 L82 68Z" fill="#F1E9DA"/><rect x="47" y="44" width="26" height="16" fill="#F1E9DA"/><path d="M45 46 Q45 22 60 17 Q75 22 75 46Z" fill="#C9CED6"/><rect x="56.5" y="8" width="7" height="10" fill="#F1E9DA"/><circle cx="60" cy="6" r="3.5" fill="#F2B937"/>`,
   `<path d="M60 17 Q75 22 75 46 L64 46 Q66 28 60 17Z" fill="#A9B0BB"/><g fill="#C9BFA8">${[44, 50, 56, 62, 68, 74].map(x => `<rect x="${x}" y="70" width="2.6" height="40"/>`).join('')}${[50, 56, 62, 68].map(x => `<rect x="${x}" y="46" width="2" height="13"/>`).join('')}</g>` + win(13, 86, 5, 2, '#8E7F6A', 5.4, 10) + win(85, 86, 5, 2, '#8E7F6A', 5.4, 10) + `<rect x="8" y="78" width="104" height="3" fill="#D9CDB4"/><path d="M36 110 L40 102 L80 102 L84 110Z" fill="#D9CDB4"/>`);
-L.needle = cut(
-  `<path d="M14 110 L24 84 L20 84 L28 66 L36 84 L32 84 L42 110Z" fill="#3E7D45"/><path d="M80 110 L88 88 L85 88 L92 72 L99 88 L96 88 L104 110Z" fill="#3E7D45"/>`
-  + `<rect x="58.8" y="6" width="2.4" height="26" fill="#C9CED6"/><path d="M42 110 Q56 82 57 50 L63 50 Q64 82 78 110 L71 110 Q62 86 60 62 Q58 86 49 110Z" fill="#F1EEE8"/><path d="M34 44 Q60 33 86 44 L79 53 Q60 57 41 53Z" fill="#F1EEE8"/><path d="M40 43 Q60 26 80 43Z" fill="#E8813C"/>`,
-  `<path d="M34 44 Q60 50 86 44 L84.5 47 Q60 53 35.5 47Z" fill="#8E97A3"/><path d="M52 34 Q60 30 68 34" stroke="#F5B98A" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M48 86 L72 86" stroke="#C9CED6" stroke-width="3"/>`);
-L.hollywood = cut(
-  `<path d="M0 110 Q26 46 60 62 Q92 38 120 110Z" fill="#B79A62"/><rect x="40" y="44" width="40" height="16" fill="#FFF8EE"/><path d="M42 46 Q42 34 50 34 Q58 34 58 46Z" fill="#FFF8EE"/><path d="M62 46 Q62 38 68 38 Q74 38 74 46Z" fill="#FFF8EE"/>`
-  + `<path d="M14 110 Q10 84 18 62 L23 63 Q17 86 21 110Z" fill="#8A5F38"/><path d="M20 62 Q4 50 -6 60 Q8 56 18 66Z M20 62 Q34 46 46 56 Q32 54 22 66Z M20 62 Q14 42 2 40 Q14 48 16 62Z M20 62 Q28 42 40 42 Q28 50 24 62Z" fill="#4FA85A"/>`
-  + `<path d="M100 110 Q96 88 102 70 L107 71 Q102 90 106 110Z" fill="#8A5F38"/><path d="M104 70 Q90 60 82 68 Q94 66 102 74Z M104 70 Q116 56 126 66 Q114 64 106 74Z M104 70 Q98 52 88 52 Q98 58 100 70Z M104 70 Q110 52 120 54 Q112 60 108 70Z" fill="#4FA85A"/>`,
-  `<path d="M50 34 Q58 34 58 46 L52 46 Q54 38 50 34Z M68 38 Q74 38 74 46 L70 46 Q71 41 68 38Z" fill="#C9CED6"/><rect x="40" y="56" width="40" height="4" fill="#D9D3C6"/>` + win(44, 49, 7, 1, '#8E97A3', 5, 7)
-  + `<path d="M30 92 L20 20 L34 18Z M88 96 L84 14 L98 18Z" fill="#FFF6D6" opacity=".55"/><path d="M26 92 h8 v8 h-8Z M84 96 h8 v8 h-8Z" fill="#34333B"/><path d="M0 110 Q26 46 60 62 Q44 76 36 110Z" fill="#C9AE78"/><path d="M44 100 l5 -9 l5 9Z M62 90 l5 -9 l5 9Z M74 104 l5 -9 l5 9Z" fill="#6F8A4A"/>`);
 L.mitad = cut(
   `<path d="M26 110 L30 100 L90 100 L94 110Z" fill="#CDBFA4"/><path d="M40 102 L48 42 L72 42 L80 102Z" fill="#B9A88C"/><rect x="50" y="33" width="20" height="10" fill="#CDBFA4"/><circle cx="60" cy="22" r="12" fill="#C9CED6"/>`,
   `<path d="M60 42 L72 42 L80 102 L60 102Z" fill="#9C8B70" opacity=".6"/><path d="M58.5 110 L59.4 42 L60.6 42 L61.5 110Z" fill="#F2B937"/><path d="M48 22 Q60 27 72 22 M49.5 16 Q60 20 70.5 16 M49.5 28 Q60 32 70.5 28 M60 10 V34" stroke="#8E97A3" stroke-width="1.6" fill="none"/><path d="M47 22 Q60 30 73 22" stroke="#E8452C" stroke-width="2.4" fill="none"/><rect x="50" y="52" width="6" height="8" fill="#8A7A60"/><rect x="64" y="52" width="6" height="8" fill="#8A7A60"/>`);
@@ -105,10 +95,6 @@ L.salvo = cut(
 L.reloj = cut(
   `<rect x="6" y="70" width="108" height="40" fill="#F2C14E"/><rect x="45" y="32" width="30" height="40" fill="#F2C14E"/><path d="M45 32 L50 21 L70 21 L75 32Z" fill="#FFF4DC"/><path d="M50 21 L60 4 L70 21Z" fill="#C96A3C"/>`,
   `<circle cx="60" cy="47" r="8.5" fill="#FFF8EE" stroke="#8A5F38" stroke-width="2"/><path d="M60 47 V41 M60 47 L64.5 49" stroke="#3E3A44" stroke-width="2" stroke-linecap="round"/><rect x="45" y="60" width="30" height="3" fill="#FFF4DC"/><rect x="6" y="70" width="108" height="4" fill="#FFF4DC"/><path d="M50 110 L50 92 Q60 80 70 92 L70 110Z M20 110 L20 96 Q27 88 34 96 L34 110Z M86 110 L86 96 Q93 88 100 96 L100 110Z" fill="#6B4A2E"/><path d="M60 4 L70 21 L64 21Z" fill="#A8502C"/><rect x="67" y="32" width="8" height="38" fill="#D9A63A" opacity=".5"/>`);
-L.molino = cut(
-  `<path d="M2 110 Q60 96 118 110Z" fill="#7FB25A"/><path d="M44 108 L51 52 L69 52 L76 108Z" fill="#9A6A44"/><path d="M47 54 Q60 34 73 54Z" fill="#3E3A44"/>`
-  + `<g transform="rotate(38 60 46)"><rect x="57.5" y="0" width="5" height="92" fill="#3E3A44"/><rect x="14" y="43.5" width="92" height="5" fill="#3E3A44"/><rect x="62" y="2" width="13" height="34" fill="#FFF4DC"/><rect x="45" y="56" width="13" height="34" fill="#FFF4DC"/><rect x="70" y="48" width="34" height="13" fill="#FFF4DC"/><rect x="16" y="31" width="34" height="13" fill="#FFF4DC"/></g>`,
-  `<rect x="42" y="80" width="36" height="4" fill="#FFF4DC"/><path d="M55 108 L55 94 Q60 88 65 94 L65 108Z" fill="#3F7F6A"/><rect x="56" y="64" width="8" height="9" rx="1" fill="#FFE9A8"/><circle cx="60" cy="46" r="4" fill="#F2B937"/><g>${[12, 22, 32, 88, 98, 108].map((x, i) => `<rect x="${x - .8}" y="100" width="1.6" height="8" fill="#3E7D45"/><path d="M${x - 3.5} 100 Q${x - 3.5} 93 ${x} 95 Q${x + 3.5} 93 ${x + 3.5} 100Z" fill="${['#E8452C', '#F2B937', '#F29BB8'][i % 3]}"/>`).join('')}</g>`);
 const ATO = { t: [60, 14], b: [60, 104], c: [60, 59], ul: [26, 40], ur: [94, 40], ll: [26, 78], lr: [94, 78], um: [60, 36], lm: [60, 82] };
 L.atomium = cut(
   [['t', 'ul'], ['t', 'ur'], ['t', 'um'], ['b', 'll'], ['b', 'lr'], ['b', 'lm'], ['ul', 'll'], ['ur', 'lr'], ['c', 't'], ['c', 'b'], ['c', 'ul'], ['c', 'ur'], ['c', 'll'], ['c', 'lr'], ['ul', 'lm'], ['ur', 'lm'], ['ll', 'um'], ['lr', 'um']].map(([a, b]) => tube(ATO[a], ATO[b], 4, '#9AA3B2')).join('')
@@ -147,9 +133,6 @@ L.kutubia = cut(
 L.petra = cut(
   `<path d="M6 110 L6 22 Q30 6 60 14 Q92 4 114 22 L114 110Z" fill="#D98C6A"/>`,
   `<path d="M14 30 Q22 60 14 96 M104 28 Q96 60 106 98 M26 18 Q30 40 24 58" stroke="#C0714F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M26 62 L60 48 L94 62Z" fill="#F0B592"/><rect x="28" y="62" width="64" height="5" fill="#F0B592"/><rect x="28" y="67" width="64" height="37" fill="#B8684A"/><g fill="#F0B592">${[30, 41, 52, 63, 74, 85].map(x => `<rect x="${x}" y="67" width="5" height="37"/>`).join('')}<rect x="32" y="28" width="16" height="20" /><rect x="72" y="28" width="16" height="20"/><path d="M30 28 L48 28 L48 22Z M90 28 L72 28 L72 22Z"/><rect x="53" y="28" width="14" height="20"/><path d="M50 28 L60 14 L70 28Z"/></g><path d="M55 104 L55 82 L65 82 L65 104Z" fill="#5E2F22"/><rect x="24" y="104" width="72" height="6" fill="#F0B592"/><g fill="#B8684A"><rect x="38" y="33" width="4" height="12"/><rect x="78" y="33" width="4" height="12"/><rect x="58" y="33" width="4" height="12"/></g>`);
-L.mesa = cut(
-  `<path d="M88 110 L102 68 L108 72 L118 110Z" fill="#7C8C7A"/><path d="M2 110 L16 62 L30 46 L90 46 L102 60 L112 110Z" fill="#8C9AA6"/><path d="M0 110 Q30 90 60 98 Q90 90 120 110Z" fill="#6FA255"/>`,
-  `<path d="M22 48 Q26 38 36 42 Q44 34 56 40 Q66 34 76 40 Q88 36 96 48 Q84 54 70 50 Q56 56 44 50 Q32 54 22 48Z" fill="#FFFFFF"/><path d="M30 56 L26 92 M48 54 L46 94 M68 54 L72 94 M86 56 L92 92" stroke="#74828E" stroke-width="2.5" stroke-linecap="round"/><path d="M0 110 Q30 96 60 104 Q90 96 120 110Z" fill="#86BC66"/>`);
 L.kili = cut(
   `<path d="M0 110 Q28 62 44 44 L76 44 Q92 62 120 110Z" fill="#8E7BA8"/><path d="M0 110 Q60 94 120 110Z" fill="#D9BC6A"/><rect x="24" y="80" width="4" height="26" fill="#6B4A2E"/><path d="M6 82 Q14 68 26 70 Q40 66 48 82 Q28 76 6 82Z" fill="#5E8A3C"/>`,
   `<path d="M39 50 L44 44 L76 44 L81 50 L74 58 L67 51 L59 60 L51 51 L45 58Z" fill="#FFFFFF"/><path d="M76 44 Q92 62 120 110 L96 110 Q84 70 70 52Z" fill="#74628E" opacity=".5"/><path d="M26 86 L18 78 M26 88 L34 78" stroke="#6B4A2E" stroke-width="2.5" stroke-linecap="round"/>`);
@@ -215,7 +198,6 @@ const P = {
   quiosco: '<rect x="28" y="56" width="64" height="54" rx="3" fill="#2F6B4F"/><path d="M18 60 L28 36 L92 36 L102 60Z" fill="#245540"/><path d="M36 36 L48 36 L44 60 L30 60Z M60 36 L72 36 L74 60 L60 60Z M84 36 L92 36 L102 60 L90 60Z" fill="#FFF4DC"/><rect x="36" y="68" width="48" height="22" rx="2" fill="#FFF4DC"/><g fill="#E8452C"><rect x="40" y="72" width="8" height="14"/><rect x="64" y="72" width="8" height="14"/></g><g fill="#3E5BA9"><rect x="52" y="72" width="8" height="14"/><rect x="76" y="72" width="5" height="14"/></g>',
   bambu: '<rect x="34" y="18" width="10" height="92" rx="4" fill="#7DB04A"/><rect x="56" y="6" width="11" height="104" rx="4" fill="#8FC25A"/><rect x="79" y="26" width="9" height="84" rx="4" fill="#6FA044"/><path d="M44 40 Q60 30 66 42 Q54 42 44 46Z M67 30 Q84 18 92 30 Q78 30 67 36Z M34 60 Q18 52 12 62 Q24 62 34 66Z" fill="#5E9A3C"/><path d="M34 48 h10 M34 78 h10 M56 40 h11 M56 74 h11 M79 56 h9 M79 86 h9" stroke="#4E7F32" stroke-width="3"/>',
   auto: '<circle cx="34" cy="98" r="10" fill="#34333B"/><circle cx="88" cy="98" r="10" fill="#34333B"/><path d="M8 96 L10 80 L36 76 L46 60 L76 60 L86 76 L108 78 L112 96Z" fill="#3FB8B0"/><path d="M42 76 L49 64 L60 64 L60 76Z M64 76 L64 64 L74 64 L81 76Z" fill="#DDF3F5"/><rect x="8" y="86" width="104" height="4" fill="#FFF4DC"/><circle cx="34" cy="98" r="4.5" fill="#FFF4DC"/><circle cx="88" cy="98" r="4.5" fill="#FFF4DC"/><rect x="106" y="82" width="7" height="5" rx="2" fill="#FFD46B"/>',
-  tulipan: '<path d="M38 110 L38 62 M60 110 L60 48 M82 110 L82 66" stroke="#3E7D45" stroke-width="5" stroke-linecap="round"/><path d="M38 96 Q24 90 22 76 Q36 80 38 92Z M60 92 Q76 84 78 70 Q62 76 60 88Z M82 98 Q94 92 96 82 Q84 84 82 94Z" fill="#5DA35A"/><path d="M26 60 Q26 38 38 44 Q50 38 50 60 Q44 72 38 70 Q32 72 26 60Z" fill="#E8452C"/><path d="M47 44 Q47 20 60 27 Q73 20 73 44 Q67 58 60 56 Q53 58 47 44Z" fill="#F2B937"/><path d="M70 64 Q70 44 82 50 Q94 44 94 64 Q88 76 82 74 Q76 76 70 64Z" fill="#F29BB8"/>',
   acacia: '<path d="M56 110 L58 62 L46 48 L50 45 L60 56 L72 44 L76 47 L64 62 L66 110Z" fill="#6B4A2E"/><path d="M6 46 Q16 26 40 28 Q60 16 82 28 Q106 26 114 46 Q88 38 60 44 Q32 38 6 46Z" fill="#5E8A3C"/><path d="M24 36 q14 -6 28 -4 M66 32 q14 -2 26 4" stroke="#86B052" stroke-width="4" fill="none" stroke-linecap="round"/>',
   farolPiedra: '<rect x="50" y="84" width="20" height="26" rx="3" fill="#9AA1A6"/><rect x="42" y="56" width="36" height="30" rx="4" fill="#B8BEC0"/><path d="M30 58 Q60 30 90 58Z" fill="#7C8388"/><rect x="52" y="64" width="16" height="14" rx="2" fill="#FFD46B"/><circle cx="60" cy="34" r="6" fill="#7C8388"/>',
 };
@@ -225,20 +207,43 @@ const PAV = '#8D919B', VEREDA = '#6F737D';
 const TABLA = [
   ['BAMBÚ', 'Kioto', 'Japón', LANDMARKS.pagoda, '#E3F0C8', '#D2E4AA', '#A0C672', '#9FBF6A', '#A9C873', '#5F9447', 'dune', 'bamboo', 11.5, 'bambu farolPiedra helecho'],
   ['CIUDAD', 'Tokio', 'Japón', L.tokyo, '#FBE3E6', '#F2C4CE', '#DDA6B8', '#BDB9C4', PAV, VEREDA, 'city', 'petals', 10.5, 'cerezo expendedora neon'],
+  ['PALACIO', 'Seúl', 'Corea del Sur', L.palacio, '#FBE6E4', '#F2C8CE', '#DEA8B6', '#C9C2B4', '#C9C2AE', '#A59D86', 'peak', 'petals', 10.5, 'cerezo farolPiedra pino'],
   ['MURALLA', 'Pekín', 'China', L.muralla, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'pino farolRojo rocaGris'],
+  ['CIUDAD', 'Shanghái', 'China', L.perla, '#EFE4F2', '#DCC8E4', '#C4A8D4', '#B8B4BE', PAV, VEREDA, 'city', 'lanterns', 15.5, 'farolRojo neon farola'],
+  ['TEMPLOS', 'Bangkok', 'Tailandia', L.watarun, '#FBEAD8', '#F4D4B4', '#E8BA90', '#D9C8A8', '#C9BCA4', '#A89A80', 'dune', 'petals', 15.5, 'palmera farolRojo loto'],
+  ['CIUDAD', 'Kuala Lumpur', 'Malasia', L.petronas, '#E0EEF4', '#BCD6E2', '#98BCD0', '#B0B8BC', PAV, VEREDA, 'city', 'leaves', 13, 'palmera farola arbusto'],
+  ['ISLA', 'Bali', 'Indonesia', L.bali, '#E0F2E0', '#BCE0BC', '#94C894', '#7FB86A', '#98C87C', '#64A050', 'peak', 'petals', 11, 'palmera loto helecho'],
   ['MÁRMOL', 'Agra', 'India', L.taj, '#FBE8DC', '#F4CFC0', '#E8B4A8', '#E6D7C4', '#F0E6DA', '#D6C6B4', 'dune', 'petals', 10, 'palmera chhatri loto'],
   ['CIUDAD', 'Dubái', 'Emiratos Árabes', L.burj, '#FBEBD0', '#F2D6A8', '#E4BE88', '#D8C8A8', '#A39C92', '#827B72', 'city', 'sand', 13.5, 'palmera farola duna'],
-  ['CÚPULAS', 'Moscú', 'Rusia', L.basilio, '#EAF1F8', '#D2DEEC', '#B4C4DA', '#DCE4EC', '#E6EBF0', '#C3CDD8', 'city', 'snow', 13, 'pinoNevado farola monticulo'],
-  ['RUINAS', 'Atenas', 'Grecia', L.partenon, '#E2F0FA', '#C0DCF0', '#A0C6E4', '#DDD2B8', '#E9E0CA', '#C8BC9C', 'dune', 'leaves', 12.5, 'olivo anfora columna'],
+  ['SABANA', 'Kilimanjaro', 'Tanzania', L.kili, '#FBEFC8', '#F4DC9A', '#E8C470', '#D9BC6A', '#E3CC84', '#B89C54', 'dune', 'sand', 14, 'acacia mata rocaArena'],
+  ['CAÑÓN', 'Petra', 'Jordania', L.petra, '#FBE0D0', '#F2C0A4', '#E09C80', '#E0A888', '#E8B89A', '#C8906E', 'peak', 'sand', 13, 'rocaArena anfora duna'],
   ['DESIERTO', 'El Cairo', 'Egipto', L.piramides, '#F6E2B4', '#EDD09A', '#DDB877', '#E3C98C', '#EBD49C', '#D9BC7C', 'dune', 'sand', 13, 'palmera duna anfora'],
+  ['CÚPULAS', 'Estambul', 'Turquía', L.sofia, '#FBE6D8', '#F2CDBA', '#E0AE9C', '#D6C2A8', '#C2B49C', '#A0927A', 'city', 'leaves', 15.5, 'cipres farola anfora'],
+  ['RUINAS', 'Atenas', 'Grecia', L.partenon, '#E2F0FA', '#C0DCF0', '#A0C6E4', '#DDD2B8', '#E9E0CA', '#C8BC9C', 'dune', 'leaves', 12.5, 'olivo anfora columna'],
+  ['CÚPULAS', 'Moscú', 'Rusia', L.basilio, '#EAF1F8', '#D2DEEC', '#B4C4DA', '#DCE4EC', '#E6EBF0', '#C3CDD8', 'city', 'snow', 13, 'pinoNevado farola monticulo'],
+  ['RÍO', 'Budapest', 'Hungría', L.parlamento, '#F4E8DC', '#E6D0BC', '#D0B49C', '#C9C0B0', '#A8A098', '#88807A', 'city', 'leaves', 15, 'farola arbusto velero'],
+  ['CIUDAD', 'Berlín', 'Alemania', L.brandeburgo, '#EEEAE0', '#DAD2C0', '#C0B6A0', '#C2BDB0', '#9A968E', '#7A766E', 'city', 'leaves', 14, 'farola arbusto quiosco'],
+  ['LAGUNA', 'Venecia', 'Italia', L.campanile, '#FBE8DC', '#F0D0C0', '#E0B4A4', '#D9CDB8', '#C9BCA8', '#A89A86', 'dune', 'bubbles', 10.5, 'farola velero anfora'],
   ['RUINAS', 'Roma', 'Italia', L.coliseo, '#FAE6C8', '#EFCFA2', '#DDB684', '#D6C2A0', '#C9B694', '#A8956F', 'dune', 'leaves', 15.5, 'cipres columna pinoParasol'],
-  ['CIUDAD', 'París', 'Francia', L.eiffel, '#E9EEF6', '#CBD6E6', '#AEBED6', '#C2C0BC', '#9A9CA3', '#797B83', 'city', 'leaves', 15, 'farola toldo morris'],
   ['PRADERA', 'Pisa', 'Italia', LANDMARKS.pisa, '#E6F4DA', '#C4E0A2', '#97C670', '#A6CC78', '#B9D88E', '#8DBF5E', 'dune', 'petals', 10, 'cipres arbusto pinoParasol'],
-  ['CIUDAD', 'Londres', 'Reino Unido', L.bigben, '#E4E8EC', '#C2CAD2', '#A3AEBA', '#B2B5BA', '#84888F', '#666A72', 'city', 'leaves', 14, 'cabina farola buzon'],
   ['CIUDAD', 'Barcelona', 'España', L.sagrada, '#FBE9D2', '#F4D2A6', '#E6B880', '#DCC8A6', '#C6B8A0', '#A39479', 'city', 'petals', 14, 'palmera farola toldo'],
+  ['ZOCO', 'Marrakech', 'Marruecos', L.kutubia, '#FBE4C8', '#F4C89A', '#E6A870', '#E3B98A', '#E0A878', '#C08A5C', 'dune', 'sand', 15.5, 'palmera anfora duna'],
+  ['COSTA', 'Lisboa', 'Portugal', L.belem, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 15, 'palmera velero farola'],
+  ['CIUDAD', 'Madrid', 'España', L.alcala, '#FBE9D2', '#F4D2A6', '#E6B880', '#C9C2B4', '#9A9690', '#787470', 'city', 'leaves', 15.5, 'farola toldo cipres'],
+  ['CIUDAD', 'París', 'Francia', L.eiffel, '#E9EEF6', '#CBD6E6', '#AEBED6', '#C2C0BC', '#9A9CA3', '#797B83', 'city', 'leaves', 15, 'farola toldo morris'],
+  ['CIUDAD', 'Bruselas', 'Bélgica', L.atomium, '#E6ECF2', '#C8D2DE', '#A8B8CA', '#B4B8BE', PAV, VEREDA, 'city', 'leaves', 13, 'farola toldo morris'],
+  ['CIUDAD', 'Londres', 'Reino Unido', L.bigben, '#E4E8EC', '#C2CAD2', '#A3AEBA', '#B2B5BA', '#84888F', '#666A72', 'city', 'leaves', 14, 'cabina farola buzon'],
+  ['CASTILLO', 'Edimburgo', 'Escocia', L.edimburgo, '#E4ECE6', '#C6D6CC', '#A4BEB0', '#8FB07A', '#A4C08E', '#6F9460', 'peak', 'leaves', 13, 'pino rocaGris mata'],
+  ['HIELO', 'Reikiavik', 'Islandia', LANDMARKS.iglesia, '#EAF2F6', '#D6E4EC', '#B4CAD8', '#DCE6EC', '#E6EDF2', '#C3CDD8', 'peak', 'snow', 11, 'rocaLava monticulo rocaHelada'],
   ['CIUDAD', 'Nueva York', 'EE.UU.', L.liberty, '#DCEBF5', '#B9CDE0', '#9DB5CE', '#B4BAC4', PAV, VEREDA, 'city', 'leaves', 12, 'taxi farola hidrante'],
+  ['CIUDAD', 'La Habana', 'Cuba', L.capitolio, '#DDF3F5', '#B4E0E4', '#8CCBD4', '#E6D6B0', '#B8AC9C', '#958A7A', 'city', 'bubbles', 15, 'palmera farola auto'],
+  ['MAYA', 'Chichén Itzá', 'México', L.chichen, '#F4ECC8', '#DCE0A0', '#B4C878', '#A9C070', '#C9C08A', '#A59D6A', 'dune', 'leaves', 13, 'palmera rocaArena helecho'],
+  ['MURALLA', 'Cartagena', 'Colombia', L.reloj, '#FBEBC8', '#F4D69A', '#E8BE74', '#E6CFA0', '#D9C7A4', '#B8A47E', 'dune', 'bubbles', 14, 'palmera farola anfora'],
+  ['SELVA', 'Salto Ángel', 'Venezuela', L.salto, '#DDF0E2', '#B4DCC0', '#86C098', '#6FA85A', '#8DBF6A', '#5F9447', 'peak', 'leaves', 11, 'palmera helecho rocaGris'],
+  ['ECUADOR', 'Mitad del Mundo', 'Ecuador', L.mitad, '#E0F0F4', '#BCDDE4', '#94C4D0', '#9FBF7A', '#C9C2AE', '#A59D86', 'peak', 'leaves', 12, 'llama rocaGris mata'],
   ['ANDES', 'Machu Picchu', 'Perú', L.machu, '#DCEFE0', '#B8DCC0', '#8FC49C', '#7FAE6A', '#93BF78', '#5F9447', 'peak', 'leaves', 11, 'llama terraza helecho'],
   ['COSTA', 'Río de Janeiro', 'Brasil', LANDMARKS.cristo, '#DDF3F5', '#A9DCE2', '#8FCED6', '#F2E3B5', '#F4E6BC', '#E2CE97', 'dune', 'bubbles', 12, 'palmera sombrilla estrella'],
+  ['CIUDAD', 'Montevideo', 'Uruguay', L.salvo, '#E4EEF8', '#C4D6EA', '#A4BEDC', '#B8BCC4', PAV, VEREDA, 'city', 'leaves', 15, 'palmera farola quiosco'],
   ['CIUDAD', 'Buenos Aires', 'Argentina', L.obelisco, '#E6E0F4', '#CDC2E8', '#B4A6D8', '#B8B4BE', PAV, VEREDA, 'city', 'petals', 15, 'jacaranda farola quiosco'],
   ['NIEVE', 'Ushuaia', 'Argentina', LANDMARKS.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'pinoNevado monticulo rocaHelada'],
   ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'moaiChico rocaLava mata'],
@@ -249,34 +254,3 @@ const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColo
   look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: props.split(' ').map(k => wrap(P[k])) },
 });
 export const DESTINOS = TABLA.map(armar);
-// Segunda tanda, todavía en prueba (no entra en el recorrido ni en el mapa)
-export const NUEVOS = [
-  ['SELVA', 'Salto Ángel', 'Venezuela', L.salto, '#DDF0E2', '#B4DCC0', '#86C098', '#6FA85A', '#8DBF6A', '#5F9447', 'peak', 'leaves', 11, 'palmera helecho rocaGris'],
-  ['MAYA', 'Chichén Itzá', 'México', L.chichen, '#F4ECC8', '#DCE0A0', '#B4C878', '#A9C070', '#C9C08A', '#A59D6A', 'dune', 'leaves', 13, 'palmera rocaArena helecho'],
-  ['CIUDAD', 'La Habana', 'Cuba', L.capitolio, '#DDF3F5', '#B4E0E4', '#8CCBD4', '#E6D6B0', '#B8AC9C', '#958A7A', 'city', 'bubbles', 15, 'palmera farola auto'],
-  ['ROCOSAS', 'Banff', 'Canadá', LANDMARKS.banff, '#E3F1F0', '#C7E0DA', '#9CC7BA', '#8FB58A', '#A5C59A', '#6F9C68', 'peak', 'leaves', 10, 'pino rocaGris helecho'],
-  ['CIUDAD', 'Seattle', 'EE.UU.', L.needle, '#E2ECF0', '#C0D2DC', '#9DB8C6', '#A9B8B4', PAV, VEREDA, 'city', 'leaves', 14, 'pino farola arbusto'],
-  ['COLINAS', 'Hollywood', 'EE.UU.', L.hollywood, '#FBE6D2', '#F4CDA8', '#E6B088', '#D9C29A', '#9A9690', '#787470', 'dune', 'leaves', 15.5, 'palmera farola cipres'],
-  ['ECUADOR', 'Mitad del Mundo', 'Ecuador', L.mitad, '#E0F0F4', '#BCDDE4', '#94C4D0', '#9FBF7A', '#C9C2AE', '#A59D86', 'peak', 'leaves', 12, 'llama rocaGris mata'],
-  ['CIUDAD', 'Montevideo', 'Uruguay', L.salvo, '#E4EEF8', '#C4D6EA', '#A4BEDC', '#B8BCC4', PAV, VEREDA, 'city', 'leaves', 15, 'palmera farola quiosco'],
-  ['MURALLA', 'Cartagena', 'Colombia', L.reloj, '#FBEBC8', '#F4D69A', '#E8BE74', '#E6CFA0', '#D9C7A4', '#B8A47E', 'dune', 'bubbles', 14, 'palmera farola anfora'],
-  ['CAMPO', 'Ámsterdam', 'Países Bajos', L.molino, '#E4F2F0', '#C4E2D8', '#9CCDB8', '#9CC87A', '#AFD488', '#7FB25A', 'dune', 'petals', 11, 'tulipan arbusto mata'],
-  ['CIUDAD', 'Bruselas', 'Bélgica', L.atomium, '#E6ECF2', '#C8D2DE', '#A8B8CA', '#B4B8BE', PAV, VEREDA, 'city', 'leaves', 13, 'farola toldo morris'],
-  ['CIUDAD', 'Berlín', 'Alemania', L.brandeburgo, '#EEEAE0', '#DAD2C0', '#C0B6A0', '#C2BDB0', '#9A968E', '#7A766E', 'city', 'leaves', 14, 'farola arbusto quiosco'],
-  ['COSTA', 'Lisboa', 'Portugal', L.belem, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 15, 'palmera velero farola'],
-  ['CIUDAD', 'Madrid', 'España', L.alcala, '#FBE9D2', '#F4D2A6', '#E6B880', '#C9C2B4', '#9A9690', '#787470', 'city', 'leaves', 15.5, 'farola toldo cipres'],
-  ['LAGUNA', 'Venecia', 'Italia', L.campanile, '#FBE8DC', '#F0D0C0', '#E0B4A4', '#D9CDB8', '#C9BCA8', '#A89A86', 'dune', 'bubbles', 10.5, 'farola velero anfora'],
-  ['CÚPULAS', 'Estambul', 'Turquía', L.sofia, '#FBE6D8', '#F2CDBA', '#E0AE9C', '#D6C2A8', '#C2B49C', '#A0927A', 'city', 'leaves', 15.5, 'cipres farola anfora'],
-  ['HIELO', 'Reikiavik', 'Islandia', LANDMARKS.iglesia, '#EAF2F6', '#D6E4EC', '#B4CAD8', '#DCE6EC', '#E6EDF2', '#C3CDD8', 'peak', 'snow', 11, 'rocaLava monticulo rocaHelada'],
-  ['RÍO', 'Budapest', 'Hungría', L.parlamento, '#F4E8DC', '#E6D0BC', '#D0B49C', '#C9C0B0', '#A8A098', '#88807A', 'city', 'leaves', 15, 'farola arbusto velero'],
-  ['CASTILLO', 'Edimburgo', 'Escocia', L.edimburgo, '#E4ECE6', '#C6D6CC', '#A4BEB0', '#8FB07A', '#A4C08E', '#6F9460', 'peak', 'leaves', 13, 'pino rocaGris mata'],
-  ['ZOCO', 'Marrakech', 'Marruecos', L.kutubia, '#FBE4C8', '#F4C89A', '#E6A870', '#E3B98A', '#E0A878', '#C08A5C', 'dune', 'sand', 15.5, 'palmera anfora duna'],
-  ['CAÑÓN', 'Petra', 'Jordania', L.petra, '#FBE0D0', '#F2C0A4', '#E09C80', '#E0A888', '#E8B89A', '#C8906E', 'peak', 'sand', 13, 'rocaArena anfora duna'],
-  ['CABO', 'Ciudad del Cabo', 'Sudáfrica', L.mesa, '#DDF0FA', '#B4D8EE', '#8CC0E0', '#9FBF7A', '#B5CF8E', '#7FA860', 'dune', 'bubbles', 12, 'palmera arbusto rocaGris'],
-  ['SABANA', 'Kilimanjaro', 'Tanzania', L.kili, '#FBEFC8', '#F4DC9A', '#E8C470', '#D9BC6A', '#E3CC84', '#B89C54', 'dune', 'sand', 14, 'acacia mata rocaArena'],
-  ['TEMPLOS', 'Bangkok', 'Tailandia', L.watarun, '#FBEAD8', '#F4D4B4', '#E8BA90', '#D9C8A8', '#C9BCA4', '#A89A80', 'dune', 'petals', 15.5, 'palmera farolRojo loto'],
-  ['CIUDAD', 'Kuala Lumpur', 'Malasia', L.petronas, '#E0EEF4', '#BCD6E2', '#98BCD0', '#B0B8BC', PAV, VEREDA, 'city', 'leaves', 13, 'palmera farola arbusto'],
-  ['CIUDAD', 'Shanghái', 'China', L.perla, '#EFE4F2', '#DCC8E4', '#C4A8D4', '#B8B4BE', PAV, VEREDA, 'city', 'lanterns', 15.5, 'farolRojo neon farola'],
-  ['PALACIO', 'Seúl', 'Corea del Sur', L.palacio, '#FBE6E4', '#F2C8CE', '#DEA8B6', '#C9C2B4', '#C9C2AE', '#A59D86', 'peak', 'petals', 10.5, 'cerezo farolPiedra pino'],
-  ['ISLA', 'Bali', 'Indonesia', L.bali, '#E0F2E0', '#BCE0BC', '#94C894', '#7FB86A', '#98C87C', '#64A050', 'peak', 'petals', 11, 'palmera loto helecho'],
-].map(armar);

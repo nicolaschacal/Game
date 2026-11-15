@@ -185,10 +185,10 @@ body.home #hud{opacity:0}
 #mapWorld{position:relative}
 .mpin{position:absolute;transform:translate(-50%,-50%) scale(1.2);text-align:center;background:none;border:0;padding:0;color:var(--ink);width:0;height:0}
 .mpin .t{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:9px;border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink);transform:rotate(-6deg);display:flex;align-items:center;justify-content:center;font:400 14px 'Lilita One',sans-serif;color:#fff}
-.mpin .t svg{width:34px;height:34px}
+.mpin .t svg{width:30px;height:30px}
 .mpin .n{position:absolute;left:0;top:19px;transform:translateX(-50%);display:none;padding:2px 8px 3px;border-radius:8px;background:var(--cream);border:2.5px solid var(--ink);font:900 10px Nunito;white-space:nowrap;box-shadow:0 2px 0 var(--ink)}
 .mpin.done .t{background:var(--green)}.mpin.lock .t{background:#B9AE95;color:#6b6250;font-size:11px}.mpin.lock .n{background:#E6DBC2;color:#6b6250}
-.mpin.cur{z-index:3}.mpin.cur .t{background:var(--red);left:-21px;top:-21px;width:42px;height:42px;animation:mbob 1.6s ease-in-out infinite}.mpin.cur .n{display:block;top:27px;background:var(--ink);color:var(--cream);border-color:var(--cream);font-size:11px}
+.mpin.cur{z-index:3}.mpin.cur .t{background:var(--red);left:-17px;top:-17px;width:34px;height:34px;animation:mbob 1.6s ease-in-out infinite}.mpin.cur .n{display:block;top:23px;background:var(--ink);color:var(--cream);border-color:var(--cream);font-size:11px}
 .mpin.sel{z-index:4}.mpin.sel .n{display:block}
 .mpin.sel .t{outline:4px solid var(--gold);outline-offset:3px}
 @keyframes mbob{50%{transform:rotate(-6deg) translateY(-5px)}}
@@ -275,7 +275,7 @@ body.home #hud{opacity:0}
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
-import { DESTINOS, NUEVOS } from './kanjuu-demo/destinos.js';
+import { DESTINOS } from './kanjuu-demo/destinos.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -296,15 +296,14 @@ const stock={revive:0,shield:0,magnet:0,double:0,freeze:0,...store.get('items',{
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
 const stage=carry?.stage??(Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):store.get('world',0)); // ?world=N abre directo el destino N (para probar) // se retoma en el mundo donde quedaste
-const TODOS=Q.has('nuevos')?[...DESTINOS,...NUEVOS]:DESTINOS; // ?nuevos suma la segunda tanda en prueba (destinos 21 en adelante)
-const NW=TODOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
-const S=Math.min(8,Math.round(WI*6/(NW-1))+LAP*2);   // dificultad 0…8: sube de a poco en los 20 destinos y cada vuelta arranca dos escalones más arriba
+const NW=DESTINOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
+const S=Math.min(8,Math.round(WI*6/(NW-1))+LAP*2);   // dificultad 0…8: sube de a poco a lo largo de todos los destinos y cada vuelta arranca dos escalones más arriba
 const SP=Math.min(16,WI*10/(NW-1)+LAP*3);            // escalón de velocidad
 const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
 const PATH='dirt';
-const THEMES=TODOS; // destinos reales (kanjuu-demo/destinos.js); al terminar la vuelta se repiten, cada vez más difíciles
+const THEMES=DESTINOS; // destinos reales (kanjuu-demo/destinos.js); al terminar la vuelta se repiten, cada vez más difíciles
 const theme=THEMES[stage%THEMES.length];
 
 // ── Nivel ──
