@@ -585,7 +585,7 @@ function sanctuary() {
   const rings = Array.from({ length: 8 }, () => { const r = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: ringTex, transparent: true, depthWrite: false })); r.rotation.x = -Math.PI / 2; r.visible = false; r.userData.life = 0; fx.add(r); return r; });
 
   const W = { name: 'sanct', scene, camera, world, ov, island, fx, items: new Map(), opts: {}, cols: 0, rows: 0, N: 5, sig: '', tops: new Map(), tufts: [], foams: [], az: Math.PI / 4, azT: Math.PI / 4, zoom: 1, rainK: 0, nightK: 0,
-    bg: { scene: bgScene, cam: bgCam }, onResize(w, h) { const a = w / h; bgCam.left = -a; bgCam.right = a; bgCam.updateProjectionMatrix(); } };
+    bg: { scene: bgScene, cam: bgCam }, onResize(w, h) { const a = w / h; bgCam.left = -a; bgCam.right = a; bgCam.updateProjectionMatrix(); } }; if (/[?&]debug/.test(location.search)) window.__W = W;
   for (let i = 0; i < RN; i++) drop(i, true);
   let az0 = 0;
   W.dragStart = () => { az0 = W.az; W.dragging = true; };
@@ -887,7 +887,7 @@ const baseDepth = N => { let n = 0; for (let j = 1; N - 2 * j >= 5; j++) n++; re
 function buildIsland(W, cols, rows, tiles, items) {
   const { island } = W;
   island.traverse(o => { if (o.geometry && !o.userData.keepGeo) o.geometry.dispose?.(); });
-  island.clear(); W.tops.clear(); W.tufts = []; W.foams = []; W.waters = [];
+  island.clear(); W.rail = null; W.tops.clear(); W.tufts = []; W.foams = []; W.waters = [];
   W.cols = cols; W.rows = rows; W.N = Math.max(cols, rows);
   const ox = (cols - 1) / 2, oz = (rows - 1) / 2; W.center = 0;
   const T = (x, y) => ({ g: W.opts.runner ? 'empty' : 'grass', h: 0, r: null, ...(tiles[x + ',' + y] || {}) });
@@ -1073,22 +1073,30 @@ export function moverLane(mv, now = moverNow()) {
   const u = ((now / 1000 + mv.phase) / mv.period) % 1, tri = u < .5 ? u * 2 : 2 - u * 2, k = Math.max(0, Math.min(1, (tri - .28) / .44));
   return mv.a + (mv.b - mv.a) * k * k * (3 - 2 * k);
 }
-// Textura de vía entre dos "puertas" del tile. Arriba de la imagen = adelante (N); derecha = carril mayor (E).
-const RAIL_PORT = { S: [64, 128], N: [64, 0], E: [128, 64], W: [0, 64], NE: [128, 0], NW: [0, 0], SE: [128, 128], SW: [0, 128] };
-function railMaterial(a, b) {
-  // Solo los rieles de metal sobre fondo transparente: el tile conserva el color del suelo de cada ciudad.
-  const cache = runnerGeo.rails ||= {}, key = a + '>' + b; if (cache[key]) return cache[key];
-  const S = 256, c = document.createElement('canvas'); c.width = c.height = S; const k = c.getContext('2d'); k.scale(2, 2);
-  const [x0, y0] = RAIL_PORT[a], [x1, y1] = RAIL_PORT[b], N = 40, pts = [];
-  // la curva sale y entra perpendicular al borde: control en el centro del tile
-  for (let i = -2; i <= N + 2; i++) { const t = i / N, u = 1 - t; pts.push([u * u * x0 + 2 * u * t * 64 + t * t * x1, u * u * y0 + 2 * u * t * 64 + t * t * y1, 2 * u * (64 - x0) + 2 * t * (x1 - 64), 2 * u * (64 - y0) + 2 * t * (y1 - 64)]); }
-  const nrm = p => { const l = Math.hypot(p[2], p[3]) || 1; return [-p[3] / l, p[2] / l]; };
-  const line = side => { k.beginPath(); pts.forEach((p, i) => { const [nx, ny] = nrm(p); k[i ? 'lineTo' : 'moveTo'](p[0] + nx * side, p[1] + ny * side); }); k.stroke(); };
-  k.lineJoin = k.lineCap = 'round';
-  for (const [col, w, dy] of [['rgba(27,23,48,.22)', 9, 2.5], ['#1B1730', 8, 0], ['#8E97A3', 4.6, 0], ['#E9EDF2', 1.6, -.8]])
-    for (const side of [-24, 24]) { k.save(); k.translate(0, dy); k.strokeStyle = col; k.lineWidth = w; line(side); k.restore(); }
-  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
-  return cache[key] = new THREE.MeshStandardMaterial({ map: tx, roughness: .6, metalness: .1, transparent: true, alphaTest: .05, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+// Vía de tren: una sola cinta continua (durmientes + rieles, fondo transparente) que pasa por el centro de cada fila
+// construida y se suaviza en las curvas. Así los cambios de carril son curvas limpias y el piso de cada ciudad se ve debajo.
+function railStripMat() {
+  if (runnerGeo.railStrip) return runnerGeo.railStrip;
+  const c = document.createElement('canvas'); c.width = c.height = 128; const k = c.getContext('2d');
+  k.strokeStyle = '#6B4A2E'; k.lineWidth = 12; for (let i = 0; i < 6; i++) { const y = 10.67 + i * 21.33; k.beginPath(); k.moveTo(18, y); k.lineTo(110, y); k.stroke(); }
+  for (const [col, w] of [['#3E434B', 11], ['#D5DAE2', 3.5]]) for (const x of [36, 92]) { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); k.moveTo(x, -2); k.lineTo(x, 130); k.stroke(); }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4;
+  return runnerGeo.railStrip = new THREE.MeshStandardMaterial({ map: tx, roughness: .9, side: THREE.DoubleSide, transparent: true, alphaTest: .5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+}
+function buildRailRun(W, run) {
+  const P = run.pts, f = new THREE.Vector3(0, 0, -1);
+  const ctrl = [new THREE.Vector3(P[0].x, P[0].y, P[0].z + .5), ...P.map(p => new THREE.Vector3(p.x, p.y, p.z)), new THREE.Vector3(P[P.length - 1].x, P[P.length - 1].y, P[P.length - 1].z - .5)];
+  const curve = new THREE.CatmullRomCurve3(ctrl, false, 'centripetal'), L = curve.getLength(), n = Math.max(2, Math.ceil(L / .06));
+  const pos = [], uv = [], idx = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, p = curve.getPointAt(t), d = curve.getTangentAt(t), nx = -d.z, nz = d.x, l = Math.hypot(nx, nz) || 1;
+    pos.push(p.x - nx / l * .5, p.y, p.z - nz / l * .5, p.x + nx / l * .5, p.y, p.z + nz / l * .5);
+    uv.push(0, t * L, 1, t * L);
+    if (i) { const a = (i - 1) * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+  if (run.mesh) { run.mesh.geometry.dispose(); run.mesh.geometry = g; }
+  else { run.mesh = new THREE.Mesh(g, railStripMat()); run.mesh.receiveShadow = true; run.mesh.renderOrder = 1; W.island.add(run.mesh); }
 }
 export function updateRunnerTile(x, y, tile) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
@@ -1100,10 +1108,13 @@ export function updateRunnerTile(x, y, tile) {
     m.position.set(top.position.x, tile.h * LV - .05, top.position.z); m.castShadow = m.receiveShadow = true; m.userData.keepGeo = true;
     W.island.add(m); W.floats.set(x + ',' + y, m); W.rowB?.get(y)?.push(m); return;
   }
-  if (tile.g === 'rail') { // vía pintada: el dibujo sigue la entrada y la salida del tile (recta, curva o diagonal)
-    const mat = railMaterial(tile.in || 'S', tile.out || 'N');
-    if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail ||= new THREE.PlaneGeometry(1, 1), mat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, W.tY(x, y) + .012, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; }
-    else top.userData.rail.material = mat;
+  if (tile.g === 'rail') { // vía: cada fila nueva suma un punto a la cinta; moverse de carril en la misma fila corre ese punto
+    const R = W.rail ||= { runs: [], seen: new Set() }, key = x + ',' + y; if (R.seen.has(key)) return; R.seen.add(key);
+    const p = { x: top.position.x, y: W.tY(x, y) + .014, z: top.position.z, row: y };
+    let run = R.runs[R.runs.length - 1], last = run?.pts[run.pts.length - 1];
+    if (!last || (last.row !== y && last.row !== y + 1)) { run = { pts: [], mesh: null }; R.runs.push(run); last = null; }
+    if (last && last.row === y) last.x = p.x; else run.pts.push(p);
+    buildRailRun(W, run);
     return;
   }
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
