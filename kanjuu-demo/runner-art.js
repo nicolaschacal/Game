@@ -118,16 +118,16 @@ export const STAR = cut(`<path d="M60 14 L73 44 L106 48 L81 70 L88 102 L60 86 L3
 
 // ── Tren de papel (visto desde atrás) y obstáculos de vía ───────────────────
 function trainPose(k, moving) {
-  // compacto: ruedas y techo quedan dentro del tile (de x 20 a 100)
+  // ancho como el barco y el globo, pero ruedas y techo quedan dentro del tile (de x 17 a 103)
   const shapes = (moving ? `<circle cx="${k ? 66 : 58}" cy="${k ? 8 : 12}" r="${k ? 8 : 6}" fill="#FFFFFF"/>` : '')
-    + `<path d="M51 40 L53 21 L49 15 L71 15 L67 21 L69 40Z" fill="#34333B"/>`
-    + `<rect x="22" y="84" width="14" height="24" rx="5" fill="#34333B"/><rect x="84" y="84" width="14" height="24" rx="5" fill="#34333B"/>`
-    + `<rect x="26" y="40" width="68" height="58" rx="8" fill="#E8452C"/><path d="M20 45 Q60 28 100 45 L98 53 L22 53Z" fill="#FFF0D2"/>`
-    + `<rect x="23" y="92" width="74" height="12" rx="4" fill="#704332"/>`;
-  const details = `<path d="M22 49 L98 49 L98 53 L22 53Z" fill="#EAD3A6"/><rect x="40" y="58" width="40" height="23" rx="6" fill="#8EC7D8"/>` + rider(60, 72, .75)
-    + `<rect x="40" y="58" width="40" height="23" rx="6" fill="none" stroke="#FFF0D2" stroke-width="4"/><rect x="26" y="84" width="68" height="5" fill="#F2B937"/><path d="M26 90 L94 90 L94 92 Q60 97 26 92Z" fill="#B93322"/>`
-    + `<circle cx="37" cy="98" r="4.5" fill="#F2B937"/><circle cx="83" cy="98" r="4.5" fill="#F2B937"/><circle cx="60" cy="98" r="3.2" fill="#FFF0D2"/>`
-    + `<rect x="22" y="${k ? 92 : 98}" width="14" height="4" fill="#5E5D66"/><rect x="84" y="${k ? 98 : 92}" width="14" height="4" fill="#5E5D66"/>`;
+    + `<path d="M50 40 L52 21 L48 15 L72 15 L68 21 L70 40Z" fill="#34333B"/>`
+    + `<rect x="19" y="84" width="15" height="24" rx="5" fill="#34333B"/><rect x="86" y="84" width="15" height="24" rx="5" fill="#34333B"/>`
+    + `<rect x="23" y="40" width="74" height="58" rx="8" fill="#E8452C"/><path d="M17 45 Q60 28 103 45 L101 53 L19 53Z" fill="#FFF0D2"/>`
+    + `<rect x="20" y="92" width="80" height="12" rx="4" fill="#704332"/>`;
+  const details = `<path d="M19 49 L101 49 L101 53 L19 53Z" fill="#EAD3A6"/><rect x="38" y="58" width="44" height="23" rx="6" fill="#8EC7D8"/>` + rider(60, 72, .75)
+    + `<rect x="38" y="58" width="44" height="23" rx="6" fill="none" stroke="#FFF0D2" stroke-width="4"/><rect x="23" y="84" width="74" height="5" fill="#F2B937"/><path d="M23 90 L97 90 L97 92 Q60 97 23 92Z" fill="#B93322"/>`
+    + `<circle cx="35" cy="98" r="4.5" fill="#F2B937"/><circle cx="85" cy="98" r="4.5" fill="#F2B937"/><circle cx="60" cy="98" r="3.2" fill="#FFF0D2"/>`
+    + `<rect x="19" y="${k ? 92 : 98}" width="15" height="4" fill="#5E5D66"/><rect x="86" y="${k ? 98 : 92}" width="15" height="4" fill="#5E5D66"/>`;
   return cut(shapes, details);
 }
 const trainSet = () => ({ idle: [trainPose(0, false)], run: [trainPose(0, true), trainPose(1, true)] });

@@ -1075,19 +1075,59 @@ export function moverLane(mv, now = moverNow()) {
 }
 // Textura de vía entre dos "puertas" del tile. Arriba de la imagen = adelante (N); derecha = carril mayor (E).
 const RAIL_PORT = { S: [64, 128], N: [64, 0], E: [128, 64], W: [0, 64], NE: [128, 0], NW: [0, 0], SE: [128, 128], SW: [0, 128] };
-function railMaterial(a, b) {
-  const cache = runnerGeo.rails ||= {}, key = a + '>' + b; if (cache[key]) return cache[key];
-  const c = document.createElement('canvas'); c.width = c.height = 128; const k = c.getContext('2d');
-  // sin fondo: solo durmientes y rieles, el tile conserva el color del piso de cada ciudad
-  const [x0, y0] = RAIL_PORT[a], [x1, y1] = RAIL_PORT[b], N = 28, pts = [];
-  for (let i = -3; i <= N + 3; i++) { const t = i / N, u = 1 - t; pts.push([u * u * x0 + 2 * u * t * 64 + t * t * x1, u * u * y0 + 2 * u * t * 64 + t * t * y1, 2 * u * (64 - x0) + 2 * t * (x1 - 64), 2 * u * (64 - y0) + 2 * t * (y1 - 64)]); }
-  const nrm = p => { const l = Math.hypot(p[2], p[3]) || 1; return [-p[3] / l, p[2] / l]; };
-  const bend = (x0 !== x1 && y0 !== y1) && !(a.length > 1 || b.length > 1); // curva de 90°: durmientes un poco más cortos y espaciados para que no se amontonen
-  let acc = 9;                                                    // durmientes perpendiculares a la curva
-  for (let i = 1; i < pts.length; i++) { acc += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); if (acc < (bend ? 24 : 21)) continue; acc = 0; const [nx, ny] = nrm(pts[i]), L = bend ? 40 : 46; k.strokeStyle = '#6B4A2E'; k.lineWidth = bend ? 10 : 12; k.beginPath(); k.moveTo(pts[i][0] - nx * L, pts[i][1] - ny * L); k.lineTo(pts[i][0] + nx * L, pts[i][1] + ny * L); k.stroke(); }
-  for (const [col, w] of [['#3E434B', 11], ['#D5DAE2', 3.5]]) for (const side of [-28, 28]) { k.strokeStyle = col; k.lineWidth = w; k.lineJoin = 'round'; k.beginPath(); pts.forEach((p, i) => { const [nx, ny] = nrm(p); k[i ? 'lineTo' : 'moveTo'](p[0] + nx * side, p[1] + ny * side); }); k.stroke(); }
-  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
-  return cache[key] = new THREE.MeshStandardMaterial({ map: tx, roughness: .9, transparent: true, alphaTest: .5 });
+// Eje de la vía entre dos puertas, como puntos [x, y, tx, ty] (tangente unitaria) en un tile de 128.
+// Recta si las puertas se enfrentan; arco de círculo con centro en la esquina si doblan 90° (así los dos rieles
+// quedan siempre paralelos); curva suave si entra o sale por una esquina; sin salida = vía muerta hasta el centro.
+function railLine(a, b) {
+  const [x0, y0] = RAIL_PORT[a], N = 32, pts = [], EXT = 2;
+  const unit = (x, y) => { const l = Math.hypot(x, y) || 1; return [x / l, y / l]; };
+  const straight = (ax, ay, bx, by, e0, e1) => { const [tx, ty] = unit(bx - ax, by - ay), L = Math.hypot(bx - ax, by - ay); for (let i = 0; i <= N; i++) { const s = -e0 + (L + e0 + e1) * i / N; pts.push([ax + tx * s, ay + ty * s, tx, ty]); } return { pts, skip: e0, tail: e1 }; };
+  if (!b) { const [ux, uy] = unit(64 - x0, 64 - y0), L = a.length > 1 ? 72 : 50; return { ...straight(x0, y0, x0 + ux * L, y0 + uy * L, a.length > 1 ? 0 : EXT, 0), stop: true }; }
+  const [x1, y1] = RAIL_PORT[b], diag = a.length > 1 || b.length > 1;
+  if (!diag && (x0 === x1 || y0 === y1)) return straight(x0, y0, x1, y1, EXT, EXT);
+  if (!diag) {
+    const cx = x0 === 64 ? x1 : x0, cy = y0 === 64 ? y1 : y0, a0 = Math.atan2(y0 - cy, x0 - cx); let d = Math.atan2(y1 - cy, x1 - cx) - a0;
+    if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI;
+    const e = EXT / 64, sg = Math.sign(d);
+    for (let i = 0; i <= N; i++) { const an = a0 + sg * (-e + (Math.abs(d) + 2 * e) * i / N); pts.push([cx + 64 * Math.cos(an), cy + 64 * Math.sin(an), -Math.sin(an) * sg, Math.cos(an) * sg]); }
+    return { pts, skip: EXT, tail: EXT, center: [cx, cy] };
+  }
+  for (let i = 0; i <= N; i++) { const t = i / N, u = 1 - t; pts.push([u * u * x0 + 2 * u * t * 64 + t * t * x1, u * u * y0 + 2 * u * t * 64 + t * t * y1, ...unit(2 * u * (64 - x0) + 2 * t * (x1 - 64), 2 * u * (64 - y0) + 2 * t * (y1 - 64))]); }
+  let skip = 0, tail = 0; // las puertas de borde se pasan 2 px para que no quede una rendija entre tiles; las de esquina terminan justas
+  if (a.length === 1) { const p = pts[0]; pts.unshift([p[0] - p[2] * EXT, p[1] - p[3] * EXT, p[2], p[3]]); skip = EXT; }
+  if (b.length === 1) { const p = pts.at(-1); pts.push([p[0] + p[2] * EXT, p[1] + p[3] * EXT, p[2], p[3]]); tail = EXT; }
+  return { pts, skip, tail };
+}
+// Textura de un tile de vía: entrada `a`, salida `b` (null = vía muerta) y desvíos `br` que quedaron de cambios de carril.
+function railMaterial(a, b, br = []) {
+  const cache = runnerGeo.rails ||= {}, key = a + '>' + b + '+' + br.join(''); if (cache[key]) return cache[key];
+  const outs = [...(b ? [b] : []), ...br.filter(p => p !== b)], lines = outs.length ? outs.map(o => railLine(a, o)) : [railLine(a, null)];
+  // sin fondo: solo durmientes y rieles, el tile conserva el color del piso de cada ciudad.
+  // Si la vía pasa por una esquina, el dibujo ocupa 2×2 tiles para que los rieles no se corten en el borde.
+  const big = [a, ...outs].some(p => p.length > 1), O = big ? 64 : 0, S = 2, size = (big ? 256 : 128) * S;
+  const c = document.createElement('canvas'); c.width = c.height = size; const k = c.getContext('2d'); k.scale(S, S); k.translate(O, O);
+  const GAUGE = 28, STEP = 128 / 6; // 6 durmientes por tile recto, centrados: el ritmo sigue igual de un tile al otro
+  k.fillStyle = '#6B4A2E';
+  for (const ln of lines) {
+    const P = ln.pts, cum = [0]; for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+    const L = cum.at(-1) - ln.skip - ln.tail, n = Math.max(1, Math.round(L / STEP));
+    for (let j = 0; j < n; j++) {
+      const s = ln.skip + (j + .5) * L / n; let i = 1; while (i < P.length - 1 && cum[i] < s) i++;
+      const f = (s - cum[i - 1]) / ((cum[i] - cum[i - 1]) || 1), px = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * f, py = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * f, tx = P[i][2], ty = P[i][3];
+      let nx = -ty, ny = tx, lo = 46, li = 46, wo = 6, wi = 6;
+      if (ln.center) { if ((ln.center[0] - px) * nx + (ln.center[1] - py) * ny < 0) { nx = -nx; ny = -ny; } li = 37; wi = 3.6; wo = 6.6; } // en la curva el durmiente se afina hacia adentro para no amontonarse
+      k.beginPath(); k.moveTo(px - nx * lo - tx * wo, py - ny * lo - ty * wo); k.lineTo(px - nx * lo + tx * wo, py - ny * lo + ty * wo); k.lineTo(px + nx * li + tx * wi, py + ny * li + ty * wi); k.lineTo(px + nx * li - tx * wi, py + ny * li - ty * wi); k.closePath(); k.fill();
+    }
+  }
+  k.lineJoin = 'round'; k.lineCap = 'butt';
+  for (const [col, w] of [['#3E434B', 11], ['#D5DAE2', 3.5]]) for (const ln of lines) for (const side of [-GAUGE, GAUGE]) { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); ln.pts.forEach((p, i) => k[i ? 'lineTo' : 'moveTo'](p[0] - p[3] * side, p[1] + p[2] * side)); k.stroke(); }
+  for (const ln of lines) if (ln.stop) { // tope de fin de vía
+    const p = ln.pts.at(-1), bar = (col, w, h) => { k.strokeStyle = col; k.lineWidth = w; k.lineCap = 'round'; k.beginPath(); k.moveTo(p[0] + p[3] * h, p[1] - p[2] * h); k.lineTo(p[0] - p[3] * h, p[1] + p[2] * h); k.stroke(); };
+    bar('#FFF4DC', 17, 38); bar('#E8452C', 10, 38);
+  }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
+  const mat = new THREE.MeshStandardMaterial({ map: tx, roughness: .9, transparent: true, alphaTest: .5 }); mat.userData.big = big;
+  return cache[key] = mat;
 }
 export function updateRunnerTile(x, y, tile) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
@@ -1100,9 +1140,10 @@ export function updateRunnerTile(x, y, tile) {
     W.island.add(m); W.floats.set(x + ',' + y, m); W.rowB?.get(y)?.push(m); return;
   }
   if (tile.g === 'rail') { // vía pintada: el dibujo sigue la entrada y la salida del tile (recta, curva o diagonal)
-    const mat = railMaterial(tile.in || 'S', tile.out || 'N');
+    const mat = railMaterial(tile.in || 'S', tile.out === null ? null : tile.out || 'N', tile.br);
     if (!top.userData.rail) { const m = new THREE.Mesh(runnerGeo.rail ||= new THREE.PlaneGeometry(1, 1), mat); m.rotation.x = -Math.PI / 2; m.position.set(top.position.x, W.tY(x, y) + .012, top.position.z); m.receiveShadow = true; m.userData.keepGeo = true; W.island.add(m); W.rowB?.get(y)?.push(m); top.userData.rail = m; }
     else top.userData.rail.material = mat;
+    top.userData.rail.scale.setScalar(mat.userData.big ? 2 : 1);
     return;
   }
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
