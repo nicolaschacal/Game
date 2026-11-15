@@ -97,3 +97,9 @@ Nuevo ítem **Congelar** (◉90): durante la carrera aparece un botón ❄ que d
 ## Paper Voyager
 
 El runner se llama **Paper Voyager** ("Build your way"). Logo en dos líneas con la tipografía del juego, cinta con el eslogan y un ícono de tile rojo con el barco de papel del juego (`kanjuu-demo/icon-512.png`, también versión 1024 para las tiendas).
+
+## Destinos y monumentos
+- Los 8 biomas ahora son destinos reales: Toscana, Merzouga, Río de Janeiro, Ushuaia, Banff, Reikiavik, Kioto y Hội An.
+- Tocar la etiqueta del mundo abre **DESTINOS**, un mapa del mundo de papel que se desliza de lado. Muestra la ruta, un pin por destino (visitado, actual o bloqueado) y una tarjeta con el botón VIAJAR.
+- Cada destino tiene su monumento de fondo (`LANDMARKS` en `runner-art.js`, campo `lm` en `THEMES`). Si borrás el `lm`, el monumento desaparece; para sumar uno, agregás el SVG y le ponés su id.
+- El mapa sale de `kanjuu-demo/world-map.json`: la silueta de tierra y los 8 puntos ya proyectados.
