@@ -505,9 +505,12 @@ function buildToward(lane){
    if(x!==from&&!isRockCell(from,y))x=from;
    else{runner.blockedByRock=y;return false;}
   }
-  if(zone[y]==='rail'){ // cambio de carril en diagonal = curva en S: el tile anterior dobla hacia el costado y el nuevo dobla hacia adelante
-   const side=x>from?'E':'W',back=x>from?'W':'E',pin=railT[from+','+(y+1)]?.in,bend=x!==from&&pin!==side&&zone[y+1]==='rail';
-   railT[x+','+y]={g:'rail',h:0,in:x===from?'S':bend?back:x>from?'SW':'SE',out:'N'};railPort(from,y+1,{out:x===from?'N':bend?side:x>from?'NE':'NW'});}
+  if(zone[y]==='rail'&&x!==from&&!isRockCell(from,y)){ // vías: cambiar de carril arma dos tiles en la fila (adelante y al costado), así la vía dobla en L sin cortar esquinas
+   const east=x>from;railT[from+','+y]={g:'rail',h:0,in:'S',out:east?'E':'W'};railPort(from,y+1,{out:'N'});setTile(from,y,false);
+   railT[x+','+y]={g:'rail',h:0,in:east?'W':'E',out:'N'};setTile(x,y,true);runner.path[y]={x,e:x,lanes:{[from]:1,[x]:1}};
+   runner.lastBuildLane=x;runner.steps+=2;moved();return true;
+  }
+  if(zone[y]==='rail'){railT[x+','+y]={g:'rail',h:0,in:x===from?'S':x>from?'SW':'SE',out:'N'};railPort(from,y+1,{out:x===from?'N':x>from?'NE':'NW'});}
   setTile(x,y,false);runner.path[y]={x,e:x,lanes:{[x]:1}};
   runner.lastBuildLane=x;runner.steps++;if(x!==from)moved();
   return true;
