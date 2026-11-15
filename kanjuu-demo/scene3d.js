@@ -474,7 +474,7 @@ const LV = .42, SLAB = .24, TIER_H = 1.25, FOV = 24, ELEV = .58;
 // Ancho en casillas del recorte de cada pieza de papel
 const ART_W = { farol: .5, pino: .74, bambu: .52, arbusto: .72, flores: .56, roca: .56, torii: 1.0, cerezo: 1.08, minka: .95, pagoda: .74, templo: .93, castillo: .92, casate: .96, komainu: .6, campana: .62, incienso: .5, ema: .64, nobori: .32, sagrada: .6, chochin: .42, refugio: .95, suzuri: .6, brasero: .55, cerca: .9, arbol: .9 };
 const GLOW = { farol: { c: '#FFB45A', p: 1.6 }, chochin: { c: '#FF8A5A', p: 1.3 }, brasero: { c: '#FF7A3A', p: 1.4, always: true }, incienso: { c: '#FFC27A', p: .8 } };
-const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591', sky: '#E6F5FF' };
+const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591', sky: '#E6F5FF', tarmac: '#4A4658' };
 const STRATA = ['#A47D55', '#93704C', '#8A8075'];
 // Cielo de papel: madrugada, amanecer, mañana, tarde, atardecer, noche
 const PK = [
@@ -909,6 +909,7 @@ function buildIsland(W, cols, rows, tiles, items) {
     } else { top = new THREE.Mesh(c ? cornerGeo(SLAB, c) : t.g === 'water' ? wSlab : slab, mat); top.position.set(wx, base, wz); if (c && t.g === 'water') top.scale.set(.985, 1, .985); }
     top.castShadow = top.receiveShadow = true; top.userData = { x, y, base, water: t.g === 'water' }; island.add(top); W.tops.set(x + ',' + y, top);
     if (t.g === 'water') W.waters.push([wx, tY(x, y), wz]);
+    if (t.mark) { const m = new THREE.Mesh(runnerGeo.rail ||= new THREE.PlaneGeometry(1, 1), markMaterial(t.mark)); m.rotation.x = -Math.PI / 2; m.position.set(wx, tY(x, y) + .012, wz); m.receiveShadow = true; m.userData.keepGeo = true; island.add(m); }
     for (let l = 0; l < t.h; l++) { const m = new THREE.Mesh(c ? cornerGeo(LV, c) : lvBox, gMat(STRATA[Math.min(l, 2)])); m.position.set(wx, -SLAB + l * LV + LV / 2, wz); m.castShadow = m.receiveShadow = true; island.add(m); edges(m, island); }
     // cascadas: el agua alta cae hacia el agua más baja o por el borde de la isla
     if (t.g === 'water' && t.h > 0) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
@@ -1072,6 +1073,19 @@ export function freezeMovers(on) { if (on && mvFrozen === null) mvFrozen = perfo
 export function moverLane(mv, now = moverNow()) {
   const u = ((now / 1000 + mv.phase) / mv.period) % 1, tri = u < .5 ? u * 2 : 2 - u * 2, k = Math.max(0, Math.min(1, (tri - .28) / .44));
   return mv.a + (mv.b - mv.a) * k * k * (3 - 2 * k);
+}
+// Pintura de pista sobre un tile ("keys" franjas de cabecera · "center" eje punteado · "L"/"R" borde amarillo con baliza), separadas por |
+function markMaterial(mark) {
+  const cache = runnerGeo.marks ||= {}; if (cache[mark]) return cache[mark];
+  const S = 2, c = document.createElement('canvas'); c.width = c.height = 128 * S; const k = c.getContext('2d'); k.scale(S, S);
+  const rr = (x, y, w, h, r, col) => { k.fillStyle = col; k.beginPath(); k.roundRect(x, y, w, h, r); k.fill(); };
+  for (const part of mark.split('|')) {
+    if (part === 'keys') { rr(20, 12, 24, 104, 5, '#FFF4DC'); rr(84, 12, 24, 104, 5, '#FFF4DC'); }
+    if (part === 'center') rr(56, 20, 16, 88, 6, '#FFF4DC');
+    if (part === 'L' || part === 'R') { const x = part === 'L' ? 12 : 116; rr(x - 5, -2, 10, 132, 0, '#F2B937'); k.fillStyle = '#FFF4DC'; k.beginPath(); k.arc(x, 64, 11, 0, 7); k.fill(); k.fillStyle = '#7FE0B8'; k.beginPath(); k.arc(x, 64, 7.5, 0, 7); k.fill(); }
+  }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4;
+  return cache[mark] = new THREE.MeshStandardMaterial({ map: tx, roughness: .9, transparent: true, alphaTest: .5 });
 }
 // Textura de vía entre dos "puertas" del tile. Arriba de la imagen = adelante (N); derecha = carril mayor (E).
 const RAIL_PORT = { S: [64, 128], N: [64, 0], E: [128, 64], W: [0, 64], NE: [128, 0], NW: [0, 0], SE: [128, 128], SW: [0, 128] };

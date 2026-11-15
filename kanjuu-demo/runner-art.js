@@ -91,8 +91,18 @@ export const COIN = cut(`<circle cx="60" cy="64" r="30" fill="#F2B937"/>`,
   `<path d="M60 94 A30 30 0 0 1 32 74 Q60 90 88 74 A30 30 0 0 1 60 94Z" fill="#C98A1E"/><circle cx="60" cy="64" r="22" fill="none" stroke="#B87922" stroke-width="3.5"/><rect x="51" y="55" width="18" height="18" rx="3" fill="#8A551E"/><path d="M40 50 Q46 40 56 37" stroke="#FFF3C4" stroke-width="5" fill="none" stroke-linecap="round"/>`);
 export const PEARL = cut(`<path d="M18 82 Q60 112 102 82 Q98 104 60 108 Q22 104 18 82Z" fill="#F29BB8"/><path d="M16 80 C20 44 44 26 60 26 C76 26 100 44 104 80 Q60 96 16 80Z" fill="#FFC4D6"/><circle cx="60" cy="78" r="17" fill="#FFFFFF"/>`,
   `<path d="M60 28 L60 62 M40 34 L50 66 M80 34 L70 66 M26 52 L40 72 M94 52 L80 72" stroke="#F29BB8" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="78" r="17" fill="#FDFBFF"/><path d="M60 95 A17 17 0 0 1 44 84 Q60 92 76 84 A17 17 0 0 1 60 95Z" fill="#D9D3EC"/><circle cx="54" cy="72" r="4.5" fill="#FFF"/>`);
-export const GATE = cut(`<path d="M8 30 Q60 14 112 30 L108 42 Q60 28 12 42Z" fill="#E8452C"/><rect x="26" y="34" width="11" height="76" rx="3" fill="#E8452C"/><rect x="83" y="34" width="11" height="76" rx="3" fill="#E8452C"/><rect x="20" y="52" width="80" height="9" rx="3" fill="#E8452C"/>`,
-  `<path d="M8 30 Q60 14 112 30 L111 34 Q60 19 9 34Z" fill="#2B1D16"/><rect x="26" y="100" width="11" height="10" fill="#2B1D16"/><rect x="83" y="100" width="11" height="10" fill="#2B1D16"/><rect x="52" y="40" width="16" height="22" rx="3" fill="#F2B937"/>`);
+// ── Meta: aeropuerto ─────────────────────────────────────────────────────────
+// Pictograma de avión (el de los carteles de aeropuerto), centrado en 0,0
+const PLANE = 'M0 -11 C2.2 -11 2.6 -7 2.6 -4.5 L2.6 -1.5 L11 4 L11 6.8 L2.6 4.2 L2.1 8 L5.2 10.4 L5.2 12.2 L0 11 L-5.2 12.2 L-5.2 10.4 L-2.1 8 L-2.6 4.2 L-11 6.8 L-11 4 L-2.6 -1.5 L-2.6 -4.5 C-2.6 -7 -2.2 -11 0 -11Z';
+// Terminal con techo curvo, puerta central por donde se entra, torre de control y cartel redondo con el avión
+export const AIRPORT = cut(
+  `<rect x="96" y="6" width="3" height="12" fill="#34333B"/><path d="M82 34 L112 34 L108 16 L86 16Z" fill="#8EC7D8"/><rect x="90" y="34" width="14" height="40" fill="#F6EEDD"/>`
+  + `<path d="M4 76 Q52 44 112 70 L112 110 L4 110Z" fill="#F6EEDD"/>`,
+  `<path d="M4 76 Q52 44 112 70 L112 80 Q52 56 4 86Z" fill="#4E6E8E"/><path d="M84 16 L110 16 L111 21 L83 21Z" fill="#34333B"/><path d="M82 34 L112 34 L111 29 L83 29Z" fill="#4E6E8E"/><path d="M92 21 L92 29 M102 21 L102 29" stroke="${CREAM}" stroke-width="2"/><circle cx="97.5" cy="6" r="3" fill="#E8452C"/>`
+  + `<g fill="#8EC7D8"><rect x="10" y="90" width="10" height="13" rx="2"/><rect x="24" y="88" width="10" height="15" rx="2"/><rect x="86" y="88" width="10" height="15" rx="2"/><rect x="100" y="90" width="8" height="13" rx="2"/></g>`
+  + `<path d="M42 110 L42 86 Q60 74 78 86 L78 110Z" fill="#2B2440"/><path d="M60 80 L60 110" stroke="#4E6E8E" stroke-width="2.5"/>`
+  + `<circle cx="60" cy="66" r="13" fill="#F2B937" stroke="${CREAM}" stroke-width="3"/><path d="${PLANE}" transform="translate(60 66) rotate(45) scale(.82)" fill="#2B2440"/>`
+  + `<path d="M4 104 L42 104 L42 110 L4 110Z M78 104 L112 104 L112 110 L78 110Z" fill="#D9CDB4"/>`);
 // ── Cielo: globo de papel, picos entre nubes, nubes y estrella ───────────────
 function balloonPose(k, flying) {
   const shapes = `<path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/>`

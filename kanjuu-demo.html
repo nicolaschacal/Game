@@ -254,7 +254,7 @@ body.home #hud{opacity:0}
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
-import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, GATE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
+import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -348,8 +348,11 @@ const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S
 {const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
  if(QUICK){land(8,true);order.forEach(k=>{RIDE[k](6,false);land(4);});}
  else{const more=Math.min(S,4);land(12,stage===0);order.forEach((k,i)=>{RIDE[k]((k==='rail'?16:14)+more,false);land(8);});order.forEach((k,i)=>{RIDE[k]((k==='rail'?20:18)+more,true);land(i<2?8:6);});}}
-free(6,theme.hill);const GOAL=cur+2;
-const goal={id:'goal',kind:'paper',svg:GATE,x:1,y:GOAL-1,w:3,h:3};
+// Meta: siempre un aeropuerto. Pista de asfalto (franjas de cabecera, eje punteado, bordes amarillos con balizas) y la terminal al fondo.
+const RUNWAY=cur;
+for(let i=0;i<7;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':i<5&&x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
+cur-=7;const GOAL=cur+2;
+const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
 const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
@@ -569,6 +572,7 @@ function enterRow(r){
  const base=speedAt(prog);runner.speed=base*(runner.onBoat?RIDES[runner.rideType].boost:1);
  const g=Math.floor((base-speedAt(0))/.25);if(g>gear){gear=g;pop('¡MÁS RÁPIDO!','big');SFX.faster();buzz(25);}
  $('speed').style.opacity=Math.max(0,Math.min(.9,(runner.speed-1.9)/1.3));
+ if(r<=RUNWAY&&!runner.gameOver){runner.buildLane=2;buildToward(2);} // en la pista Kami se acomoda solo al centro para entrar por la puerta
  if(r<=GOAL)nextWorld();
 }
 function refreshUI(){
@@ -607,7 +611,7 @@ requestAnimationFrame(frame);
 window.addEventListener('pagehide',bank);
 
 // ── Íconos, misión del día y récords ──
-const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:GATE};
+const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:AIRPORT};
 const ico=(k,style='')=>ICO[k].replace('<svg','<svg class="ico" style="'+style+'"');
 document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ico(e.dataset.ico));
 const MISSIONS=[{id:'prize',text:'Juntá 5 tesoros',goal:5,ico:'pearl'},{id:'ride',text:'Completá 4 travesías',goal:4,ico:'boat'},{id:'coin',text:'Juntá 120 monedas',goal:120,ico:'coin'},{id:'near',text:'Rozá 12 obstáculos',goal:12,ico:'rock'}];
@@ -702,6 +706,6 @@ $('quit').addEventListener('click',()=>{bank();location.reload();});
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},GOAL,START,stage,buildToward,isRockCell,targetRow,railT};
+if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
 </script>
 </body></html>
