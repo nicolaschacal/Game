@@ -274,6 +274,7 @@ body.home #hud{opacity:0}
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
+import { DESTINOS } from './kanjuu-demo/destinos.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -293,22 +294,13 @@ const stock={revive:0,shield:0,magnet:0,double:0,freeze:0,...store.get('items',{
 // Lo que se arrastra de un mundo al siguiente dentro de la misma partida
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
-const stage=carry?.stage??store.get('world',0); // se retoma en el mundo donde quedaste
+const stage=carry?.stage??(Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):store.get('world',0)); // ?world=N abre directo el destino N (para probar) // se retoma en el mundo donde quedaste
 const S=Math.min(stage,6);
 const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
 const PATH='dirt';
-const THEMES=[ // ocho destinos reales que se van turnando; id = escenario del motor, wx = clima, hour = luz fija, lm = monumento del fondo (borrarlo lo quita)
- {name:'PRADERA',place:'Toscana',country:'Italia',lm:'pisa',id:'petals',ground:'#B9D88E',hill:'grass',wx:'petals',hour:10},
- {name:'DESIERTO',place:'Merzouga',country:'Marruecos',lm:'kasbah',id:'sand',ground:'#E8D29A',hill:'sand',wx:'sand',hour:13},
- {name:'COSTA',place:'Río de Janeiro',country:'Brasil',lm:'cristo',id:'costa',ground:'#F4E6BC',hill:'sand',wx:'bubbles',hour:12},
- {name:'NIEVE',place:'Ushuaia',country:'Argentina',lm:'faro',id:'snow',ground:'#EDF3F6',hill:'snow',wx:'snow',hour:11},
- {name:'BOSQUE',place:'Banff',country:'Canadá',lm:'banff',id:'leaves',ground:'#8DB36A',hill:'moss',wx:'leaves',hour:15.5},
- {name:'VOLCÁN',place:'Reikiavik',country:'Islandia',lm:'iglesia',id:'volcan',ground:'#7A6462',hill:'basalt',hillColor:'#5E4E50',wx:'embers',hour:15},
- {name:'BAMBÚ',place:'Kioto',country:'Japón',lm:'pagoda',id:'bambu',ground:'#A9C873',hill:'moss',wx:'bamboo',hour:11.5},
- {name:'PUEBLO',place:'Hội An',country:'Vietnam',lm:'hoian',id:'pueblo',ground:'#E0CBA6',hill:'plaza',hillColor:'#CDB38A',wx:'lanterns',hour:14.5},
-];
+const THEMES=DESTINOS; // 20 destinos reales (kanjuu-demo/destinos.js); al terminar la vuelta se repiten, cada vez más difíciles
 const theme=THEMES[stage%THEMES.length];
 
 // ── Nivel ──
@@ -376,7 +368,7 @@ const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>Math.min(3.8,1.3+(stage>=1?.22:0)+Math.min(stage,10)*.13+(.8+S*.09)*Math.pow(Math.max(0,Math.min(1,prog)),1.2));
-const runner={fx:theme.id,landmark:LANDMARKS[theme.lm]||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
+const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
@@ -713,7 +705,7 @@ $('worldChip').innerHTML='MUNDO '+(stage+1)+' · '+theme.place.toUpperCase()+'<s
 let mapData=null,mPick=stage%8;const lap=Math.floor(stage/8),allOpen=maxWorld>=7;
 const pinState=i=>i===stage%8?'cur':(allOpen||i<=maxWorld)?'done':'lock';
 function drawCard(){const t=THEMES[mPick],st=pinState(mPick),rec=(store.get('tops',[])[0]||0);
- $('dCard').innerHTML=`<div class="th" style="background:${t.ground}">${LANDMARKS[t.lm]||''}</div><div class="k">MUNDO ${mPick+1}${st==='cur'?' · ESTÁS ACÁ':st==='lock'?' · BLOQUEADO':''}</div><b>${t.place}</b><div class="c">${t.country} · ${t.name[0]+t.name.slice(1).toLowerCase()}</div>`+
+ $('dCard').innerHTML=`<div class="th" style="background:${t.ground}">${t.art||''}</div><div class="k">MUNDO ${mPick+1}${st==='cur'?' · ESTÁS ACÁ':st==='lock'?' · BLOQUEADO':''}</div><b>${t.place}</b><div class="c">${t.country} · ${t.name[0]+t.name.slice(1).toLowerCase()}</div>`+
   `<button class="btn ${st==='lock'?'plain':''}" id="goTrip">${st==='cur'?'SEGUIR ACÁ':st==='lock'?'🔒 LLEGÁ JUGANDO':'VIAJAR'}</button>`;
  $('goTrip').onclick=()=>{if(st==='lock'){const b=$('goTrip');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');return;}SFX.tap();
   if(st==='cur'){$('mapPanel').style.display='none';return;}store.set("world",mPick+8*Math.max(0,Math.floor((Math.max(maxWorld,mPick)-mPick)/8)));location.reload();};

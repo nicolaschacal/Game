@@ -712,7 +712,7 @@ function sanctuary() {
         // Escenario del mundo: suelo alrededor de la pista, horizonte de papel en capas, sol, bruma y recortes a los costados
         if (runner.fx) {
           if (!W.look) {
-            const T = {
+            const T = runner.look || {
               sand:   { fog: '#F3DDB0', ground: '#E3C98C', far: ['#F0D7A6', '#EDD09A', '#E4C285', '#DDB877'], sun: '#FFF3CF', ridge: 'dune' },
               petals: { fog: '#E6F4DA', ground: '#A6CC78', far: ['#D6EBBB', '#C4E0A2', '#AED488', '#97C670'], sun: '#FFF8DC', ridge: 'dune' },
               snow:   { fog: '#F0F6FB', ground: '#E1EBF2', far: ['#F6FAFD', '#E4EEF6', '#D0E1EE', '#BFD5E5'], sun: '#FFFDF2', ridge: 'peak' },
@@ -728,15 +728,16 @@ function sanctuary() {
             const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshStandardMaterial({ color: T.ground, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -.36; ground.receiveShadow = true; L.add(ground); L.userData.ground = ground;
             const ridge = (w, h, c, x, z) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0);
               if (T.ridge === 'peak') { sh.lineTo(-w * .22, h * .62); sh.lineTo(-w * .12, h * .5); sh.lineTo(0, h); sh.lineTo(w * .14, h * .55); sh.lineTo(w * .24, h * .7); }
+              else if (T.ridge === 'city') { let px = -w / 2, i = Math.round(Math.abs(x) + w); while (px < w / 2) { const bw = w * (.05 + ((i * 37) % 5) * .012), bh = h * (.38 + ((i * 53) % 7) * .09); sh.lineTo(px, bh); px = Math.min(w / 2, px + bw); sh.lineTo(px, bh); i++; } } // ciudad: silueta de edificios
               else { sh.bezierCurveTo(-w / 4, 0, -w / 6, h, 0, h); sh.bezierCurveTo(w / 6, h, w / 4, 0, w / 2, 0); }
               sh.lineTo(w / 2, 0); const m = new THREE.Mesh(new THREE.ShapeGeometry(sh, 24), flat(c)); m.position.set(x, -.4, z); L.add(m); return m; };
             const k = T.ridge === 'peak' ? 1.5 : 1;
             L.userData.far = [ridge(26, 5.2 * k, T.far[0], -9, -36), ridge(30, 6.4 * k, T.far[1], 10, -37), ridge(18, 3.6 * k, T.far[2], 0, -34), ridge(16, 3 * k, T.far[3], -13, -32), ridge(16, 3.2 * k, T.far[3], 14, -32)];
-            const sun = new THREE.Mesh(new THREE.CircleGeometry(2.6, 40), flat(T.sun)); sun.position.set(-5, 8.5, -39); L.add(sun); L.userData.far.push(sun);
+            // (sin disco de sol acá: el cielo de papel ya trae su sol y sus estrellas)
             // Monumento del destino (Cristo, pagoda, faro…): un recorte grande de papel entre las colinas; si el destino no trae uno, no se dibuja
             if (runner.landmark) { const s = 8.5, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: paperTexture(runner.landmark), transparent: true, alphaTest: .5, fog: false, color: 0xF2EEE8 })); lm.position.set(5.2, -1.2, -33); L.add(lm); L.userData.far.push(lm); }
             const C = '#FFF4DC', wrap = inner => `<svg viewBox="0 0 120 120"><g stroke="${C}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${inner}</g>${inner}</svg>`;
-            const ARTS = {
+            const ARTS = runner.look?.props || {
               sand: [wrap('<path d="M52 110 L52 40 Q60 26 68 40 L68 110Z" fill="#6FA255"/><path d="M52 78 L34 78 Q26 78 26 68 L26 54 Q32 46 38 54 L38 66 L52 66Z" fill="#6FA255"/><path d="M68 70 L84 70 Q92 70 92 60 L92 44 Q86 36 80 44 L80 58 L68 58Z" fill="#6FA255"/>'),
                 wrap('<path d="M14 110 L24 74 L46 56 L74 62 L100 84 L106 110Z" fill="#C9A566"/><path d="M26 76 L46 58 L54 82 L38 96Z" fill="#E2C68E"/>'),
                 wrap('<path d="M10 110 Q40 62 64 84 Q84 60 110 110Z" fill="#DDBF7E"/>')],
