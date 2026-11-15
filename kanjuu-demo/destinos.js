@@ -1,4 +1,4 @@
-// Los destinos del viaje. Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
+// Los 20 destinos del viaje, en orden de vuelta al mundo hacia el oeste (Kioto → … → Sídney → y de nuevo Kioto). Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
 // y tres adornos de costado. Cada destino trae su monumento (art), su escenario (look) y el piso de la pista.
 import { LANDMARKS } from './runner-art.js';
 const CREAM = '#FFF4DC';
@@ -52,6 +52,13 @@ L.burj = cut(
   `<rect x="10" y="70" width="16" height="40" fill="#D9C7A4"/><rect x="26" y="84" width="12" height="26" fill="#C9B48C"/><rect x="88" y="78" width="12" height="32" fill="#C9B48C"/><rect x="100" y="62" width="12" height="48" fill="#D9C7A4"/>`
   + `<path d="M60 2 L62 28 L66 28 L66 50 L71 50 L71 74 L77 74 L77 110 L43 110 L43 82 L49 82 L49 56 L54 56 L54 34 L58 34Z" fill="#A9C2D8"/>`,
   `<path d="M60 2 L62 28 L66 28 L66 50 L71 50 L71 74 L77 74 L77 110 L60 110Z" fill="#7E9CB8" opacity=".7"/><path d="M48 90 h26 M48 98 h26 M52 66 h16 M56 44 h8" stroke="#E6F1FA" stroke-width="1.6" opacity=".8"/>` + win(13, 75, 2, 5, '#FFF8EE') + win(102, 67, 2, 6, '#FFF8EE'));
+const onion = (cx, cy, r, c) => `<path d="M${cx - r} ${cy + r * .9} C${cx - r * 1.5} ${cy - r * .2} ${cx - r * .3} ${cy - r * .8} ${cx} ${cy - r * 1.7} C${cx + r * .3} ${cy - r * .8} ${cx + r * 1.5} ${cy - r * .2} ${cx + r} ${cy + r * .9}Z" fill="${c}"/>`;
+const swirl = (cx, cy, r) => `<path d="M${cx - r * .7} ${cy + r * .7} Q${cx - r * .2} ${cy - r * .2} ${cx} ${cy - r * 1.3} M${cx + r * .1} ${cy + r * .8} Q${cx + r * .7} ${cy} ${cx + r * .3} ${cy - r}" stroke="#FFF8EE" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+L.basilio = cut(
+  `<rect x="20" y="78" width="80" height="32" fill="#B5532F"/><rect x="24" y="58" width="14" height="22" fill="#FFF0D2"/><rect x="82" y="58" width="14" height="22" fill="#FFF0D2"/><rect x="40" y="48" width="12" height="32" fill="#C96A3C"/><rect x="68" y="48" width="12" height="32" fill="#C96A3C"/>`
+  + `<path d="M52 80 L52 46 L60 16 L68 46 L68 80Z" fill="#C96A3C"/>` + onion(31, 47, 8, '#3E86C6') + onion(89, 47, 8, '#5DB84F') + onion(46, 38, 7, '#E8452C') + onion(74, 38, 7, '#F2B937') + onion(60, 12, 4.5, '#F2B937'),
+  swirl(31, 47, 8) + swirl(89, 47, 8) + swirl(46, 38, 7) + swirl(74, 38, 7)
+  + `<path d="M52 46 L68 46 L68 52 L52 52Z" fill="#FFF0D2"/><path d="M60 16 L68 46 L68 80 L60 80Z" fill="#A8502C" opacity=".5"/><path d="M54 110 L54 94 Q60 86 66 94 L66 110Z" fill="#5E2F1C"/><g fill="#FFF0D2"><rect x="27" y="88" width="6" height="10" rx="3"/><rect x="38" y="88" width="6" height="10" rx="3"/><rect x="76" y="88" width="6" height="10" rx="3"/><rect x="87" y="88" width="6" height="10" rx="3"/><rect x="57" y="58" width="6" height="10" rx="3"/></g><rect x="20" y="78" width="80" height="4" fill="#FFF0D2"/>`);
 const spire = (x, top) => `<path d="M${x - 6} 110 L${x - 6} 66 Q${x} ${top - 22} ${x + 6} 66 L${x + 6} 110Z" fill="#CDA774"/>`;
 L.sagrada = cut(
   spire(30, 40) + spire(46, 22) + spire(74, 22) + spire(90, 40) + `<path d="M22 110 L22 80 L60 62 L98 80 L98 110Z" fill="#D9B684"/>`,
@@ -113,24 +120,25 @@ const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i,
 const PAV = '#8D919B', VEREDA = '#6F737D';
 const TABLA = [
   ['BAMBÚ', 'Kioto', 'Japón', LANDMARKS.pagoda, '#E3F0C8', '#D2E4AA', '#A0C672', '#9FBF6A', '#A9C873', '#5F9447', 'dune', 'bamboo', 11.5, 'bambu farolPiedra helecho'],
-  ['CIUDAD', 'Nueva York', 'EE.UU.', L.liberty, '#DCEBF5', '#B9CDE0', '#9DB5CE', '#B4BAC4', PAV, VEREDA, 'city', 'leaves', 12, 'taxi farola hidrante'],
   ['CIUDAD', 'Tokio', 'Japón', L.tokyo, '#FBE3E6', '#F2C4CE', '#DDA6B8', '#BDB9C4', PAV, VEREDA, 'city', 'petals', 10.5, 'cerezo expendedora neon'],
-  ['DESIERTO', 'El Cairo', 'Egipto', L.piramides, '#F6E2B4', '#EDD09A', '#DDB877', '#E3C98C', '#EBD49C', '#D9BC7C', 'dune', 'sand', 13, 'palmera duna anfora'],
-  ['CIUDAD', 'París', 'Francia', L.eiffel, '#E9EEF6', '#CBD6E6', '#AEBED6', '#C2C0BC', '#9A9CA3', '#797B83', 'city', 'leaves', 15, 'farola toldo morris'],
-  ['COSTA', 'Río de Janeiro', 'Brasil', LANDMARKS.cristo, '#DDF3F5', '#A9DCE2', '#8FCED6', '#F2E3B5', '#F4E6BC', '#E2CE97', 'dune', 'bubbles', 12, 'palmera sombrilla estrella'],
-  ['CIUDAD', 'Londres', 'Reino Unido', L.bigben, '#E4E8EC', '#C2CAD2', '#A3AEBA', '#B2B5BA', '#84888F', '#666A72', 'city', 'leaves', 14, 'cabina farola buzon'],
-  ['COSTA', 'Sídney', 'Australia', L.opera, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 11, 'palmera velero sombrilla'],
-  ['RUINAS', 'Roma', 'Italia', L.coliseo, '#FAE6C8', '#EFCFA2', '#DDB684', '#D6C2A0', '#C9B694', '#A8956F', 'dune', 'leaves', 15.5, 'cipres columna pinoParasol'],
-  ['MÁRMOL', 'Agra', 'India', L.taj, '#FBE8DC', '#F4CFC0', '#E8B4A8', '#E6D7C4', '#F0E6DA', '#D6C6B4', 'dune', 'petals', 10, 'palmera chhatri loto'],
-  ['RUINAS', 'Atenas', 'Grecia', L.partenon, '#E2F0FA', '#C0DCF0', '#A0C6E4', '#DDD2B8', '#E9E0CA', '#C8BC9C', 'dune', 'leaves', 12.5, 'olivo anfora columna'],
-  ['NIEVE', 'Ushuaia', 'Argentina', LANDMARKS.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'pinoNevado monticulo rocaHelada'],
   ['MURALLA', 'Pekín', 'China', L.muralla, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'pino farolRojo rocaGris'],
-  ['ANDES', 'Machu Picchu', 'Perú', L.machu, '#DCEFE0', '#B8DCC0', '#8FC49C', '#7FAE6A', '#93BF78', '#5F9447', 'peak', 'leaves', 11, 'llama terraza helecho'],
+  ['MÁRMOL', 'Agra', 'India', L.taj, '#FBE8DC', '#F4CFC0', '#E8B4A8', '#E6D7C4', '#F0E6DA', '#D6C6B4', 'dune', 'petals', 10, 'palmera chhatri loto'],
   ['CIUDAD', 'Dubái', 'Emiratos Árabes', L.burj, '#FBEBD0', '#F2D6A8', '#E4BE88', '#D8C8A8', '#A39C92', '#827B72', 'city', 'sand', 13.5, 'palmera farola duna'],
+  ['CÚPULAS', 'Moscú', 'Rusia', L.basilio, '#EAF1F8', '#D2DEEC', '#B4C4DA', '#DCE4EC', '#E6EBF0', '#C3CDD8', 'city', 'snow', 13, 'pinoNevado farola monticulo'],
+  ['RUINAS', 'Atenas', 'Grecia', L.partenon, '#E2F0FA', '#C0DCF0', '#A0C6E4', '#DDD2B8', '#E9E0CA', '#C8BC9C', 'dune', 'leaves', 12.5, 'olivo anfora columna'],
+  ['DESIERTO', 'El Cairo', 'Egipto', L.piramides, '#F6E2B4', '#EDD09A', '#DDB877', '#E3C98C', '#EBD49C', '#D9BC7C', 'dune', 'sand', 13, 'palmera duna anfora'],
+  ['RUINAS', 'Roma', 'Italia', L.coliseo, '#FAE6C8', '#EFCFA2', '#DDB684', '#D6C2A0', '#C9B694', '#A8956F', 'dune', 'leaves', 15.5, 'cipres columna pinoParasol'],
+  ['CIUDAD', 'París', 'Francia', L.eiffel, '#E9EEF6', '#CBD6E6', '#AEBED6', '#C2C0BC', '#9A9CA3', '#797B83', 'city', 'leaves', 15, 'farola toldo morris'],
   ['PRADERA', 'Pisa', 'Italia', LANDMARKS.pisa, '#E6F4DA', '#C4E0A2', '#97C670', '#A6CC78', '#B9D88E', '#8DBF5E', 'dune', 'petals', 10, 'cipres arbusto pinoParasol'],
+  ['CIUDAD', 'Londres', 'Reino Unido', L.bigben, '#E4E8EC', '#C2CAD2', '#A3AEBA', '#B2B5BA', '#84888F', '#666A72', 'city', 'leaves', 14, 'cabina farola buzon'],
   ['CIUDAD', 'Barcelona', 'España', L.sagrada, '#FBE9D2', '#F4D2A6', '#E6B880', '#DCC8A6', '#C6B8A0', '#A39479', 'city', 'petals', 14, 'palmera farola toldo'],
-  ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'moaiChico rocaLava mata'],
+  ['CIUDAD', 'Nueva York', 'EE.UU.', L.liberty, '#DCEBF5', '#B9CDE0', '#9DB5CE', '#B4BAC4', PAV, VEREDA, 'city', 'leaves', 12, 'taxi farola hidrante'],
+  ['ANDES', 'Machu Picchu', 'Perú', L.machu, '#DCEFE0', '#B8DCC0', '#8FC49C', '#7FAE6A', '#93BF78', '#5F9447', 'peak', 'leaves', 11, 'llama terraza helecho'],
+  ['COSTA', 'Río de Janeiro', 'Brasil', LANDMARKS.cristo, '#DDF3F5', '#A9DCE2', '#8FCED6', '#F2E3B5', '#F4E6BC', '#E2CE97', 'dune', 'bubbles', 12, 'palmera sombrilla estrella'],
   ['CIUDAD', 'Buenos Aires', 'Argentina', L.obelisco, '#E6E0F4', '#CDC2E8', '#B4A6D8', '#B8B4BE', PAV, VEREDA, 'city', 'petals', 15, 'jacaranda farola quiosco'],
+  ['NIEVE', 'Ushuaia', 'Argentina', LANDMARKS.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'pinoNevado monticulo rocaHelada'],
+  ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'moaiChico rocaLava mata'],
+  ['COSTA', 'Sídney', 'Australia', L.opera, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 11, 'palmera velero sombrilla'],
 ];
 export const DESTINOS = TABLA.map(([name, place, country, art, fog, c1, c2, around, ground, hillColor, ridge, wx, hour, props]) => ({
   name, place, country, art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look',

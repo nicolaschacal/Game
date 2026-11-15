@@ -183,12 +183,13 @@ body.home #hud{opacity:0}
 #mapView{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);bottom:0;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;scrollbar-width:none;background:radial-gradient(circle at 50% 40%,#9CCDE0,#6FA9C3)}
 #mapView::-webkit-scrollbar{display:none}
 #mapWorld{position:relative}
-.mpin{position:absolute;transform:translate(-50%,-100%) scale(1.2);transform-origin:50% 100%;text-align:center;background:none;border:0;padding:0;color:var(--ink)}
-.mpin .t{width:46px;height:46px;margin:0 auto;border-radius:11px;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);transform:rotate(-6deg);display:flex;align-items:center;justify-content:center;font:400 20px 'Lilita One',sans-serif;color:#fff}
-.mpin .t svg{width:42px;height:42px}
-.mpin .n{margin-top:6px;display:inline-block;padding:2px 8px 3px;border-radius:8px;background:var(--cream);border:2.5px solid var(--ink);font:900 10px Nunito;white-space:nowrap;box-shadow:0 2px 0 var(--ink)}
-.mpin.done .t{background:var(--green)}.mpin.lock .t{background:#B9AE95;color:#6b6250;font-size:17px}.mpin.lock .n{background:#E6DBC2;color:#6b6250}
-.mpin.cur .t{background:var(--red);width:58px;height:58px;animation:mbob 1.6s ease-in-out infinite}.mpin.cur .n{background:var(--ink);color:var(--cream);border-color:var(--cream);font-size:11px}
+.mpin{position:absolute;transform:translate(-50%,-50%) scale(1.2);text-align:center;background:none;border:0;padding:0;color:var(--ink);width:0;height:0}
+.mpin .t{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:9px;border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink);transform:rotate(-6deg);display:flex;align-items:center;justify-content:center;font:400 14px 'Lilita One',sans-serif;color:#fff}
+.mpin .t svg{width:34px;height:34px}
+.mpin .n{position:absolute;left:0;top:19px;transform:translateX(-50%);display:none;padding:2px 8px 3px;border-radius:8px;background:var(--cream);border:2.5px solid var(--ink);font:900 10px Nunito;white-space:nowrap;box-shadow:0 2px 0 var(--ink)}
+.mpin.done .t{background:var(--green)}.mpin.lock .t{background:#B9AE95;color:#6b6250;font-size:11px}.mpin.lock .n{background:#E6DBC2;color:#6b6250}
+.mpin.cur{z-index:3}.mpin.cur .t{background:var(--red);left:-21px;top:-21px;width:42px;height:42px;animation:mbob 1.6s ease-in-out infinite}.mpin.cur .n{display:block;top:27px;background:var(--ink);color:var(--cream);border-color:var(--cream);font-size:11px}
+.mpin.sel{z-index:4}.mpin.sel .n{display:block}
 .mpin.sel .t{outline:4px solid var(--gold);outline-offset:3px}
 @keyframes mbob{50%{transform:rotate(-6deg) translateY(-5px)}}
 .dcard{position:absolute;left:12px;right:12px;bottom:calc(var(--sb) + 14px);min-height:160px;border-radius:22px;background:var(--cream);border:3.5px solid var(--ink);box-shadow:0 6px 0 var(--ink);padding:14px 14px 14px 128px;color:var(--ink);z-index:3}
@@ -295,7 +296,9 @@ const stock={revive:0,shield:0,magnet:0,double:0,freeze:0,...store.get('items',{
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('kanjuu.run.carry')||'null');sessionStorage.removeItem('kanjuu.run.carry');autostart=sessionStorage.getItem('kanjuu.run.auto')==='1';sessionStorage.removeItem('kanjuu.run.auto');}catch{}
 const stage=carry?.stage??(Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):store.get('world',0)); // ?world=N abre directo el destino N (para probar) // se retoma en el mundo donde quedaste
-const S=Math.min(stage,6);
+const NW=DESTINOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
+const S=Math.min(8,Math.round(WI*6/(NW-1))+LAP*2);   // dificultad 0…8: sube de a poco en los 20 destinos y cada vuelta arranca dos escalones más arriba
+const SP=Math.min(16,WI*10/(NW-1)+LAP*3);            // escalón de velocidad
 const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
@@ -367,7 +370,7 @@ const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
 const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
-const speedAt=prog=>Math.min(3.8,1.3+(stage>=1?.22:0)+Math.min(stage,10)*.13+(.8+S*.09)*Math.pow(Math.max(0,Math.min(1,prog)),1.2));
+const speedAt=prog=>Math.min(3.8+Math.min(LAP,3)*.15,1.3+(stage>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(Math.max(0,Math.min(1,prog)),1.2));
 const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
@@ -702,22 +705,25 @@ document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',
 const maxWorld=Math.max(store.get('maxWorld',0),stage);
 $('worldChip').innerHTML='MUNDO '+(stage+1)+' · '+theme.place.toUpperCase()+'<small>MAPA ▾</small>';
 // Mapa de destinos: mapa del mundo de papel que se desliza de lado, con la ruta y un pin por destino
-let mapData=null,mPick=stage%8;const lap=Math.floor(stage/8),allOpen=maxWorld>=7;
-const pinState=i=>i===stage%8?'cur':(allOpen||i<=maxWorld)?'done':'lock';
+let mapData=null,mPick=WI;const lap=LAP,allOpen=maxWorld>=NW-1;
+const pinState=i=>i===WI?'cur':(allOpen||i<=maxWorld)?'done':'lock';
 function drawCard(){const t=THEMES[mPick],st=pinState(mPick),rec=(store.get('tops',[])[0]||0);
- $('dCard').innerHTML=`<div class="th" style="background:${t.ground}">${t.art||''}</div><div class="k">MUNDO ${mPick+1}${st==='cur'?' · ESTÁS ACÁ':st==='lock'?' · BLOQUEADO':''}</div><b>${t.place}</b><div class="c">${t.country} · ${t.name[0]+t.name.slice(1).toLowerCase()}</div>`+
+ $('dCard').innerHTML=`<div class="th" style="background:${t.ground}">${t.art||''}</div><div class="k">DESTINO ${mPick+1} DE ${NW}${st==='cur'?' · ESTÁS ACÁ':st==='lock'?' · BLOQUEADO':''}</div><b>${t.place}</b><div class="c">${t.country} · ${t.name[0]+t.name.slice(1).toLowerCase()}</div>`+
   `<button class="btn ${st==='lock'?'plain':''}" id="goTrip">${st==='cur'?'SEGUIR ACÁ':st==='lock'?'🔒 LLEGÁ JUGANDO':'VIAJAR'}</button>`;
  $('goTrip').onclick=()=>{if(st==='lock'){const b=$('goTrip');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');return;}SFX.tap();
-  if(st==='cur'){$('mapPanel').style.display='none';return;}store.set("world",mPick+8*Math.max(0,Math.floor((Math.max(maxWorld,mPick)-mPick)/8)));location.reload();};
+  if(st==='cur'){$('mapPanel').style.display='none';return;}store.set("world",mPick+NW*Math.max(0,Math.floor((Math.max(maxWorld,mPick)-mPick)/NW)));location.reload();};
  document.querySelectorAll('.mpin').forEach(e=>e.classList.toggle('sel',+e.dataset.i===mPick));}
-async function openMap(){audio();SFX.tap();$('mapSub').textContent='MUNDO '+(stage%8+1)+' DE 8 · VUELTA '+(lap+1);$('mapPanel').style.display='block';
+async function openMap(){audio();SFX.tap();$('mapSub').textContent='DESTINO '+(WI+1)+' DE '+NW+' · VUELTA '+(lap+1);$('mapPanel').style.display='block';
  if(!mapData)mapData=await (await fetch('./kanjuu-demo/world-map.json')).json();const M=mapData,v=$('mapView'),sc=Math.max(.55,Math.min(1,(v.clientHeight-250)/560));
- let segs='';for(let i=0;i<7;i++){const a=M.pts[i],b=M.pts[i+1];segs+=`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-46} ${b[0]} ${b[1]}" stroke="${allOpen||i<maxWorld?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round" fill="none"/>`;}
- const pins=M.pts.map((p,i)=>{const st=pinState(i),ic=st==='done'?'✓':st==='lock'?'🔒':BALLOON.idle[0];return `<button class="mpin ${st}" data-i="${i}" style="left:${p[0]}px;top:${p[1]}px"><div class="t">${ic}</div><div class="n">${THEMES[i].place}</div></button>`;}).join('');
+ // ruta punteada entre paradas; el cruce del Pacífico sale por un borde del mapa y entra por el otro
+ const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round" fill="none"/>`;
+ let segs='';for(let i=0;i<NW-1;i++){const a=M.pts[i],b=M.pts[i+1],on=allOpen||i<maxWorld;
+  if(Math.abs(b[0]-a[0])>M.W/2){const y=(a[1]+b[1])/2,l=a[0]<b[0]?a:b,r=a[0]<b[0]?b:a;segs+=seg(l,[0,y],on)+seg([M.W,y],r,on);}else segs+=seg(a,b,on);}
+ const pins=M.pts.map((p,i)=>{const st=pinState(i),ic=st==='cur'?BALLOON.idle[0]:st==='lock'?'🔒':i+1;return `<button class="mpin ${st}" data-i="${i}" style="left:${p[0]}px;top:${p[1]}px"><div class="t">${ic}</div><div class="n">${THEMES[i].place}</div></button>`;}).join('');
  const w=$('mapWorld');w.style.cssText=`width:${M.W*sc}px;height:${M.H*sc}px;margin-top:58px`;
  w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${M.W}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><svg width="${M.W}" height="${M.H}" style="position:absolute;left:0;top:0"><path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/>${segs}</svg>${pins}</div>`;
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{SFX.tap();mPick=+e.dataset.i;drawCard();}));
- mPick=stage%8;drawCard();v.scrollLeft=M.pts[mPick][0]*sc-v.clientWidth/2;}
+ mPick=WI;drawCard();v.scrollLeft=M.pts[mPick][0]*sc-v.clientWidth/2;}
 $('worldChip').addEventListener('click',openMap);
 // clima del mundo: cae, sube o sopla según el bioma
 {const wx=$('wx'),R=(a,b)=>a+Math.random()*(b-a),add=(cls,css)=>{const e=document.createElement('i');e.className=cls;e.style.cssText=css;wx.appendChild(e);};wx.className=theme.wx;
