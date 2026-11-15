@@ -797,7 +797,7 @@ function sanctuary() {
     } else {
       W.az += (W.azT - W.az) * Math.min(1, dt * 7);
     }
-    camera.fov = runner ? 48 : FOV; camera.updateProjectionMatrix();
+    camera.fov = runner ? 58 : FOV; camera.updateProjectionMatrix();
     const bd = baseDepth(W.N), hf = Math.tan(camera.fov * Math.PI / 360), asp3 = camera.aspect;
     let halfH = Math.max(W.N * .62 + 1.1 + bd * .32, (W.N * .8 + .3) / asp3) / W.zoom, el = ELEV;
     let tx = c0, ty = -.6 - bd * .3 - (W.opts.mode === 'play' ? 0 : W.N * (W.opts.preview ? .5 : .12)), tz = c0;
@@ -805,14 +805,15 @@ function sanctuary() {
     if (runner) {
       const pz = runner.playerZ ?? 0;
       // Encuadre más cercano: Hito queda dentro de cámara, por encima del panel inferior.
-      halfH = 3.0; el = .34; tx = (runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2;
-      ty = .12 + (runner.camY || 0); tz = pz - 3.3;
+      // La cámara sigue a Kami de lado solo en parte (42 %): los cinco carriles quedan siempre a la vista.
+      halfH = 3.0; el = .34; tx = ((runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2) * .42;
+      ty = .12 + (runner.camY || 0); tz = pz - 4.0;
     }
     if (fo?.sprite) { fo.sprite.getWorldPosition(tmp); halfH = fo.size * 1.25; el = .32; tx = tmp.x; ty = tmp.y + fo.size * .45; tz = tmp.z; }
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
     const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 9.2 : halfH / hf * 1.02;
     const want = runner
-      ? new THREE.Vector3(tx, ty + 2.6, tz + 8.3)   // cámara más baja y mirando lejos: aparece el horizonte
+      ? new THREE.Vector3(tx, ty + 3.7, tz + 10.8)  // más alejada y con más ángulo: se ve todo el ancho y más camino por delante
       : new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D);
     const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };
