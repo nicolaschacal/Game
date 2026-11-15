@@ -342,7 +342,7 @@ const RIDE={
   const land=cur;free(2,{g:theme.hill,h:LEVELS});for(let k=LEVELS-1;k>=0;k--)free(1,{g:theme.hill,h:k,r:[0,1]});
   rides.push({board,land,id,type:'balloon'});},
  // Vías: estación → tren → rieles → estación
- rail(len,hard){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.7);fill(len,'rail',diff(hard));const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
+ rail(len,hard){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.2);fill(len,'rail',diff(hard));const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
 };
 const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S>=3?2:1});
 {const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
@@ -505,7 +505,9 @@ function buildToward(lane){
    if(x!==from&&!isRockCell(from,y))x=from;
    else{runner.blockedByRock=y;return false;}
   }
-  if(zone[y]==='rail'){railT[x+','+y]={g:'rail',h:0,in:x===from?'S':x>from?'SW':'SE',out:'N'};railPort(from,y+1,{out:x===from?'N':x>from?'NE':'NW'});}
+  if(zone[y]==='rail'){ // cambio de carril en diagonal = curva en S: el tile anterior dobla hacia el costado y el nuevo dobla hacia adelante
+   const side=x>from?'E':'W',back=x>from?'W':'E',pin=railT[from+','+(y+1)]?.in,bend=x!==from&&pin!==side&&zone[y+1]==='rail';
+   railT[x+','+y]={g:'rail',h:0,in:x===from?'S':bend?back:x>from?'SW':'SE',out:'N'};railPort(from,y+1,{out:x===from?'N':bend?side:x>from?'NE':'NW'});}
   setTile(x,y,false);runner.path[y]={x,e:x,lanes:{[x]:1}};
   runner.lastBuildLane=x;runner.steps++;if(x!==from)moved();
   return true;

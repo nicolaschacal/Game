@@ -118,23 +118,26 @@ export const STAR = cut(`<path d="M60 14 L73 44 L106 48 L81 70 L88 102 L60 86 L3
 
 // ── Tren de papel (visto desde atrás) y obstáculos de vía ───────────────────
 function trainPose(k, moving) {
+  // compacto: ruedas y techo quedan dentro del tile (de x 20 a 100)
   const shapes = (moving ? `<circle cx="${k ? 66 : 58}" cy="${k ? 8 : 12}" r="${k ? 8 : 6}" fill="#FFFFFF"/>` : '')
-    + `<path d="M50 40 L52 20 L48 14 L72 14 L68 20 L70 40Z" fill="#34333B"/>`
-    + `<rect x="12" y="82" width="16" height="28" rx="5" fill="#34333B"/><rect x="92" y="82" width="16" height="28" rx="5" fill="#34333B"/>`
-    + `<rect x="22" y="40" width="76" height="58" rx="8" fill="#E8452C"/><path d="M14 44 Q60 26 106 44 L104 52 L16 52Z" fill="#FFF0D2"/>`
-    + `<rect x="18" y="92" width="84" height="12" rx="4" fill="#704332"/>`;
-  const details = `<path d="M16 48 L104 48 L104 52 L16 52Z" fill="#EAD3A6"/><rect x="38" y="57" width="44" height="24" rx="6" fill="#8EC7D8"/>` + rider(60, 72, .8)
-    + `<rect x="38" y="57" width="44" height="24" rx="6" fill="none" stroke="#FFF0D2" stroke-width="4"/><rect x="22" y="84" width="76" height="5" fill="#F2B937"/><path d="M22 90 L98 90 L98 92 Q60 97 22 92Z" fill="#B93322"/>`
-    + `<circle cx="34" cy="98" r="5" fill="#F2B937"/><circle cx="86" cy="98" r="5" fill="#F2B937"/><circle cx="60" cy="98" r="3.5" fill="#FFF0D2"/>`
-    + `<rect x="12" y="${k ? 90 : 96}" width="16" height="4" fill="#5E5D66"/><rect x="92" y="${k ? 96 : 90}" width="16" height="4" fill="#5E5D66"/>`;
+    + `<path d="M51 40 L53 21 L49 15 L71 15 L67 21 L69 40Z" fill="#34333B"/>`
+    + `<rect x="22" y="84" width="14" height="24" rx="5" fill="#34333B"/><rect x="84" y="84" width="14" height="24" rx="5" fill="#34333B"/>`
+    + `<rect x="26" y="40" width="68" height="58" rx="8" fill="#E8452C"/><path d="M20 45 Q60 28 100 45 L98 53 L22 53Z" fill="#FFF0D2"/>`
+    + `<rect x="23" y="92" width="74" height="12" rx="4" fill="#704332"/>`;
+  const details = `<path d="M22 49 L98 49 L98 53 L22 53Z" fill="#EAD3A6"/><rect x="40" y="58" width="40" height="23" rx="6" fill="#8EC7D8"/>` + rider(60, 72, .75)
+    + `<rect x="40" y="58" width="40" height="23" rx="6" fill="none" stroke="#FFF0D2" stroke-width="4"/><rect x="26" y="84" width="68" height="5" fill="#F2B937"/><path d="M26 90 L94 90 L94 92 Q60 97 26 92Z" fill="#B93322"/>`
+    + `<circle cx="37" cy="98" r="4.5" fill="#F2B937"/><circle cx="83" cy="98" r="4.5" fill="#F2B937"/><circle cx="60" cy="98" r="3.2" fill="#FFF0D2"/>`
+    + `<rect x="22" y="${k ? 92 : 98}" width="14" height="4" fill="#5E5D66"/><rect x="84" y="${k ? 98 : 92}" width="14" height="4" fill="#5E5D66"/>`;
   return cut(shapes, details);
 }
 const trainSet = () => ({ idle: [trainPose(0, false)], run: [trainPose(0, true), trainPose(1, true)] });
 export const TRAIN = trainSet();
 export const BARRIER = cut(`<rect x="22" y="50" width="10" height="60" rx="3" fill="#704332"/><rect x="88" y="50" width="10" height="60" rx="3" fill="#704332"/><rect x="10" y="44" width="100" height="22" rx="5" fill="#FFF0D2"/><rect x="10" y="76" width="100" height="14" rx="5" fill="#FFF0D2"/>`,
   `<path d="M22 44 L38 44 L26 66 L10 66Z M54 44 L70 44 L58 66 L42 66Z M86 44 L102 44 L90 66 L74 66Z" fill="#E8452C"/><path d="M30 76 L44 76 L36 90 L22 90Z M66 76 L80 76 L72 90 L58 90Z" fill="#E8452C"/><circle cx="60" cy="34" r="8" fill="#F2B937" stroke="${CREAM}" stroke-width="3"/>`);
-export const CRATE = cut(`<rect x="22" y="56" width="52" height="52" rx="4" fill="#C9965E"/><rect x="58" y="30" width="44" height="44" rx="4" fill="#A9794D"/>`,
-  `<path d="M22 56 L74 108 M74 56 L22 108" stroke="#8A5F38" stroke-width="5"/><rect x="22" y="56" width="52" height="52" rx="4" fill="none" stroke="#8A5F38" stroke-width="5"/><path d="M58 30 L102 74 M102 30 L58 74" stroke="#6B4A2E" stroke-width="5"/><rect x="58" y="30" width="44" height="44" rx="4" fill="none" stroke="#6B4A2E" stroke-width="5"/>`);
+// caja de madera: una sola, en tres cuartos, con tablas, marco y travesaño
+export const CRATE = cut(`<path d="M22 46 L34 34 L100 34 L88 46Z" fill="#E9BC82"/><path d="M88 46 L100 34 L100 96 L88 108Z" fill="#9E6B3C"/><rect x="22" y="46" width="66" height="62" rx="3" fill="#C98F55"/>`,
+  `<path d="M24 66 L86 66 M24 87 L86 87" stroke="#A9743F" stroke-width="2.5"/><rect x="25" y="49" width="60" height="56" rx="2" fill="none" stroke="#8A5A2E" stroke-width="6"/><path d="M28 102 L82 52" stroke="#8A5A2E" stroke-width="7" stroke-linecap="round"/>`
+  + `<path d="M40 40 L94 40" stroke="#D3A266" stroke-width="2.5"/><path d="M94 52 L94 98" stroke="#87592F" stroke-width="2.5"/><g fill="#5E3E22"><circle cx="30" cy="54" r="2.2"/><circle cx="80" cy="54" r="2.2"/><circle cx="30" cy="100" r="2.2"/><circle cx="80" cy="100" r="2.2"/></g>`);
 export const GEM = cut(`<path d="M60 18 L96 52 L60 104 L24 52Z" fill="#3FBF8F"/>`,
   `<path d="M60 18 L96 52 L60 62Z" fill="#7FE0B8"/><path d="M60 62 L96 52 L60 104Z" fill="#2A8F69"/><path d="M60 18 L24 52 L60 62Z" fill="#59CFA2"/><path d="M40 44 L52 32" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>`);
 
