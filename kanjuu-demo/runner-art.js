@@ -103,6 +103,12 @@ export const AIRPORT = cut(
   + `<path d="M42 110 L42 86 Q60 74 78 86 L78 110Z" fill="#2B2440"/><path d="M60 80 L60 110" stroke="#4E6E8E" stroke-width="2.5"/>`
   + `<circle cx="60" cy="66" r="13" fill="#F2B937" stroke="${CREAM}" stroke-width="3"/><path d="${PLANE}" transform="translate(60 66) rotate(45) scale(.82)" fill="#2B2440"/>`
   + `<path d="M4 104 L42 104 L42 110 L4 110Z M78 104 L112 104 L112 110 L78 110Z" fill="#D9CDB4"/>`);
+// Avión de papel visto desde atrás: despega hacia el horizonte en el festejo de la meta
+export const JET = cut(
+  `<path d="M60 56 L4 66 L4 74 L60 72 L116 74 L116 66Z" fill="#FFF8EE"/><path d="M56 50 L60 14 L64 50Z" fill="#E8452C"/><path d="M60 44 L36 48 L36 53 L60 52 L84 53 L84 48Z" fill="#FFF8EE"/>`
+  + `<circle cx="60" cy="64" r="17" fill="#FFF8EE"/><circle cx="32" cy="76" r="9" fill="#4E6E8E"/><circle cx="88" cy="76" r="9" fill="#4E6E8E"/>`,
+  `<path d="M4 71 L43 69.6 L43 72.6 L4 74Z M116 71 L77 69.6 L77 72.6 L116 74Z" fill="#D9D3EC"/><path d="M43.6 68 Q60 76 76.4 68 A17 17 0 0 1 43.6 68Z" fill="#D9D3EC"/><path d="M60 14 L64 50 L60 50Z" fill="#B93322"/>`
+  + `<path d="M44 60 Q60 54 76 60 L76.6 65 Q60 59 43.4 65Z" fill="#E8452C"/><circle cx="32" cy="76" r="5.5" fill="#F2B937"/><circle cx="88" cy="76" r="5.5" fill="#F2B937"/><circle cx="32" cy="76" r="2.6" fill="${CREAM}"/><circle cx="88" cy="76" r="2.6" fill="${CREAM}"/>`);
 // ── Cielo: globo de papel, picos entre nubes, nubes y estrella ───────────────
 function balloonPose(k, flying) {
   const shapes = `<path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/>`

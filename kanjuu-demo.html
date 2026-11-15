@@ -114,6 +114,10 @@ body.home #hud{opacity:0}
 .spark{position:fixed;z-index:8;width:9px;height:9px;border-radius:2px;background:#FFD46B;border:2px solid var(--ink);pointer-events:none}
 .fly{position:fixed;z-index:9;width:34px;height:34px;pointer-events:none}
 .quake{animation:quake .45s}@keyframes quake{10%{transform:translate(-9px,5px) rotate(-.6deg)}30%{transform:translate(8px,-6px) rotate(.5deg)}50%{transform:translate(-6px,4px)}70%{transform:translate(4px,-3px)}90%{transform:translate(-2px,1px)}}
+#jet{position:fixed;z-index:26;left:50%;top:29vh;width:120px;height:120px;margin:-60px 0 0 -60px;pointer-events:none;animation:jet 2.4s cubic-bezier(.2,.55,.25,1) forwards;filter:drop-shadow(0 8px 0 rgba(26,18,32,.16))}
+@keyframes jet{0%{transform:translateY(90vh) scale(7.5) rotate(-6deg)}20%{transform:translateY(40vh) scale(3.8) rotate(5deg)}55%{transform:translateY(8vh) scale(1) rotate(-3deg)}100%{transform:translateY(0) scale(.03) rotate(0)}}
+.puff{position:fixed;z-index:25;border-radius:50%;background:#fff;pointer-events:none;animation:puff 1.2s ease-out forwards}@keyframes puff{0%{opacity:.9;transform:translate(-50%,-50%) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.4)}}
+#twinkle{position:fixed;z-index:26;left:50%;top:29vh;font-size:64px;line-height:1;color:#FFE08A;text-shadow:0 0 18px #FFF4DC,0 0 36px #F2B937;pointer-events:none;animation:twinkle .9s ease-out forwards}@keyframes twinkle{0%{transform:translate(-50%,-50%) scale(0) rotate(0)}35%{transform:translate(-50%,-50%) scale(1.5) rotate(40deg);opacity:1}100%{transform:translate(-50%,-50%) scale(.2) rotate(120deg);opacity:0}}
 .bit{position:fixed;z-index:27;top:-20px;width:11px;height:15px;border:2px solid var(--ink);border-radius:2px;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 #splash{position:fixed;inset:0;z-index:60;background:var(--ink);transition:opacity .5s;display:flex;align-items:center;justify-content:center}
@@ -254,7 +258,7 @@ body.home #hud{opacity:0}
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
-import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
+import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -348,9 +352,9 @@ const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S
 {const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
  if(QUICK){land(8,true);order.forEach(k=>{RIDE[k](6,false);land(4);});}
  else{const more=Math.min(S,4);land(12,stage===0);order.forEach((k,i)=>{RIDE[k]((k==='rail'?16:14)+more,false);land(8);});order.forEach((k,i)=>{RIDE[k]((k==='rail'?20:18)+more,true);land(i<2?8:6);});}}
-// Meta: siempre un aeropuerto. Pista de asfalto (franjas de cabecera, eje punteado, bordes amarillos con balizas) y la terminal al fondo.
+// Meta: siempre un aeropuerto. Pista de asfalto (franjas de cabecera, eje punteado, bordes amarillos con balizas) que sigue hasta el horizonte, con la terminal encima.
 const RUNWAY=cur;
-for(let i=0;i<7;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':i<5&&x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
+for(let i=0;i<=RUNWAY;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
 cur-=7;const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
 const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
@@ -389,6 +393,11 @@ const SFX={
   else if(type==='balloon'){noise(.5,{f:300,to:1800,v:.05});[392,523,659,880].forEach((f,i)=>tone(f,.18,'sine',.06,0,i*.07));}
   else{tone(880,.28,'square',.03);tone(1109,.28,'square',.03);tone(880,.2,'square',.03,0,.34);tone(1109,.2,'square',.03,0,.34);}},
  arrive(){[523,659,784,1047].forEach((f,i)=>tone(f,.14,'triangle',.06,0,i*.08));},
+ jet(){const a=audio();if(!a)return;noise(.01,{v:.0001});const t=a.currentTime,D=2.7; // turbinas: rugido que pasa por encima y se aleja, silbido que cae (doppler) y un grave que sacude
+  const s=a.createBufferSource();s.buffer=noiseBuf;s.loop=true;const f=a.createBiquadFilter();f.type='bandpass';f.Q.value=.7;f.frequency.setValueAtTime(350,t);f.frequency.exponentialRampToValueAtTime(2200,t+.5);f.frequency.exponentialRampToValueAtTime(420,t+D);
+  const g=a.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.45);g.gain.exponentialRampToValueAtTime(.12,t+1.3);g.gain.exponentialRampToValueAtTime(.0001,t+D);s.connect(f).connect(g).connect(out);s.start(t);s.stop(t+D+.05);
+  const o=a.createOscillator(),og=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(700,t);o.frequency.exponentialRampToValueAtTime(2600,t+.45);o.frequency.exponentialRampToValueAtTime(1100,t+D);og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.035,t+.45);og.gain.exponentialRampToValueAtTime(.0001,t+D);o.connect(og).connect(out);o.start(t);o.stop(t+D+.05);
+  tone(62,1.2,'sine',.3,38,.15);},
  win(){[523,659,784,1047,1319,1568].forEach((f,i)=>tone(f,.2,'triangle',.06,0,i*.1));},
  lose(){tone(330,.4,'sawtooth',.05,80);noise(.25,{f:600,to:120,type:'lowpass',v:.12});},
  tap(){tone(660,.05,'triangle',.04);},
@@ -441,10 +450,22 @@ function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;r
  const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0],nd=$('goNudge');
  if(next){nd.style.display='block';nd.innerHTML=artFor(next.id).HERO.idle[0]+(wallet>=next.price?'¡Ya podés desbloquear a '+next.name.toUpperCase()+'!':'Te faltan ◉ '+(next.price-wallet)+' para '+next.name.toUpperCase())+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
  SFX.lose();buzz(120);if(record)confetti();setTimeout(()=>gameover.style.display='flex',350);}
-function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;Music.mode='menu';store.set('world',stage+1);store.set('maxWorld',Math.max(store.get('maxWorld',0),stage+1));confetti();runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();if(score>best){best=score;store.set('best',best);}
+function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Kami entra a la terminal */Music.mode='menu';store.set('world',stage+1);store.set('maxWorld',Math.max(store.get('maxWorld',0),stage+1));confetti();runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();if(score>best){best=score;store.set('best',best);}
  SFX.win();buzz([20,40,20,40,60]);pop('¡MUNDO '+(stage+1)+' COMPLETADO! +'+bonus,'big');
  try{sessionStorage.setItem('kanjuu.run.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak,shield:boost.shield,revives,maxMult,rides:ridesDone}));}catch{}
- setTimeout(()=>location.reload(),1700);}
+ takeoff();setTimeout(()=>location.reload(),3700);}
+// Festejo de la meta: un avión pasa rugiendo por encima y se pierde en el horizonte, con estela, temblor, destello y más confeti
+function takeoff(){
+ const next=THEMES[(stage+1)%THEMES.length];
+ setTimeout(()=>{const j=document.createElement('div');j.id='jet';j.innerHTML=JET;document.body.appendChild(j);SFX.jet();buzz([60,30,90,30,140,40,60]);
+  host.classList.remove('quake');void host.offsetWidth;host.classList.add('quake');$('flash').style.opacity='.45';setTimeout(()=>$('flash').style.opacity='0',140);
+  const trail=setInterval(()=>{const r=j.getBoundingClientRect(),w=r.width,cx=r.left+w/2,cy=r.top+r.height/2;if(w<5)return;
+   for(const sx of[-.23,.23]){const p=document.createElement('div'),d=Math.max(4,w*.13);p.className='puff';p.style.cssText='left:'+(cx+w*sx)+'px;top:'+(cy+w*.13)+'px;width:'+d+'px;height:'+d+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),1200);}},40);
+  setTimeout(()=>{clearInterval(trail);j.remove();const s=document.createElement('div');s.id='twinkle';s.textContent='✦';document.body.appendChild(s);[1568,2093,2637].forEach((f,i)=>tone(f,.22,'sine',.06,0,i*.07));confetti();buzz([20,30,40]);},2400);
+ },380);
+ setTimeout(()=>pop('¡DESPEGUE!','big'),700);
+ setTimeout(()=>{banner('PRÓXIMO DESTINO · '+next.place.toUpperCase());SFX.arrive();},1900);
+}
 function deathText(){
  const y=targetRow(),t=runner.onBoat?runner.rideType:null,z=zone[y];
  const air=t==='balloon'||z==='sky',sea=!air&&(t==='boat'||z==='sea'),rail=!air&&!sea&&(t==='train'||z==='rail');
