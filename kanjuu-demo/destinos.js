@@ -1,4 +1,4 @@
-// Los 20 destinos del viaje. Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
+// Los destinos del viaje. Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
 // y tres adornos de costado. Cada destino trae su monumento (art), su escenario (look) y el piso de la pista.
 import { LANDMARKS } from './runner-art.js';
 const CREAM = '#FFF4DC';
@@ -52,11 +52,6 @@ L.burj = cut(
   `<rect x="10" y="70" width="16" height="40" fill="#D9C7A4"/><rect x="26" y="84" width="12" height="26" fill="#C9B48C"/><rect x="88" y="78" width="12" height="32" fill="#C9B48C"/><rect x="100" y="62" width="12" height="48" fill="#D9C7A4"/>`
   + `<path d="M60 2 L62 28 L66 28 L66 50 L71 50 L71 74 L77 74 L77 110 L43 110 L43 82 L49 82 L49 56 L54 56 L54 34 L58 34Z" fill="#A9C2D8"/>`,
   `<path d="M60 2 L62 28 L66 28 L66 50 L71 50 L71 74 L77 74 L77 110 L60 110Z" fill="#7E9CB8" opacity=".7"/><path d="M48 90 h26 M48 98 h26 M52 66 h16 M56 44 h8" stroke="#E6F1FA" stroke-width="1.6" opacity=".8"/>` + win(13, 75, 2, 5, '#FFF8EE') + win(102, 67, 2, 6, '#FFF8EE'));
-L.goldengate = cut(
-  `<path d="M60 110 Q84 70 120 76 L120 110Z" fill="#8FA86A"/><path d="M0 110 L0 98 Q30 92 60 98 Q90 104 120 98 L120 110Z" fill="#5AA5D2"/>`
-  + `<rect x="24" y="18" width="11" height="86" fill="#D2452F"/><rect x="85" y="18" width="11" height="86" fill="#D2452F"/><rect x="0" y="76" width="120" height="7" fill="#D2452F"/>`,
-  `<path d="M0 58 Q14 44 29.5 20 Q60 96 90.5 20 Q106 44 120 58" stroke="#D2452F" stroke-width="3" fill="none"/><path d="M40 46 V76 M50 62 V76 M60 68 V76 M70 62 V76 M80 46 V76 M12 46 V76 M108 46 V76" stroke="#D2452F" stroke-width="1.4"/>`
-  + `<path d="M24 34 h11 M24 52 h11 M85 34 h11 M85 52 h11" stroke="#9E2F1F" stroke-width="3"/><rect x="0" y="81" width="120" height="2.5" fill="#9E2F1F"/><path d="M8 104 q6 -5 12 0 M96 106 q6 -5 12 0" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>`);
 const spire = (x, top) => `<path d="M${x - 6} 110 L${x - 6} 66 Q${x} ${top - 22} ${x + 6} 66 L${x + 6} 110Z" fill="#CDA774"/>`;
 L.sagrada = cut(
   spire(30, 40) + spire(46, 22) + spire(74, 22) + spire(90, 40) + `<path d="M22 110 L22 80 L60 62 L98 80 L98 110Z" fill="#D9B684"/>`,
@@ -106,7 +101,6 @@ const P = {
   llama: '<rect x="36" y="84" width="8" height="26" rx="3" fill="#E3D5B8"/><rect x="50" y="84" width="8" height="26" rx="3" fill="#E3D5B8"/><rect x="64" y="84" width="8" height="26" rx="3" fill="#E3D5B8"/><rect x="76" y="84" width="8" height="26" rx="3" fill="#E3D5B8"/><rect x="30" y="56" width="58" height="34" rx="15" fill="#F6EEDD"/><rect x="74" y="24" width="14" height="46" rx="7" fill="#F6EEDD"/><path d="M76 22 L74 8 L82 18Z M88 22 L92 8 L84 18Z" fill="#F6EEDD"/><ellipse cx="86" cy="28" rx="12" ry="9" fill="#F6EEDD"/><path d="M40 56 L72 56 L72 76 Q56 82 40 76Z" fill="#E8452C"/><path d="M40 62 h32 M40 70 h32" stroke="#F2B937" stroke-width="3"/><circle cx="89" cy="26" r="2.2" fill="#1A1220"/><path d="M92 32 q3 2 5 0" stroke="#1A1220" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
   terraza: '<path d="M10 110 L10 92 L42 92 L42 76 L78 76 L78 60 L110 60 L110 110Z" fill="#CDB89A"/><path d="M10 92 L42 92 L42 97 L10 97Z M42 76 L78 76 L78 81 L42 81Z M78 60 L110 60 L110 65 L78 65Z" fill="#7FAE6A"/><path d="M22 97 V110 M34 97 V104 M54 81 V110 M66 81 V94 M90 65 V110 M100 65 V84" stroke="#A8916E" stroke-width="2"/>',
   helecho: '<path d="M60 110 Q30 96 16 66 Q40 76 56 100 Q48 64 60 36 Q72 64 64 100 Q80 76 104 66 Q90 96 60 110Z" fill="#5E9A3C"/>',
-  tranvia: '<circle cx="34" cy="100" r="8" fill="#34333B"/><circle cx="86" cy="100" r="8" fill="#34333B"/><rect x="14" y="46" width="92" height="52" rx="6" fill="#B5532F"/><path d="M10 48 Q60 32 110 48 L108 54 L12 54Z" fill="#FFF0D2"/><g fill="#8EC7D8"><rect x="20" y="60" width="16" height="18" rx="2"/><rect x="42" y="60" width="16" height="18" rx="2"/><rect x="64" y="60" width="16" height="18" rx="2"/><rect x="86" y="60" width="14" height="18" rx="2"/></g><rect x="14" y="84" width="92" height="5" fill="#F2B937"/>',
   arbusto: '<path d="M16 110 Q22 70 44 78 Q54 54 74 74 Q96 66 104 110Z" fill="#6FB24F"/><circle cx="40" cy="88" r="6" fill="#FFF4DC"/><circle cx="66" cy="80" r="6" fill="#F2B937"/><circle cx="84" cy="94" r="5" fill="#F29BB8"/>',
   moaiChico: '<rect x="39" y="46" width="7" height="30" rx="3" fill="#7D828A"/><rect x="74" y="46" width="7" height="30" rx="3" fill="#7D828A"/><path d="M44 110 L46 42 Q46 30 60 30 Q74 30 74 42 L76 110Z" fill="#8F949C"/><path d="M46 47 L74 47 L74 54 L46 54Z" fill="#5E626A"/><path d="M57 54 L63 54 L66 76 L54 76Z" fill="#A9AEB5"/><path d="M52 86 L68 86" stroke="#5E626A" stroke-width="3.5" stroke-linecap="round"/>',
   mata: '<path d="M18 110 L28 72 L38 100 L48 56 L56 98 L62 46 L70 98 L78 62 L84 102 L96 76 L102 110Z" fill="#6FA84A"/><path d="M48 56 L56 98 L52 110 L44 110Z M78 62 L84 102 L80 110 L74 110Z" fill="#8FC25A"/>',
@@ -133,7 +127,6 @@ const TABLA = [
   ['MURALLA', 'Pekín', 'China', L.muralla, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'pino farolRojo rocaGris'],
   ['ANDES', 'Machu Picchu', 'Perú', L.machu, '#DCEFE0', '#B8DCC0', '#8FC49C', '#7FAE6A', '#93BF78', '#5F9447', 'peak', 'leaves', 11, 'llama terraza helecho'],
   ['CIUDAD', 'Dubái', 'Emiratos Árabes', L.burj, '#FBEBD0', '#F2D6A8', '#E4BE88', '#D8C8A8', '#A39C92', '#827B72', 'city', 'sand', 13.5, 'palmera farola duna'],
-  ['CIUDAD', 'San Francisco', 'EE.UU.', L.goldengate, '#F6E6DC', '#E8CFC4', '#D0B4B0', '#B9B4B0', '#8F8D90', '#6F6D72', 'dune', 'leaves', 15.5, 'tranvia farola cipres'],
   ['PRADERA', 'Pisa', 'Italia', LANDMARKS.pisa, '#E6F4DA', '#C4E0A2', '#97C670', '#A6CC78', '#B9D88E', '#8DBF5E', 'dune', 'petals', 10, 'cipres arbusto pinoParasol'],
   ['CIUDAD', 'Barcelona', 'España', L.sagrada, '#FBE9D2', '#F4D2A6', '#E6B880', '#DCC8A6', '#C6B8A0', '#A39479', 'city', 'petals', 14, 'palmera farola toldo'],
   ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'moaiChico rocaLava mata'],
