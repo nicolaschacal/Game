@@ -207,22 +207,13 @@ export const LANDMARKS = {
     `<path d="M20 110 Q60 82 100 110" fill="#7FB7CF"/><g fill="#8A5F38"><rect x="32" y="86" width="5" height="8"/><rect x="58" y="86" width="5" height="8"/><rect x="84" y="86" width="5" height="8"/></g><g fill="#FFF3C4" opacity=".7"><ellipse cx="28" cy="31" rx="2" ry="3"/><ellipse cx="58" cy="39" rx="2" ry="3"/><ellipse cx="88" cy="31" rx="2" ry="3"/></g>`),
 };
 
-// ── Power-ups de la pista (estilo Subway Surfers, en papel recortado) ──
-// Imán: herradura violeta con puntas plateadas
-export const MAGNET = cut(`<path d="M34 24 L34 70 Q34 96 60 96 Q86 96 86 70 L86 24 L68 24 L68 70 Q68 78 60 78 Q52 78 52 70 L52 24Z" fill="#7B5CC4"/>`,
-  `<rect x="34" y="24" width="18" height="16" fill="#E6E9EF"/><rect x="68" y="24" width="18" height="16" fill="#E6E9EF"/><path d="M40 48 L40 68" stroke="#A98BE8" stroke-width="5" stroke-linecap="round"/>`);
-// x2: medalla verde con el número
-export const X2 = cut(`<circle cx="60" cy="60" r="36" fill="#5DB84F"/>`,
-  `<circle cx="60" cy="60" r="28" fill="none" stroke="#3F8F36" stroke-width="4"/><text x="60" y="72" text-anchor="middle" font-family="Lilita One,Arial Black,sans-serif" font-size="34" fill="#FFF4DC">x2</text>`);
-// Escudo: blasón azul con estrella
-export const SHIELD = cut(`<path d="M60 18 L94 30 L92 62 Q88 88 60 104 Q32 88 28 62 L26 30Z" fill="#3E5BA9"/>`,
-  `<path d="M60 36 L66 50 L82 52 L70 62 L74 78 L60 70 L46 78 L50 62 L38 52 L54 50Z" fill="#F2B937"/>`);
-// Cofre misterioso: baúl de madera con herrajes dorados y un signo de pregunta
-export const CHEST = cut(`<rect x="22" y="48" width="76" height="52" rx="6" fill="#A9794D"/><path d="M22 54 Q22 30 60 30 Q98 30 98 54Z" fill="#8A5F38"/>`,
-  `<rect x="22" y="54" width="76" height="8" fill="#5A3E2B"/><rect x="52" y="48" width="16" height="22" rx="3" fill="#F2B937"/><circle cx="60" cy="60" r="3" fill="#5A3E2B"/><text x="60" y="94" text-anchor="middle" font-family="Lilita One,Arial Black,sans-serif" font-size="30" fill="#F2B937">?</text>`);
-// Llave dorada
-export const KEY = cut(`<circle cx="42" cy="48" r="20" fill="#F2B937"/><rect x="54" y="42" width="48" height="12" rx="4" fill="#F2B937"/>`,
-  `<circle cx="42" cy="48" r="8" fill="#8A551E"/><rect x="84" y="54" width="8" height="14" fill="#F2B937"/><rect x="70" y="54" width="8" height="10" fill="#F2B937"/>`);
-// Ficha con una letra (para la palabra del día)
-export const letterTile = ch => cut(`<rect x="22" y="22" width="76" height="76" rx="14" fill="#FFF4DC"/>`,
-  `<rect x="30" y="30" width="60" height="60" rx="9" fill="none" stroke="#E8452C" stroke-width="4"/><text x="60" y="78" text-anchor="middle" font-family="Lilita One,Arial Black,sans-serif" font-size="46" fill="#E8452C">${ch}</text>`);
+// ── Power-ups de la pista: mismo oficio que moneda, gema y caja (formas planas, tres tonos, sin texto) ──
+// Doble: dos monedas apiladas (duplica lo que juntás)
+export const DOUBLE = cut(`<circle cx="50" cy="72" r="26" fill="#C98A1E"/><circle cx="68" cy="56" r="26" fill="#F2B937"/>`,
+  `<path d="M42 56 A26 26 0 0 1 80 42 Q68 46 60 52 Q52 60 46 66Z" fill="#FFE49A"/><circle cx="68" cy="56" r="15" fill="none" stroke="#C98A1E" stroke-width="4"/><path d="M44 46 Q48 38 56 36" stroke="#FFF3C4" stroke-width="5" fill="none" stroke-linecap="round"/>`);
+// Escudo: blasón de papel azul, mitad en sombra, con una franja clara
+export const SHIELD = cut(`<path d="M60 16 L96 28 L94 60 Q90 90 60 106 Q30 90 26 60 L24 28Z" fill="#3E5BA9"/>`,
+  `<path d="M60 16 L96 28 L94 60 Q90 90 60 106 L60 16Z" fill="#2C4585"/><path d="M60 34 L78 40 L77 60 Q74 78 60 88 Q46 78 43 60 L42 40Z" fill="#7FA0E0"/><path d="M60 34 L60 88 Q46 78 43 60 L42 40Z" fill="#9DB6EA"/><path d="M50 46 Q54 40 60 38" stroke="#FFF4DC" stroke-width="4" fill="none" stroke-linecap="round"/>`);
+// Cofre: caja de madera con tapa curva, herrajes dorados y cerradura (como la caja, pero con tapa)
+export const CHEST = cut(`<rect x="20" y="58" width="80" height="46" rx="5" fill="#C98F55"/><path d="M20 58 Q20 30 60 30 Q100 30 100 58Z" fill="#E9BC82"/><path d="M80 58 L100 58 L100 104 L80 104Z" fill="#9E6B3C"/>`,
+  `<path d="M20 58 Q20 30 60 30 Q100 30 100 58" fill="none" stroke="#8A5A2E" stroke-width="5"/><rect x="18" y="72" width="84" height="8" fill="#5E3E22"/><rect x="50" y="66" width="20" height="22" rx="3" fill="#F2B937" stroke="#C98A1E" stroke-width="2.5"/><circle cx="60" cy="77" r="3.5" fill="#5E3E22"/><path d="M34 40 Q40 36 50 35" stroke="#FFF3C4" stroke-width="4" fill="none" stroke-linecap="round"/><g fill="#F2B937"><circle cx="30" cy="96" r="2.6"/><circle cx="90" cy="96" r="2.6"/></g>`);

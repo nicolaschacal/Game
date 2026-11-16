@@ -681,7 +681,7 @@ function sanctuary() {
           if (coin.collected || coin.missed) return;
           // La moneda se junta si el corredor pasa por su carril en cualquier momento de esa fila
           // (también durante un desplazamiento lateral).
-          if (pos <= coin.y + .5 && pos >= coin.y - .5 && Math.abs(Math.round(runner.visualLane ?? runner.lane ?? 2) - coin.x) <= (runner.magnet ? 1 : 0)) {
+          if (pos <= coin.y + .5 && pos >= coin.y - .5 && Math.abs(Math.round(runner.visualLane ?? runner.lane ?? 2) - coin.x) === 0) {
             coin.collected = true;
             const item = W.items.get(coin.id); if (item) item.group.visible = false;
             runner.onCoin?.(coin.id);

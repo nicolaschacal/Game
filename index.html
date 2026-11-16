@@ -304,7 +304,7 @@ body.ads #playWrap{bottom:calc(var(--sb) + 72px)}body.ads #mission{bottom:calc(v
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
-import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, MAGNET, X2, SHIELD, CHEST, KEY, letterTile } from './paper-voyager/runner-art.js';
+import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { DESTINOS } from './paper-voyager/destinos.js';
 const $=id=>document.getElementById(id);
@@ -320,14 +320,13 @@ if(!owned.includes(skinId))skinId='kami';
 const ITEMS=[
  {id:'revive',name:'Revivir',icon:'♥',price:120,tag:'Seguís donde caíste'},
  {id:'shield',name:'Escudo',icon:'◈',price:80,tag:'Te salva de un choque'},
- {id:'magnet',name:'Imán',icon:'∩',price:60,tag:'Atrae monedas vecinas'},
  {id:'double',name:'Doble',icon:'x2',price:100,tag:'Monedas x2'},
  {id:'freeze',name:'Congelar',icon:'❄',price:90,tag:'Frena 8 s a los enemigos que se mueven'},
 ];
-const stock={revive:0,shield:0,magnet:0,double:0,freeze:0,...store.get('items',{})};
+const stock={revive:0,shield:0,double:0,freeze:0,...store.get('items',{})};
 // ── Misiones: tres a la vez. Al cumplir las tres sube el nivel, y con él el multiplicador base del puntaje ──
 const MPOOL={coin:{t:n=>'Juntá '+n+' monedas',base:80,ico:'coin'},prize:{t:n=>'Juntá '+n+' tesoros',base:4,ico:'pearl'},ride:{t:n=>'Completá '+n+' travesías',base:3,ico:'boat'},near:{t:n=>'Rozá '+n+' obstáculos',base:8,ico:'rock'},
- power:{t:n=>'Agarrá '+n+' power-ups',base:3,ico:'magnet'},tile:{t:n=>'Construí '+n+' tiles',base:200,ico:'tile'},world:{t:n=>'Llegá a '+n+(n>1?' aeropuertos':' aeropuerto'),base:1,ico:'gate'},chest:{t:n=>'Encontrá '+n+(n>1?' cofres':' cofre'),base:1,ico:'chest'},streak:{t:n=>'Lográ una racha x'+n,base:2,ico:'coin',max:true}};
+ power:{t:n=>'Agarrá '+n+' power-ups',base:3,ico:'double'},tile:{t:n=>'Construí '+n+' tiles',base:200,ico:'tile'},world:{t:n=>'Llegá a '+n+(n>1?' aeropuertos':' aeropuerto'),base:1,ico:'gate'},chest:{t:n=>'Encontrá '+n+(n>1?' cofres':' cofre'),base:1,ico:'chest'},streak:{t:n=>'Lográ una racha x'+n,base:2,ico:'coin',max:true}};
 const MORDER=['coin','ride','power','prize','near','tile','chest','world','streak'];
 function newSet(level){return [0,1,2].map(i=>{const id=MORDER[(level*3+i)%MORDER.length],m=MPOOL[id];return {id,goal:m.max?Math.min(5,m.base+Math.floor(level/2)):Math.max(1,Math.round(m.base*(1+level*.5))),n:0,done:false};});}
 let prog=store.get('prog',null);if(!prog||!prog.set)prog={level:0,set:newSet(0)};
@@ -348,7 +347,7 @@ const stage=carry?.stage??(Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):sto
 const NW=DESTINOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
 const S=Math.min(8,Math.round(WI*6/(NW-1))+LAP*2);   // dificultad 0…8: sube de a poco a lo largo de todos los destinos y cada vuelta arranca dos escalones más arriba
 const SP=Math.min(16,WI*10/(NW-1)+LAP*3);            // escalón de velocidad
-const boost={shield:!!carry?.shield,magnet:false,double:false}; // activos en esta partida
+const boost={shield:!!carry?.shield,double:false}; // activos en esta partida
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
 const PATH='dirt';
@@ -372,6 +371,8 @@ const LIVE={sea:FIN,sky:STORM,rail:CART};
 const PRIZE={land:[GEM,'JOYA'],sea:[PEARL,'PERLA'],sky:[STAR,'ESTRELLA'],rail:[GEM,'JOYA']};
 function fill(n,kind,{gap,lead,extra}){
  let safe=2;const air=kind==='sky',lift=air?SKY:0;
+ // Monedas en varios caminos: además de la del carril seguro, hay monedas de los costados que se juntan cambiando de carril
+ const sideCoins=(lanes,y,lift)=>{const got=[];for(const x of lanes)if(rnd()<.5){coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift,side:true});got.push(x);}return got;};
  for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
   const coin=x=>coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift});
   if(i>=lead&&(i-lead)%gap===0&&i<n-1){
@@ -384,9 +385,10 @@ function fill(n,kind,{gap,lead,extra}){
    for(const x of blocked){const live=alive&&alive[0]===x,b={id:'b'+uid++,kind:'paper',svg:live?LIVE[kind]:pick(OBST[kind]),x:air?x-.15:x,y:air?y-.15:y,w:air?1.3:1,h:air?1.3:1,lift,cx:x,cy:y};
     if(live)b.mv={a:x,b:pick(alive[1]),period:2.6+rnd()*1.2-S*.12,phase:rnd()*3};
     blockers.push(b);}
-   coin(safe);
-   if(pool.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:PRIZE[kind][0],label:PRIZE[kind][1],x:pick(pool),y,w:.7,h:.7,value:50,prize:true,lift});
-  }else if(i>1)coin(safe);
+   coin(safe);const sides=sideCoins(pool,y,lift);
+   const freeL=pool.filter(x=>!sides.includes(x));
+   if(freeL.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:PRIZE[kind][0],label:PRIZE[kind][1],x:pick(freeL),y,w:.7,h:.7,value:50,prize:true,lift});
+  }else if(i>1){coin(safe);sideCoins([0,1,2,3,4].filter(x=>x!==safe),y,lift);}
  }
  cur-=n;
 }
@@ -411,14 +413,13 @@ const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S
 {const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
  if(QUICK){land(8,true);order.forEach(k=>{RIDE[k](6,false);land(4);});}
  else{const more=Math.min(S,4);land(12,stage===0);order.forEach((k,i)=>{RIDE[k]((k==='rail'?16:14)+more,false);land(8);});order.forEach((k,i)=>{RIDE[k]((k==='rail'?20:18)+more,true);land(i<2?8:6);});}}
-// Power-ups en la pista (estilo Subway Surfers): algunas monedas del carril seguro se vuelven imán, x2 o escudo;
-// hay un cofre misterioso por mundo (casi siempre) y, si falta, la próxima letra de la palabra del día.
+// Power-ups en la pista: algunas monedas se vuelven x2 o escudo; hay un cofre por mundo (casi siempre) y una gema con la próxima letra de la palabra del día.
 {const cand=coins.filter(c=>!c.prize&&zone[c.y]!=='free'&&c.y<START-16&&c.y>cur+8);let pool=cand;
  const take=()=>{if(!pool.length)return null;const c=pool[Math.floor(rnd()*pool.length)];pool=pool.filter(x=>Math.abs(x.y-c.y)>=4);return c;};
  const setP=(c,power,svg,size)=>{c.power=power;c.svg=svg;c.w=c.h=size;c.value=0;};
- const nP=3+Math.floor(S/2);for(let i=0;i<nP;i++){const c=take();if(!c)break;const pw=pick(['magnet','double','shield','magnet','double']);setP(c,pw,{magnet:MAGNET,double:X2,shield:SHIELD}[pw],.95);}
+ const nP=3+Math.floor(S/2);for(let i=0;i<nP;i++){const c=take();if(!c)break;const pw=pick(['double','shield','double']);setP(c,pw,{double:DOUBLE,shield:SHIELD}[pw],.95);}
  if(rnd()<.7){const c=take();if(c)setP(c,'chest',CHEST,1.05);}
- if(!wd.done){const c=take();if(c)setP(c,'letter',letterTile(WORD[wd.got]),.95);}}
+ if(!wd.done){const c=take();if(c)setP(c,'letter',GEM,.9);}}
 // Meta: siempre un aeropuerto. Pista de asfalto (franjas de cabecera, eje punteado, bordes amarillos con balizas) que sigue hasta el horizonte, con la terminal encima.
 const RUNWAY=cur;
 for(let i=0;i<=RUNWAY;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
@@ -496,7 +497,7 @@ let score=carry?.score||0,coinCount=carry?.coins||0,banked=carry?.coins||0,strea
 $('score').textContent=score.toLocaleString('es');$('coinsN').textContent=coinCount;
 const baseMult=()=>1+Math.min(9,prog.level); // sube un punto por cada set de misiones completado (hasta x10)
 const mult=()=>baseMult()+Math.min(4,Math.floor(streak/6));
-const POWER_MS=10000,boostUntil={magnet:0,double:0};let chests=carry?.chests||0;
+const POWER_MS=10000,boostUntil={double:0};let chests=carry?.chests||0;
 const fmt=n=>n.toLocaleString('es');
 function addScore(n){score+=n;$('score').textContent=fmt(score);}
 let maxMult=carry?.maxMult||1;
@@ -505,7 +506,7 @@ showCombo();
 // las monedas se guardan en el monedero al terminar cada mundo y al perder
 function bank(){const n=coinCount-banked;if(n>0)wallet+=Math.round(n*(Iap.pro?1.25:1));banked=coinCount;store.set('wallet',wallet);} // PRO: +25% al guardar
 const doubleOn=()=>boost.double||boostUntil.double>performance.now();
-function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){onPower(c);return;}const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(doubleOn()?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
+function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){onPower(c);return;}if(c.side)guideSide++;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(doubleOn()?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
  missionAdd(c.prize?'prize':'coin',1);
  if(c.prize){pop(c.label+' +'+gain,'pink');SFX.prize();buzz([12,30,12]);runnerPulse('hop');}
  else{pop('+'+gain,'gold');SFX.coin(streak);buzz(8);runnerPulse('squash');}
@@ -514,18 +515,17 @@ function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){on
  showCombo();}
 // Power-up agarrado en la pista
 function onPower(c){const g=25*mult();addScore(g);sparks(12);missionAdd('power');buzz([15,30,15]);
- if(c.power==='magnet'){boostUntil.magnet=performance.now()+POWER_MS;runner.magnet=true;pop('¡IMÁN!','big');SFX.power();}
- else if(c.power==='double'){boostUntil.double=performance.now()+POWER_MS;pop('¡MONEDAS x2!','big');SFX.power();}
+ if(c.power==='double'){boostUntil.double=performance.now()+POWER_MS;pop('¡MONEDAS x2!','big');SFX.power();}
  else if(c.power==='shield'){boost.shield=true;pop('¡ESCUDO!','big');SFX.power();}
  else if(c.power==='chest'){chests++;missionAdd('chest');pop('¡COFRE MISTERIOSO!','big');SFX.chest();}
  else if(c.power==='letter'){wd.got++;store.set('word',wd);pop('LETRA '+WORD[wd.got-1],'pink');SFX.prize();
   if(wd.got>=WORD.length){wd.done=true;store.set('word',wd);wallet+=300;stock.revive++;store.set('wallet',wallet);store.set('items',stock);setTimeout(()=>{pop('¡'+WORD+'! +◉300 +♥','big');SFX.win();confetti();},650);}}
  drawBoosts();}
 // Los power-ups con tiempo se apagan solos; la barrita debajo de cada ícono muestra cuánto queda
-setInterval(()=>{const now=performance.now();let off=false;for(const k of['magnet','double'])if(boostUntil[k]&&now>boostUntil[k]){boostUntil[k]=0;off=true;}
- runner.magnet=boost.magnet||boostUntil.magnet>now;if(off){drawBoosts();showToast('SE TERMINÓ EL POWER-UP');}
+setInterval(()=>{const now=performance.now();let off=false;for(const k of['double'])if(boostUntil[k]&&now>boostUntil[k]){boostUntil[k]=0;off=true;}
+ if(off){drawBoosts();showToast('SE TERMINÓ EL POWER-UP');}
  document.querySelectorAll('.pw[data-k]').forEach(e=>{const u=boostUntil[e.dataset.k];e.querySelector('i').style.width=(u?Math.max(0,(u-now)/POWER_MS*100):100)+'%';});},100);
-function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize)return;if(streak>=6)showToast('SE CORTÓ LA RACHA');streak=0;showCombo();}
+function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize||c?.side)return;if(streak>=6)showToast('SE CORTÓ LA RACHA');streak=0;showCombo();}
 
 // ── Fin de partida y paso de mundo ──
 let ended=false;
@@ -541,7 +541,7 @@ function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;r
  setTimeout(()=>Ads.intersticialQuizas(),1400);}
 // Cofres: se abren al terminar; cada uno trae monedas o un ítem. Después se puede abrir uno extra mirando un anuncio.
 let adDouble=false,adChest=false;
-const PRIZES=[[30,{coins:60}],[24,{coins:120}],[12,{coins:250}],[10,{item:'shield'}],[9,{item:'magnet'}],[8,{item:'double'}],[5,{item:'freeze'}],[4,{item:'revive'}],[2,{coins:600}]];
+const PRIZES=[[30,{coins:60}],[24,{coins:120}],[12,{coins:250}],[10,{item:'shield'}],[9,{coins:90}],[8,{item:'double'}],[5,{item:'freeze'}],[4,{item:'revive'}],[2,{coins:600}]];
 function openChest(){let r=Math.random()*PRIZES.reduce((a,p)=>a+p[0],0),pz;for(const [w,v] of PRIZES){r-=w;if(r<=0){pz=v;break;}}pz||=PRIZES[0][1];
  if(pz.coins){wallet+=pz.coins;store.set('wallet',wallet);pop('+◉'+pz.coins,'gold');}else{stock[pz.item]++;store.set('items',stock);pop('¡'+ITEMS.find(i=>i.id===pz.item).name.toUpperCase()+'!','big');}
  SFX.prize();buzz([20,40,20]);confetti();const row=$('goChest');row.classList.remove('shake');void row.offsetWidth;row.classList.add('shake');}
@@ -646,7 +646,7 @@ function buildToward(lane){
  runner.buildRow=y;
  lane=clampLane(lane??runner.buildLane);
  const row=runner.path[y];
- if(coach==='hold'&&lane!==prevExit(y)&&!isRockCell(lane,y))coachDone();
+ if(rockHeld&&lane!==prevExit(y)&&!isRockCell(lane,y)){rockHeld=false;runner.hitPause=0;pop('¡ESO!','big');SFX.streak();}
  if(!row){
   const from=prevExit(y);
   let x=Math.abs(lane-from)>1?from+Math.sign(lane-from):lane;
@@ -729,15 +729,30 @@ const TUTO=[
  {no:'ESQUIVÁ CONSTRUYENDO',h:'¿ROCA ADELANTE? RODEALA',p:'Si hay un obstáculo en tu carril, armá el camino por un costado antes de llegar. Barco, globo y tren te llevan por mar, cielo y vías: seguí construyendo delante de ellos.',
   pic:()=>'<div class="t g" style="left:50%;bottom:66px;margin-left:-22px"></div>'+ROCK.replace('<svg','<svg style="left:50%;bottom:108px;margin-left:-30px"')+'<div class="t new" style="left:50%;bottom:66px;margin-left:-70px"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-70px;animation-delay:.3s"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-22px;animation-delay:.6s;margin-left:-22px;bottom:162px"></div>'+art.HERO.idle[0].replace('<svg','<svg style="left:50%;bottom:4px;margin-left:-30px"')},
 ];
-let tutoStep=0,tutoAfter=null,coach=store.get('tuto',0)>=2?'done':'wait';
-function showTuto(after){tutoStep=0;tutoAfter=after;drawTuto();$('tuto').style.display='flex';}
-function drawTuto(){const t=TUTO[tutoStep];$('tutoPic').innerHTML=t.pic();$('tutoNo').textContent=t.no;$('tutoH').textContent=t.h;$('tutoP').textContent=t.p;$('tutoNext').textContent=tutoStep<TUTO.length-1?'SIGUIENTE':'¡A JUGAR!';document.querySelectorAll('#tuto .steps i').forEach((e,i)=>e.classList.toggle('on',i<=tutoStep));}
-$('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<TUTO.length-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';store.set('tuto',Math.max(1,store.get('tuto',0)));tutoAfter?.();tutoAfter=null;});
-$('howTo').addEventListener('click',()=>{SFX.tap();showTuto(null);});
-// Freno en la primera roca: el juego se detiene hasta que el jugador construye hacia un costado
-function coachCheck(){if(coach!=='wait'||!runner.started||runner.gameOver||runner.onBoat)return;const y=targetRow();if(y<0)return;const from=prevExit(y);
- if(!runner.path[y]&&(isRockCell(from,y)||isRockCell(from,y-1))){coach='hold';runner.hitPause=999;const c=$('coach');c.innerHTML='<b>¡ROCA ADELANTE!</b><p>Kami no la esquiva solo. Arrastrá hacia un costado para armar el camino alrededor.</p><span class="arr">⟷</span>';c.style.display='block';SFX.near();buzz([30,40,30]);}}
-function coachDone(){if(coach!=='hold')return;coach='done';store.set('tuto',2);runner.hitPause=0;$('coach').style.display='none';pop('¡ESO!','big');SFX.streak();}
+let tutoStep=0,tutoAfter=null,tutoN=3;
+// Guía del primer mundo: cada paso se cumple con lo que hace el jugador; no se pasa al siguiente hasta que lo hace
+const GUIDE=[
+ {a:'⟷',t:'Kami avanza solo. Arrastrá hacia un costado para cambiar el camino que construye.',ok:()=>Object.values(runner.path).some(r=>r.x!==2)},
+ {a:'◉',t:'Hay monedas en varios caminos, también a los costados. Pasá por las de los lados para juntar más.',ok:()=>guideSide>=3},
+ {a:'x2',t:'Juntá monedas seguidas sin cortar la racha para subir el multiplicador.',ok:()=>streak>=6},
+];
+let guideStep=0,guideSide=0,rockSeen=false,rockHeld=false,coachShown='';
+const guideOn=()=>stage===0&&store.get('tuto',0)<2;
+function showTuto(after,n=3){tutoStep=0;tutoAfter=after;tutoN=n;drawTuto();$('tuto').style.display='flex';}
+function drawTuto(){const t=TUTO[tutoStep];$('tutoPic').innerHTML=t.pic();$('tutoNo').textContent=t.no;$('tutoH').textContent=t.h;$('tutoP').textContent=t.p;$('tutoNext').textContent=tutoStep<tutoN-1?'SIGUIENTE':'¡A JUGAR!';document.querySelectorAll('#tuto .steps i').forEach((e,i)=>{e.style.display=i<tutoN?'':'none';e.classList.toggle('on',i<=tutoStep);});}
+$('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<tutoN-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';if(tutoAfter){store.set('tuto',Math.max(1,store.get('tuto',0)));const f=tutoAfter;tutoAfter=null;f();}});
+$('howTo').addEventListener('click',()=>{SFX.tap();showTuto(null,3);});
+function drawCoach(html){if(html===coachShown)return;coachShown=html;const c=$('coach');if(!html){c.style.display='none';return;}c.innerHTML=html;c.style.display='block';}
+// Cada cuadro: muestra el paso actual, frena una sola vez en la primera roca y avanza cuando el jugador cumple el paso
+function coachFrame(){
+ if(!runner.started||runner.gameOver||runner.onBoat||!guideOn()||paused)return;
+ const y=targetRow();
+ if(y>=0&&!rockSeen&&!runner.path[y]){const from=prevExit(y);if(isRockCell(from,y)||isRockCell(from,y-1)){rockSeen=true;rockHeld=true;runner.hitPause=999;drawCoach('<b>¡ROCA ADELANTE!</b><p>Kami no la esquiva solo. Arrastrá hacia un costado para armar el camino alrededor.</p><span class="arr">⟷</span>');SFX.near();buzz([30,40,30]);}}
+ if(rockHeld)return;
+ if(guideStep<GUIDE.length&&GUIDE[guideStep].ok()){guideStep++;if(guideStep<GUIDE.length){pop('¡BIEN!','big');SFX.coin(4);}}
+ if(guideStep>=GUIDE.length){store.set('tuto',2);drawCoach('');pop('¡YA SABÉS JUGAR!','big');SFX.win();confetti();return;}
+ const g=GUIDE[guideStep];drawCoach('<b>'+g.a+' PASO '+(guideStep+1)+' DE '+GUIDE.length+'</b><p>'+g.t+'</p>');
+}
 function begin(){if(!runner.started&&!paused){runner.started=true;audio();Music.start();Music.mode='run';document.body.classList.remove('home');}}
 host.addEventListener('pointerdown',e=>{if(runner.gameOver||menuOpen||paused)return;begin();buildHeld=true;lateralClock=0;laneFromPointer(e);buildToward(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointermove',e=>{if(!buildHeld)return;laneFromPointer(e);e.preventDefault();e.stopPropagation();},true);
@@ -756,7 +771,7 @@ function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
  if(!runner.gameOver&&y>=0&&runner.started){
   if(!runner.path[y])buildToward(buildHeld?runner.buildLane:prevExit(y));
   if(buildHeld&&runner.path[y]&&clampLane(runner.buildLane)!==runner.path[y].x){lateralClock-=dt;if(lateralClock<=0){lateralClock=.07;buildToward(runner.buildLane);}}
-  moverHit();coachCheck();
+  moverHit();coachFrame();
   const r=Math.ceil(START-runner.distance);while(lastRow>r&&!runner.gameOver){lastRow--;enterRow(lastRow);if(runner.gameOver)break;}
  }
  refreshHints();if(!runner.gameOver)refreshUI();
@@ -765,7 +780,7 @@ requestAnimationFrame(frame);
 window.addEventListener('pagehide',bank);
 
 // ── Íconos, misión del día y récords ──
-const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:AIRPORT,magnet:MAGNET,chest:CHEST,tile:STUMP};
+const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:AIRPORT,double:DOUBLE,chest:CHEST,tile:STUMP};
 const ico=(k,style='')=>ICO[k].replace('<svg','<svg class="ico" style="'+style+'"');
 document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ico(e.dataset.ico));
 function drawMission(){const m=$('mission');
@@ -779,9 +794,9 @@ const tops=store.get('tops',[]);
 let menuOpen=!autostart&&!carry,browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
 const RARITY={kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
 function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
-function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);if(boost.magnet||boostUntil.magnet>now)L.push(['magnet',MAGNET,boostUntil.magnet>now]);if(boost.double||boostUntil.double>now)L.push(['double',X2,boostUntil.double>now]);
+function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);if(boostUntil.double>now||boost.double)L.push(['double',DOUBLE,boostUntil.double>now]);
  $('boosts').innerHTML=L.map(([k,svg,timed])=>'<div class="pw"'+(timed?' data-k="'+k+'"':'')+'>'+svg+(timed?'<b><i style="width:100%"></i></b>':'')+'</div>').join('');}
-function useItems(){for(const k of ['shield','magnet','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);runner.magnet=boost.magnet;drawBoosts();}
+function useItems(){for(const k of ['shield','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);drawBoosts();}
 function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast('TE FALTAN ◉ '+(price-wallet)+' PARA '+name.toUpperCase());return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
 function drawClima(){
  const c=climaEstado(),b=$('climaChip');
@@ -805,7 +820,7 @@ function drawHome(){
 }
 function drawShop(){
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
- const COL={revive:'#E8452C',shield:'#3E5BA9',magnet:'#7B5CC4',double:'#5DB84F',freeze:'#4FB3D9'};
+ const COL={revive:'#E8452C',shield:'#3E5BA9',double:'#5DB84F',freeze:'#4FB3D9'};
  $('items').innerHTML=ITEMS.map(k=>`<button class="it" data-id="${k.id}"><i style="background:${COL[k.id]}">${k.icon}</i><div><b>${k.name}${stock[k.id]?'<u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small></div><span class="price">◉ ${k.price}</span></button>`).join('')+'<div class="note" style="grid-column:1/3">Revivir se usa cuando caés. Congelar tiene su botón ❄ durante la carrera. Escudo, Imán y Doble se gastan solos al empezar tu próxima partida.</div>';
  $('pro').innerHTML='<div class="note" style="grid-column:1/3">'+(Iap.pro?'★ SOS PRO: sin banner ni intersticiales y +25% de monedas en cada partida. ¡Gracias por apoyar el juego!':'★ PRO: sin banner ni intersticiales y +25% de monedas en cada partida. Los videos con recompensa siguen siendo opcionales.')+'</div>'
   +(Iap.pro?'':'<button class="btn green" id="paywall" style="grid-column:1/3;height:52px;font-size:19px">★ HACETE PRO</button>')
@@ -879,7 +894,7 @@ function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
  SFX.tap();const go=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
- if(stage===0&&!store.get('tuto',0))showTuto(go);else go();});
+ if(stage===0&&!store.get('tuto',0))showTuto(go,1);else go();});
 function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
@@ -888,6 +903,6 @@ Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';if(Ads.enabled){document.body.classList.add('ads');Ads.banner(true);}}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
+if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get guideStep(){return guideStep},get guideSide(){return guideSide},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
 </script>
 </body></html>
