@@ -313,8 +313,11 @@ const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('q
 // Progreso guardado con el nombre viejo del juego: se copia una vez a las claves nuevas
 try{if(!localStorage.getItem('pv.wallet'))for(const k of Object.keys(localStorage))if(k.startsWith('kanjuu.run.'))localStorage.setItem('pv.'+k.slice(11),localStorage.getItem(k));}catch{}
 const store={get(k,d){try{const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
-let wallet=store.get('wallet',0),owned=store.get('owned',['kami']),skinId=store.get('skin','kami'),best=store.get('best',0),muted=store.get('mute',false);
-if(!owned.includes(skinId))skinId='kami';
+let wallet=store.get('wallet',0),owned=store.get('owned',['nilo']),skinId=store.get('skin','nilo'),best=store.get('best',0),muted=store.get('mute',false);
+// Nilo reemplaza a Kami como personaje base: quien tenía a Kami guardado pasa a Nilo sin perder monedas
+if(!owned.includes('nilo'))owned.unshift('nilo');
+if(skinId==='kami')skinId='nilo';
+if(!owned.includes(skinId))skinId='nilo';
 // Ítems consumibles: se compran con monedas. Revivir se usa al perder; los demás se gastan al empezar la próxima partida.
 const ITEMS=[
  {id:'revive',name:'Revivir',icon:'♥',price:120,tag:'Seguís donde caíste'},
@@ -421,7 +424,7 @@ const RUNWAY=cur;
 for(let i=0;i<=RUNWAY;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
 cur-=7;const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
-const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
+const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=stage===0?.3*(1-p):stage===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(stage>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
@@ -550,7 +553,7 @@ function drawChests(){const row=$('goChest');
  else row.style.display='none';}
 $('goDouble').addEventListener('click',async()=>{if(adDouble)return;audio();adDouble=true;$('goDouble').style.display='none';
  if(await Ads.recompensa('double')){wallet+=Math.round(coinCount*(Iap.pro?1.25:1));store.set('wallet',wallet);$('goCoins').textContent='+'+coinCount*2;pop('¡MONEDAS x2!','big');SFX.prize();confetti();}});
-function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Kami entra a la terminal */Music.mode='menu';store.set('world',stage+1);store.set('maxWorld',Math.max(store.get('maxWorld',0),stage+1));confetti();runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
+function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Nilo entra a la terminal */Music.mode='menu';store.set('world',stage+1);store.set('maxWorld',Math.max(store.get('maxWorld',0),stage+1));confetti();runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
  SFX.win();buzz([20,40,20,40,60]);pop('¡MUNDO '+(stage+1)+' COMPLETADO! +'+bonus,'big');
  try{sessionStorage.setItem('pv.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak,shield:boost.shield,revives,maxMult,rides:ridesDone,chests}));}catch{}
  takeoff();setTimeout(()=>location.reload(),5250);}
@@ -704,7 +707,7 @@ function enterRow(r){
  const base=speedAt(prog);runner.speed=base*(runner.onBoat?RIDES[runner.rideType].boost:1);
  const g=Math.floor((base-speedAt(0))/.25);if(g>gear){gear=g;pop('¡MÁS RÁPIDO!','big');SFX.faster();buzz(25);}
  $('speed').style.opacity=Math.max(0,Math.min(.9,(runner.speed-1.9)/1.3));
- if(r<=RUNWAY&&!runner.gameOver){runner.buildLane=2;buildToward(2);} // en la pista Kami se acomoda solo al centro para entrar por la puerta
+ if(r<=RUNWAY&&!runner.gameOver){runner.buildLane=2;buildToward(2);} // en la pista Nilo se acomoda solo al centro para entrar por la puerta
  if(r<=GOAL)nextWorld();
 }
 function refreshUI(){
@@ -718,9 +721,9 @@ let buildHeld=false,lateralClock=0,lastFrame=performance.now();
 let paused=false;
 // ── Tutorial: la gente llega pensando que es un runner de swipe. Tres paneles antes de la primera partida y un freno en la primera roca. ──
 const TUTO=[
- {no:'NO ES SWIPE',h:'KAMI AVANZA SOLO',p:'No lo movés a él: en este juego el dedo no empuja al personaje, construye el camino por donde va a pasar.',
+ {no:'NO ES SWIPE',h:'NILO AVANZA SOLO',p:'No lo movés a él: en este juego el dedo no empuja al personaje, construye el camino por donde va a pasar.',
   pic:()=>'<div class="t g" style="left:50%;bottom:66px;margin-left:-22px"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-22px"></div>'+art.HERO.idle[0].replace('<svg','<svg style="left:50%;bottom:4px;margin-left:-30px"')},
- {no:'VOS CONSTRUÍS',h:'TOCÁ O ARRASTRÁ EL CAMINO',p:'Tocá o arrastrá hacia el carril por donde querés que siga. El tile aparece una fila adelante y Kami lo sigue. Mantené el dedo apoyado para ir dejando tiles.',
+ {no:'VOS CONSTRUÍS',h:'TOCÁ O ARRASTRÁ EL CAMINO',p:'Tocá o arrastrá hacia el carril por donde querés que siga. El tile aparece una fila adelante y Nilo lo sigue. Mantené el dedo apoyado para ir dejando tiles.',
   pic:()=>'<div class="t g" style="left:50%;bottom:66px;margin-left:-22px"></div>'+'<div class="t new" style="left:50%;bottom:66px;margin-left:26px"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:26px;animation-delay:.3s"></div>'+'<div class="hand"></div>'+art.HERO.idle[0].replace('<svg','<svg style="left:50%;bottom:4px;margin-left:-30px"')},
  {no:'ESQUIVÁ CONSTRUYENDO',h:'¿ROCA ADELANTE? RODEALA',p:'Si hay un obstáculo en tu carril, armá el camino por un costado antes de llegar. Barco, globo y tren te llevan por mar, cielo y vías: seguí construyendo delante de ellos.',
   pic:()=>'<div class="t g" style="left:50%;bottom:66px;margin-left:-22px"></div>'+ROCK.replace('<svg','<svg style="left:50%;bottom:108px;margin-left:-30px"')+'<div class="t new" style="left:50%;bottom:66px;margin-left:-70px"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-70px;animation-delay:.3s"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-22px;animation-delay:.6s;margin-left:-22px;bottom:162px"></div>'+art.HERO.idle[0].replace('<svg','<svg style="left:50%;bottom:4px;margin-left:-30px"')},
@@ -770,7 +773,7 @@ const tops=store.get('tops',[]);
 
 // ── Inicio, tienda y pausa ──
 let menuOpen=!autostart&&!carry,browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
-const RARITY={kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
+const RARITY={nilo:['COMÚN','#8a8069','#DCE9F7'],kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
 function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
 function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);if(boostUntil.double>now||boost.double)L.push(['double',DOUBLE,boostUntil.double>now]);
  $('boosts').innerHTML=L.map(([k,svg,timed])=>'<div class="pw"'+(timed?' data-k="'+k+'"':'')+'>'+svg+(timed?'<b><i style="width:100%"></i></b>':'')+'</div>').join('');}

@@ -1,5 +1,6 @@
 // Arte del Tile Runner, con las reglas de recorte de KANJŪ: formas planas de papel, borde crema,
 // sombra inferior más oscura, ojos grandes con brillo y la paleta del juego. Lienzo 120×120, base en y≈110.
+import { NILO } from './nilo-art.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
 // Recorte: la silueta se dibuja primero con borde crema y encima las mismas formas sin borde + detalles.
 const cut = (shapes, details = '', under = '') => `<svg viewBox="0 0 120 120">${under}<g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${shapes}</g>${shapes}${details}</svg>`;
@@ -19,7 +20,12 @@ const hatLines = (dy, front) => HEAD === 'fox' ? `<path d="M46 ${35 + dy} L43.5 
   : HEAD === 'ninja' ? `<path d="M43.6 ${45 + dy} Q60 ${40 + dy} 76.4 ${45 + dy} L76.6 ${51 + dy} Q60 ${46 + dy} 43.4 ${51 + dy}Z" fill="${C.hatD}"/>`
   : kasaLines(dy);
 // Cabecita del personaje asomando en barco, globo y tren
-const rider = (cx, cy, k = 1) => HEAD === 'kasa'
+// Nilo a bordo: gorra de cuero con anteojos de bronce, la misma cabecita de papel que en tierra
+const niloRider = (cx, cy, k = 1) => `<circle cx="${cx}" cy="${cy + 2 * k}" r="${10 * k}" fill="#F6D2B0" stroke="${CREAM}" stroke-width="3"/>`
+  + `<path d="M${cx - 10 * k} ${cy - 1 * k} Q${cx} ${cy - 13 * k} ${cx + 10 * k} ${cy - 1 * k}Z" fill="#A9794D" stroke="${CREAM}" stroke-width="2" stroke-linejoin="round"/>`
+  + `<rect x="${cx - 10 * k}" y="${cy - 2.5 * k}" width="${20 * k}" height="${3 * k}" fill="#8E5C35"/>`
+  + `<circle cx="${cx - 4 * k}" cy="${cy + 3 * k}" r="${3.2 * k}" fill="#BFE3F5" stroke="#EFC76A" stroke-width="1.6"/><circle cx="${cx + 4 * k}" cy="${cy + 3 * k}" r="${3.2 * k}" fill="#BFE3F5" stroke="#EFC76A" stroke-width="1.6"/>`;
+const rider = (cx, cy, k = 1) => HEAD === 'nilo' ? niloRider(cx, cy, k) : HEAD === 'kasa'
   ? `<path d="M${cx} ${cy - 8 * k} L${cx + 15 * k} ${cy + 6 * k} Q${cx} ${cy + 12 * k} ${cx - 15 * k} ${cy + 6 * k}Z" fill="${C.hat}" stroke="${CREAM}" stroke-width="3" stroke-linejoin="round"/><path d="M${cx - 15 * k} ${cy + 6 * k} Q${cx} ${cy + 12 * k} ${cx + 15 * k} ${cy + 6 * k} Q${cx} ${cy + 15 * k} ${cx - 15 * k} ${cy + 6 * k}Z" fill="${C.hatD}"/>`
   : (HEAD === 'fox' ? `<path d="M${cx - 9 * k} ${cy - 2 * k} L${cx - 12 * k} ${cy - 16 * k} L${cx - 1 * k} ${cy - 7 * k}Z M${cx + 9 * k} ${cy - 2 * k} L${cx + 12 * k} ${cy - 16 * k} L${cx + 1 * k} ${cy - 7 * k}Z" fill="${C.hat}" stroke="${CREAM}" stroke-width="3" stroke-linejoin="round"/>` : '')
     + `<circle cx="${cx}" cy="${cy + 2 * k}" r="${10 * k}" fill="${C.hat}" stroke="${CREAM}" stroke-width="3"/>` + (HEAD === 'ninja' ? `<rect x="${cx - 10 * k}" y="${cy - 3 * k}" width="${20 * k}" height="${5 * k}" fill="${C.hatD}"/>` : '');
@@ -159,7 +165,7 @@ export const GEM = cut(`<path d="M60 18 L96 52 L60 104 L24 52Z" fill="#3FBF8F"/>
 
 // ── Personajes (skins) ──────────────────────────────────────────────────────
 export const SKINS = [
-  { id: 'kami', name: 'Kami', tag: 'El viajero', price: 0, head: 'kasa', c: {} },
+  { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: NILO },
   { id: 'sakura', name: 'Sakura', tag: 'Flor de cerezo', price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },
   { id: 'kitsu', name: 'Kitsu', tag: 'Zorrita blanca', price: 400, head: 'fox', c: { hat: '#FFF8EE', hatD: '#F29BB8', hair: '#FFF8EE', coat: '#E8452C', coatD: '#B93322', scarf: '#F2B937' } },
   { id: 'shinobi', name: 'Shinobi', tag: 'Sombra veloz', price: 800, head: 'ninja', c: { hat: '#2B2440', hatD: '#E8452C', hair: '#2B2440', coat: '#3A3558', coatD: '#262240', scarf: '#7B5CC4', leg: '#1A1728' } },
@@ -169,7 +175,7 @@ export const SKINS = [
 export function artFor(id) {
   const skin = SKINS.find(k => k.id === id) || SKINS[0];
   C = { ...BASE, ...skin.c }; HEAD = skin.head;
-  const out = { HERO: heroSet(), BOAT: boatSet(), BALLOON: balloonSet(), TRAIN: trainSet() };
+  const out = { HERO: skin.hero || heroSet(), BOAT: boatSet(), BALLOON: balloonSet(), TRAIN: trainSet() };
   C = { ...BASE }; HEAD = 'kasa';
   return out;
 }

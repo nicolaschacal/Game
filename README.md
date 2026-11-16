@@ -1,6 +1,6 @@
 # Paper Voyager · Build your way
 
-Runner de construcción en papel recortado: **Kami** avanza solo y vos construís el camino de tiles por donde va a pasar, una fila por delante. No es un runner de swipe: el personaje no se mueve con el dedo, se mueve el camino.
+Runner de construcción en papel recortado: **Nilo** avanza solo y vos construís el camino de tiles por donde va a pasar, una fila por delante. No es un runner de swipe: el personaje no se mueve con el dedo, se mueve el camino.
 
 ## Probar
 
@@ -27,8 +27,8 @@ Controles: mantener y arrastrar con el dedo (o mouse). En escritorio: mantener �
 
 ## tramo de mar
 
-- **Kami**, el viajero de papel, reemplaza a Hito: recorte original con sombrero de paja y bufanda, ciclo de carrera de 4 poses visto de espaldas y giro de papel al arrancar.
-- **Barco de papel**: al final de cada tramo de tierra hay un muelle y un barco estacionado. Al llegar, Kami desaparece y navega el barco (vela que se hincha, cabeceo y estela).
+- **Nilo**, el viajero de papel, es el personaje principal: gorra de aviador, anteojos de bronce y bufanda roja, con mochila. Ciclo de carrera de 6 cuadros visto de espaldas, saludo al arrancar y recorte de papel con la misma regla que el resto del juego.
+- **Barco de papel**: al final de cada tramo de tierra hay un muelle y un barco estacionado. Al llegar, Nilo desaparece y navega el barco (vela que se hincha, cabeceo y estela).
 - **El mar se construye con AGUA**: el mar profundo no es navegable; la ruta se traza con el tile de agua. En tierra se usa CAMINO. Dos botones grandes al alcance del pulgar.
 - **Respiros**: muelle, puerto y playa ya están construidos y el camino sigue solo, para poder cambiar de tile con la misma mano.
 - **Obstáculos de agua**: arrecifes, aletas y barriles que obligan a moverse; en tierra, rocas y tocones.
@@ -37,13 +37,13 @@ Controles: mantener y arrastrar con el dedo (o mouse). En escritorio: mantener �
 
 ## cielo (reemplaza al puente)
 
-Entre mares hay una cima con un globo de papel. Kami sube solo el escalón (rampa ya hecha), monta el globo y vuela: el camino se traza con tiles de cielo flotantes, esquivando picos, nubes y nubarrones. Hay monedas y estrellas en el aire, y al final aterriza en otra cima con la bajada ya construida.
+Entre mares hay una cima con un globo de papel. Nilo sube solo el escalón (rampa ya hecha), monta el globo y vuela: el camino se traza con tiles de cielo flotantes, esquivando picos, nubes y nubarrones. Hay monedas y estrellas en el aire, y al final aterriza en otra cima con la bajada ya construida.
 
 ## versión nocturna (tren, mundos, tienda, sonido, rendimiento)
 
 - **Tren de papel**: estación → tren → vías que se tienden solas con rieles y durmientes; vallas, cajas y rocas obligan a cambiar de vía. Es el vehículo más rápido.
 - **Mundos encadenados**: al cruzar el torii se pasa al mundo siguiente (Pradera → Desierto → Nieve → Bosque…) conservando puntaje, monedas y racha. Cada mundo arranca más rápido y la velocidad sube de a poco dentro del mundo ("¡MÁS RÁPIDO!").
-- **Economía**: las monedas se guardan en un monedero (localStorage). En el menú inicial se compran y eligen personajes: Kami, Sakura, Kitsu, Shinobi y Kami de Oro. El personaje también aparece a bordo del barco, el globo y el tren.
+- **Economía**: las monedas se guardan en un monedero (localStorage). En el menú inicial se compran y eligen personajes: Nilo (el base), Sakura, Kitsu, Shinobi y Kami de Oro. El personaje también aparece a bordo del barco, el globo y el tren.
 - **Sonido**: cada tile es una nota de una melodía pentatónica con el timbre del tramo (marimba en tierra, burbuja en agua, campanita en el cielo, clac-clac en las vías); monedas que suben de tono con la racha, silbato, zumbido al rozar, subida al acelerar.
 - **Rendimiento**: solo se dibujan las filas cercanas (34 adelante, 7 atrás); lo que queda atrás se saca de la escena. La grilla es una línea tenue por fila y la resolución se limita a 1.5×.
 - Pruebas: `?debug` expone `window.__dbg`; `?debug&quick` genera un mundo corto.
