@@ -473,6 +473,7 @@ function bush(s, seed) {
 const LV = .42, SLAB = .24, TIER_H = 1.25, FOV = 24, ELEV = .58;
 // Ancho en casillas del recorte de cada pieza de papel
 const ART_W = { farol: .5, pino: .74, bambu: .52, arbusto: .72, flores: .56, roca: .56, torii: 1.0, cerezo: 1.08, minka: .95, pagoda: .74, templo: .93, castillo: .92, casate: .96, komainu: .6, campana: .62, incienso: .5, ema: .64, nobori: .32, sagrada: .6, chochin: .42, refugio: .95, suzuri: .6, brasero: .55, cerca: .9, arbol: .9 };
+const NIGHT_FOG = new THREE.Color('#1A1F3A'), NIGHT_GROUND = new THREE.Color('#1E2636');
 const GLOW = { farol: { c: '#FFB45A', p: 1.6 }, chochin: { c: '#FF8A5A', p: 1.3 }, brasero: { c: '#FF7A3A', p: 1.4, always: true }, incienso: { c: '#FFC27A', p: .8 } };
 const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591', sky: '#E6F5FF', tarmac: '#4A4658' };
 const STRATA = ['#A47D55', '#93704C', '#8A8075'];
@@ -724,6 +725,7 @@ function sanctuary() {
             }[runner.fx] || null; if (!T) { runner.fx = null; }
             const L = W.look = new THREE.Group(); W.scene.add(L);
             W.scene.fog = new THREE.Fog(T.fog, 13, 31);
+            L.userData.fogDay = new THREE.Color(T.fog); L.userData.groundDay = new THREE.Color(T.ground);
             const flat = c => new THREE.MeshBasicMaterial({ color: c, fog: false });
             const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshStandardMaterial({ color: T.ground, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -.36; ground.receiveShadow = true; L.add(ground); L.userData.ground = ground;
             const ridge = (w, h, c, x, z) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0);
@@ -768,6 +770,8 @@ function sanctuary() {
           const U = W.look.userData; U.ground.position.z = playerZ - 20;
           U.far.forEach(m => { if (m.userData.dz == null) m.userData.dz = m.position.z; m.position.z = playerZ + m.userData.dz; });
           const nk = W.nightK || 0, lamps = [];
+          // De noche la niebla y el suelo de la pista se oscurecen (antes quedaban con el verde de día y lavaban los faroles)
+          if (W.look?.userData?.fogDay && W.scene.fog) { W.scene.fog.color.copy(W.look.userData.fogDay).lerp(NIGHT_FOG, nk * .9); W.look.userData.ground.material.color.copy(W.look.userData.groundDay).lerp(NIGHT_GROUND, nk * .8); }
           U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion); if (m.userData.lamp && nk > .15) lamps.push(m); });
           // De noche los farolillos alumbran como en el santuario: luces puntuales cálidas (las 6 de la reserva) en los más cercanos al corredor
           lamps.sort((a, b) => Math.abs(a.position.z - playerZ) - Math.abs(b.position.z - playerZ));
