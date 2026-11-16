@@ -75,6 +75,7 @@ body.home #hud{opacity:0}
 #menu{position:fixed;inset:0;z-index:30;display:none}
 #menu:before{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(#1b173000,#1b1730cc 70%);pointer-events:none}
 #mute{left:16px;top:calc(var(--st) + 16px)}
+#howHome{left:16px;top:calc(var(--st) + 70px)}
 #walletChip{right:16px;top:calc(var(--st) + 16px)}
 .logo{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);text-align:center;transform:rotate(-3deg);pointer-events:none;animation:float 3.2s ease-in-out infinite}
 @keyframes float{50%{transform:rotate(-3deg) translateY(-6px)}}
@@ -107,8 +108,6 @@ body.ads #playWrap{bottom:calc(var(--sb) + 72px)}body.ads #mission{bottom:calc(v
 #tuto .pic svg{position:absolute;width:60px;height:60px;z-index:2}#tuto .pic .hand{position:absolute;left:50%;top:48%;z-index:3;width:34px;height:34px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);animation:handDrag 1.6s ease-in-out infinite}
 @keyframes handDrag{0%,15%{transform:translate(-50%,0) scale(.85);opacity:0}25%{transform:translate(-50%,0) scale(1);opacity:1}65%{transform:translate(calc(-50% + 70px),-46px) scale(1);opacity:1}80%,100%{transform:translate(calc(-50% + 70px),-46px) scale(.85);opacity:0}}
 #tuto h3{margin:0 0 6px;font:400 24px 'Lilita One',sans-serif;color:var(--red)}#tuto p{margin:0 0 14px;font:700 14px/1.4 Nunito;color:var(--ink)}#tuto .no{display:inline-block;background:var(--ink);color:var(--cream);border-radius:8px;padding:1px 7px;font:900 10px Nunito;letter-spacing:1px;margin-bottom:8px}
-#coach{position:fixed;left:50%;top:21%;transform:translateX(-50%);z-index:9;width:min(86vw,330px);padding:12px 14px 14px;border-radius:18px;background:#1B1730F0;border:3px solid var(--ink);color:var(--cream);text-align:center;pointer-events:none;display:none;animation:cardIn .35s cubic-bezier(.2,1.4,.4,1)}
-#coach b{display:block;font:400 22px 'Lilita One',sans-serif;color:var(--gold)}#coach p{margin:4px 0 8px;font:800 13px/1.35 Nunito}#coach .arr{font:400 34px 'Lilita One',sans-serif;color:#86D66F;display:inline-block;animation:arrSlide 1.2s ease-in-out infinite}
 @keyframes arrSlide{0%,100%{transform:translateX(-22px);opacity:.3}50%{transform:translateX(22px);opacity:1}}
 .pw svg{position:absolute;inset:2px;width:40px;height:40px}.pw b{position:absolute;left:5px;right:5px;bottom:-9px;height:6px;border-radius:3px;background:var(--ink)}.pw b i{display:block;height:100%;border-radius:3px;background:#86D66F}
 #playWrap{position:absolute;left:18px;right:18px;bottom:calc(var(--sb) + 26px)}
@@ -254,6 +253,7 @@ body.ads #playWrap{bottom:calc(var(--sb) + 72px)}body.ads #mission{bottom:calc(v
 <div id="banner" class="ribbon"></div>
 <div id="menu">
  <button class="round" id="mute" aria-label="Sonido">♪</button>
+ <button class="round" id="howHome" aria-label="Cómo se juega">?</button>
  <div class="chip" id="walletChip"><span data-ico="coin"></span><b id="mWallet" class="L">0</b></div>
  <div class="logo"><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div>
  <button class="side" id="openShop" style="left:14px"><i>♜</i>TIENDA<span class="dot" id="shopDot">!</span></button>
@@ -296,7 +296,6 @@ body.ads #playWrap{bottom:calc(var(--sb) + 72px)}body.ads #mission{bottom:calc(v
  <div class="nudge" id="goNudge"></div>
  <div class="row2"><button class="btn sm plain" id="toShop">⌂ INICIO</button><button class="btn sm" id="restart">↻ OTRA VEZ</button></div></div></div>
 <div id="tuto" class="dim"><div class="card"><div class="steps"><i class="on"></i><i></i><i></i></div><div class="pic" id="tutoPic"></div><span class="no" id="tutoNo"></span><h3 id="tutoH"></h3><p id="tutoP"></p><button class="btn green" id="tutoNext">SIGUIENTE</button></div></div>
-<div id="coach"></div>
 <div id="paused" class="dim"><div class="card"><div class="ribbon">PAUSA</div>
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <button class="link" id="howTo" style="margin-top:8px">? CÓMO SE JUEGA</button>
@@ -368,7 +367,6 @@ for(let y=0;y<ROWS;y++)paintRow(y,theme.hill);
 let cur=START-1,uid=0;
 const OBST={land:[ROCK,STUMP],sea:[REEF,FIN,BARREL],sky:[PEAK,PEAK,CLOUD,STORM],rail:[BARRIER,CRATE,ROCK]};
 const LIVE={sea:FIN,sky:STORM,rail:CART};
-const PRIZE={land:[GEM,'JOYA'],sea:[PEARL,'PERLA'],sky:[STAR,'ESTRELLA'],rail:[GEM,'JOYA']};
 function fill(n,kind,{gap,lead,extra}){
  let safe=2;const air=kind==='sky',lift=air?SKY:0;
  // Monedas en varios caminos: además de la del carril seguro, hay monedas de los costados que se juntan cambiando de carril
@@ -385,9 +383,7 @@ function fill(n,kind,{gap,lead,extra}){
    for(const x of blocked){const live=alive&&alive[0]===x,b={id:'b'+uid++,kind:'paper',svg:live?LIVE[kind]:pick(OBST[kind]),x:air?x-.15:x,y:air?y-.15:y,w:air?1.3:1,h:air?1.3:1,lift,cx:x,cy:y};
     if(live)b.mv={a:x,b:pick(alive[1]),period:2.6+rnd()*1.2-S*.12,phase:rnd()*3};
     blockers.push(b);}
-   coin(safe);const sides=sideCoins(pool,y,lift);
-   const freeL=pool.filter(x=>!sides.includes(x));
-   if(freeL.length&&rnd()<.4)coins.push({id:'c'+uid++,kind:'paper',svg:PRIZE[kind][0],label:PRIZE[kind][1],x:pick(freeL),y,w:.7,h:.7,value:50,prize:true,lift});
+   coin(safe);sideCoins(pool,y,lift);
   }else if(i>1){coin(safe);sideCoins([0,1,2,3,4].filter(x=>x!==safe),y,lift);}
  }
  cur-=n;
@@ -428,7 +424,7 @@ const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
 const player={id:'kami',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:9,x:2,y:START,w:1.15,h:1.15};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
-const speedAt=prog=>Math.min(3.8+Math.min(LAP,3)*.15,1.3+(stage>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(Math.max(0,Math.min(1,prog)),1.2));
+const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=stage===0?.3*(1-p):stage===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(stage>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
 const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
@@ -478,7 +474,8 @@ const SFX={
 };
 // Música: no hay bucle sintetizado. Si existe paper-voyager/music.mp3 (una pista real), se reproduce en bucle
 // y acompaña la velocidad; si no existe, el juego suena solo con sus efectos.
-const Music={el:null,mode:'menu',ok:true,
+// Poné ok:true cuando subas paper-voyager/music.mp3; mientras no exista, no se pide (evita el 404 en consola)
+const Music={el:null,mode:'menu',ok:false,
  start(){if(muted||!this.ok)return;if(!this.el){this.el=new Audio('./paper-voyager/music.mp3');this.el.loop=true;this.el.volume=.45;this.el.addEventListener('error',()=>{this.ok=false;});}this.el.play().catch(()=>{});},
  stop(){this.el?.pause();},
  sync(){if(this.el&&!this.el.paused){this.el.playbackRate=this.mode==='run'?Math.min(1.25,1+(runner.speed-1.4)*.09):1;this.el.volume=this.mode==='run'?.45:.3;}}
@@ -506,7 +503,7 @@ showCombo();
 // las monedas se guardan en el monedero al terminar cada mundo y al perder
 function bank(){const n=coinCount-banked;if(n>0)wallet+=Math.round(n*(Iap.pro?1.25:1));banked=coinCount;store.set('wallet',wallet);} // PRO: +25% al guardar
 const doubleOn=()=>boost.double||boostUntil.double>performance.now();
-function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){onPower(c);return;}if(c.side)guideSide++;const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(doubleOn()?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
+function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){onPower(c);return;}const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(doubleOn()?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
  missionAdd(c.prize?'prize':'coin',1);
  if(c.prize){pop(c.label+' +'+gain,'pink');SFX.prize();buzz([12,30,12]);runnerPulse('hop');}
  else{pop('+'+gain,'gold');SFX.coin(streak);buzz(8);runnerPulse('squash');}
@@ -646,7 +643,6 @@ function buildToward(lane){
  runner.buildRow=y;
  lane=clampLane(lane??runner.buildLane);
  const row=runner.path[y];
- if(rockHeld&&lane!==prevExit(y)&&!isRockCell(lane,y)){rockHeld=false;runner.hitPause=0;pop('¡ESO!','big');SFX.streak();}
  if(!row){
   const from=prevExit(y);
   let x=Math.abs(lane-from)>1?from+Math.sign(lane-from):lane;
@@ -730,29 +726,11 @@ const TUTO=[
   pic:()=>'<div class="t g" style="left:50%;bottom:66px;margin-left:-22px"></div>'+ROCK.replace('<svg','<svg style="left:50%;bottom:108px;margin-left:-30px"')+'<div class="t new" style="left:50%;bottom:66px;margin-left:-70px"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-70px;animation-delay:.3s"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-22px;animation-delay:.6s;margin-left:-22px;bottom:162px"></div>'+art.HERO.idle[0].replace('<svg','<svg style="left:50%;bottom:4px;margin-left:-30px"')},
 ];
 let tutoStep=0,tutoAfter=null,tutoN=3;
-// Guía del primer mundo: cada paso se cumple con lo que hace el jugador; no se pasa al siguiente hasta que lo hace
-const GUIDE=[
- {a:'⟷',t:'Kami avanza solo. Arrastrá hacia un costado para cambiar el camino que construye.',ok:()=>Object.values(runner.path).some(r=>r.x!==2)},
- {a:'◉',t:'Hay monedas en varios caminos, también a los costados. Pasá por las de los lados para juntar más.',ok:()=>guideSide>=2},
- {a:'x2',t:'Juntá monedas seguidas sin cortar la racha para subir el multiplicador.',ok:()=>streak>=6},
-];
-let guideStep=0,guideSide=0,rockSeen=false,rockHeld=false,coachShown='';
-const guideOn=()=>stage===0&&store.get('tuto2',0)<2;
 function showTuto(after,n=3){tutoStep=0;tutoAfter=after;tutoN=n;drawTuto();$('tuto').style.display='flex';}
 function drawTuto(){const t=TUTO[tutoStep];$('tutoPic').innerHTML=t.pic();$('tutoNo').textContent=t.no;$('tutoH').textContent=t.h;$('tutoP').textContent=t.p;$('tutoNext').textContent=tutoStep<tutoN-1?'SIGUIENTE':'¡A JUGAR!';document.querySelectorAll('#tuto .steps i').forEach((e,i)=>{e.style.display=i<tutoN?'':'none';e.classList.toggle('on',i<=tutoStep);});}
 $('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<tutoN-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';if(tutoAfter){store.set('tuto2',Math.max(1,store.get('tuto2',0)));const f=tutoAfter;tutoAfter=null;f();}});
 $('howTo').addEventListener('click',()=>{SFX.tap();showTuto(null,3);});
-function drawCoach(html){if(html===coachShown)return;coachShown=html;const c=$('coach');if(!html){c.style.display='none';return;}c.innerHTML=html;c.style.display='block';}
-// Cada cuadro: muestra el paso actual, frena una sola vez en la primera roca y avanza cuando el jugador cumple el paso
-function coachFrame(){
- if(!runner.started||runner.gameOver||runner.onBoat||!guideOn()||paused)return;
- const y=targetRow();
- if(y>=0&&!rockSeen&&!runner.path[y]){const from=prevExit(y);if(isRockCell(from,y)||isRockCell(from,y-1)){rockSeen=true;rockHeld=true;runner.hitPause=999;drawCoach('<b>¡ROCA ADELANTE!</b><p>Kami no la esquiva solo. Arrastrá hacia un costado para armar el camino alrededor.</p><span class="arr">⟷</span>');SFX.near();buzz([30,40,30]);}}
- if(rockHeld)return;
- if(guideStep<GUIDE.length&&GUIDE[guideStep].ok()){guideStep++;if(guideStep<GUIDE.length){pop('¡BIEN!','big');SFX.coin(4);}}
- if(guideStep>=GUIDE.length){store.set('tuto2',2);drawCoach('');pop('¡YA SABÉS JUGAR!','big');SFX.win();confetti();return;}
- const g=GUIDE[guideStep];drawCoach('<b>'+g.a+' PASO '+(guideStep+1)+' DE '+GUIDE.length+'</b><p>'+g.t+'</p>');
-}
+$('howHome').addEventListener('click',()=>{SFX.tap();showTuto(null,3);});
 function begin(){if(!runner.started&&!paused){runner.started=true;audio();Music.start();Music.mode='run';document.body.classList.remove('home');}}
 host.addEventListener('pointerdown',e=>{if(runner.gameOver||menuOpen||paused)return;begin();buildHeld=true;lateralClock=0;laneFromPointer(e);buildToward(runner.buildLane);try{host.setPointerCapture(e.pointerId);}catch{}e.preventDefault();e.stopPropagation();},true);
 host.addEventListener('pointermove',e=>{if(!buildHeld)return;laneFromPointer(e);e.preventDefault();e.stopPropagation();},true);
@@ -771,7 +749,7 @@ function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
  if(!runner.gameOver&&y>=0&&runner.started){
   if(!runner.path[y])buildToward(buildHeld?runner.buildLane:prevExit(y));
   if(buildHeld&&runner.path[y]&&clampLane(runner.buildLane)!==runner.path[y].x){lateralClock-=dt;if(lateralClock<=0){lateralClock=.07;buildToward(runner.buildLane);}}
-  moverHit();coachFrame();
+  moverHit();
   const r=Math.ceil(START-runner.distance);while(lastRow>r&&!runner.gameOver){lastRow--;enterRow(lastRow);if(runner.gameOver)break;}
  }
  refreshHints();if(!runner.gameOver)refreshUI();
@@ -894,7 +872,7 @@ function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
  SFX.tap();const go=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
- if(stage===0&&!store.get('tuto2',0))showTuto(go,1);else go();});
+ if(stage===0&&!store.get('tuto2',0))showTuto(go,3);else go();});
 function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
@@ -903,6 +881,6 @@ Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';if(Ads.enabled){document.body.classList.add('ads');Ads.banner(true);}}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get guideStep(){return guideStep},get guideSide(){return guideSide},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
+if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
 </script>
 </body></html>

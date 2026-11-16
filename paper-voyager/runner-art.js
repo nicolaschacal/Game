@@ -209,9 +209,8 @@ export const LANDMARKS = {
 
 // ── Power-ups de la pista: mismo oficio que moneda, gema y caja (formas planas, tres tonos, sin texto) ──
 // Doble: dos monedas apiladas (duplica lo que juntás)
-export const DOUBLE = cut(`<circle cx="50" cy="72" r="26" fill="#C98A1E"/><circle cx="68" cy="56" r="26" fill="#F2B937"/>`,
-  `<path d="M42 56 A26 26 0 0 1 80 42 Q68 46 60 52 Q52 60 46 66Z" fill="#FFE49A"/><circle cx="68" cy="56" r="15" fill="none" stroke="#C98A1E" stroke-width="4"/><path d="M44 46 Q48 38 56 36" stroke="#FFF3C4" stroke-width="5" fill="none" stroke-linecap="round"/>`);
-// Escudo: blasón de papel azul, mitad en sombra, con una franja clara
+export const DOUBLE = cut(`<path d="M68 12 L30 66 L56 66 L46 108 L90 48 L63 48 Z" fill="#F2B937"/>`,
+  `<path d="M63 48 L90 48 L66 80 Z" fill="#C98A1E"/><path d="M68 12 L30 66 L56 66 Z" fill="#FFE49A"/><path d="M42 58 L60 40" stroke="#FFF3C4" stroke-width="4" stroke-linecap="round"/>`);
 export const SHIELD = cut(`<path d="M60 16 L96 28 L94 60 Q90 90 60 106 Q30 90 26 60 L24 28Z" fill="#3E5BA9"/>`,
   `<path d="M60 16 L96 28 L94 60 Q90 90 60 106 L60 16Z" fill="#2C4585"/><path d="M60 34 L78 40 L77 60 Q74 78 60 88 Q46 78 43 60 L42 40Z" fill="#7FA0E0"/><path d="M60 34 L60 88 Q46 78 43 60 L42 40Z" fill="#9DB6EA"/><path d="M50 46 Q54 40 60 38" stroke="#FFF4DC" stroke-width="4" fill="none" stroke-linecap="round"/>`);
 // Cofre: caja de madera con tapa curva, herrajes dorados y cerradura (como la caja, pero con tapa)
