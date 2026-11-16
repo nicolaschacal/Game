@@ -652,8 +652,6 @@ function sanctuary() {
     // luz
     hemi.intensity = sk.amb * (1 - rk * .15); hemi.color.set('#FFF3E0').lerp(new THREE.Color('#7D8CC8'), night); hemi.groundColor.set('#7D6A58').lerp(new THREE.Color('#2C2C48'), night);
     sun.color.copy(sk.sun); sun.intensity = sk.si * (1 - rk * .5);
-    // De noche en la pista la luz general baja y los faroles son la luz principal (como en el santuario de noche)
-    if (W.opts.runner) { hemi.intensity *= 1 - night * .7; sun.intensity *= 1 - night * .7; }
     const c0 = W.center || 0; sun.position.set(c0 - 6, 12, c0 + 5); sun.target.position.set(c0, 0, c0);
     waterMat().emissiveIntensity = .22 + Math.sin(t * 1.4) * .06;
     // Cámara runner: fija detrás del KANJŪ, mirando siempre hacia el horizonte.
