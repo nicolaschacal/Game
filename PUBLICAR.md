@@ -27,7 +27,7 @@ Hoy el juego usa los **IDs de prueba oficiales de Google**: muestran anuncios de
 
 1. Creá la app en [admob.google.com](https://admob.google.com) (una para Android, otra para iOS).
 2. Creá tres bloques por plataforma: **Banner**, **Intersticial** y **Recompensado**.
-3. Pegá los IDs en `kanjuu-demo/monetizacion.js` → `CONFIG.admob.android / ios`, y poné `testing: false`.
+3. Pegá los IDs en `paper-voyager/monetizacion.js` → `CONFIG.admob.android / ios`, y poné `testing: false`.
 4. ID de aplicación (`ca-app-pub-XXXX~YYYY`):
    - Android: `android/app/src/main/AndroidManifest.xml` → `com.google.android.gms.ads.APPLICATION_ID`.
    - iOS: `ios/App/App/Info.plist` → `GADApplicationIdentifier`.
@@ -66,7 +66,7 @@ La app ya está configurada con tu clave de prueba `test_PGIWIvBmdBFGIAlJEzBdlmj
 - **App Store Connect** → In-App Purchases: `lifetime` (Non-Consumable), `monthly` y `yearly` (Auto-Renewable, mismo grupo). Cargá la clave de In-App Purchase (.p8) en RevenueCat.
 - Los precios orientativos que muestra la tienda del juego (`CONFIG.revenuecat.paquetes[].precio`) se reemplazan solos por los reales cuando la offering carga.
 
-### 3.3 Cómo está implementado (`kanjuu-demo/monetizacion.js`)
+### 3.3 Cómo está implementado (`paper-voyager/monetizacion.js`)
 
 - `Iap.init()` al abrir: `Purchases.configure({ apiKey })`, `addCustomerInfoUpdateListener` (renovaciones, reembolsos, otro dispositivo) y `getCustomerInfo()` para saber si ya es PRO. Sin `appUserID`: RevenueCat crea un id anónimo y lo guarda; si más adelante agregás login, llamá `Purchases.logIn({ appUserID })`.
 - `Iap.cargarOfertas()` → `getOfferings().current` para precios reales.
@@ -76,7 +76,7 @@ La app ya está configurada con tu clave de prueba `test_PGIWIvBmdBFGIAlJEzBdlmj
 - `Iap.restaurar()` → `restorePurchases()` (Apple lo exige como botón visible).
 - El estado PRO se guarda en el dispositivo para arrancar rápido, pero la verdad siempre es el `customerInfo` del SDK.
 
-Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guardar cada partida. Si querés sumar más (un personaje exclusivo, por ejemplo), `Iap.pro` ya está disponible en todo `kanjuu-demo.html`.
+Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guardar cada partida. Si querés sumar más (un personaje exclusivo, por ejemplo), `Iap.pro` ya está disponible en todo `index.html`.
 
 ## 4. Google Play
 
@@ -100,7 +100,7 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 
 ## 7. Lo que todavía no está
 
-- **Música**: `kanjuu-demo/music.mp3` no existe en el repo. Si la agregás, el build la incluye solo.
+- **Música**: `paper-voyager/music.mp3` no existe en el repo. Si la agregás, el build la incluye solo.
 - **IDs reales** de AdMob y RevenueCat (puntos 2 y 3).
 - **Probar en teléfonos reales**: sonido, vibración (en iOS va por Haptics), rendimiento del WebGL en gama baja, y los flujos de compra con cuentas de prueba (License testers en Play, Sandbox testers en App Store Connect).
 - **Capturas y textos de las fichas**.

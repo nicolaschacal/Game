@@ -35,7 +35,7 @@ export const CONFIG = {
 };
 
 const Q = new URLSearchParams(location.search);
-const KEY = 'kanjuu.run.pro';
+const KEY = 'pv.pro';
 const nativo = () => !!(window.Capacitor?.isNativePlatform?.());
 const plugin = n => window.Capacitor?.Plugins?.[n];
 const plataforma = () => window.Capacitor?.getPlatform?.() === 'ios' ? 'ios' : 'android';

@@ -3,9 +3,9 @@
 import { cpSync, mkdirSync, rmSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 const out = 'www';
 rmSync(out, { recursive: true, force: true }); mkdirSync(out + '/vendor', { recursive: true });
-cpSync('kanjuu-demo', out + '/kanjuu-demo', { recursive: true, filter: s => !/\.(py|mjs~)$/.test(s) });
+cpSync('paper-voyager', out + '/paper-voyager', { recursive: true, filter: s => !/\.(py|mjs~)$/.test(s) });
 cpSync('node_modules/three/build/three.module.js', out + '/vendor/three.module.js');
-let html = readFileSync('kanjuu-demo.html', 'utf8');
+let html = readFileSync('paper-voyager.html', 'utf8');
 html = html.replace('https://unpkg.com/three@0.164.1/build/three.module.js', './vendor/three.module.js');
 // Dentro de la app, Capacitor expone window.Capacitor; lo cargamos antes del juego.
 html = html.replace('<script type="importmap">', '<script src="./capacitor.js"></script>\n<script type="importmap">');
@@ -19,6 +19,6 @@ writeFileSync(out + '/capacitor.js', `// Puente mínimo: Capacitor inyecta windo
   // Vibración: en iOS navigator.vibrate no existe; usamos Haptics
   if (!navigator.vibrate && P.Haptics) navigator.vibrate = function(p){ try { var n = Array.isArray(p) ? p.length : 1; for (var i = 0; i < Math.min(n, 3); i++) setTimeout(function(){ P.Haptics.impact({ style: 'LIGHT' }); }, i * 60); } catch (e) {} return true; };
 })();`);
-if (existsSync('kanjuu-demo/music.mp3')) console.log('música incluida');
-else console.log('aviso: kanjuu-demo/music.mp3 no existe; la app va sin música (sólo efectos)');
+if (existsSync('paper-voyager/music.mp3')) console.log('música incluida');
+else console.log('aviso: paper-voyager/music.mp3 no existe; la app va sin música (sólo efectos)');
 console.log('www/ listo');

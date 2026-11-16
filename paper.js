@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 
 // ---------- Grano del papel (Configuración › Papel con grano; por defecto, fuerte) ----------
-const GKEY = 'kanjuu.grain';
+const GKEY = 'pv.grain';
 export const grainOn = () => { try { return localStorage.getItem(GKEY) !== '0'; } catch { return true; } };
 function noiseCanvas(n, lo, hi) {
   const c = document.createElement('canvas'); c.width = c.height = n;

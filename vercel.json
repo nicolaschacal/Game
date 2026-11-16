@@ -1,3 +1,3 @@
 {
-  "rewrites": [{ "source": "/", "destination": "/kanjuu-demo.html" }]
+  "rewrites": [{ "source": "/kanjuu-demo.html", "destination": "/index.html" }]
 }

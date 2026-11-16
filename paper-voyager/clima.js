@@ -1,6 +1,6 @@
 // Clima real (opcional): sólo se pide ubicación si el jugador lo activa desde el inicio.
 // Datos de Open-Meteo (sin clave). Si está lloviendo donde estás, llueve en el juego.
-const KEY = 'kanjuu.clima', CACHE = 'kanjuu.clima.dato', TTL = 20 * 60e3;
+const KEY = 'pv.clima', CACHE = 'pv.clima.dato', TTL = 20 * 60e3;
 const Q = new URLSearchParams(location.search);
 // Nombres en español de los códigos WMO que devuelve Open-Meteo
 const WMO = { 0: 'Despejado', 1: 'Mayormente despejado', 2: 'Parcialmente nublado', 3: 'Nublado', 45: 'Niebla', 48: 'Niebla',

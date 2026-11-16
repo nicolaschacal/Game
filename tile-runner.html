@@ -74,7 +74,7 @@ const camera=new THREE.PerspectiveCamera(24,innerWidth/innerHeight,.5,220);camer
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;$('scene').appendChild(renderer.domElement);
 const hemi=new THREE.HemisphereLight('#FFF3E0','#7D6A58',2);scene.add(hemi);
 const sun=new THREE.DirectionalLight('#FFF0D2',2.6);sun.position.set(-6,12,5);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0008;sun.shadow.normalBias=.03;sun.shadow.radius=3;sun.shadow.camera.left=-8;sun.shadow.camera.right=8;sun.shadow.camera.top=22;sun.shadow.camera.bottom=-22;scene.add(sun);
-// Kanjuu's actual sanctuary tile materials, geometry and paper grain.
+// Paper Voyager sanctuary tile materials, geometry and paper grain.
 const CREAM='#FFF4DC', LV=.42, SLAB=.24;
 const GROUND_C={grass:'#8DBF5E',moss:'#5F9447',dirt:'#B98D5A',sand:'#E2CE97',slate:'#AAA59B',snow:'#F3F0EA',water:'#5AA5D2',lava:'#E8452C'};
 const STRATA=['#A47D55','#93704C','#8A8075'];
@@ -86,7 +86,7 @@ function edges(m,parent){const e=new THREE.LineSegments(new THREE.EdgesGeometry(
 function hash(i,j,s=0){const v=Math.sin(i*127.1+j*311.7+s*71.3)*43758.5453;return v-Math.floor(v)}
 function boxUV(g){if(g.index)g=g.toNonIndexed();g.computeVertexNormals();const p=g.attributes.position,n=g.attributes.normal,uv=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const ax=Math.abs(n.getX(i)),ay=Math.abs(n.getY(i)),az=Math.abs(n.getZ(i));let u,v;if(ay>=ax&&ay>=az){u=p.getX(i);v=p.getZ(i)}else if(ax>=az){u=p.getZ(i);v=p.getY(i)}else{u=p.getX(i);v=p.getY(i)}uv[i*2]=u+.5;uv[i*2+1]=v+.5}g.setAttribute('uv',new THREE.BufferAttribute(uv,2));return g}
 function paperProp(id,w,shadow=false){const h=w*paper.artAspect(id),geo=new THREE.PlaneGeometry(w,h);geo.translate(0,h/2-w*.07,0);const map=paper.artTex(id),mat=new THREE.MeshLambertMaterial({map,transparent:true,alphaTest:.04,side:THREE.DoubleSide,emissive:'#FFFFFF',emissiveMap:map,emissiveIntensity:.32});const m=new THREE.Mesh(geo,mat);m.rotation.order='YXZ';if(shadow)m.castShadow=true;return m}
-function makeKanjuuTile(x,z,kind='grass',height=0,rampDir=null,parent=scene){
+function makePaperTile(x,z,kind='grass',height=0,rampDir=null,parent=scene){
  const group=new THREE.Group();group.position.set(x,0,z);parent.add(group);
  const topY=height*LV,mat=kind==='water'?waterMat:gMat(GROUND_C[kind]||GROUND_C.grass);
  let top;
@@ -100,7 +100,7 @@ const baseRows=[],decor=[],coins3d=[],challenges=[],targets=[],raycaster=new THR
 const laneW=1,cols=5,spacing=1,roadW=cols*laneW;
 const worldTiles=new THREE.Group();scene.add(worldTiles);
 const underlay=new THREE.Mesh(new THREE.BoxGeometry(5.02,.42,60),gMat('#9A7550'));underlay.position.set(0,-.34,-20);underlay.receiveShadow=true;worldTiles.add(underlay);
-for(let i=0;i<cols;i++)for(let r=0;r<56;r++){const z=8-r*spacing;baseRows.push(makeKanjuuTile(i-2,z,'grass',0,null,worldTiles))}
+for(let i=0;i<cols;i++)for(let r=0;r<56;r++){const z=8-r*spacing;baseRows.push(makePaperTile(i-2,z,'grass',0,null,worldTiles))}
 for(let side of [-1,1]){const border=new THREE.Mesh(new THREE.BoxGeometry(.16,.45,60),gMat('#8E857A'));border.position.set(side*2.58,-.35,-20);border.castShadow=border.receiveShadow=true;worldTiles.add(border)}
 const mats={grass:gMat('#8DBF5E'),grassTop:gMat('#8DBF5E'),soil:gMat('#A47D55'),edge:gMat('#F6EBD0'),ink:gMat('#2B1D16'),wood:gMat('#7A4E32'),woodLight:gMat('#B98D5A'),water:waterMat,stone:gMat('#AAA59B'),lava:gMat('#E8452C'),gold:gMat('#F2B544'),cream:gMat('#F6EBD0'),red:gMat('#E8452C'),leaf:gMat('#5F9447'),leaf2:gMat('#8DBF5E')};
 const box=(w,h,d,material,x,y,z,parent=scene)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m};
@@ -132,7 +132,7 @@ function createChallenge(def,z){
  for(let row=0;row<3;row++)for(let col=0;col<5;col++){
    let kind=baseKind==='lava'?'lava':baseKind;
    let height=def.kind==='cliff'&&row===0?1:0;
-   const cell=makeKanjuuTile(col-2,-row,kind,height,null,root);cells.push(cell);
+   const cell=makePaperTile(col-2,-row,kind,height,null,root);cells.push(cell);
  }
  if(def.kind==='river'||def.kind==='boat'){
    const boat=paperProp(def.kind==='boat'?'boat':'puente',def.kind==='boat'?1.25:1.5,false);
@@ -162,14 +162,14 @@ function buildAt(slot){
  inventory[selected]--;slot.placed=true;slot.preview.visible=false;
  const oldTarget=targets.indexOf(slot.mesh);if(oldTarget>=0)targets.splice(oldTarget,1);const old=slot.cell;slot.root.remove(old);
  if(def.tile==='bridge'){
-   const water=makeKanjuuTile(slot.localX,slot.localZ,'water',0,null,slot.root);
+   const water=makePaperTile(slot.localX,slot.localZ,'water',0,null,slot.root);
    const bridge=paperProp('puente',1.45,true);bridge.position.set(slot.localX,.05,slot.localZ);slot.root.add(bridge);slot.cell=water;slot.plank=bridge;
  }else if(def.tile==='water'){
-   slot.cell=makeKanjuuTile(slot.localX,slot.localZ,'water',0,null,slot.root);
+   slot.cell=makePaperTile(slot.localX,slot.localZ,'water',0,null,slot.root);
  }else if(def.tile==='stone'){
-   slot.cell=makeKanjuuTile(slot.localX,slot.localZ,'slate',0,null,slot.root);
+   slot.cell=makePaperTile(slot.localX,slot.localZ,'slate',0,null,slot.root);
  }else{
-   slot.cell=makeKanjuuTile(slot.localX,slot.localZ,'grass',1,[0,-1],slot.root);
+   slot.cell=makePaperTile(slot.localX,slot.localZ,'grass',1,[0,-1],slot.root);
  }
  slot.mesh=slot.cell.userData.top;slot.mesh.userData.slot=slot;targets.push(slot.mesh);
  slot.challenge.built++;$('mission-progress').textContent=slot.challenge.built+'/'+def.count;
