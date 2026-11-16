@@ -260,6 +260,6 @@ const TABLA = [
 ];
 const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColor, ridge, wx, hour, props]) => ({
   name, place, country, art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look',
-  look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: props.split(' ').map(k => wrap(P[k])) },
+  look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: props.split(' ').map(k => wrap(P[k])), lamps: props.split(' ').map(k => /^farol/.test(k)) },
 });
 export const DESTINOS = TABLA.map(armar);
