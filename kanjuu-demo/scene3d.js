@@ -763,15 +763,15 @@ function sanctuary() {
                 wrap('<rect x="26" y="62" width="68" height="48" rx="4" fill="#FFF0D2"/><path d="M12 64 Q60 22 108 64 L100 70 Q60 40 20 70Z" fill="#3E4A6E"/><rect x="52" y="80" width="16" height="30" rx="2" fill="#8A5F38"/><rect x="32" y="76" width="12" height="12" rx="2" fill="#8EC7D8"/><rect x="76" y="76" width="12" height="12" rx="2" fill="#8EC7D8"/>'),
                 wrap('<rect x="24" y="54" width="72" height="56" rx="3" fill="#EBB84A"/><path d="M14 58 L26 34 L94 34 L106 58Z" fill="#B5532F"/><rect x="50" y="78" width="20" height="32" rx="2" fill="#6B4A2E"/><rect x="31" y="68" width="13" height="18" rx="2" fill="#3F7F6A"/><rect x="76" y="68" width="13" height="18" rx="2" fill="#3F7F6A"/><path d="M20 46 L100 46" stroke="#8E3F24" stroke-width="3"/><ellipse cx="38" cy="62" rx="5" ry="6.5" fill="#E8452C"/><ellipse cx="60" cy="64" rx="5" ry="6.5" fill="#F2B937"/><ellipse cx="82" cy="62" rx="5" ry="6.5" fill="#E8452C"/>')],
             }[runner.fx];
-            L.userData.props = Array.from({ length: 18 }, (_, i) => { const s = i % 3 === 0 ? 1.7 : i % 3 === 1 ? 1.15 : 1.9, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lamp = !!runner.look?.lamps?.[i % 3], m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: paperTexture(ARTS[i % 3]), transparent: true, alphaTest: .5, roughness: 1, emissive: lamp ? '#FFB45A' : '#FFE8C0', emissiveIntensity: 0 })); m.castShadow = true; m.userData = { base: i * 2.2, x: (i % 2 ? 1 : -1) * (3.5 + ((i * 7) % 5) * .9), lamp }; if (lamp) { const halo = new THREE.Mesh(new THREE.PlaneGeometry(s * 1.7, s * 1.7), new THREE.MeshBasicMaterial({ map: dotTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: '#FFB45A', opacity: 0 })); halo.position.set(0, s * .62, .03); m.add(halo); m.userData.halo = halo; } L.add(m); return m; });
+            L.userData.props = Array.from({ length: 18 }, (_, i) => { const s = i % 3 === 0 ? 1.7 : i % 3 === 1 ? 1.15 : 1.9, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lamp = !!runner.look?.lamps?.[i % 3], m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: paperTexture(ARTS[i % 3]), transparent: true, alphaTest: .5, roughness: 1 })); m.castShadow = true; m.userData = { base: i * 2.2, x: (i % 2 ? 1 : -1) * (3.5 + ((i * 7) % 5) * .9), lamp, s }; L.add(m); return m; });
           }
           const U = W.look.userData; U.ground.position.z = playerZ - 20;
           U.far.forEach(m => { if (m.userData.dz == null) m.userData.dz = m.position.z; m.position.z = playerZ + m.userData.dz; });
-          const nk = W.nightK || 0, rkK = W.rainK || 0;
-          U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion);
-            // De noche, los farolillos se encienden y los demás adornos se iluminan un poco
-            const lit = m.userData.lamp ? nk * (1 - rkK * .4) : nk * .12; m.material.emissiveIntensity = lit * (1 + Math.sin(t * 5 + m.userData.base) * .05);
-            if (m.userData.halo) m.userData.halo.material.opacity = nk * (1 - rkK * .5) * (.75 + .25 * Math.sin(t * 4 + m.userData.base)); });
+          const nk = W.nightK || 0, lamps = [];
+          U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion); if (m.userData.lamp && nk > .15) lamps.push(m); });
+          // De noche los farolillos alumbran como en el santuario: luces puntuales cálidas (las 6 de la reserva) en los más cercanos al corredor
+          lamps.sort((a, b) => Math.abs(a.position.z - playerZ) - Math.abs(b.position.z - playerZ));
+          lights.forEach((p, i) => { const m = lamps[i]; if (!m) { p.intensity = 0; return; } p.color.set('#FFB45A'); p.position.set(m.position.x, m.position.y + m.userData.s * .55, m.position.z + .2); p.intensity = 1.6 * nk * 2.2 * (1 + Math.sin(t * 8 + i) * .06); });
         }
         // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
         const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
@@ -869,7 +869,7 @@ function sanctuary() {
       }
       const gl = o.glow; if (gl && (night > .15 || gl.always)) { o.group.getWorldPosition(tmp); lit.push({ x: tmp.x, y: tmp.y + .7, z: tmp.z, ...gl }); }
     });
-    lights.forEach((p, i) => { const L0 = lit[i]; if (!L0) { p.intensity = 0; return; } p.color.set(L0.c); p.position.set(L0.x, L0.y, L0.z); p.intensity = L0.p * (L0.always ? .6 + night * 1.6 : night * 2.2) * (1 + Math.sin(t * 8 + i) * .06); });
+    if (!W.opts.runner) lights.forEach((p, i) => { const L0 = lit[i]; if (!L0) { p.intensity = 0; return; } p.color.set(L0.c); p.position.set(L0.x, L0.y, L0.z); p.intensity = L0.p * (L0.always ? .6 + night * 1.6 : night * 2.2) * (1 + Math.sin(t * 8 + i) * .06); });
     // luciérnagas
     fmat.opacity = night * (1 - rk * .7);
     if (fmat.opacity > .01) { const P = fg.attributes.position, R = W.N * .42; fseeds.forEach((s, i) => P.setXYZ(i, c0 + Math.sin(t * .23 * (1 + s % 1) + s) * R, .4 + .45 * (.5 + .5 * Math.sin(t * .9 + s * 3)), c0 + Math.cos(t * .19 * (1 + s % 1) + s * 1.7) * R)); P.needsUpdate = true; }
