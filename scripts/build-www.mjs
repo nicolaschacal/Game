@@ -5,6 +5,8 @@ const out = 'www';
 rmSync(out, { recursive: true, force: true }); mkdirSync(out + '/vendor', { recursive: true });
 cpSync('paper-voyager', out + '/paper-voyager', { recursive: true, filter: s => !/\.(py|mjs~)$/.test(s) });
 cpSync('node_modules/three/build/three.module.js', out + '/vendor/three.module.js');
+// Vercel sirve www/ tal cual: también van la política de privacidad y los prototipos viejos
+for (const f of ['privacidad.html', 'tile-runner.html', 'build-run.html', 'paper.js']) if (existsSync(f)) cpSync(f, out + '/' + f);
 let html = readFileSync('index.html', 'utf8');
 html = html.replace('https://unpkg.com/three@0.164.1/build/three.module.js', './vendor/three.module.js');
 // Dentro de la app, Capacitor expone window.Capacitor; lo cargamos antes del juego.
