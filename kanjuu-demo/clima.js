@@ -62,3 +62,12 @@ export async function refrescarSiHaceFalta() {
   if (dato && Date.now() - dato.t < TTL) return;
   await actualizarClima();
 }
+
+// Hora que usa el cielo del juego. Sin clima real: siempre de día (12:00).
+// Con clima real: de día o de noche según la ubicación del jugador. ?hora=N la fuerza para probar.
+export function horaFija() {
+  const h = Q.get('hora');
+  if (h !== null && !isNaN(+h)) return +h;
+  if (!climaActivo() || !dato) return 12;
+  return dato.dia ? 12 : 23;
+}

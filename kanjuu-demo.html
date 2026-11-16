@@ -88,7 +88,7 @@ body.home #hud{opacity:0}
 .arrow{position:absolute;bottom:calc(var(--sb) + 252px);width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 26px/36px 'Lilita One',sans-serif;text-align:center}
 #prevSkin{left:30px}#nextSkin{right:30px}
 #skinName{bottom:calc(var(--sb) + 182px)}
-#climaChip{left:70px;top:calc(var(--st) + 18px);padding:0 16px;white-space:nowrap;font-size:17px;pointer-events:auto;cursor:pointer;background:#FFF4DC;color:var(--ink)}#climaChip.on{background:#BFE3F5}
+#climaChip{left:70px;top:calc(var(--st) + 16px);height:42px;line-height:36px;padding:0 16px;white-space:nowrap;font-size:17px;pointer-events:auto;cursor:pointer;background:#FFF4DC;color:var(--ink)}#climaChip.on{background:#BFE3F5}
 #mission{position:absolute;left:18px;right:18px;bottom:calc(var(--sb) + 108px);padding:9px 12px 10px 54px;border-radius:16px;background:#1B1730E6;border:3px solid var(--ink);box-shadow:0 0 0 2px #fff4dc30 inset;text-align:left}
 #mission svg{position:absolute;left:6px;top:5px;width:42px;height:42px}#mission b{font:900 12px Nunito;letter-spacing:.3px}#mission em{float:right;font:400 14px 'Lilita One',sans-serif;color:var(--gold);font-style:normal}
 #mission.done{box-shadow:0 0 0 2px var(--green) inset}#mission.done em{color:#86D66F}
@@ -275,8 +275,8 @@ body.home #hud{opacity:0}
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, freezeMovers } from './kanjuu-demo/scene3d.js';
-import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta } from './kanjuu-demo/clima.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
+import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './kanjuu-demo/clima.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
 import { DESTINOS } from './kanjuu-demo/destinos.js';
 const $=id=>document.getElementById(id);
@@ -680,6 +680,7 @@ function useItems(){for(const k of ['shield','magnet','double'])if(stock[k]>0&&!
 function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast('TE FALTAN ◉ '+(price-wallet)+' PARA '+name.toUpperCase());return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
 function drawClima(){
  const c=climaEstado(),b=$('climaChip');
+ setHour(horaFija());
  const txt={off:'☁ CLIMA REAL · ACTIVAR',load:'☁ CLIMA REAL · BUSCANDO…',denied:'☁ CLIMA REAL · SIN PERMISO',error:'☁ CLIMA REAL · SIN CONEXIÓN'}[c.estado];
  b.textContent=txt||(c.lluvia?'☂ ':'☀ ')+c.texto.toUpperCase()+' · '+c.temp+'°';
  b.classList.toggle('on',c.estado==='ok');
@@ -687,7 +688,7 @@ function drawClima(){
 $('climaChip').addEventListener('click',async()=>{SFX.tap();$('climaChip').textContent='☁ CLIMA REAL · BUSCANDO…';const r=await alternarClima();drawClima();
  if(r==='denied')showToast('Activá el permiso de ubicación para ver el clima real');
  else if(r==='error')showToast('No pude leer el clima ahora');});
-refrescarSiHaceFalta().then(drawClima);setInterval(()=>refrescarSiHaceFalta().then(drawClima),10*60e3);
+setHour(horaFija());refrescarSiHaceFalta().then(drawClima);setInterval(()=>refrescarSiHaceFalta().then(drawClima),10*60e3);
 function drawHome(){
  const k=SKINS[browse],has=owned.includes(k.id);
  drawClima();
