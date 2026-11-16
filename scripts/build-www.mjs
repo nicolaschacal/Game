@@ -5,7 +5,7 @@ const out = 'www';
 rmSync(out, { recursive: true, force: true }); mkdirSync(out + '/vendor', { recursive: true });
 cpSync('paper-voyager', out + '/paper-voyager', { recursive: true, filter: s => !/\.(py|mjs~)$/.test(s) });
 cpSync('node_modules/three/build/three.module.js', out + '/vendor/three.module.js');
-let html = readFileSync('paper-voyager.html', 'utf8');
+let html = readFileSync('index.html', 'utf8');
 html = html.replace('https://unpkg.com/three@0.164.1/build/three.module.js', './vendor/three.module.js');
 // Dentro de la app, Capacitor expone window.Capacitor; lo cargamos antes del juego.
 html = html.replace('<script type="importmap">', '<script src="./capacitor.js"></script>\n<script type="importmap">');
