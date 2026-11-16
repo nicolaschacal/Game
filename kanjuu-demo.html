@@ -88,6 +88,7 @@ body.home #hud{opacity:0}
 .arrow{position:absolute;bottom:calc(var(--sb) + 252px);width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 26px/36px 'Lilita One',sans-serif;text-align:center}
 #prevSkin{left:30px}#nextSkin{right:30px}
 #skinName{bottom:calc(var(--sb) + 182px)}
+#climaChip{left:50%;transform:translateX(-50%);bottom:calc(var(--sb) + 166px);padding:0 16px;white-space:nowrap;font-size:17px;pointer-events:auto;cursor:pointer;background:#FFF4DC;color:var(--ink)}#climaChip.on{background:#BFE3F5}
 #mission{position:absolute;left:18px;right:18px;bottom:calc(var(--sb) + 108px);padding:9px 12px 10px 54px;border-radius:16px;background:#1B1730E6;border:3px solid var(--ink);box-shadow:0 0 0 2px #fff4dc30 inset;text-align:left}
 #mission svg{position:absolute;left:6px;top:5px;width:42px;height:42px}#mission b{font:900 12px Nunito;letter-spacing:.3px}#mission em{float:right;font:400 14px 'Lilita One',sans-serif;color:var(--gold);font-style:normal}
 #mission.done{box-shadow:0 0 0 2px var(--green) inset}#mission.done em{color:#86D66F}
@@ -242,6 +243,7 @@ body.home #hud{opacity:0}
  <button class="arrow" id="prevSkin" aria-label="Anterior">‹</button><button class="arrow" id="nextSkin" aria-label="Siguiente">›</button>
  <div class="ribbon" id="skinName"></div>
  <div id="mission"></div>
+ <button class="chip" id="climaChip" aria-label="Clima real"></button>
  <div id="playWrap"><button class="btn" id="play">JUGAR</button></div>
 </div>
 <div id="shop" class="panel">
@@ -273,7 +275,8 @@ body.home #hud{opacity:0}
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './kanjuu-demo/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, freezeMovers } from './kanjuu-demo/scene3d.js';
+import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta } from './kanjuu-demo/clima.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor } from './kanjuu-demo/runner-art.js';
 import { DESTINOS } from './kanjuu-demo/destinos.js';
 const $=id=>document.getElementById(id);
@@ -315,7 +318,7 @@ const pick=a=>a[Math.floor(rnd()*a.length)];
 let art=artFor(skinId);
 const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
 const paintRow=(y,t)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]=typeof t==='string'?{g:t,h:0}:{...t};};
-setGroundColor('empty',theme.ground);if(theme.hillColor)setGroundColor(theme.hill,theme.hillColor);setHour(theme.hour);
+setGroundColor('empty',theme.ground);if(theme.hillColor)setGroundColor(theme.hill,theme.hillColor);
 for(let y=0;y<ROWS;y++)paintRow(y,theme.hill);
 let cur=START-1,uid=0;
 const OBST={land:[ROCK,STUMP],sea:[REEF,FIN,BARREL],sky:[PEAK,PEAK,CLOUD,STORM],rail:[BARRIER,CRATE,ROCK]};
@@ -372,7 +375,7 @@ const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>Math.min(3.8+Math.min(LAP,3)*.15,1.3+(stage>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(Math.max(0,Math.min(1,prog)),1.2));
 const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
-const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:false,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
+const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
 const toast=$('toast'),hint=$('hint'),gameover=$('gameover');
@@ -675,8 +678,19 @@ function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=
 function drawBoosts(){drawFreeze();$('boosts').innerHTML=[boost.shield&&'◈',boost.magnet&&'∩',boost.double&&'x2'].filter(Boolean).map(t=>'<div class="pw"><span>'+t+'</span></div>').join('');}
 function useItems(){for(const k of ['shield','magnet','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);runner.magnet=boost.magnet;drawBoosts();}
 function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast('TE FALTAN ◉ '+(price-wallet)+' PARA '+name.toUpperCase());return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
+function drawClima(){
+ const c=climaEstado(),b=$('climaChip');
+ const txt={off:'☁ CLIMA REAL · ACTIVAR',load:'☁ CLIMA REAL · BUSCANDO…',denied:'☁ CLIMA REAL · SIN PERMISO',error:'☁ CLIMA REAL · SIN CONEXIÓN'}[c.estado];
+ b.textContent=txt||(c.lluvia?'☂ ':'☀ ')+c.texto.toUpperCase()+' · '+c.temp+'°';
+ b.classList.toggle('on',c.estado==='ok');
+}
+$('climaChip').addEventListener('click',async()=>{SFX.tap();$('climaChip').textContent='☁ CLIMA REAL · BUSCANDO…';const r=await alternarClima();drawClima();
+ if(r==='denied')showToast('Activá el permiso de ubicación para ver el clima real');
+ else if(r==='error')showToast('No pude leer el clima ahora');});
+refrescarSiHaceFalta().then(drawClima);setInterval(()=>refrescarSiHaceFalta().then(drawClima),10*60e3);
 function drawHome(){
  const k=SKINS[browse],has=owned.includes(k.id);
+ drawClima();
  $('mWallet').textContent=fmt(wallet);$('sWallet').textContent=fmt(wallet);
  $('skinName').innerHTML=k.name.toUpperCase()+'<small>'+(has?k.tag.toUpperCase():RARITY[k.id][0]+' · BLOQUEADO')+'</small>';
  const p=$('play');p.className='btn'+(has?'':' locked');p.textContent=has?'JUGAR':'DESBLOQUEAR ◉ '+k.price;
