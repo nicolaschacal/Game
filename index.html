@@ -372,7 +372,7 @@ const PRIZE={land:[GEM,'JOYA'],sea:[PEARL,'PERLA'],sky:[STAR,'ESTRELLA'],rail:[G
 function fill(n,kind,{gap,lead,extra}){
  let safe=2;const air=kind==='sky',lift=air?SKY:0;
  // Monedas en varios caminos: además de la del carril seguro, hay monedas de los costados que se juntan cambiando de carril
- const sideCoins=(lanes,y,lift)=>{const got=[];for(const x of lanes)if(rnd()<.5){coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift,side:true});got.push(x);}return got;};
+ const sideCoins=(lanes,y,lift)=>{const got=[];if(rnd()>.25)return got;const ls=lanes.slice().sort(()=>rnd()-.5).slice(0,rnd()<.5?1:2);for(const x of ls){coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift,side:true});got.push(x);}return got;};
  for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
   const coin=x=>coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift});
   if(i>=lead&&(i-lead)%gap===0&&i<n-1){
@@ -733,14 +733,14 @@ let tutoStep=0,tutoAfter=null,tutoN=3;
 // Guía del primer mundo: cada paso se cumple con lo que hace el jugador; no se pasa al siguiente hasta que lo hace
 const GUIDE=[
  {a:'⟷',t:'Kami avanza solo. Arrastrá hacia un costado para cambiar el camino que construye.',ok:()=>Object.values(runner.path).some(r=>r.x!==2)},
- {a:'◉',t:'Hay monedas en varios caminos, también a los costados. Pasá por las de los lados para juntar más.',ok:()=>guideSide>=3},
+ {a:'◉',t:'Hay monedas en varios caminos, también a los costados. Pasá por las de los lados para juntar más.',ok:()=>guideSide>=2},
  {a:'x2',t:'Juntá monedas seguidas sin cortar la racha para subir el multiplicador.',ok:()=>streak>=6},
 ];
 let guideStep=0,guideSide=0,rockSeen=false,rockHeld=false,coachShown='';
-const guideOn=()=>stage===0&&store.get('tuto',0)<2;
+const guideOn=()=>stage===0&&store.get('tuto2',0)<2;
 function showTuto(after,n=3){tutoStep=0;tutoAfter=after;tutoN=n;drawTuto();$('tuto').style.display='flex';}
 function drawTuto(){const t=TUTO[tutoStep];$('tutoPic').innerHTML=t.pic();$('tutoNo').textContent=t.no;$('tutoH').textContent=t.h;$('tutoP').textContent=t.p;$('tutoNext').textContent=tutoStep<tutoN-1?'SIGUIENTE':'¡A JUGAR!';document.querySelectorAll('#tuto .steps i').forEach((e,i)=>{e.style.display=i<tutoN?'':'none';e.classList.toggle('on',i<=tutoStep);});}
-$('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<tutoN-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';if(tutoAfter){store.set('tuto',Math.max(1,store.get('tuto',0)));const f=tutoAfter;tutoAfter=null;f();}});
+$('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<tutoN-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';if(tutoAfter){store.set('tuto2',Math.max(1,store.get('tuto2',0)));const f=tutoAfter;tutoAfter=null;f();}});
 $('howTo').addEventListener('click',()=>{SFX.tap();showTuto(null,3);});
 function drawCoach(html){if(html===coachShown)return;coachShown=html;const c=$('coach');if(!html){c.style.display='none';return;}c.innerHTML=html;c.style.display='block';}
 // Cada cuadro: muestra el paso actual, frena una sola vez en la primera roca y avanza cuando el jugador cumple el paso
@@ -750,7 +750,7 @@ function coachFrame(){
  if(y>=0&&!rockSeen&&!runner.path[y]){const from=prevExit(y);if(isRockCell(from,y)||isRockCell(from,y-1)){rockSeen=true;rockHeld=true;runner.hitPause=999;drawCoach('<b>¡ROCA ADELANTE!</b><p>Kami no la esquiva solo. Arrastrá hacia un costado para armar el camino alrededor.</p><span class="arr">⟷</span>');SFX.near();buzz([30,40,30]);}}
  if(rockHeld)return;
  if(guideStep<GUIDE.length&&GUIDE[guideStep].ok()){guideStep++;if(guideStep<GUIDE.length){pop('¡BIEN!','big');SFX.coin(4);}}
- if(guideStep>=GUIDE.length){store.set('tuto',2);drawCoach('');pop('¡YA SABÉS JUGAR!','big');SFX.win();confetti();return;}
+ if(guideStep>=GUIDE.length){store.set('tuto2',2);drawCoach('');pop('¡YA SABÉS JUGAR!','big');SFX.win();confetti();return;}
  const g=GUIDE[guideStep];drawCoach('<b>'+g.a+' PASO '+(guideStep+1)+' DE '+GUIDE.length+'</b><p>'+g.t+'</p>');
 }
 function begin(){if(!runner.started&&!paused){runner.started=true;audio();Music.start();Music.mode='run';document.body.classList.remove('home');}}
@@ -894,7 +894,7 @@ function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
  SFX.tap();const go=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
- if(stage===0&&!store.get('tuto',0))showTuto(go,1);else go();});
+ if(stage===0&&!store.get('tuto2',0))showTuto(go,1);else go();});
 function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
