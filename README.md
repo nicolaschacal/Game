@@ -1,5 +1,7 @@
 # KANJŪ · Tile Trail
 
+> **Paper Voyager** (`kanjuu-demo.html`) es la versión que va a las tiendas. Para empaquetarla con Capacitor, los anuncios (AdMob) y las compras (RevenueCat), leé [PUBLICAR.md](PUBLICAR.md).
+
 Prototipo jugable de un runner de construcción: el personaje avanza mientras el jugador interpreta el escenario y coloca tiles para transformar el mundo.
 
 ## Probar

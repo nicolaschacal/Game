@@ -1,0 +1,32 @@
+{
+  "name": "paper-voyager",
+  "version": "1.0.0",
+  "description": "Paper Voyager · Build your way. Runner de tiles en papel recortado.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-www.mjs",
+    "sync": "npm run build && npx cap sync",
+    "android": "npm run sync && npx cap open android",
+    "ios": "npm run sync && npx cap open ios",
+    "assets": "npx @capacitor/assets generate --iconBackgroundColor '#1B1730' --splashBackgroundColor '#1B1730' --iconBackgroundColorDark '#1B1730' --splashBackgroundColorDark '#1B1730'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/haptics": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/preferences": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0",
+    "@capacitor-community/admob": "^7.0.0",
+    "@revenuecat/purchases-capacitor": "^11.0.0",
+    "@revenuecat/purchases-capacitor-ui": "^11.0.0",
+    "three": "0.164.1"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0"
+  }
+}

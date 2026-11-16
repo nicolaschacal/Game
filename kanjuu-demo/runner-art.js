@@ -206,3 +206,23 @@ export const LANDMARKS = {
   hoian: cut(`<path d="M8 22 Q60 44 112 22" stroke="#6B4A2E" stroke-width="2" fill="none"/><path d="M14 104 Q60 70 106 104 L106 110 L14 110Z" fill="#E9C46A"/><path d="M10 78 Q60 56 110 78 L104 84 L16 84Z" fill="#8E3424"/><rect x="24" y="84" width="72" height="12" fill="#E9C46A"/><g><ellipse cx="30" cy="34" rx="7" ry="9" fill="#E8452C"/><ellipse cx="60" cy="42" rx="7" ry="9" fill="#F2B937"/><ellipse cx="90" cy="34" rx="7" ry="9" fill="#E8452C"/></g>`,
     `<path d="M20 110 Q60 82 100 110" fill="#7FB7CF"/><g fill="#8A5F38"><rect x="32" y="86" width="5" height="8"/><rect x="58" y="86" width="5" height="8"/><rect x="84" y="86" width="5" height="8"/></g><g fill="#FFF3C4" opacity=".7"><ellipse cx="28" cy="31" rx="2" ry="3"/><ellipse cx="58" cy="39" rx="2" ry="3"/><ellipse cx="88" cy="31" rx="2" ry="3"/></g>`),
 };
+
+// ── Power-ups de la pista (estilo Subway Surfers, en papel recortado) ──
+// Imán: herradura violeta con puntas plateadas
+export const MAGNET = cut(`<path d="M34 24 L34 70 Q34 96 60 96 Q86 96 86 70 L86 24 L68 24 L68 70 Q68 78 60 78 Q52 78 52 70 L52 24Z" fill="#7B5CC4"/>`,
+  `<rect x="34" y="24" width="18" height="16" fill="#E6E9EF"/><rect x="68" y="24" width="18" height="16" fill="#E6E9EF"/><path d="M40 48 L40 68" stroke="#A98BE8" stroke-width="5" stroke-linecap="round"/>`);
+// x2: medalla verde con el número
+export const X2 = cut(`<circle cx="60" cy="60" r="36" fill="#5DB84F"/>`,
+  `<circle cx="60" cy="60" r="28" fill="none" stroke="#3F8F36" stroke-width="4"/><text x="60" y="72" text-anchor="middle" font-family="Lilita One,Arial Black,sans-serif" font-size="34" fill="#FFF4DC">x2</text>`);
+// Escudo: blasón azul con estrella
+export const SHIELD = cut(`<path d="M60 18 L94 30 L92 62 Q88 88 60 104 Q32 88 28 62 L26 30Z" fill="#3E5BA9"/>`,
+  `<path d="M60 36 L66 50 L82 52 L70 62 L74 78 L60 70 L46 78 L50 62 L38 52 L54 50Z" fill="#F2B937"/>`);
+// Cofre misterioso: baúl de madera con herrajes dorados y un signo de pregunta
+export const CHEST = cut(`<rect x="22" y="48" width="76" height="52" rx="6" fill="#A9794D"/><path d="M22 54 Q22 30 60 30 Q98 30 98 54Z" fill="#8A5F38"/>`,
+  `<rect x="22" y="54" width="76" height="8" fill="#5A3E2B"/><rect x="52" y="48" width="16" height="22" rx="3" fill="#F2B937"/><circle cx="60" cy="60" r="3" fill="#5A3E2B"/><text x="60" y="94" text-anchor="middle" font-family="Lilita One,Arial Black,sans-serif" font-size="30" fill="#F2B937">?</text>`);
+// Llave dorada
+export const KEY = cut(`<circle cx="42" cy="48" r="20" fill="#F2B937"/><rect x="54" y="42" width="48" height="12" rx="4" fill="#F2B937"/>`,
+  `<circle cx="42" cy="48" r="8" fill="#8A551E"/><rect x="84" y="54" width="8" height="14" fill="#F2B937"/><rect x="70" y="54" width="8" height="10" fill="#F2B937"/>`);
+// Ficha con una letra (para la palabra del día)
+export const letterTile = ch => cut(`<rect x="22" y="22" width="76" height="76" rx="14" fill="#FFF4DC"/>`,
+  `<rect x="30" y="30" width="60" height="60" rx="9" fill="none" stroke="#E8452C" stroke-width="4"/><text x="60" y="78" text-anchor="middle" font-family="Lilita One,Arial Black,sans-serif" font-size="46" fill="#E8452C">${ch}</text>`);
