@@ -568,6 +568,8 @@ function sanctuary() {
   const world = new THREE.Group(), island = new THREE.Group(), ov = new THREE.Group(), fx = new THREE.Group();
   scene.add(world); world.add(island, ov, fx);
   const lights = Array.from({ length: 6 }, () => { const p = new THREE.PointLight('#FFB45A', 0, 3.6, 2); scene.add(p); return p; });
+  // Misma función para el santuario y la pista: cada luz va sobre un solo objeto brillante
+  const applyLights = (list, night, t) => lights.forEach((p, i) => { const L0 = list[i]; if (!L0) { p.intensity = 0; return; } p.color.set(L0.c); p.position.set(L0.x, L0.y, L0.z); p.intensity = L0.p * (L0.always ? .6 + night * 1.6 : night * 2.2) * (1 + Math.sin(t * 8 + i) * .06); });
   // Mar de nubes debajo de la isla
   const seaClouds = Array.from({ length: 8 }, (_, i) => { const m = paperProp('nube', 1.1 + Math.random() * .8, false); m.userData = { a: i / 8 * Math.PI * 2, v: .05 + Math.random() * .08, y: Math.random() }; scene.add(m); return m; });
   // Luciérnagas de noche
@@ -775,7 +777,7 @@ function sanctuary() {
           U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion); if (m.userData.lamp && nk > .15) lamps.push(m); });
           // De noche los farolillos alumbran como en el santuario: luces puntuales cálidas (las 6 de la reserva) en los más cercanos al corredor
           lamps.sort((a, b) => Math.abs(a.position.z - playerZ) - Math.abs(b.position.z - playerZ));
-          lights.forEach((p, i) => { const m = lamps[i]; if (!m) { p.intensity = 0; return; } p.color.set('#FFB45A'); p.position.set(m.position.x, m.position.y + m.userData.s * .55, m.position.z + .2); p.intensity = 1.6 * nk * 2.2 * (1 + Math.sin(t * 8 + i) * .06); });
+          applyLights(lamps.map(m => ({ x: m.position.x, y: m.position.y + m.userData.s * .55, z: m.position.z + .2, ...GLOW.farol })), nk, t);
         }
         // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
         const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
@@ -873,7 +875,7 @@ function sanctuary() {
       }
       const gl = o.glow; if (gl && (night > .15 || gl.always)) { o.group.getWorldPosition(tmp); lit.push({ x: tmp.x, y: tmp.y + .7, z: tmp.z, ...gl }); }
     });
-    if (!W.opts.runner) lights.forEach((p, i) => { const L0 = lit[i]; if (!L0) { p.intensity = 0; return; } p.color.set(L0.c); p.position.set(L0.x, L0.y, L0.z); p.intensity = L0.p * (L0.always ? .6 + night * 1.6 : night * 2.2) * (1 + Math.sin(t * 8 + i) * .06); });
+    if (!W.opts.runner) applyLights(lit, night, t);
     // luciérnagas
     fmat.opacity = night * (1 - rk * .7);
     if (fmat.opacity > .01) { const P = fg.attributes.position, R = W.N * .42; fseeds.forEach((s, i) => P.setXYZ(i, c0 + Math.sin(t * .23 * (1 + s % 1) + s) * R, .4 + .45 * (.5 + .5 * Math.sin(t * .9 + s * 3)), c0 + Math.cos(t * .19 * (1 + s % 1) + s * 1.7) * R)); P.needsUpdate = true; }
