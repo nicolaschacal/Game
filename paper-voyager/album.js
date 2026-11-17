@@ -266,6 +266,9 @@ function css() {
 .pva-cfg,.pva-det{overflow-x:hidden;overscroll-behavior-x:none;max-width:100vw;box-sizing:border-box}
 .pva .tabs{touch-action:pan-x pan-y}
 .pva .head h2{font-size:30px}
+body.gpapel .pva .head:before,body.gpapel .pva .head:after{left:0!important;right:0!important;transform:none!important}
+html.pvlock,html.pvlock body{overflow:hidden!important;overscroll-behavior:none}
+.pva{position:fixed;inset:0;width:100%}
 .pva .head small{bottom:50px}
 .pva-top{padding:16px 14px 6px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .pva-cover{width:min(58vw,230px);filter:drop-shadow(0 7px 0 rgba(27,23,48,.35));transform:rotate(-1.5deg)}
@@ -351,7 +354,7 @@ export function openAlbum(ctx, onClose, opts = {}) {
   document.querySelectorAll('.pvalb').forEach(e => e.remove());
   const root = document.createElement('div'); root.className = 'panel pva pvalb'; root.style.display = 'block';
   if (opts.preload) { root.style.animation = 'none'; root.style.opacity = '0'; root.style.pointerEvents = 'none'; }
-  document.body.appendChild(root);
+  document.body.appendChild(root); lockScroll(root);
   let region = (V.T && V.regionOf(V.T.at)) || 'am';
   const close = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
 
@@ -449,14 +452,14 @@ const BAG_CSS = `
 .pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
 .pvb-alb .cv{position:relative;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
 .pvb-alb:active:not(.opening) .cv{transform:translateY(2px) scale(.985)}
-.pvb-fly{position:fixed;z-index:70;pointer-events:none;perspective:900px;transform-origin:50% 50%;will-change:transform}
+.pvb-fly{position:fixed;z-index:70;pointer-events:none;transform-origin:50% 50%;will-change:transform,opacity}
 .pvb-fly .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
-.pvb-fly .cv{position:absolute;inset:0;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35));will-change:transform,opacity}
+.pvb-fly .cv{position:absolute;inset:0}
 .pvb-fly svg{display:block;width:100%;height:auto}
 .pvb-tag{display:inline-block;margin:-8px 0 0;padding:3px 10px 4px;background:#F6EBD0;color:#6B4E26;font:900 10px Nunito,sans-serif;letter-spacing:.9px;border-radius:3px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);position:relative;white-space:nowrap}
 .pvb-tag b{color:#C9402A;font:400 12px 'Lilita One',sans-serif;letter-spacing:.3px;margin-left:3px}
 .pvb-alb .pvb-tag{transform:rotate(3deg);left:12%}
-.pvb-pas{position:absolute;right:3%;top:2%;width:42%;height:34%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
+.pvb-pas{position:absolute;right:7%;top:2%;width:42%;height:34%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
 .pvb-pas .bk{position:absolute;left:50%;bottom:16%;width:56%;transform-origin:50% 112%;transition:transform .3s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 5px 6px rgba(27,23,48,.3))}
 .pvb-pas .bk svg,.pvb-sc svg,.pvb-dec svg{display:block;width:100%;height:auto;overflow:visible}
 .pvb-pas:active .bk{filter:brightness(.96) drop-shadow(0 1px 1px rgba(40,24,10,.3))}
@@ -464,13 +467,14 @@ const BAG_CSS = `
 .pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}
 .pvb-sv{position:absolute;left:6%;right:6%;top:58%;bottom:2%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
-.pvb-sc{position:absolute;left:50%;top:52%;width:min(37vw,140px);transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
+.pvb-sc{position:absolute;left:0;top:0;transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
 .pvb-sn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;min-height:30px}
 .pvb-all{border:0;padding:4px 11px 5px;font:400 12px 'Lilita One',sans-serif;letter-spacing:.6px;color:#3A2410;background:#F2BC3E;border-radius:99px;box-shadow:0 2px 0 #A9701B,0 4px 6px rgba(27,23,48,.2)}.pvb-all:active{transform:translateY(2px);box-shadow:0 0 0 #A9701B}
 .pvs-g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;padding:16px 14px 8px}
 .pvs-i{border:0;background:#F7ECD3;border-radius:14px;padding:8px 4px 7px;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 9px rgba(27,23,48,.2);transform:rotate(var(--r));text-align:center;color:#3A2A12;min-width:0}.pvs-i:active{transform:rotate(var(--r)) translateY(2px)}
 .pvs-i .th{width:78%;margin:0 auto}.pvs-i svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3))}
-.pvs-i b{display:block;margin-top:2px;font:400 12.5px/1.1 'Lilita One',sans-serif;min-height:27px;display:flex;align-items:center;justify-content:center}
+.pvs-i small{display:block;margin-top:3px;font:900 8.5px Nunito;letter-spacing:1px;color:#8A6A44;text-transform:uppercase}
+.pvs-i b{display:block;margin-top:0;font:400 12.5px/1.1 'Lilita One',sans-serif;min-height:27px;display:flex;align-items:center;justify-content:center}
 .pvs-big{width:min(70vw,280px)!important;filter:drop-shadow(0 10px 12px rgba(0,0,0,.4))}.pvs-big svg{display:block;width:100%;height:auto}
 .pvb-sn .nm{padding:4px 14px 5px;background:#F6EBD0;color:#3A2A12;font:400 16px 'Lilita One',sans-serif;letter-spacing:.4px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);clip-path:polygon(9px 0,100% 0,100% 100%,9px 100%,0 50%);padding-left:20px;transform:rotate(-1.5deg)}
 .pvb-sn small{font:900 10px Nunito,sans-serif;letter-spacing:.9px;color:#6B4E26}
@@ -494,6 +498,12 @@ const BAG_CSS = `
 .pvp-sg span{display:block;font:900 7.5px Nunito;color:#6B4E26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:-2px}.pvp-sg .nv span{opacity:.55}
 .pvp-go{margin-top:10px;display:flex;align-items:center;gap:10px;padding-left:6px;font:700 11.5px Nunito;color:#6B4E26}.pvp-go .btn{width:auto;flex:none;padding:0 16px;height:44px;font-size:16px}
 `;
+let LOCKS = 0;
+function lockScroll(root) {
+  LOCKS++; document.documentElement.classList.add('pvlock');
+  const mo = new MutationObserver(() => { if (!root.isConnected) { mo.disconnect(); if (--LOCKS <= 0) { LOCKS = 0; document.documentElement.classList.remove('pvlock'); } } });
+  mo.observe(document.body, { childList: true });
+}
 function bagCss() { css(); if (document.getElementById('pvBagCss')) return; const st = document.createElement('style'); st.id = 'pvBagCss'; st.textContent = BAG_CSS; document.head.appendChild(st); }
 
 // Libreta de pasaporte (lienzo 100×134), del color de la región
@@ -517,7 +527,7 @@ export function openBag(ctx) {
   bagCss();
   const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
   document.querySelectorAll('.pvbag').forEach(e => e.remove());
-  const root = document.createElement('div'); root.className = 'panel pva pvbag'; root.style.display = 'block'; document.body.appendChild(root);
+  const root = document.createElement('div'); root.className = 'panel pva pvbag'; root.style.display = 'block'; document.body.appendChild(root); lockScroll(root);
   let idx = 0;
   const close = () => { root.remove(); sfx('tap'); };
   function draw() {
@@ -534,7 +544,7 @@ export function openBag(ctx) {
 <div class="pvb-t">
  <button class="pvb-alb" data-alb aria-label="Abrir el álbum"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">ÁLBUM · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
  <div class="pvb-dec" style="left:2%;top:53%;width:40%;transform:rotate(-9deg)">${pencilSVG()}</div>
- <div class="pvb-dec" style="right:1%;top:37%;width:34%;transform:rotate(11deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
+ <div class="pvb-dec" style="right:5%;top:37%;width:30%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
  <button class="pvb-pas" data-pas aria-label="Abrir pasaportes">${fan}<span class="pvb-tag">PASAPORTES · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
 </div>`;
@@ -545,39 +555,45 @@ export function openBag(ctx) {
     q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
     if (sv.length) souvenirs(sv);
   }
-  // Apertura continua: el DOM del álbum se arma antes; la libreta viaja hasta el lugar de su tapa, gira (rotateY) y el álbum aparece en crossfade
-  function flyOpen(b) {
+  // Apertura: la libreta va al centro de la pantalla y crece hasta cubrirla; recién ahí (con el álbum ya armado y pintado) se hace el crossfade
+  async function flyOpen(b) {
     if (b.classList.contains('opening')) return; b.classList.add('opening'); sfx('tap');
-    const cv = b.querySelector('.cv'), pg = b.querySelector('.pg');
+    const cv = b.querySelector('.cv');
     const album = openAlbum(ctx, () => draw(), { preload: true });
-    const pc = album.querySelector('.pva-cover'), done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
-    if (!cv.animate || !pc || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.cssText = 'display:block'; album.style.animation = ''; done(); return; }
-    const s = cv.getBoundingClientRect(), t = pc.getBoundingClientRect(), wt = pc.offsetWidth, ht = wt * 162 / 128, ws = cv.offsetWidth;
+    const done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
+    if (!cv.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.animation = ''; album.style.opacity = ''; album.style.pointerEvents = ''; done(); return; }
+    try { await document.fonts?.ready; } catch (e) {}
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // el álbum ya está pintado (opacity 0) antes de tocar la tapa
+    const s = cv.getBoundingClientRect(), w = cv.offsetWidth, h = cv.offsetHeight, vw = innerWidth, vh = innerHeight;
+    const cx = s.left + s.width / 2, cy = s.top + s.height / 2, S = Math.max(vw / w, vh / h) * 1.04;
     const fly = document.createElement('div'); fly.className = 'pvb-fly';
-    fly.style.cssText = `left:${t.left + t.width / 2 - wt / 2}px;top:${t.top + t.height / 2 - ht / 2}px;width:${wt}px;height:${ht}px`;
-    fly.innerHTML = `<div class="pg"></div><div class="cv">${cv.innerHTML}</div>`;
+    fly.style.cssText = `left:${cx - w / 2}px;top:${cy - h / 2}px;width:${w}px;height:${h}px`;
+    fly.innerHTML = `<div class="cv">${cv.innerHTML}</div>`;
     document.body.appendChild(fly); b.style.visibility = 'hidden';
-    const T0 = `translate(${s.left + s.width / 2 - t.left - t.width / 2}px,${s.top + s.height / 2 - t.top - t.height / 2}px) rotate(-5deg) scale(${ws / wt})`;
-    const ease = 'cubic-bezier(.3,.7,.2,1)';
-    const a1 = fly.animate([{ transform: T0 }, { transform: 'translate(0,0) rotate(-1.5deg) scale(1)' }], { duration: 340, easing: ease, fill: 'forwards' });
-    const a2 = fly.querySelector('.cv').animate([{ transform: 'rotateY(0)', opacity: 1 }, { transform: 'rotateY(-75deg)', opacity: 1, offset: .62 }, { transform: 'rotateY(-120deg)', opacity: 0 }], { delay: 280, duration: 480, easing: 'ease-in-out', fill: 'both' });
-    const a3 = fly.querySelector('.pg').animate([{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0 }], { delay: 280, duration: 480, fill: 'both' });
-    const a4 = album.animate([{ opacity: 0 }, { opacity: 1 }], { delay: 360, duration: 420, easing: 'ease-out', fill: 'both' });
-    a4.finished.then(() => { album.style.opacity = ''; album.style.pointerEvents = ''; album.style.animation = ''; a4.cancel(); fly.remove(); done(); }).catch(() => { fly.remove(); done(); });
+    const grow = fly.animate([{ transform: 'translate(0,0) rotate(-5deg) scale(1)' }, { transform: `translate(${vw / 2 - cx}px,${vh / 2 - cy}px) rotate(0deg) scale(${S})` }], { duration: 580, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' });
+    const cleanup = () => { album.style.opacity = ''; album.style.pointerEvents = ''; album.style.animation = ''; fly.remove(); done(); };
+    grow.finished.then(() => {
+      const fade = { duration: 260, easing: 'ease-out', fill: 'forwards' };
+      fly.animate([{ opacity: 1 }, { opacity: 0 }], fade);
+      album.animate([{ opacity: 0 }, { opacity: 1 }], fade).finished.then(cleanup, cleanup);
+    }, cleanup);
   }
   // Carrusel de souvenirs: uno al frente sobre una pila en abanico; toque o deslizar para rotar
   function souvenirs(sv) {
     const n = sv.length, st = root.querySelector('[data-st]'), els = [...st.querySelectorAll('.pvb-sc')];
     const nm = root.querySelector('[data-nm]'), ct = root.querySelector('[data-ct]');
     const hash = k => { let h = (k + 1) * 2654435761 % 4294967296; h ^= h >>> 13; h = h * 1597334677 % 4294967296; return h; };
+    // Filas de souvenirs derechos (±4°): separados si son pocos, cada vez más superpuestos si son muchos; el destacado va adelante y más grande
     const place = () => {
-      const W = st.clientWidth || 300, H = st.clientHeight || 160;
+      const W = st.clientWidth || 300, H = st.clientHeight || 160, rows = n <= 4 ? 1 : n <= 10 ? 2 : 3, c = Math.ceil(n / rows);
+      const sz = Math.min(W * .3, (H / rows) * 1.08, 118), edge = sz * .68;
       els.forEach((el, k) => {
-        const rel = (k - idx + n) % n;
-        if (rel === 0) { el.style.cssText = `transform:translate(-50%,-52%) rotate(-3deg) scale(1.12);z-index:${n + 5};opacity:1`; return; }
-        const h = hash(k), fx = ((h % 1000) / 1000 - .5) * 2, fy = (((h >> 10) % 1000) / 1000 - .5) * 2, rot = (((h >> 4) % 1000) / 1000 - .5) * 62, sc = .72 + ((h >> 7) % 100) / 380;
-        // la pila se abre hacia los costados y queda detrás; los más cercanos en el orden quedan más arriba
-        el.style.cssText = `transform:translate(calc(-50% + ${(fx * W * .22).toFixed(0)}px),calc(-50% + ${(fy * H * .14 + H * .1).toFixed(0)}px)) rotate(${rot.toFixed(0)}deg) scale(${sc.toFixed(2)});z-index:${n - rel + 1};opacity:.97`;
+        const r = Math.floor(k / c), i = k % c, cnt = Math.min(c, n - r * c);
+        const step = cnt < 2 ? 0 : Math.min(sz * 1.12, (W - 2 * edge) / (cnt - 1)), x0r = W / 2 - step * (cnt - 1) / 2;
+        const y = rows === 1 ? H * .5 : edge * .8 + (H - edge * 1.6) * (rows < 2 ? 0 : r / (rows - 1));
+        const f = k === idx, rot = ((((hash(k) >> 5) % 1000) / 1000) - .5) * 8;
+        el.style.width = sz + 'px';
+        el.style.cssText += `;width:${sz}px;transform:translate(${(x0r + step * i - sz / 2).toFixed(1)}px,${(y - sz / 2 - (f ? 8 : 0)).toFixed(1)}px) rotate(${rot.toFixed(1)}deg) scale(${f ? 1.22 : 1});z-index:${f ? n + 5 : r * c + i + 1};opacity:1`;
       });
       nm.textContent = sv[idx].name; ct.textContent = n > 1 ? `${idx + 1}/${n}` : '';
     };
@@ -591,13 +607,13 @@ export function openBag(ctx) {
   }
   // Vista ordenada de todos los souvenirs; al tocar uno se ve grande
   function souvenirGrid(sv) {
-    const g = document.createElement('div'); g.className = 'panel pva pvsouv'; g.style.display = 'block';
-    g.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${sv.length} EN TU MOCHILA</small><h2>SOUVENIRS</h2></div><div class="pvs-g">${sv.map((s, k) => `<button class="pvs-i" data-k="${k}" style="--r:${(((k * 7) % 9) - 4) * .9}deg"><div class="th">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><b>${esc(s.name)}</b></button>`).join('')}</div>`;
+    const g = document.createElement('div'); g.className = 'panel pva pvsouv'; g.style.display = 'block'; lockScroll(g);
+    g.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${sv.length} EN TU MOCHILA</small><h2>SOUVENIRS</h2></div><div class="pvs-g">${sv.map((s, k) => `<button class="pvs-i" data-k="${k}" style="--r:${(((k * 7) % 9) - 4) * .9}deg"><div class="th">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><small>${esc(s.country || '')}</small><b>${esc(s.name)}</b></button>`).join('')}</div>`;
     document.body.appendChild(g);
     g.querySelector('[data-x]').onclick = () => { g.remove(); sfx('tap'); };
     g.querySelectorAll('.pvs-i').forEach(b => b.onclick = () => {
       sfx('tap'); const s = sv[+b.dataset.k], R = V.REGIONS[s.region], ov = document.createElement('div'); ov.className = 'pva-det';
-      ov.innerHTML = `<button class="round close" aria-label="Cerrar">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${R ? esc(R.name) : ''} · souvenir</small></div>`;
+      ov.innerHTML = `<button class="round close" aria-label="Cerrar">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${esc(s.country || (R ? R.name : ''))}</small></div>`;
       ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) { ov.remove(); sfx('tap'); } };
       g.appendChild(ov);
     });
@@ -610,7 +626,7 @@ export function openBag(ctx) {
 export function openPassport(ctx, onClose) {
   bagCss();
   const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
-  const root = document.createElement('div'); root.className = 'panel pva pvpass'; root.style.display = 'block'; document.body.appendChild(root);
+  const root = document.createElement('div'); root.className = 'panel pva pvpass'; root.style.display = 'block'; document.body.appendChild(root); lockScroll(root);
   const T = V.T, vis = T.visits || {}, have = r => (T.passports || []).includes(r);
   const visited = Object.keys(vis).filter(k => vis[k] > 0).length;
   const order = [...V.REGION_ORDER.filter(have), ...V.REGION_ORDER.filter(r => !have(r))];

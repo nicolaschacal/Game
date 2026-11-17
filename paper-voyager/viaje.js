@@ -102,11 +102,11 @@ export const photoItem = id => PHOTO_ITEMS.find(p => p.id === id);
 // Souvenirs (sección Objetos): uno por región, coleccionables; sólo se venden si tenés el pasaporte de esa región.
 // Se exhiben en la tapa del álbum.
 export const SOUVENIRS = [
-  { id: 's-am', region: 'am', name: 'Mate de calabaza', price: 200 },
-  { id: 's-eu', region: 'eu', name: 'Torre en miniatura', price: 200 },
-  { id: 's-af', region: 'af', name: 'Máscara tallada', price: 200 },
-  { id: 's-as', region: 'as', name: 'Farolito de papel', price: 200 },
-  { id: 's-oc', region: 'oc', name: 'Boomerang', price: 200 },
+  { id: 's-am', country: 'Uruguay', region: 'am', name: 'Mate de calabaza', price: 200 },
+  { id: 's-eu', country: 'Francia', region: 'eu', name: 'Torre en miniatura', price: 200 },
+  { id: 's-af', country: 'Kenia', region: 'af', name: 'Máscara tallada', price: 200 },
+  { id: 's-as', country: 'Japón', region: 'as', name: 'Farolito de papel', price: 200 },
+  { id: 's-oc', country: 'Australia', region: 'oc', name: 'Boomerang', price: 200 },
 ];
 
 // ── Estado guardado ──

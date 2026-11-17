@@ -545,6 +545,25 @@ body.gpapel #coinPill{padding:0 18px 0 46px}
 body.gpapel #coinPill svg{left:-1px;top:-6px}
 #paused .row2{gap:10px}#paused .row2 .btn,#paused .row2 .btn+.btn{flex:1 1 0;min-width:0;padding:0 6px;white-space:nowrap}
 #paused .pnote{position:absolute;left:0;right:0;top:calc(100% + 16px);font:900 11px Nunito;letter-spacing:.6px;color:#FFF4DCD9;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+/* festejo de llegada: libreta de cartulina, sello de goma entintado, avión de papel */
+body.gpapel{--ink-m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='i' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.45' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -7 5.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23i)'/%3E%3C/svg%3E")}
+body.gpapel #pass{animation-name:gpPassMove}
+@keyframes gpPassMove{0%{transform:translateX(-90vw) rotate(-8deg) scale(var(--k,1.2));animation-timing-function:cubic-bezier(.2,.9,.3,1.12)}14%,84%{transform:translateX(0) rotate(-1.5deg) scale(var(--k,1.2));animation-timing-function:cubic-bezier(.6,0,.9,.5)}100%{transform:translateX(95vw) rotate(7deg) scale(var(--k,1.2))}}
+body.gpapel #pass .bk{box-shadow:0 6px 10px rgba(27,23,48,.25)} /* sombra sin filtro: no pesa en la animación */
+body.gpapel #pass .pg,body.gpapel #pass .cv i{border-radius:0;box-shadow:none;clip-path:var(--card-a)}
+body.gpapel #pass .pg{background-color:#EFE2BF;background-image:var(--nz),repeating-linear-gradient(#0000 0 21px,#C9B88F 21px 22px);background-size:160px,auto;background-blend-mode:multiply,normal;box-shadow:none}
+body.gpapel #pass .cv .b{clip-path:var(--card-b);background-color:#EFE2BF;background-image:var(--nz),repeating-linear-gradient(#0000 0 21px,#C9B88F 21px 22px);background-size:160px,auto;background-blend-mode:multiply,normal;border-radius:0}
+body.gpapel #pass .cv .f{border-left:0;color:#F6D58A;background-image:var(--nz),linear-gradient(90deg,#0004 0,#0004 9px,#0000 10px,#0000 100%);background-size:160px,auto;background-blend-mode:multiply,normal;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+body.gpapel #pass .st{border-radius:0;clip-path:none;border:0;outline:0;color:#C9402A;transform:rotate(-3deg);opacity:0;mix-blend-mode:multiply;animation:gpStamp 2.1s forwards;
+ -webkit-mask-image:var(--ink-m);mask-image:var(--ink-m);-webkit-mask-size:160px;mask-size:160px;background:radial-gradient(circle,#0000 0 40.5px,#C9402A 41px 45px,#0000 45.5px 48px,#C9402A 48.5px 50.5px,#0000 51px)}
+@keyframes gpStamp{0%,39.9%{opacity:0;transform:rotate(-3deg) scale(2)}40%{opacity:.35;transform:rotate(-3deg) scale(1.9)}42.5%{opacity:.95;transform:rotate(-3deg) scale(.9)}46%{transform:rotate(-3deg) scale(1.04)}50%,77%{opacity:.92;transform:rotate(-3deg) scale(1)}81%,100%{opacity:0;transform:rotate(-3deg) scale(1)}}
+body.gpapel #pass .tool{animation-name:gpTool}
+@keyframes gpTool{0%,27%{opacity:0;transform:translate(34px,-250px) rotate(4deg);animation-timing-function:cubic-bezier(.6,0,.9,.4)}31%{opacity:1}40%,45%{opacity:1;transform:translate(0,0) rotate(-1.5deg);animation-timing-function:cubic-bezier(.2,.6,.3,1)}56%{opacity:1}60%,100%{opacity:0;transform:translate(44px,-260px) rotate(3deg)}}
+body.gpapel #jet{filter:none}
+body.gpapel .puff{background:#FFF4DC;border-radius:0;clip-path:var(--c-a);animation-name:gpPuff}
+@keyframes gpPuff{0%{opacity:.95;transform:translate(-50%,-50%) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(2)}}
+body.gpapel #twinkle{color:#F2BC3E;text-shadow:0 2px 4px rgba(120,70,10,.45)}
+body.gpapel #skip{text-shadow:0 1px 3px rgba(0,0,0,.6)}
 /* gpapel:end */
 /* nilo-inicio: personaje, cinta bajo los pies, misiones y JUGAR un poco más abajo para que todo respire */
 #mHero{transform-origin:50% 92.7%}#mHero .hf{pointer-events:auto;cursor:pointer}
@@ -762,7 +781,7 @@ const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S
 const RUNWAY=cur;
 for(let i=0;i<=RUNWAY;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
 cur-=7;const GOAL=cur+2;
-const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
+const goal={id:'goal',kind:'paper',svg:AIRPORT,x:-.6,y:GOAL-1.2,w:6.2,h:3.4}; // ~+18% sobre 5×3, mismo centro
 // Tamaño del corredor en la pista (1 = un tile). Para probar otros: ?size=1.7
 const PSIZE=+Q.get('size')||1.8;
 const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.runFps||(art.HERO.run.length===6?12:9),x:2,y:START,w:PSIZE,h:PSIZE};
@@ -1194,8 +1213,9 @@ function heroJump(start){const h=$('mHero'),m=$('menu');
  const an=h.animate([{transform:'translateY(0) scale(1,1)',offset:0},{transform:'translateY(0) scale(1.06,.9)',offset:.16,easing:'ease-out'},
   {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
   {transform:`translateY(${dy}px) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(${dy}px) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
- const hf=h.querySelector('.hf');const runA=hArt.run||hArt.idle,riv=0;hf.innerHTML=runA[runA.length>5?5:0];hf._f='run'; // en el aire: UN solo cuadro de corrida (pie levantado), congelado; corre recién al pisar el suelo
- let done=false;const fin=()=>{if(done)return;done=true;clearInterval(riv);hBusy=false;runner.noTurn=true;setTimeout(()=>runner.noTurn=false,1500);runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
+ const hf=h.querySelector('.hf');const runA=hArt.run||hArt.idle;let riv=0,ri=runA.length>5?5:0;hf.innerHTML=runA[ri];hf._f='run'; // sube y cae congelado en UN cuadro de corrida (pie levantado); en el último tramo de la caída (~70%) arranca a correr y aterriza corriendo
+ const rt=setTimeout(()=>{riv=setInterval(()=>{ri=(ri+1)%runA.length;hf.innerHTML=runA[ri];},Math.round(1000/(hArt.runFps||12)));},630);
+ let done=false;const fin=()=>{if(done)return;done=true;clearTimeout(rt);clearInterval(riv);hBusy=false;runner.noTurn=true;setTimeout(()=>runner.noTurn=false,1500);runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
