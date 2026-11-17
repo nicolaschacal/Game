@@ -499,11 +499,46 @@ body.gpapel #tpick .tp-ribbon:before{inset:4px -2px -3px 2px;clip-path:var(--rib
 body.gpapel #tpick .tp-ribbon:after{inset:0 0 3px 0;clip-path:var(--rib-a);background-color:#E14E34}
 body.gpapel #tpick .tp-bubble:before{inset:12px -1.5px -3px 1.5px;clip-path:var(--md-b);background-color:#B39463}
 body.gpapel #tpick .tp-bubble:after{inset:0 0 0 0;clip-path:var(--bub);background-color:#F7ECD3}
+/* ═══ splash, mapa, selfie, reveal ═══ */
+body.gpapel #splash{background-color:#222B63;background-image:var(--nz),radial-gradient(ellipse at 50% 40%,#34437F,#1C2352 80%);background-size:160px,auto;background-blend-mode:multiply,normal}
+body.gpapel #splash .logo b{text-shadow:0 3px 0 #8F2C1E,0 5px 0 #6c2016,0 10px 14px rgba(0,0,0,.45)}
+body.gpapel #splash .logo b+b{text-shadow:0 3px 0 #A9701B,0 5px 0 #7d5010,0 10px 14px rgba(0,0,0,.45)}
+body.gpapel #splash .logo{transform:rotate(-1.5deg);animation:none}
+body.gpapel .logo .slogan{border:0;box-shadow:none;border-radius:0;background:#F6EBD0;color:#2B2236;clip-path:var(--pk);padding:5px 16px 6px}
+body.gpapel .logo .seal{border:0;box-shadow:none;border-radius:0;background:#E14E34;clip-path:var(--sq-a);transform:rotate(1.5deg)}
+body.gpapel #splash .load{border:0;height:12px;border-radius:0;background:#171C47;clip-path:var(--pill-a)}
+body.gpapel #splash .load i{background:#F2BC3E}
+body.gpapel #mapView{background-color:#5E9BB8;background-image:var(--nz),radial-gradient(circle at 50% 40%,#8CC3D8,#4F8CAB);background-size:160px,auto;background-blend-mode:multiply,normal}
+body.gpapel .mpin .fare{color:#2B2236}
+body.gpapel .mpin .t{filter:drop-shadow(0 2px 2px rgba(20,16,40,.45))}
+body.gpapel .mpin .n{filter:drop-shadow(0 2px 2px rgba(20,16,40,.4))}
+body.gpapel .pva-det{background:rgba(20,16,44,.82)}
+body.gpapel .pva-det .info{position:relative;isolation:isolate;padding:8px 30px 12px;color:#2B2236;filter:var(--sh)}
+body.gpapel .pva-det .info:before,body.gpapel .pva-det .info:after{content:"";position:absolute;z-index:-1;background-image:var(--nz);background-size:160px;background-blend-mode:multiply}
+body.gpapel .pva-det .info:before{inset:4px -2px -3px 2px;clip-path:var(--card-b);background-color:#B39463}
+body.gpapel .pva-det .info:after{inset:0 0 2px 0;clip-path:var(--card-a);background-color:#F7ECD3}
+body.gpapel .pva-det .info b{text-shadow:none;color:#2B2236}
+body.gpapel .pva-det .info small{color:#6B5A44}
+body.gpapel .pva-det .big{animation-name:gpPop}
+@keyframes gpPop{0%{transform:scale(.6) rotate(-1.5deg);opacity:0}}
+body.gpapel .pvrv .tx{position:relative;isolation:isolate;padding:8px 18px 10px;filter:var(--sh2);align-items:center}
+body.gpapel .pvrv .tx:before,body.gpapel .pvrv .tx:after{content:"";position:absolute;z-index:-1;background-image:var(--nz);background-size:160px;background-blend-mode:multiply}
+body.gpapel .pvrv .tx:before{inset:3px -2px -3px 2px;clip-path:var(--rib-b);background-color:#8F2C1E}
+body.gpapel .pvrv .tx:after{inset:0 0 2px 0;clip-path:var(--rib-a);background-color:#E14E34}
+body.gpapel .pvrv .tt{color:#FFF4DC;padding:0 10px}
+body.gpapel .pvrv.dup .tx:after{background-color:#3B4C96}body.gpapel .pvrv.dup .tx:before{background-color:#1C2352}
+body.gpapel .pvrv .rg{filter:var(--sh2)}
+body.gpapel .pvrv{animation-name:gpRv}body.gpapel .pvrv.long{animation-name:gpRvL}
+@keyframes gpRv{0%{transform:translateY(-150%) rotate(-1.5deg);opacity:0}14%{transform:translateY(0);opacity:1}80%{transform:none;opacity:1}100%{transform:translateY(-40%);opacity:0}}
+@keyframes gpRvL{0%{transform:translateY(-150%);opacity:0}10%{transform:none;opacity:1}86%{transform:none;opacity:1}100%{transform:translateY(-40%);opacity:0}}
+body.gpapel .pvrv .pol{transform:rotate(-1.5deg)}
+body.gpapel .pk i{--top:#2F3E78;--bot:#1C2352;background-color:#2F3E78}
 
 /* gpapel:end */
 </style>
 </head>
 <body class="home">
+<script>if(!/[?&]gui=clasico/.test(location.search))document.body.classList.add('gpapel')</script>
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="wx"></div><div id="frost"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
 <div id="splash"><div class="logo"><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div><div class="load"><i></i></div></div>
@@ -1169,14 +1204,14 @@ function drawCard(){const t=THEMES[mPick],s=pinState(mPick),R=V.REGIONS[s.r],vis
  document.querySelectorAll('.mpin').forEach(e=>e.classList.toggle('sel',+e.dataset.i===mPick));
  const arc=$('mapArc');if(arc&&mapData){const a=mapData.pts[WI],b=mapData.pts[mPick];arc.setAttribute('d',mPick===WI?'':`M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${Math.min(a[1],b[1])-Math.min(90,Math.hypot(b[0]-a[0],b[1]-a[1])*.3)} ${b[0]} ${b[1]}`);}}
 async function openMap(){audio();SFX.tap();$('mapSub').innerHTML='ESTÁS EN '+theme.place.toUpperCase()+' · ◉ '+fmt(wallet)+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').style.display='block';
- if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();const M=mapData,v=$('mapView'),sc=Math.max(.55,Math.min(1,(v.clientHeight-250)/560));
+ if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();const M=mapData,v=$('mapView'),GP=document.body.classList.contains('gpapel'),sc=Math.max(.55,Math.min(1,(v.clientHeight-250)/560));
  // ruta punteada entre paradas (la misma de siempre); se ve marcada donde tenés pasaporte. El cruce del Pacífico sale por un borde del mapa y entra por el otro
- const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round" fill="none"/>`;
+ const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" ${GP?`stroke="${on?'#7A4A2B':'#7A4A2B66'}" stroke-width="2.6" stroke-dasharray="7 6"`:`stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10"`} stroke-linecap="round" fill="none"/>`;
  let segs='';for(let i=0;i<NW-1;i++){const a=M.pts[i],b=M.pts[i+1],on=V.hasPass(V.regionOf(i))&&V.hasPass(V.regionOf(i+1));
   if(Math.abs(b[0]-a[0])>M.W/2){const y=(a[1]+b[1])/2,l=a[0]<b[0]?a:b,r=a[0]<b[0]?b:a;segs+=seg(l,[0,y],on)+seg([M.W,y],r,on);}else segs+=seg(a,b,on);}
  const pins=M.pts.map((p,i)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):'<b class="fare">'+s.cost+'</b>';return `<button class="mpin ${pinCls[s.st]}" data-i="${i}" style="left:${p[0]}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div><div class="n">${THEMES[i].place}${s.st==='cur'?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;}).join('');
  const w=$('mapWorld');w.style.cssText=`width:${M.W*sc}px;height:${M.H*sc}px;margin-top:58px`;
- w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${M.W}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><svg width="${M.W}" height="${M.H}" style="position:absolute;left:0;top:0"><path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/>${segs}<path id="mapArc" d="" stroke="#E8452C" stroke-width="5" stroke-dasharray="1 11" stroke-linecap="round" fill="none"/></svg>${pins}</div>`;
+ w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${M.W}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><svg width="${M.W}" height="${M.H}" style="position:absolute;left:0;top:0">${GP?`<defs><filter id="gpBl" x="-5%" y="-5%" width="110%" height="115%"><feGaussianBlur stdDeviation="6"/></filter><pattern id="gpNz" width="160" height="160" patternUnits="userSpaceOnUse"><image href="${(getComputedStyle(document.body).getPropertyValue('--nz').match(/url\("?(.*?)"?\)$/)||[])[1]||''}" width="160" height="160"/></pattern></defs><path d="${M.land}" transform="translate(0,11)" fill="#1B1730" opacity=".38" filter="url(#gpBl)"/><path d="${M.land}" transform="translate(0,5)" fill="#B79568"/><path d="${M.land}" fill="#F6EBD0"/><path d="${M.land}" fill="url(#gpNz)" style="mix-blend-mode:multiply" opacity=".9"/>`:`<path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/>`}${segs}<path id="mapArc" d="" ${GP?'stroke="#E14E34" stroke-width="3.4" stroke-dasharray="9 6"':'stroke="#E8452C" stroke-width="5" stroke-dasharray="1 11"'} stroke-linecap="round" fill="none"/></svg>${pins}</div>`;
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{SFX.tap();mPick=+e.dataset.i;drawCard();}));
  mPick=WI;drawCard();v.scrollLeft=M.pts[mPick][0]*sc-v.clientWidth/2;}
 $('worldChip').addEventListener('click',openMap);
