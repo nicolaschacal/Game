@@ -63,21 +63,28 @@ const cheeks = (xs, y) => xs.map(x => `<ellipse cx="${x}" cy="${y}" rx="4" ry="2
 const smile = (x, y, w = 10) => L(P(`M${x} ${y} Q${x + w / 2} ${y + 5} ${x + w} ${y} Q${x + w / 2} ${y + 2.4} ${x} ${y}Z`), INK, null, { j: .15 });
 const nails = (list, c = '#5E3E22', r = 2.3) => list.map(([x, y]) => disc(x, y, r, c, null, { n: 8, j: .15 })).join('');
 
-// ── Moneda mon: disco recortado, aro en relieve y agujero cuadrado ──
+// ── Moneda mon: disco recortado, aro en relieve con facetas de luz de papel y agujero cuadrado ──
+const arc = (cx, cy, r0, r1, a0, a1, n = 8) => { const o = [], i = [], p = a => a * Math.PI / 180; for (let k = 0; k <= n; k++) { const a = p(a0 + (a1 - a0) * k / n); o.push([cx + Math.cos(a) * r1, cy + Math.sin(a) * r1]); i.push([cx + Math.cos(a) * r0, cy + Math.sin(a) * r0]); } return [...o, ...i.reverse()]; };
 const coinBody = E(60, 64, 30, 29.4, 28);
 export const COIN = paper(
-  L(coinBody, '#F2B937', '#B8741A', { dx: 1.8, dy: 2.6, j: .5 })
-  + L(E(59.4, 63.4, 22.5, 22, 24), '#E3A62C', '#FBD36A', { dx: -.9, dy: -1, j: .4 })        // aro: capa más oscura con borde de luz de papel
-  + L(E(60.2, 64.2, 20.2, 19.8, 24), '#F6C447', null, { j: .4 })                            // cara
-  + L(R(49.6, 53.6, 20, 20), '#8A4F1A', '#E8B04A', { dx: 1.4, dy: 1.6, j: .35 })            // agujero cuadrado: hueco oscuro
-  + L(R(52.4, 56.6, 14.6, 14.2), '#B9771F', null, { j: .3 }),                               // fondo del hueco (capa de abajo)
+  L(coinBody, '#FFC21F', '#C27A0C', { dx: 1.8, dy: 2.6, j: .5 })
+  + L(arc(60, 64, 24.5, 29, 195, 285), '#FFE27A', null, { j: .25 })                        // faceta de luz en el borde (papel más claro)
+  + L(arc(60, 64, 24.5, 29, 15, 95), '#E79F17', null, { j: .25 })                          // faceta de sombra
+  + L(E(59.4, 63.4, 22.5, 22, 24), '#EAA520', '#FFDD6E', { dx: -.9, dy: -1, j: .4 })       // aro
+  + L(E(60.2, 64.2, 20.2, 19.8, 24), '#FFCF40', null, { j: .4 })                           // cara
+  + L(arc(60, 64, 15.6, 20, 190, 280), '#FFE88A', null, { j: .25 })                        // facetas de luz de la cara
+  + L(arc(60, 64, 15.6, 20, 10, 100), '#F0AE24', null, { j: .25 })
+  + L(R(49.6, 53.6, 20, 20), '#8A4F1A', '#F5C14E', { dx: 1.4, dy: 1.6, j: .35 })
+  + L(R(52.4, 56.6, 14.6, 14.2), '#B9771F', null, { j: .3 })
+  + L(P('M88 33 L90 39 L96 41 L90 43 L88 49 L86 43 L80 41 L86 39Z'), '#FFF1B0', '#E5A62A', { dx: .6, dy: .8, j: .2 }),  // destello recortado
   [coinBody]);
 export const PEARL = (() => {
   const lip = P('M18 82 Q60 112 102 82 Q98 104 60 108 Q22 104 18 82Z'), top = P('M16 80 C20 44 44 26 60 26 C76 26 100 44 104 80 Q60 96 16 80Z');
   const ribs = [[60, 30, 60, 64], [41, 36, 50, 68], [79, 36, 70, 68], [27, 54, 41, 73], [93, 54, 79, 73]].map(([a, b, c, d]) => strip(a, b, c, d, 3.4));
   return paper(L(lip, '#F29BB8', '#B85F82', { j: .6 }) + L(top, '#FFC4D6', '#D97A9C', { j: .7 })
-    + LS(ribs, '#F4A9C0', null, { j: .3 })
-    + disc(60, 78, 17.5, '#FDFBFF', '#B9B0D6', { dx: 1.6, dy: 2.2 }) + disc(58.5, 76.5, 10.5, '#EFE9F8', null, { j: .3 }),
+    + L(P('M20 78 C22 52 38 34 54 28 L48 60 L26 70Z'), '#FFDCE7', null, { j: .4 }) + L(P('M100 78 C98 56 90 40 76 30 L74 56 L96 72Z'), '#F8B0C7', null, { j: .4 })
+    + LS(ribs, '#F4A0BA', null, { j: .3 })
+    + disc(60, 78, 17.5, '#F6F2FF', '#9F95CC', { dx: 1.6, dy: 2.2 }) + L(arc(60, 78, 9, 17, 10, 110), '#D9D3EC', null, { j: .3 }) + disc(54.5, 72.5, 7, '#FFFFFF', '#E6E0F6', { dx: .7, dy: .9, j: .25 }),
     [top, lip]);
 })();
 export const STAR = (() => { const s = P('M60 14 L73 44 L106 48 L81 70 L88 102 L60 86 L32 102 L39 70 L14 48 L47 44Z');
@@ -207,9 +214,10 @@ export const GEM = (() => {
 // ── Power-ups de la pista ──
 export const DOUBLE = (() => {
   const b = P('M68 12 L30 66 L56 66 L46 108 L90 48 L63 48Z');
-  return paper(L(b, '#F2B937', '#B8741A', { dx: 1.6, dy: 2, j: .5 })
-    + L(P('M68 12 L30 66 L56 66 L63 48 L62 36Z'), '#F9CF5F', null, { j: .3 })
-    + L(P('M63 48 L90 48 L66 80Z'), '#D99A25', null, { j: .3 }), [b]);
+  return paper(L(b, '#FFC21F', '#C27A0C', { dx: 1.6, dy: 2, j: .5 })
+    + L(P('M68 12 L30 66 L56 66 L63 48 L62 36Z'), '#FFE27A', null, { j: .3 })
+    + L(P('M66 22 L40 62 L50 62 L66 38Z'), '#FFF1B0', null, { j: .2 })
+    + L(P('M63 48 L90 48 L66 80Z'), '#E09A18', null, { j: .3 }), [b]);
 })();
 export const SHIELD = (() => {
   const b = P('M60 16 L96 28 L94 60 Q90 90 60 106 Q30 90 26 60 L24 28Z'), inner = P('M60 34 L78 40 L77 60 Q74 78 60 88 Q46 78 43 60 L42 40Z');
@@ -238,3 +246,63 @@ export const CHEST = (() => {
     + nails([[34.5, 44], [73.5, 44], [34.5, 92], [73.5, 92]], '#5E3E22', 1.9)
     + star(108, 17, 8) + star(12, 30, 6), [front, lidF, lidT, side]);
 })();
+
+// ── Vehículos: barco, globo y tren en el mismo estilo (el personaje a bordo llega ya dibujado desde runner-art.js) ──
+// Semilla fija por pose: el recorte no "tiembla" entre cuadros ni cambia entre skins.
+const WAVE = (sailing, b) => sailing ? LS([bumps(6 + b * 2, 100, 2, 14, 7, 3), bumps(72 - b * 2, 102, 2, 14, 7, 3), bumps(38 + b, 106, 2, 14, 6, 3)], '#FBFDFE', '#B9D2DD', { dx: .8, dy: 1.4, j: .4 })
+  : LS([bumps(16, 102, 1, 16, 6, 3), bumps(88, 102, 1, 16, 6, 3)], '#FBFDFE', '#B9D2DD', { dx: .8, dy: 1.4, j: .4 });
+export function paperBoat(k, sailing, rider) {
+  SD = 900; const b = k ? 3 : 0;
+  const sail = P(`M60 22 C${88 + b} 26 ${96 + b} 50 ${90 + b} 70 L${30 - b} 70 C${24 - b} 50 ${32 - b} 26 60 22Z`), hull = P('M12 76 Q60 68 108 76 L97 100 Q60 108 23 100Z');
+  return paper(
+    L(strip(60, 10, 60, 78, 5), '#704332', '#46271C', { dx: 1, dy: 1, j: .3 })
+    + L(P(`M62 12 L${82 + b} ${17 + b} L62 23Z`), '#E8452C', '#A82A18', { dx: .8, dy: 1.2, j: .3 })
+    + L(sail, '#FFF8E8', '#C9B189', { dx: 1.2, dy: 1.8, j: .5 })
+    + L(P(`M60 22 C${88 + b} 26 ${96 + b} 50 ${90 + b} 70 L60 70Z`), '#F0DDB6', null, { j: .4 })
+    + L(P(`M${30 - b} 70 C${28 - b} 62 ${28 - b} 56 ${29 - b} 50 C50 56 70 56 ${91 + b} 50 C${92 + b} 58 ${92 + b} 64 ${90 + b} 70Z`), '#EAD3A6', null, { j: .4 })
+    + disc(60, 42, 9, '#E8452C', '#A82A18', { n: 16, dx: .8, dy: 1.2 }) + L(arc(60, 42, 3, 8, 190, 280), '#F26A52', null, { j: .15 })
+    + L(hull, '#B94D36', '#7A2D20', { dx: 1.2, dy: 1.6, j: .5 })
+    + rider
+    + L(P('M12 76 Q60 68 108 76 L105.5 82 Q60 74 14.5 82Z'), '#F5E7C8', null, { j: .4 })
+    + L(P('M19 92 Q60 101 101 92 L97 100 Q60 108 23 100Z'), '#8E3526', null, { j: .4 })
+    + L(P('M16 84 L40 86 L30 96 L21 92Z'), '#CC6048', null, { j: .3 })
+    + [40, 60, 80].map((x, i) => disc(x, i === 1 ? 91 : 89, 3, '#F2B937', '#B8741A', { n: 10, dx: .5, dy: .8, j: .12 })).join('')
+    + WAVE(sailing, b), [sail, hull]);
+}
+export function paperBalloon(k, flying, rider) {
+  SD = 1300;
+  const env = P('M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z'), a = k ? 5 : 4, y = k ? 71 : 74;
+  return paper(
+    L(env, '#E8452C', '#9E2A1A', { dx: 1.4, dy: 2, j: .6 })
+    + L(P('M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z'), '#C2352A', null, { j: .5 })
+    + L(P('M66 9 C88 14 102 34 100 50 L95 47 C91 31 80 18 66 9Z'), '#F26A52', null, { j: .4 })
+    + L(P('M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z'), '#FFF0D2', '#C9B189', { dx: .8, dy: 1, j: .4 })
+    + L(P('M60 6 C68 16 71 34 70 52 L66 50 C65 34 63 20 60 6Z'), '#E7D3A9', null, { j: .3 })
+    + L(P('M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z'), '#F2B937', '#B8741A', { dx: .5, dy: 1.2, j: .4 })
+    + L(P('M30 43 Q44 49 56 50 L56 54 Q42 53 29 47Z'), '#FFE27A', null, { j: .2 })
+    + L(P('M46 98 L74 98 L71 114 Q60 117 49 114Z'), '#A9794D', '#6B4A2E', { dx: .8, dy: 1.2, j: .4 })
+    + rider
+    + L(P('M48 84 L72 84 L70 90 L50 90Z'), '#704332', null, { j: .25 }) + L(strip(50, 90, 48, 99, 2.4), '#704332', null, { j: .1 }) + L(strip(70, 90, 72, 99, 2.4), '#704332', null, { j: .1 })
+    + L(P('M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z'), '#E2B987', null, { j: .3 })
+    + L(P('M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z'), '#6B4A2E', null, { j: .3 })
+    + (flying ? L(P(`M60 ${y} Q${60 + a} ${y + 7} 60 ${y + 12} Q${60 - a} ${y + 7} 60 ${y}Z`), '#F2B937', '#B8741A', { dx: .5, dy: .8, j: .2 }) + L(P(`M60 ${y + 5} Q${60 + a / 2} ${y + 8} 60 ${y + 11} Q${60 - a / 2} ${y + 8} 60 ${y + 5}Z`), '#FFE88A', null, { j: .1 }) : ''), [env]);
+}
+export function paperTrain(k, moving, rider) {
+  SD = 1700;
+  const body = RR(23, 40, 74, 58, 8), roof = P('M17 45 Q60 28 103 45 L101 53 L19 53Z');
+  return paper(
+    (moving ? disc(k ? 66 : 58, k ? 8 : 12, k ? 8 : 6, '#FBFAF6', '#BFD0DC', { dx: .8, dy: 1.4 }) : '')
+    + L(P('M50 40 L52 21 L48 15 L72 15 L68 21 L70 40Z'), '#34333B', '#1E1D24', { dx: 1, dy: 1.2, j: .4 })
+    + LS([RR(19, 84, 15, 24, 5), RR(86, 84, 15, 24, 5)], '#34333B', '#1E1D24', { dx: .8, dy: 1.2, j: .3 })
+    + L(body, '#E8452C', '#9E2A1A', { dx: 1.3, dy: 1.8, j: .5 })
+    + L(P('M70 42 L95 44 L95 84 L70 84Z'), '#D23A25', null, { j: .4 })
+    + L(roof, '#FFF0D2', '#C9B189', { dx: .6, dy: 1.4, j: .4 })
+    + L(P('M19 49 L101 49 L101 53 L19 53Z'), '#EAD3A6', null, { j: .3 })
+    + L(RR(20, 92, 80, 12, 4), '#704332', '#46271C', { dx: .6, dy: 1.2, j: .35 })
+    + L(RR(36, 56, 48, 27, 8), '#FFF0D2', '#C9B189', { dx: .6, dy: 1, j: .3 }) + L(RR(39, 59, 42, 21, 6), '#8EC7D8', null, { j: .25 }) + L(P('M41 61 L58 61 L48 78 L41 78Z'), '#B9E0EC', null, { j: .2 })
+    + rider
+    + L(R(23, 84, 74, 5), '#F2B937', '#B8741A', { dx: .4, dy: .9, j: .25 })
+    + L(P('M23 90 L97 90 L97 92 Q60 97 23 92Z'), '#B93322', null, { j: .25 })
+    + [35, 85].map(x => disc(x, 98, 4.5, '#F2B937', '#B8741A', { n: 10, dx: .5, dy: .8, j: .12 })).join('') + disc(60, 98, 3.2, '#FFF0D2', null, { n: 9, j: .1 })
+    + L(R(19, k ? 92 : 98, 15, 4), '#5E5D66', null, { j: .15 }) + L(R(86, k ? 98 : 92, 15, 4), '#5E5D66', null, { j: .15 }), [body, roof]);
+}

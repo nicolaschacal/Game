@@ -1,6 +1,7 @@
 // Arte del Tile Runner, con las reglas de recorte de KANJŪ: formas planas de papel, borde crema,
 // sombra inferior más oscura, ojos grandes con brillo y la paleta del juego. Lienzo 120×120, base en y≈110.
 import { NILO } from './nilo-art.js';
+import { paperBoat, paperBalloon, paperTrain } from './runner-papel.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
 export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST } from './runner-papel.js';
 // Recorte: la silueta se dibuja primero con borde crema y encima las mismas formas sin borde + detalles.
@@ -63,21 +64,7 @@ const heroSet = () => ({ idle: [frontPose()], run: [runPose(-1, 0), runPose(0, 1
 export const HERO = heroSet();
 
 // ── Barco de papel (visto desde popa) ───────────────────────────────────────
-function boatPose(k, sailing) {
-  const b = k ? 3 : 0; // la vela se hincha
-  const shapes = `<rect x="57.5" y="10" width="5" height="68" rx="2.5" fill="#704332"/>`
-    + `<path d="M62 ${12} L${82 + b} ${17 + b} L62 23Z" fill="#E8452C"/>`
-    + `<path d="M60 22 C${88 + b} 26 ${96 + b} 50 ${90 + b} 70 L${30 - b} 70 C${24 - b} 50 ${32 - b} 26 60 22Z" fill="#FFF0D2"/>`
-    + `<path d="M12 76 Q60 68 108 76 L97 100 Q60 108 23 100Z" fill="#B94D36"/>`;
-  const details = `<path d="M${30 - b} 70 C${28 - b} 62 ${28 - b} 56 ${29 - b} 50 C50 56 70 56 ${91 + b} 50 C${92 + b} 58 ${92 + b} 64 ${90 + b} 70Z" fill="#EAD3A6"/>`
-    + `<circle cx="60" cy="42" r="9" fill="#E8452C"/><path d="M60 22 V70" stroke="#704332" stroke-width="2.5" opacity=".35"/>`
-    + rider(84, 68)
-    + `<path d="M12 76 Q60 68 108 76 L105.5 82 Q60 74 14.5 82Z" fill="#F5E7C8"/><path d="M19 92 Q60 101 101 92 L97 100 Q60 108 23 100Z" fill="#8E3526"/>`
-    + `<circle cx="40" cy="89" r="3" fill="#F2B937"/><circle cx="60" cy="91" r="3" fill="#F2B937"/><circle cx="80" cy="89" r="3" fill="#F2B937"/>`
-    + (sailing ? `<path d="M${6 + b * 2} 106 q7 -9 14 0 q7 -9 14 0 M${72 - b * 2} 108 q7 -9 14 0 q7 -9 14 0 M${38 + b} 112 q7 -7 14 0 q7 -7 14 0" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"/>`
-               : `<path d="M16 106 q8 -6 16 0 M88 106 q8 -6 16 0" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>`);
-  return cut(shapes, details);
-}
+const boatPose = (k, sailing) => paperBoat(k, sailing, rider(84, 68));
 const boatSet = () => ({ idle: [boatPose(0, false)], run: [boatPose(0, true), boatPose(1, true)] });
 export const BOAT = boatSet();
 
@@ -103,34 +90,13 @@ export const JET = cut(
   `<path d="M4 71 L43 69.6 L43 72.6 L4 74Z M116 71 L77 69.6 L77 72.6 L116 74Z" fill="#D9D3EC"/><path d="M43.6 68 Q60 76 76.4 68 A17 17 0 0 1 43.6 68Z" fill="#D9D3EC"/><path d="M60 14 L64 50 L60 50Z" fill="#B93322"/>`
   + `<path d="M44 60 Q60 54 76 60 L76.6 65 Q60 59 43.4 65Z" fill="#E8452C"/><circle cx="32" cy="76" r="5.5" fill="#F2B937"/><circle cx="88" cy="76" r="5.5" fill="#F2B937"/><circle cx="32" cy="76" r="2.6" fill="${CREAM}"/><circle cx="88" cy="76" r="2.6" fill="${CREAM}"/>`);
 // ── Cielo: globo de papel, picos entre nubes, nubes y estrella ───────────────
-function balloonPose(k, flying) {
-  const shapes = `<path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/>`
-    + `<path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/>` + rider(60, 88, .85);
-  const details = `<path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/>`
-    + `<path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/>`
-    + `<path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/>`
-    + `<path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/>`
-    + (flying ? `<path d="M60 ${k ? 71 : 74} q${k ? 5 : 4} 7 0 12 q-${k ? 5 : 4} -5 0 -12Z" fill="#F2B937"/>` : '');
-  return cut(shapes, details);
-}
+const balloonPose = (k, flying) => paperBalloon(k, flying, rider(60, 88, .85));
 const balloonSet = () => ({ idle: [balloonPose(0, false)], run: [balloonPose(0, true), balloonPose(1, true)] });
 export const BALLOON = balloonSet();
 const puff = (y, c = '#FFFFFF') => `<path d="M8 ${y} q-2 -12 10 -12 q4 -12 18 -6 q8 -10 20 -2 q12 -8 22 2 q14 -4 16 8 q12 0 10 10 q-48 8 -96 0Z" fill="${c}"/>`;
 
 // ── Tren de papel (visto desde atrás) y obstáculos de vía ───────────────────
-function trainPose(k, moving) {
-  // ancho como el barco y el globo, pero ruedas y techo quedan dentro del tile (de x 17 a 103)
-  const shapes = (moving ? `<circle cx="${k ? 66 : 58}" cy="${k ? 8 : 12}" r="${k ? 8 : 6}" fill="#FFFFFF"/>` : '')
-    + `<path d="M50 40 L52 21 L48 15 L72 15 L68 21 L70 40Z" fill="#34333B"/>`
-    + `<rect x="19" y="84" width="15" height="24" rx="5" fill="#34333B"/><rect x="86" y="84" width="15" height="24" rx="5" fill="#34333B"/>`
-    + `<rect x="23" y="40" width="74" height="58" rx="8" fill="#E8452C"/><path d="M17 45 Q60 28 103 45 L101 53 L19 53Z" fill="#FFF0D2"/>`
-    + `<rect x="20" y="92" width="80" height="12" rx="4" fill="#704332"/>`;
-  const details = `<path d="M19 49 L101 49 L101 53 L19 53Z" fill="#EAD3A6"/><rect x="38" y="58" width="44" height="23" rx="6" fill="#8EC7D8"/>` + rider(60, 72, .75)
-    + `<rect x="38" y="58" width="44" height="23" rx="6" fill="none" stroke="#FFF0D2" stroke-width="4"/><rect x="23" y="84" width="74" height="5" fill="#F2B937"/><path d="M23 90 L97 90 L97 92 Q60 97 23 92Z" fill="#B93322"/>`
-    + `<circle cx="35" cy="98" r="4.5" fill="#F2B937"/><circle cx="85" cy="98" r="4.5" fill="#F2B937"/><circle cx="60" cy="98" r="3.2" fill="#FFF0D2"/>`
-    + `<rect x="19" y="${k ? 92 : 98}" width="15" height="4" fill="#5E5D66"/><rect x="86" y="${k ? 98 : 92}" width="15" height="4" fill="#5E5D66"/>`;
-  return cut(shapes, details);
-}
+const trainPose = (k, moving) => paperTrain(k, moving, rider(60, 72, .75));
 const trainSet = () => ({ idle: [trainPose(0, false)], run: [trainPose(0, true), trainPose(1, true)] });
 export const TRAIN = trainSet();
 // caja de madera: una sola, en tres cuartos, con tablas, marco y travesaño
