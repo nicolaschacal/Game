@@ -16,13 +16,13 @@
 - Resultado: una ronda completada deja ≈150–200 monedas; una perdida, ≈40–80.
 
 ## Reglas nuevas (paper-voyager/viaje.js)
-- **Tarifa** = 10 + 1 por cada 90 km (gran círculo con coordenadas reales) + 10 si cambia de región + 15 si el destino es remoto (islas/confines), redondeado a 5, mínimo 15. Quedarse es gratis.
-  Montevideo → Buenos Aires 15 · Río 30 · Cartagena 70 · Madrid 130. Máximo del mapa: 255.
-- **Pasaportes** = 300 + 30 × destinos de la región (redondeo a 50): América 650 (12) · Europa 800 (16) · África 400 (4) · Asia 650 (11) · Oceanía 350 (2). Permanentes. El viajero elegido trae el de su región.
+- **Tarifa** = 40 + 1 por cada 35 km (gran círculo con coordenadas reales) + 60 si cambia de región + 30 si el destino es remoto (islas/confines), redondeado a 5, mínimo 40. Quedarse es gratis.
+  Montevideo → Buenos Aires 45 · Río 90 · Cartagena 195 · Madrid 385 · Kioto → Buenos Aires 635.
+- **Pasaportes** = 500 + 60 × destinos de la región (redondeo a 50): América 1200 · Europa 1450 · África 750 · Asia 1150 · Oceanía 600. Permanentes. El viajero elegido trae el de su región.
+- **Cobro**: las monedas de la pista (y los cofres) se cobran sólo al llegar al aeropuerto. Si perdés o salís, se pierden.
 - Regiones: Petra y Dubái → Asia; Estambul y Moscú → Europa; Marrakech → África; Isla de Pascua → Oceanía (Polinesia), para que Oceanía no tenga un solo destino.
 - **Dificultad** según rondas completadas (no según la ciudad): empezar en Buenos Aires o Kioto es igual de amable.
 - **Selfies**: 3 tomas por destino (Llegada, Paseo, Recuerdo) = 135. Una cámara por ronda. Primera vez +25; repetida +10. Completar la primera toma de todos los destinos de una región: +300 y un revivir (reemplaza el premio de la palabra del día).
-- Con ≈150 netas por ronda: un viaje regional cuesta 1/5 a 1/3 de lo que se gana; un pasaporte, 3–5 rondas; un cosmético de fotografía, 1–3 rondas.
 
 ## Migración
 - `pv.trip` nuevo. Si no existe y hay datos viejos (`world`, `maxWorld`, `wallet` o `best`): viajero Nilo, destino actual = `world % 45`, rondas = `maxWorld`, y pasaportes de todas las regiones de los destinos ya alcanzados (más Europa). Nunca se les pide elegir.

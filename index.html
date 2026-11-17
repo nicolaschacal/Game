@@ -352,7 +352,7 @@ body.home #hud{opacity:0}
 <div id="paused" class="dim"><div class="card"><div class="ribbon">PAUSA</div>
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <button class="link" id="howTo" style="margin-top:8px">? CÓMO SE JUEGA</button>
- <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div></div></div>
+ <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR <small style="display:block;font-size:10px;opacity:.7">PERDÉS LAS MONEDAS</small></button></div></div></div>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
@@ -481,7 +481,9 @@ const RUNWAY=cur;
 for(let i=0;i<=RUNWAY;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
 cur-=7;const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
-const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.run.length===6?12:9,x:2,y:START,w:1.4,h:1.4};
+// Tamaño del corredor en la pista (1 = un tile). Para probar otros: ?size=1.7
+const PSIZE=+Q.get('size')||1.55;
+const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.run.length===6?12:9,x:2,y:START,w:PSIZE,h:PSIZE};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(DIF.P>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
@@ -560,7 +562,7 @@ function addScore(n){score+=n;$('score').textContent=fmt(score);}
 let maxMult=carry?.maxMult||1;
 function showCombo(){const c=$('combo'),m=mult();maxMult=Math.max(maxMult,m);if(m>1){c.textContent='x'+m+(m>baseMult()?' RACHA':'');c.style.opacity='1';}else c.style.opacity='0';if(streak>0)missionAdd('streak',Math.min(4,Math.floor(streak/6))+1);}
 showCombo();
-// las monedas se guardan en el monedero al terminar cada mundo y al perder
+// las monedas de la pista se cobran sólo al llegar al aeropuerto: si perdés o salís, se pierden
 function bank(){const n=coinCount-banked;if(n>0)wallet+=Math.round(n*(Iap.pro?1.25:1));banked=coinCount;store.set('wallet',wallet);} // PRO: +25% al guardar
 const doubleOn=()=>boost.double||boostUntil.double>performance.now();
 function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){onPower(c);return;}const before=mult();streak++;const gain=c.value*mult();addScore(gain);coinCount+=(c.prize?5:1)*(doubleOn()?2:1);$('coinsN').textContent=coinCount;bump('coinPill');
@@ -586,15 +588,15 @@ function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize||c?.side)re
 
 // ── Fin de partida y paso de mundo ──
 let ended=false;
-function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;bank();Music.mode='menu';
+function endGame(title,reason){if(ended)return;ended=true;runner.gameOver=true;runner.hitPause=999;Music.mode='menu';const lost=coinCount-banked;chests=0; // sin llegar no se cobra nada (ni cofres)
  const record=score>best&&score>0;if(record){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
  $('goTitle').textContent=title;$('gameReason').textContent=reason;$('goRec').style.display=record?'inline-block':'none';
- $('goScore').textContent=fmt(score);$('goCoins').textContent='+'+coinCount;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
+ $('goScore').textContent=fmt(score);$('goCoins').innerHTML=lost>0?'<s style="opacity:.55">'+lost+'</s>':'0';if(lost>0)reason+=' · Las monedas se cobran al llegar al aeropuerto.';$('gameReason').textContent=reason;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
  const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0],nd=$('goNudge');
  if(next){nd.style.display='block';nd.innerHTML=artFor(next.id).HERO.idle[0]+(wallet>=next.price?'¡Ya podés desbloquear a '+next.name.toUpperCase()+'!':'Te faltan ◉ '+(next.price-wallet)+' para '+next.name.toUpperCase())+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
  SFX.lose();buzz(120);if(record)confetti();setTimeout(()=>gameover.style.display='flex',350);
- drawChests();adDouble=false;$('goDouble').style.display=coinCount>0?'flex':'none';
+ drawChests();adDouble=false;$('goDouble').style.display='none';
  setTimeout(()=>Ads.intersticialQuizas(),1400);}
 // Cofres: se abren al terminar; cada uno trae monedas o un ítem. Después se puede abrir uno extra mirando un anuncio.
 let adDouble=false,adChest=false;
@@ -656,7 +658,6 @@ const revivePrice=()=>120*(revives+1);
 function onGameOver(){
  const [title,reason]=deathText();host.classList.remove('quake');void host.offsetWidth;host.classList.add('quake');$('speed').style.opacity=0;
  if(boost.shield){boost.shield=false;rescue();pop('¡ESCUDO!','big');return;}
- bank();
  if(revives<2){
   const own=stock.revive>0,pay=own||wallet>=revivePrice();$('rvBtn').style.display=pay?'block':'none';$('rvSub').style.display=pay?'block':'none';$('rvTitle').textContent=title;$('rvBtn').innerHTML='♥ REVIVIR<div class="ring"><span id="rvN">5</span></div>';$('rvSub').textContent=own?'TENÉS '+stock.revive:'CUESTA ◉ '+revivePrice()+' · TENÉS ◉ '+wallet;
   $('revive').style.display='flex';SFX.nope();clearTimeout(reviveTimer);let left=5;const tickR=()=>{left--;if($('rvN'))$('rvN').textContent=Math.max(1,left);if(left<=0){$('revive').style.display='none';endGame(title,reason);}else reviveTimer=setTimeout(tickR,1000);};reviveTimer=setTimeout(tickR,1000);
@@ -817,7 +818,7 @@ function frame(now){const dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
  refreshHints();if(!runner.gameOver)refreshUI();
  requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
-window.addEventListener('pagehide',bank);
+
 
 // ── Íconos, misión del día y récords ──
 const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:AIRPORT,double:DOUBLE,chest:CHEST,tile:STUMP};
@@ -860,12 +861,12 @@ function drawHome(){
  drawMission();
 }
 // ── Personaje grande del inicio (DOM, mismos frames que el corredor de la escena) ──
-const FEETY=.675,RUNW=.25; // dónde pisa y qué tan grande se ve el corredor 3D (para que el grande lo tape y el salto aterrice ahí)
+const FEETY=.675,RUNW=.25*(PSIZE/1.4)*(.9/(+Q.get('zoom')||.9)); // dónde pisa y qué tan grande se ve el corredor 3D (para que el grande lo tape y el salto aterrice ahí)
 let hKey='',hArt=null,hTick=0,hWave=0,hBusy=false;
 function heroLayout(){const m=$('menu').getBoundingClientRect(),h=$('mHero');if(!m.width)return;
- const fy=m.height*FEETY,top=$('worldChip').getBoundingClientRect().bottom-m.top+4,S=Math.min(m.width*.95,(fy-top)/.917)*.76;
+ const fy=m.height*FEETY,top=$('worldChip').getBoundingClientRect().bottom-m.top+4,S=Math.min(m.width*.95,(fy-top)/.917)*.58;
  h.style.width=h.style.height=S+'px';h.style.left=(m.width/2-S/2)+'px';h.style.top=(fy+.083*S-S)+'px';
- const ay=fy-S*.4-23;$('prevSkin').style.top=$('nextSkin').style.top=ay+'px';$('skinName').style.top=(fy-26)+'px';
+ const ay=fy-S*.4-23;$('prevSkin').style.top=$('nextSkin').style.top=ay+'px';$('skinName').style.top=(fy-S*.2-26)+'px'; // la cinta tapa las piernas y no pisa las misiones
  h._S=S;h._rs=(m.width*RUNW)/S;h._m=m;}
 function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt)return;hTick++;
  const f=Date.now()<hWave?(hTick%3===0?hArt.idle[0]:(hArt.wave?.[0]||hArt.idle[0])):hArt.idle[hTick%hArt.idle.length];
@@ -884,8 +885,8 @@ function heroJump(start){const h=$('mHero'),m=$('menu');
  const an=h.animate([{transform:'translateY(0) scale(1,1)',offset:0},{transform:'translateY(0) scale(1.06,.9)',offset:.16,easing:'ease-out'},
   {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
   {transform:`translateY(0) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(0) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
- setTimeout(()=>{const f=h.querySelector('.hf');if(hArt.run)f.innerHTML=hArt.run[0];f._f='run';},770); // al caer ya está de espaldas, como el corredor
- let done=false;const fin=()=>{if(done)return;done=true;hBusy=false;runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
+ const hf=h.querySelector('.hf');let ri=0;const runA=hArt.run||hArt.idle,riv=setInterval(()=>{hf.innerHTML=runA[ri++%runA.length];hf._f='run';},75);hf.innerHTML=runA[0]; // salta ya de espaldas y corriendo, como el corredor
+ let done=false;const fin=()=>{if(done)return;done=true;clearInterval(riv);hBusy=false;runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
@@ -982,7 +983,7 @@ $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
 function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
-$('quit').addEventListener('click',()=>{bank();location.reload();});
+$('quit').addEventListener('click',()=>{location.reload();}); // salir antes de llegar: no se cobran las monedas
 // ── Puente para los módulos de pantallas (tienda.js, album.js, seleccion.js) ──
 const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
  get owned(){return owned},saveOwned(){store.set('owned',owned);},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},

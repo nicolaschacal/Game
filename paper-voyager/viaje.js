@@ -33,7 +33,7 @@ export const regionOf = i => GEO[i]?.[2] || 'eu';
 export const destsOf = r => DESTINOS.map((_, i) => i).filter(i => regionOf(i) === r);
 
 // Precio de un pasaporte: base + un tanto por cada destino que abre (más destinos, más vale). Redondeado a 50.
-export const passPrice = r => Math.round((300 + 30 * destsOf(r).length) / 50) * 50;
+export const passPrice = r => Math.round((500 + 60 * destsOf(r).length) / 50) * 50;
 
 // ── Tarifas ──
 // km reales por la superficie de la Tierra (gran círculo)
@@ -43,11 +43,13 @@ export function km(a, b) {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 // Una sola regla para todos los viajes:
-//   10 de tasa base + 1 moneda cada 90 km
-//   + 10 si cruza de región (vuelo internacional) + 15 si el destino es remoto (pocas conexiones)
-//   redondeado a 5, mínimo 15. Repetir el destino donde estás es gratis.
-// Montevideo → Buenos Aires 15 · Río 30 · Cartagena 65 · Madrid 130 · Kioto → Buenos Aires ≈ 225.
-export const FARE = { base: 10, kmPerCoin: 90, intl: 10, remote: 15, min: 15 };
+//   40 de tasa base + 1 moneda cada 35 km
+//   + 60 si cruza de región (vuelo internacional) + 30 si el destino es remoto (pocas conexiones)
+//   redondeado a 5, mínimo 40. Repetir el destino donde estás es gratis.
+// Una ronda completada deja ≈150–200 monedas (y sólo se cobran al llegar): un vecino cuesta media ronda,
+// cruzar la región ≈1 ronda y cruzar el océano 2–4 rondas.
+// Montevideo → Buenos Aires 45 · Río 95 · Cartagena 185 · Madrid 385 · Kioto → Buenos Aires ≈ 625.
+export const FARE = { base: 40, kmPerCoin: 35, intl: 60, remote: 30, min: 40 };
 export function fare(from, to) {
   if (from === to) return 0;
   let c = FARE.base + km(from, to) / FARE.kmPerCoin;
