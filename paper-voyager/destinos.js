@@ -164,6 +164,51 @@ L.monument = cut(
   `<path d="M0 110 Q60 98 120 110Z" fill="#E0A070"/><path d="M6 108 L10 88 L20 80 L22 46 L40 46 L42 80 L52 88 L56 108Z" fill="#C0603C"/><rect x="44" y="60" width="7" height="22" fill="#C0603C"/><path d="M64 108 L68 90 L78 82 L80 54 L88 54 L88 34 L102 34 L104 82 L112 90 L116 108Z" fill="#C0603C"/>`,
   `<path d="M32 46 L40 46 L42 80 L52 88 L56 108 L40 108 L36 84 L34 80Z M96 34 L102 34 L104 82 L112 90 L116 108 L100 108 L98 84Z" fill="#9E4A2E" opacity=".6"/><path d="M22 58 h18 M22 70 h19 M12 94 h40 M80 66 h23 M88 46 h14 M70 96 h42" stroke="#D98C6A" stroke-width="2.5" stroke-linecap="round"/><path d="M0 110 Q60 102 120 110Z" fill="#E8B488"/>`);
 
+// ── Monumentos rehechos (tanda 3): mismo oficio que Kioto, Moscú o París: formas planas, sombra de papel a media opacidad y pocos recortes ──
+const bar = (x1, y1, x2, y2, w) => { const dx = x2 - x1, dy = y2 - y1, l = Math.hypot(dx, dy) || 1, nx = -dy / l * w / 2, ny = dx / l * w / 2; return `M${(x1 + nx).toFixed(1)} ${(y1 + ny).toFixed(1)} L${(x2 + nx).toFixed(1)} ${(y2 + ny).toFixed(1)} L${(x2 - nx).toFixed(1)} ${(y2 - ny).toFixed(1)} L${(x1 - nx).toFixed(1)} ${(y1 - ny).toFixed(1)}Z`; };
+// Kilimanjaro: macizo con el Kibo de cumbre plana y nevada, el Mawenzi irregular, sabana, jirafa y acacia
+const jirafa = (x, y, k = 1) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M0 0 L0 -22 L3 -22 L3 0Z M14 0 L14 -22 L17 -22 L17 0Z M-2 -24 Q8 -30 20 -24 L18 -14 L0 -14Z M17 -22 L21 -48 L26 -46 L22 -20Z" fill="#E0B05A"/><ellipse cx="25" cy="-50" rx="5.5" ry="3.4" fill="#E0B05A"/></g>`;
+const jirafaD = (x, y, k = 1) => `<g transform="translate(${x} ${y}) scale(${k})"><g fill="#A8702E"><circle cx="6" cy="-21" r="2.2"/><circle cx="13" cy="-19" r="2"/><circle cx="21" cy="-34" r="1.6"/><circle cx="23" cy="-42" r="1.5"/></g><path d="M23 -53 l-1 -5 M26 -53 l1 -5" stroke="#8A5A24" stroke-width="1.4" stroke-linecap="round"/><path d="M14 -22 L14 0 L17 0 L17 -22Z" fill="#B88A3E" opacity=".6"/></g>`;
+L.kili = cut(
+  `<path d="M0 110 L0 96 Q18 80 34 72 L44 60 L52 62 L58 46 L90 46 Q98 56 108 70 L120 84 L120 110Z" fill="#9A8DB0"/><path d="M12 76 L26 50 L32 58 L36 46 L44 62 L40 76Z" fill="#8E81A6"/><path d="M0 110 Q60 96 120 110Z" fill="#D9BC6A"/>`
+  + `<path d="M92 110 L94 78 L88 66 L92 64 L98 72 L104 62 L108 65 L102 78 L104 110Z" fill="#6B4A2E"/><path d="M76 66 Q90 52 112 56 Q124 60 118 70 Q96 62 76 66Z" fill="#5E8A3C"/>` + jirafa(12, 108, .9),
+  `<path d="M58 46 L90 46 L86 52 L82 49 L76 58 L70 51 L64 60 L60 52 L54 62 L52 62Z" fill="#FFFFFF"/><path d="M58 46 L52 62 L44 60 L47 53Z" fill="#F0F2F8"/><path d="M90 46 Q98 56 108 70 L120 84 L120 110 L100 110 Q96 80 84 58Z" fill="#74628E" opacity=".45"/><path d="M34 72 L44 60 L52 62 L58 46 L50 64 L40 80Z" fill="#B7ABCB" opacity=".5"/><path d="M12 76 L26 50 L32 58 L28 76Z" fill="#6E6286" opacity=".4"/><path d="M26 52 L28 58 L24 56Z M36 47 L38 54 L34 53Z" fill="#FFFFFF"/>`
+  + `<path d="M0 110 Q60 96 120 110 L120 106 Q60 92 0 106Z" fill="#C9A94E" opacity=".6"/><path d="M80 66 Q92 56 108 58" stroke="#3E6A28" stroke-width="2.4" fill="none" opacity=".6"/>` + jirafaD(12, 108, .9));
+// Avenida de los Baobabs: troncos en botella con copa plana de hojas, a distinta escala
+const bao = (x, k) => `<g transform="translate(${x} 110) scale(${k})"><path d="M-15 0 Q-20 -10 -15 -30 Q-11 -50 -10 -64 L10 -64 Q11 -50 15 -30 Q20 -10 15 0Z" fill="#B98A62"/><path d="M-9 -62 L-20 -80 L-15 -82 L-6 -66Z M-2 -64 L-4 -88 L2 -88 L3 -64Z M7 -64 L18 -84 L23 -81 L11 -62Z" fill="#B98A62"/><path d="M-10 -64 L-8 -60 L8 -60 L10 -64Z" fill="#B98A62"/></g>`;
+const baoD = (x, k) => `<g transform="translate(${x} 110) scale(${k})"><path d="M2 -64 L10 -64 Q11 -50 15 -30 Q20 -10 15 0 L4 0 Q9 -30 2 -64Z" fill="#8A6040" opacity=".55"/><path d="M-5 -58 Q-7 -36 -9 -8 M-1 -60 Q-1 -34 -2 -6" stroke="#8A6040" stroke-width="1.6" fill="none"/><g fill="#6FA85A"><ellipse cx="-19" cy="-83" rx="9" ry="4.4"/><ellipse cx="0" cy="-90" rx="9" ry="4.4"/><ellipse cx="21" cy="-85" rx="9" ry="4.4"/></g><g fill="#4F8040" opacity=".6"><ellipse cx="-17" cy="-80" rx="6" ry="2.4"/><ellipse cx="23" cy="-82" rx="6" ry="2.4"/></g></g>`;
+L.baobabs = cut(`<path d="M0 110 Q60 100 120 110Z" fill="#C96A3C"/>` + bao(12, .5) + bao(106, .45) + bao(82, .78) + bao(40, 1) + `<g transform="translate(-19 -83) translate(40 110)"><ellipse cx="0" cy="0" rx="9" ry="4.4" fill="#6FA85A"/></g>`,
+  baoD(12, .5) + baoD(106, .45) + baoD(82, .78) + baoD(40, 1) + `<path d="M0 110 Q60 100 120 110 L120 108 Q60 98 0 108Z" fill="#E0A070" opacity=".7"/><path d="M26 110 Q52 104 76 110Z" fill="#E8B386" opacity=".6"/>`);
+// Wat Arun: prang central de cuatro cuerpos con terrazas, corona con aguja, y cuatro prangs menores
+const prang2 = (x, base, h, hw) => {
+  const st = [[0, .3, 1, .82], [.3, .56, .72, .56], [.56, .76, .5, .36]]; let s = '', d = '', dots = '';
+  st.forEach(([a, b, w0, w1]) => { const yb = base - h * a, yt = base - h * b; s += `<path d="M${x - hw * w0 - 1.6} ${yb} L${x - hw * w0 - 1.6} ${yb - 2.6} L${x - hw * w0 + .6} ${yb - 2.6} L${x - hw * w1} ${yt} L${x + hw * w1} ${yt} L${x + hw * w0 - .6} ${yb - 2.6} L${x + hw * w0 + 1.6} ${yb - 2.6} L${x + hw * w0 + 1.6} ${yb}Z" fill="#F1EADC"/>`;
+    d += `<path d="M${x} ${yb - 2.6} L${x + hw * w0 + 1.6} ${yb - 2.6} L${x + hw * w0 + 1.6} ${yb} L${x} ${yb}Z M${x} ${yt} L${x + hw * w1} ${yt} L${x + hw * w0 - .6} ${yb - 2.6} L${x} ${yb - 2.6}Z" fill="#D9CDB4" opacity=".55"/>`;
+    const n = Math.max(1, Math.round(w1 * 3)); for (let i = 0; i < n; i++) { const nx = x + (i - (n - 1) / 2) * hw * w1 * 1.2 / n * 1.6; d += `<path d="M${nx - 1.6} ${yb - 5} L${nx - 1.6} ${yb - 9} Q${nx} ${yb - 11.4} ${nx + 1.6} ${yb - 9} L${nx + 1.6} ${yb - 5}Z" fill="#BFB094"/>`; }
+    dots += [-.55, 0, .55].map((q, i) => `<circle cx="${x + q * hw * w1}" cy="${yt + 3}" r="${Math.max(.9, hw * .07)}" fill="${['#3F8F7F', '#E8452C', '#F2B937'][i]}"/>`).join(''); });
+  const yc = base - h * .76, top = base - h;
+  s += `<path d="M${x - hw * .36} ${yc} Q${x - hw * .34} ${yc - h * .13} ${x - hw * .14} ${top + h * .06} L${x} ${top} L${x + hw * .14} ${top + h * .06} Q${x + hw * .34} ${yc - h * .13} ${x + hw * .36} ${yc}Z" fill="#F1EADC"/>`;
+  d += `<path d="M${x} ${top} L${x + hw * .14} ${top + h * .06} Q${x + hw * .34} ${yc - h * .13} ${x + hw * .36} ${yc} L${x} ${yc}Z" fill="#D9CDB4" opacity=".55"/><rect x="${x - .8}" y="${top - h * .14}" width="1.6" height="${h * .15}" fill="#E4B23A"/><path d="M${x - 3.4} ${top - h * .08} Q${x} ${top - h * .02} ${x + 3.4} ${top - h * .08}" stroke="#E4B23A" stroke-width="1.4" fill="none"/>`;
+  return [s, d + dots];
+};
+{ const parts = [[22, 104, 44, 9], [98, 104, 44, 9], [40, 104, 58, 10], [80, 104, 58, 10]].map(a => prang2(...a)), c = prang2(60, 104, 92, 17);
+  L.watarun = cut(parts.map(p => p[0]).join('') + c[0] + `<path d="M4 110 L8 102 L112 102 L116 110Z" fill="#E3D8C4"/>`, parts.map(p => p[1]).join('') + c[1] + `<path d="M50 110 L52 104 L68 104 L70 110Z" fill="#D9CDB4"/><path d="M6 106 L114 106" stroke="#C9BCA0" stroke-width="2"/>`); }
+// Les Éclaireurs (Ushuaia): faro rojo y blanco sobre su islote; sin montañas propias (van las del fondo)
+L.faro = cut(
+  `<path d="M0 110 Q40 100 60 104 Q90 100 120 110Z" fill="#8FB6D0"/><path d="M14 110 L24 100 L40 94 L50 90 L74 92 L92 96 L106 110Z" fill="#7D7A78"/><path d="M52 92 L55 54 L57 34 L63 34 L65 54 L68 92Z" fill="#F6F2EA"/><path d="M46 34 L74 34 L74 38 L46 38Z" fill="#3C3A44"/><rect x="54" y="22" width="12" height="12" rx="2" fill="#F6F2EA"/><path d="M52 22 L60 8 L68 22Z" fill="#D9402E"/><circle cx="60" cy="7" r="2.4" fill="#3C3A44"/>`,
+  `<path d="M54.4 80 L67.6 80 L68 92 L52 92Z M55.2 62 L64.8 62 L65.4 70 L54.6 70Z" fill="#D9402E"/><path d="M60 34 L65 34 L66 50 L64.8 62 L67.6 80 L68 92 L60 92Z" fill="#CFC8BC" opacity=".5"/><rect x="56.4" y="25" width="7" height="6" fill="#F2D27A"/><path d="M48 38 h24" stroke="#5A5666" stroke-width="1.4"/><path d="M57 92 L57 86 Q60 82 63 86 L63 92Z" fill="#6B5A4A"/><path d="M52 92 L74 92 L92 96 L106 110 L66 110Z" fill="#5E5C5A" opacity=".45"/><path d="M24 100 L40 94 L50 90 L44 100Z" fill="#9A9794" opacity=".6"/><path d="M6 106 q8 -3 16 0 M84 107 q8 -3 16 0" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".8"/>`);
+// Gran Muralla: lienzo serpenteando por dos capas de colinas, con torres de vigía
+{ const pts = [[0, 96], [14, 84], [26, 68], [38, 60], [50, 72], [62, 82], [76, 66], [88, 52], [100, 42], [112, 34], [120, 30]];
+  const hill = dy => `M0 110 ` + pts.map(([x, y]) => `L${x} ${y + dy}`).join(' ') + ` L120 110Z`;
+  const wall = pts.slice(1).map((p, i) => bar(pts[i][0], pts[i][1] - 2, p[0], p[1] - 2, 5.6)).join('');
+  const top = pts.slice(1).map((p, i) => bar(pts[i][0], pts[i][1] - 4.6, p[0], p[1] - 4.6, 2.2)).join('');
+  const tw = (x, y, k = 1) => `M${x - 6 * k} ${y} L${x - 6 * k} ${y - 14 * k} L${x - 7.4 * k} ${y - 14 * k} L${x - 7.4 * k} ${y - 18 * k} L${x - 4 * k} ${y - 18 * k} L${x - 4 * k} ${y - 16 * k} L${x - 1.6 * k} ${y - 16 * k} L${x - 1.6 * k} ${y - 18 * k} L${x + 1.6 * k} ${y - 18 * k} L${x + 1.6 * k} ${y - 16 * k} L${x + 4 * k} ${y - 16 * k} L${x + 4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 14 * k} L${x + 6 * k} ${y - 14 * k} L${x + 6 * k} ${y}Z`;
+  const tws = [[26, 68, 1], [50, 72, .9], [76, 66, 1], [100, 42, 1], [112, 34, 1.15]];
+  L.muralla = cut(`<path d="${hill(-12)}" fill="#A9C58C"/><path d="${hill(6)}" fill="#6FA255"/><path d="${wall}${top}" fill="#CDB48C"/>` + tws.map(([x, y, k]) => `<path d="${tw(x, y - 1, k)}" fill="#DCC49C"/>`).join(''),
+    `<path d="${hill(6)}" fill="none"/>` + tws.map(([x, y, k]) => `<path d="M${x} ${y - 18 * k} L${x + 4 * k} ${y - 16 * k} L${x + 4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 14 * k} L${x + 6 * k} ${y - 14 * k} L${x + 6 * k} ${y - 1} L${x} ${y - 1}Z" fill="#B99E74" opacity=".5"/><path d="M${x - 2 * k} ${y - 1} L${x - 2 * k} ${y - 6 * k} Q${x} ${y - 8.4 * k} ${x + 2 * k} ${y - 6 * k} L${x + 2 * k} ${y - 1}Z" fill="#7A6442"/><rect x="${x - 1.4 * k}" y="${y - 12 * k}" width="${2.8 * k}" height="${3.4 * k}" rx="1" fill="#7A6442"/>`).join('')
+    + pts.slice(1).map((p, i) => i % 2 ? '' : `<path d="M${pts[i][0]} ${pts[i][1] - 2} L${p[0]} ${p[1] - 2}" stroke="#A88E66" stroke-width="1.6" stroke-dasharray="3 3" fill="none"/>`).join('')
+    + `<path d="M0 110 L0 96 Q30 100 60 96 Q90 100 120 110Z" fill="#4F8040" opacity=".35"/>`); }
+
 // Adornos de costado: viven en adornos.js, organizados por BIOMA (ver BIOMAS). Cada destino sólo elige bioma (+ extras opcionales).
 const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
 // [nombre del mundo, ciudad, país, monumento, cielo/bruma, colina clara, colina oscura, suelo alrededor, piso de la pista, piso ya construido, horizonte, clima, hora, adornos]
@@ -211,13 +256,13 @@ const TABLA = [
   ['COSTA', 'Río de Janeiro', 'Brasil', LANDMARKS.cristo, '#DDF3F5', '#A9DCE2', '#8FCED6', '#F2E3B5', '#F4E6BC', '#E2CE97', 'dune', 'bubbles', 12, 'tropical sombrilla'],
   ['CIUDAD', 'Montevideo', 'Uruguay', L.salvo, '#E4EEF8', '#C4D6EA', '#A4BEDC', '#B8BCC4', PAV, VEREDA, 'city', 'leaves', 15, 'europa quiosco'],
   ['CIUDAD', 'Buenos Aires', 'Argentina', L.obelisco, '#E6E0F4', '#CDC2E8', '#B4A6D8', '#B8B4BE', PAV, VEREDA, 'city', 'petals', 15, 'europa !jacaranda quiosco'],
-  ['NIEVE', 'Ushuaia', 'Argentina', LANDMARKS.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'nieve'],
+  ['NIEVE', 'Ushuaia', 'Argentina', L.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'nieve'],
   ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'tropical moaiChico'],
   ['COSTA', 'Sídney', 'Australia', L.opera, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 11, 'tropical velero'],
 ];
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base
-const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.25 };
+const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
 const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColor, ridge, wx, hour, biomaStr], idx) => { const [biome, ...extras] = biomaStr.split(' '), names = adornosDe(biome, idx, extras.filter(x => x[0] !== '!')); extras.filter(x => x[0] === '!').forEach(x => { names[0] = x.slice(1); }); return ({
   name, place, country, art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look', biome, lmScale: LM_ESCALA[place] || 1,
   look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: names.map(k => ADORNOS[k]), lamps: names.map(k => /^farol/.test(k)), lights: names.map(k => LUZ[k] || null) },
