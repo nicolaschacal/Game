@@ -162,8 +162,25 @@ export const CRATE = cut(`<path d="M22 46 L34 34 L100 34 L88 46Z" fill="#E9BC82"
 export const GEM = "<svg viewBox=\"0 0 120 120\"><g stroke=\"#FFF4DC\" stroke-width=\"10\" stroke-linejoin=\"round\"><rect x=\"36\" y=\"94\" width=\"38\" height=\"21\" rx=\"2\" fill=\"#FFFFFF\"/><path d=\"M42 44 L49 36 L75 36 L68 44Z\" fill=\"#F7F0DF\"/><path d=\"M68 44 L75 36 L75 46 L68 54Z\" fill=\"#C2AE88\"/><rect x=\"42\" y=\"40\" width=\"26\" height=\"15\" rx=\"5\" fill=\"#EADFC6\"/><path d=\"M22 55 L33 44 L100 44 L89 55Z\" fill=\"#F7F0DF\"/><path d=\"M89 55 L100 44 L100 92 L89 103Z\" fill=\"#C2AE88\"/><rect x=\"20\" y=\"53\" width=\"71\" height=\"52\" rx=\"11\" fill=\"#EADFC6\"/></g><rect x=\"36\" y=\"94\" width=\"38\" height=\"21\" rx=\"2\" fill=\"#FFFFFF\"/><path d=\"M42 44 L49 36 L75 36 L68 44Z\" fill=\"#F7F0DF\" stroke=\"#F7F0DF\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M68 44 L75 36 L75 46 L68 54Z\" fill=\"#C2AE88\" stroke=\"#C2AE88\" stroke-width=\"3\" stroke-linejoin=\"round\"/><rect x=\"42\" y=\"40\" width=\"26\" height=\"15\" rx=\"5\" fill=\"#EADFC6\"/><path d=\"M22 55 L33 44 L100 44 L89 55Z\" fill=\"#F7F0DF\" stroke=\"#F7F0DF\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M89 55 L100 44 L100 92 L89 103Z\" fill=\"#C2AE88\" stroke=\"#C2AE88\" stroke-width=\"3\" stroke-linejoin=\"round\"/><rect x=\"20\" y=\"53\" width=\"71\" height=\"52\" rx=\"11\" fill=\"#EADFC6\"/><path d=\"M20 88 H91 V94 Q91 105 80 105 H31 Q20 105 20 94Z\" fill=\"#2C2545\"/><path d=\"M91 88 L100 79 L100 92 L91 101Z\" fill=\"#1B1730\" stroke=\"#1B1730\" stroke-width=\"3\" stroke-linejoin=\"round\"/><rect x=\"20\" y=\"83\" width=\"69.5\" height=\"5\" fill=\"#E8452C\"/><rect x=\"40\" y=\"105\" width=\"30\" height=\"7\" rx=\"1\" fill=\"#BFE3F5\"/><path d=\"M40 112 H70\" stroke=\"#8FCB6A\" stroke-width=\"3\"/><path d=\"M33 104 H77\" stroke=\"#1B1730\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M95 58 L95 80\" stroke=\"#A8926A\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><rect x=\"47\" y=\"43\" width=\"16\" height=\"8\" rx=\"2.5\" fill=\"#2C2545\"/><rect x=\"49.5\" y=\"45\" width=\"6\" height=\"4\" rx=\"1\" fill=\"#BFE3F5\"/><circle cx=\"55\" cy=\"69\" r=\"15\" fill=\"#FFF4DC\"/><circle cx=\"55\" cy=\"69\" r=\"11\" fill=\"#2C2545\"/><circle cx=\"55\" cy=\"69\" r=\"6.5\" fill=\"#3E5BA9\"/><path d=\"M50 65 L53 62\" stroke=\"#FFFFFF\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><rect x=\"26\" y=\"59\" width=\"11\" height=\"8\" rx=\"2.5\" fill=\"#2C2545\"/><circle cx=\"80\" cy=\"62\" r=\"4\" fill=\"#E8452C\"/></svg>";
 
 // ── Personajes (skins) ──────────────────────────────────────────────────────
+// ── Mora y Ren: arte PROVISORIO ──
+// Son los frames de Nilo (idle/run/wave) recoloreados reemplazando los hex de su paleta.
+// Se descarta cuando llegue el arte definitivo de Mora y Ren (reemplazar `hero` de cada entrada).
+const recolorNilo = map => {
+  const re = new RegExp(Object.keys(map).join('|'), 'gi');
+  const f = s => s.replace(re, m => map[m.toUpperCase()]);
+  const o = {}; for (const k in NILO) o[k] = Array.isArray(NILO[k]) ? NILO[k].map(f) : f(NILO[k]);
+  return o;
+};
+const niloIdle = N => [...Array(16).fill(N.idle[0]), ...Array(16).fill(N.idle[1]), N.idle[2], N.idle[2], ...Array(4).fill(N.idle[0])];
+// Mora (América, Buenos Aires): verde y mostaza
+const MORA = recolorNilo({ '#E8452C': '#E8B425', '#B93322': '#A87D12', '#3E5BA9': '#4E9A4A', '#2D4585': '#2F6B30', '#A9794D': '#C9A227', '#7A5334': '#8F7218', '#6B3F22': '#5A3A1C', '#C98F55': '#B8873F' });
+// Ren (Asia, Kioto): violeta/índigo con bufanda blanca
+const REN = recolorNilo({ '#E8452C': '#FFFFFF', '#B93322': '#CFC8E6', '#3E5BA9': '#6A4FC0', '#2D4585': '#43308C', '#A9794D': '#2F2A66', '#7A5334': '#1F1B48', '#6B3F22': '#1F1B48', '#C98F55': '#8E78D0', '#9E6B3C': '#5F4A9E', '#B57C45': '#A28BDD' });
+
 export const SKINS = [
   { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: { ...NILO, idle: [...Array(16).fill(NILO.idle[0]), ...Array(16).fill(NILO.idle[1]), NILO.idle[2], NILO.idle[2], ...Array(4).fill(NILO.idle[0])] } },
+  { id: 'mora', name: 'Mora', tag: 'Mapas a mano', price: 1200, head: 'nilo', c: {}, hero: { ...MORA, idle: niloIdle(MORA) } },
+  { id: 'ren', name: 'Ren', tag: 'Cámara y bambú', price: 1200, head: 'nilo', c: {}, hero: { ...REN, idle: niloIdle(REN) } },
   { id: 'sakura', name: 'Sakura', tag: 'Flor de cerezo', price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },
   { id: 'kitsu', name: 'Kitsu', tag: 'Zorrita blanca', price: 400, head: 'fox', c: { hat: '#FFF8EE', hatD: '#F29BB8', hair: '#FFF8EE', coat: '#E8452C', coatD: '#B93322', scarf: '#F2B937' } },
   { id: 'shinobi', name: 'Shinobi', tag: 'Sombra veloz', price: 800, head: 'ninja', c: { hat: '#2B2440', hatD: '#E8452C', hair: '#2B2440', coat: '#3A3558', coatD: '#262240', scarf: '#7B5CC4', leg: '#1A1728' } },

@@ -197,6 +197,7 @@ body.ads #playWrap{bottom:calc(var(--sb) + 72px)}body.ads #mission{bottom:calc(v
 .top5 i{flex:0 0 36px;height:36px;border-radius:50%;background:var(--ink);color:var(--cream);font:400 17px/36px 'Lilita One',sans-serif;font-style:normal;text-align:center}.top5 div:first-child i{background:var(--gold);color:var(--ink)}
 .top5 small{margin-left:auto;font:900 10px Nunito;letter-spacing:1px;color:var(--mute);text-align:right}
 /* Mapa de destinos */
+.mpin .fare{font:400 14px/1 'Lilita One',sans-serif;color:#1B1730;letter-spacing:-.3px}.mpin.nc .fare{color:#B93322}.mpin .n em{display:block;font-style:normal;font-size:9px;opacity:.85}.mpin.np .t{background:var(--rc)!important}.mpin.np,.mpin.nc{opacity:.62}.mpin.nc .n em{color:#B93322}
 #mapPanel{overflow:hidden}
 .head small{position:absolute;left:20px;bottom:48px;font:900 9px Nunito;letter-spacing:1.5px;color:#ffe3b0}
 #mapView{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);bottom:0;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;scrollbar-width:none;background:radial-gradient(circle at 50% 40%,#9CCDE0,#6FA9C3)}
@@ -258,6 +259,7 @@ body.ads #playWrap{bottom:calc(var(--sb) + 72px)}body.ads #mission{bottom:calc(v
  <div class="logo"><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div>
  <button class="side" id="openShop" style="left:14px"><i>♜</i>TIENDA<span class="dot" id="shopDot">!</span></button>
  <button class="side" id="openScores" style="right:14px"><i>♛</i>RÉCORDS</button>
+ <button class="side" id="openAlbum" style="left:14px;top:calc(var(--st) + 352px)"><i><svg viewBox="0 0 28 28" width="28" height="28"><rect x="5" y="3" width="18" height="22" rx="2" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" transform="rotate(-8 14 14)"/><rect x="8" y="6" width="12" height="11" fill="#E8452C" transform="rotate(-8 14 14)"/></svg></i>ÁLBUM</button>
  <button class="ribbon" id="worldChip"></button>
  <button class="arrow" id="prevSkin" aria-label="Anterior">‹</button><button class="arrow" id="nextSkin" aria-label="Siguiente">›</button>
  <div class="ribbon" id="skinName"></div>
@@ -306,6 +308,7 @@ import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { DESTINOS } from './paper-voyager/destinos.js';
+import * as V from './paper-voyager/viaje.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
 
@@ -313,11 +316,13 @@ const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('q
 // Progreso guardado con el nombre viejo del juego: se copia una vez a las claves nuevas
 try{if(!localStorage.getItem('pv.wallet'))for(const k of Object.keys(localStorage))if(k.startsWith('kanjuu.run.'))localStorage.setItem('pv.'+k.slice(11),localStorage.getItem(k));}catch{}
 const store={get(k,d){try{const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
+V.initViaje(store); // viaje libre: viajero, pasaportes, destino actual, álbum (migra partidas viejas sin borrar nada)
 let wallet=store.get('wallet',0),owned=store.get('owned',['nilo']),skinId=store.get('skin','nilo'),best=store.get('best',0),muted=store.get('mute',false);
 // Nilo reemplaza a Kami como personaje base: quien tenía a Kami guardado pasa a Nilo sin perder monedas
-if(!owned.includes('nilo'))owned.unshift('nilo');
+if(V.T.traveler==='nilo'&&!owned.includes('nilo'))owned.unshift('nilo');
+if(V.T.traveler&&!owned.includes(V.T.traveler))owned.push(V.T.traveler);
 if(skinId==='kami')skinId='nilo';
-if(!owned.includes(skinId))skinId='nilo';
+if(!owned.includes(skinId))skinId=V.T.traveler||owned[0]||'nilo';
 // Ítems consumibles: se compran con monedas. Revivir se usa al perder; los demás se gastan al empezar la próxima partida.
 const ITEMS=[
  {id:'revive',name:'Revivir',icon:'♥',price:120,tag:'Seguís donde caíste'},
@@ -345,10 +350,11 @@ let wd=store.get('word',null);if(!wd||wd.day!==today)wd={day:today,got:0,done:fa
 // Lo que se arrastra de un mundo al siguiente dentro de la misma partida
 let carry=null,autostart=false;
 try{carry=JSON.parse(sessionStorage.getItem('pv.carry')||'null');sessionStorage.removeItem('pv.carry');autostart=sessionStorage.getItem('pv.auto')==='1';sessionStorage.removeItem('pv.auto');}catch{}
-const stage=carry?.stage??(Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):store.get('world',0)); // ?world=N abre directo el destino N (para probar) // se retoma en el mundo donde quedaste
-const NW=DESTINOS.length,LAP=Math.floor(stage/NW),WI=stage%NW; // destino dentro de la vuelta y número de vuelta
-const S=Math.min(8,Math.round(WI*6/(NW-1))+LAP*2);   // dificultad 0…8: sube de a poco a lo largo de todos los destinos y cada vuelta arranca dos escalones más arriba
-const SP=Math.min(16,WI*10/(NW-1)+LAP*3);            // escalón de velocidad
+carry=null; // las rondas ya no se encadenan: cada destino es una ronda y se vuelve al mapa
+const stage=Q.has('world')?Math.max(0,(+Q.get('world')||1)-1):(V.T.at??0); // ?world=N abre directo el destino N (para probar) // ?world=N abre directo el destino N (para probar) // se retoma en el mundo donde quedaste
+const NW=DESTINOS.length,WI=stage%NW,DIF=V.difficulty(),LAP=DIF.lap; // destino actual · la dificultad sale de las rondas completadas, no de la ciudad
+const S=DIF.S;   // dificultad 0…8: sube de a poco a lo largo de todos los destinos y cada vuelta arranca dos escalones más arriba
+const SP=DIF.SP;            // escalón de velocidad
 const boost={shield:!!carry?.shield,double:false}; // activos en esta partida
 // El protagonista siempre tiende su propio camino (PATH); lo que cambia de un mundo a otro es el escenario:
 // color del suelo sin construir, material de cimas y llanuras, y el clima que cruza la pantalla.
@@ -418,7 +424,7 @@ const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S
  const setP=(c,power,svg,size)=>{c.power=power;c.svg=svg;c.w=c.h=size;c.value=0;};
  const nP=3+Math.floor(S/2);for(let i=0;i<nP;i++){const c=take();if(!c)break;const pw=pick(['double','shield','double']);setP(c,pw,{double:DOUBLE,shield:SHIELD}[pw],.95);}
  if(rnd()<.7){const c=take();if(c)setP(c,'chest',CHEST,1.05);}
- if(!wd.done){const c=take();if(c)setP(c,'letter',GEM,.9);}}
+ {const c=take();if(c)setP(c,'letter',GEM,.9);}} // cámara polaroid: una selfie por ronda
 // Meta: siempre un aeropuerto. Pista de asfalto (franjas de cabecera, eje punteado, bordes amarillos con balizas) que sigue hasta el horizonte, con la terminal encima.
 const RUNWAY=cur;
 for(let i=0;i<=RUNWAY;i++){const y=cur-i;zone[y]='free';for(let x=0;x<COLS;x++){const m=[i===0?'keys':x===2?'center':'',x===0?'L':x===COLS-1?'R':''].filter(Boolean).join('|');tiles[x+','+y]=m?{g:'tarmac',h:0,mark:m}:{g:'tarmac',h:0};}}
@@ -427,7 +433,7 @@ const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
 const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.run.length===6?12:9,x:2,y:START,w:1.15,h:1.15};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
-const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=stage===0?.3*(1-p):stage===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(stage>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
+const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(DIF.P>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
 const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
@@ -518,8 +524,8 @@ function onPower(c){const g=25*mult();addScore(g);sparks(12);missionAdd('power')
  if(c.power==='double'){boostUntil.double=performance.now()+POWER_MS;pop('¡MONEDAS x2!','big');SFX.power();}
  else if(c.power==='shield'){boost.shield=true;pop('¡ESCUDO!','big');SFX.power();}
  else if(c.power==='chest'){chests++;missionAdd('chest');pop('¡COFRE MISTERIOSO!','big');SFX.chest();}
- else if(c.power==='letter'){wd.got++;store.set('word',wd);pop('LETRA '+WORD[wd.got-1],'pink');SFX.prize();
-  if(wd.got>=WORD.length){wd.done=true;store.set('word',wd);wallet+=300;stock.revive++;store.set('wallet',wallet);store.set('items',stock);setTimeout(()=>{pop('¡'+WORD+'! +◉300 +♥','big');SFX.win();confetti();},650);}}
+ else if(c.power==='letter'){const res=V.addSelfie(WI);wallet+=res.coins;if(res.region){wallet+=V.SELFIE_REWARD.regionCoins;stock.revive++;store.set('items',stock);}store.set('wallet',wallet);SFX.prize();drawMission();
+  import('./paper-voyager/album.js').then(m=>m.selfieReveal(ctx,WI,res)).catch(()=>pop(res.nuevo?'¡NUEVA SELFIE!':'SELFIE +◉'+res.coins,'pink'));}
  drawBoosts();}
 // Los power-ups con tiempo se apagan solos; la barrita debajo de cada ícono muestra cuánto queda
 setInterval(()=>{const now=performance.now();let off=false;for(const k of['double'])if(boostUntil[k]&&now>boostUntil[k]){boostUntil[k]=0;off=true;}
@@ -553,14 +559,16 @@ function drawChests(){const row=$('goChest');
  else row.style.display='none';}
 $('goDouble').addEventListener('click',async()=>{if(adDouble)return;audio();adDouble=true;$('goDouble').style.display='none';
  if(await Ads.recompensa('double')){wallet+=Math.round(coinCount*(Iap.pro?1.25:1));store.set('wallet',wallet);$('goCoins').textContent='+'+coinCount*2;pop('¡MONEDAS x2!','big');SFX.prize();confetti();}});
-function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Nilo entra a la terminal */Music.mode='menu';store.set('world',stage+1);store.set('maxWorld',Math.max(store.get('maxWorld',0),stage+1));confetti();runner.hitPause=999;const bonus=500*(stage+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
- SFX.win();buzz([20,40,20,40,60]);pop('¡MUNDO '+(stage+1)+' COMPLETADO! +'+bonus,'big');
- try{sessionStorage.setItem('pv.carry',JSON.stringify({stage:stage+1,score,coins:coinCount,streak,shield:boost.shield,revives,maxMult,rides:ridesDone,chests}));}catch{}
+function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Nilo entra a la terminal */Music.mode='menu';V.roundDone();store.set('maxWorld',Math.max(store.get('maxWorld',0),V.T.trips));confetti();runner.hitPause=999;const bonus=500*(DIF.P+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
+ tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
+ for(let i=0;i<chests;i++)setTimeout(openChest,2300+i*450);chests=0; // los cofres de la ronda se abren solos al llegar
+ SFX.win();buzz([20,40,20,40,60]);pop('¡'+theme.place.toUpperCase()+' COMPLETADO! +'+bonus,'big');
+ try{sessionStorage.setItem('pv.map','1');}catch{} // al volver, el inicio abre el mapa para elegir el próximo viaje
  takeoff();setTimeout(()=>location.reload(),5250);}
 // Festejo de la meta: entra el pasaporte por la izquierda, le ponen el sello de la ciudad, se cierra y sale por la derecha;
 // ahí un avión pasa rugiendo por encima y se pierde en el horizonte, con estela, temblor, destello y más confeti. Tocar la pantalla lo saltea.
 const planeIco=(col)=>`<svg viewBox="-13 -13 26 26"><path d="${PLANE}" transform="rotate(45)" fill="${col}"/></svg>`;
-const passportHTML=(place,country)=>`<div class="bk"><div class="pg"><div class="st${place.length>9?' long':''}">${planeIco('#D2362B')}<b>${place.toUpperCase()}</b><small>${country.toUpperCase()}</small></div><svg class="tool" viewBox="0 0 90 130"><g stroke="#FFF4DC" stroke-width="6" stroke-linejoin="round"><circle cx="45" cy="24" r="20"/><rect x="36" y="38" width="18" height="50"/><rect x="8" y="84" width="74" height="38" rx="9"/></g><rect x="36" y="38" width="18" height="50" fill="#8E3526"/><circle cx="45" cy="24" r="20" fill="#B94D36"/><path d="M33 16 Q38 8 48 7" stroke="#F5E7C8" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><rect x="8" y="84" width="74" height="38" rx="9" fill="#704332"/><rect x="8" y="110" width="74" height="12" rx="5" fill="#D2362B"/></svg></div><div class="cv"><i class="f">${planeIco('#F2B937')}PASAPORTE</i><i class="b"></i></div></div>`;
+const passportHTML=(place,country,R=V.REGIONS[V.regionOf(WI)])=>`<div class="bk"><div class="pg"><div class="st${place.length>9?' long':''}">${planeIco('#D2362B')}<b>${place.toUpperCase()}</b><small>${country.toUpperCase()}</small></div><svg class="tool" viewBox="0 0 90 130"><g stroke="#FFF4DC" stroke-width="6" stroke-linejoin="round"><circle cx="45" cy="24" r="20"/><rect x="36" y="38" width="18" height="50"/><rect x="8" y="84" width="74" height="38" rx="9"/></g><rect x="36" y="38" width="18" height="50" fill="#8E3526"/><circle cx="45" cy="24" r="20" fill="#B94D36"/><path d="M33 16 Q38 8 48 7" stroke="#F5E7C8" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><rect x="8" y="84" width="74" height="38" rx="9" fill="#704332"/><rect x="8" y="110" width="74" height="12" rx="5" fill="#D2362B"/></svg></div><div class="cv"><i class="f" style="background:${R.color};border-left-color:${R.dark}">${planeIco('#F2B937')}PASAPORTE</i><i class="b"></i></div></div>`;
 function takeoff(){
  const next=THEMES[(stage+1)%THEMES.length],P=1950; // P = cuando arranca el avión, justo cuando el pasaporte se va
  const ps=document.createElement('div');ps.id='pass';ps.style.setProperty('--k',Math.min(1.5,innerWidth*.88/300).toFixed(2));ps.innerHTML=passportHTML(theme.place,theme.country);document.body.appendChild(ps);setTimeout(()=>ps.remove(),2120);
@@ -765,7 +773,7 @@ const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train
 const ico=(k,style='')=>ICO[k].replace('<svg','<svg class="ico" style="'+style+'"');
 document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ico(e.dataset.ico));
 function drawMission(){const m=$('mission');
- m.innerHTML='<b><em>x'+baseMult()+'</em>MISIONES · NIVEL '+(prog.level+1)+'<span class="word'+(wd.done?' done':'')+'" title="Palabra del día">'+[...WORD].map((ch,i)=>'<i class="'+(i<wd.got?'ok':'')+'">'+(i<wd.got?ch:'')+'</i>').join('')+'</span></b>'
+ m.innerHTML='<b><em>x'+baseMult()+'</em>MISIONES · NIVEL '+(prog.level+1)+'<span class="word'+((V.ALBUM[WI]||[]).length>=V.SHOTS.length?' done':'')+'" title="Selfies en este destino">'+V.SHOTS.map(s=>'<i class="'+((V.ALBUM[WI]||[]).includes(s.id)?'ok':'')+'">'+((V.ALBUM[WI]||[]).includes(s.id)?'▣':'')+'</i>').join('')+'</span></b>'
  +prog.set.map(x=>{const M=MPOOL[x.id];return '<div class="mrow'+(x.done?' ok':'')+'">'+ico(M.ico)+'<span>'+M.t(x.goal)+'</span><em>'+(x.done?'✓':x.n+'/'+x.goal)+'</em></div>';}).join('');}
 const tops=store.get('tops',[]);
 // marcas de los vehículos sobre la barra de avance
@@ -773,7 +781,7 @@ const tops=store.get('tops',[]);
 
 // ── Inicio, tienda y pausa ──
 let menuOpen=!autostart&&!carry,browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
-const RARITY={nilo:['COMÚN','#8a8069','#DCE9F7'],kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
+const RARITY={nilo:['VIAJERO','#3E5BA9','#DCE9F7'],mora:['VIAJERA','#4E9A4A','#DDEFCF'],ren:['VIAJERO','#7B5CC4','#E4DAF5'],kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
 function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
 function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);if(boostUntil.double>now||boost.double)L.push(['double',DOUBLE,boostUntil.double>now]);
  $('boosts').innerHTML=L.map(([k,svg,timed])=>'<div class="pw"'+(timed?' data-k="'+k+'"':'')+'>'+svg+(timed?'<b><i style="width:100%"></i></b>':'')+'</div>').join('');}
@@ -799,7 +807,8 @@ function drawHome(){
  $('shopDot').style.display=SKINS.some(s=>!owned.includes(s.id)&&wallet>=s.price)?'block':'none';
  drawMission();
 }
-function drawShop(){
+function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
+
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
  const COL={revive:'#E8452C',shield:'#3E5BA9',double:'#5DB84F',freeze:'#4FB3D9'};
  $('items').innerHTML=ITEMS.map(k=>`<button class="it" data-id="${k.id}"><i style="background:${COL[k.id]}">${k.icon}</i><div><b>${k.name}${stock[k.id]?'<u>x'+stock[k.id]+'</u>':''}</b><small>${k.tag}</small></div><span class="price">◉ ${k.price}</span></button>`).join('')+'<div class="note" style="grid-column:1/3">Revivir se usa cuando caés. Congelar tiene su botón ❄ durante la carrera. Escudo, Imán y Doble se gastan solos al empezar tu próxima partida.</div>';
@@ -827,31 +836,40 @@ $('pro').addEventListener('click',async e=>{audio();const pw=e.target.closest('#
  if(pw){SFX.tap();const r=await Iap.paywall();if(r==='PURCHASED'||r==='RESTORED'){pop('¡SOS PRO!','big');SFX.buy();confetti();Ads.banner(false);document.body.classList.remove('ads');drawHome();drawShop();}else if(r==='sin-ui')showToast('ELEGÍ UN PLAN ABAJO');}
  else if(pk){SFX.tap();if(Iap.pro)showToast('YA SOS PRO');else comprarPro(pk.dataset.id);}
  else if(rs){SFX.tap();if(Iap.pro){if(!await Iap.centroCliente())showToast('LA SUSCRIPCIÓN SE GESTIONA DESDE LA APP');}else{showToast(await Iap.restaurar()?'¡COMPRAS RESTAURADAS!':'NO HAY COMPRAS PARA RESTAURAR');drawShop();drawHome();}}});
-Iap.onCambio(()=>{drawShop();drawHome();if(Iap.pro){Ads.banner(false);document.body.classList.remove('ads');}});
+Iap.onCambio(()=>{drawShop();drawHome();import('./paper-voyager/tienda.js').then(m=>m.refreshShop?.()).catch(()=>{});if(Iap.pro){Ads.banner(false);document.body.classList.remove('ads');}});
 const openPanel=id=>{audio();SFX.tap();drawHome();drawShop();$(id).style.display='block';};
-$('openShop').addEventListener('click',()=>openPanel('shop'));$('openScores').addEventListener('click',()=>openPanel('scores'));
+function openStore(tab){audio();SFX.tap();$('shop').style.display='block';import('./paper-voyager/tienda.js').then(m=>m.openShop(ctx,tab)).catch(e=>{console.warn(e);drawHome();drawShop();});}
+$('openShop').addEventListener('click',()=>openStore());
+$('openAlbum').addEventListener('click',()=>{audio();SFX.tap();import('./paper-voyager/album.js').then(m=>m.openAlbum(ctx)).catch(e=>console.warn(e));});$('openScores').addEventListener('click',()=>openPanel('scores'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{SFX.tap();$('shop').style.display='none';$('scores').style.display='none';$('mapPanel').style.display='none';const k=SKINS[browse];if(!owned.includes(k.id))pickSkin(SKINS.findIndex(x=>x.id===skinId));drawHome();}));
-// mundo guardado: se retoma donde quedaste; tocar la etiqueta recorre los mundos ya alcanzados
-const maxWorld=Math.max(store.get('maxWorld',0),stage);
-$('worldChip').innerHTML='MUNDO '+(stage+1)+' · '+theme.place.toUpperCase()+'<small>MAPA ▾</small>';
-// Mapa de destinos: mapa del mundo de papel que se desliza de lado, con la ruta y un pin por destino
-let mapData=null,mPick=WI;const lap=LAP,allOpen=maxWorld>=NW-1;
-const pinState=i=>i===WI?'cur':(allOpen||i<=maxWorld)?'done':'lock';
-function drawCard(){const t=THEMES[mPick],st=pinState(mPick),rec=(store.get('tops',[])[0]||0);
- $('dCard').innerHTML=`<div class="th" style="background:${t.ground}">${t.art||''}</div><div class="k">DESTINO ${mPick+1} DE ${NW}${st==='cur'?' · ESTÁS ACÁ':st==='lock'?' · BLOQUEADO':''}</div><b>${t.place}</b><div class="c">${t.country} · ${t.name[0]+t.name.slice(1).toLowerCase()}</div>`+
-  `<button class="btn ${st==='lock'?'plain':''}" id="goTrip">${st==='cur'?'SEGUIR ACÁ':st==='lock'?'🔒 LLEGÁ JUGANDO':'VIAJAR'}</button>`;
- $('goTrip').onclick=()=>{if(st==='lock'){const b=$('goTrip');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');return;}SFX.tap();
-  if(st==='cur'){$('mapPanel').style.display='none';return;}store.set("world",mPick+NW*Math.max(0,Math.floor((Math.max(maxWorld,mPick)-mPick)/NW)));location.reload();};
- document.querySelectorAll('.mpin').forEach(e=>e.classList.toggle('sel',+e.dataset.i===mPick));}
-async function openMap(){audio();SFX.tap();$('mapSub').textContent='DESTINO '+(WI+1)+' DE '+NW+' · VUELTA '+(lap+1);$('mapPanel').style.display='block';
+// Viaje libre: el inicio está en la ciudad donde estás; el mapa deja viajar a cualquier destino con pasaporte, pagando el pasaje.
+const REG=V.REGIONS[V.regionOf(WI)];
+$('worldChip').innerHTML=theme.place.toUpperCase()+' · '+theme.country.toUpperCase()+'<small>MAPA ▾</small>';
+const passMini=(r,w=18)=>{const c=V.REGIONS[r];return `<svg viewBox="0 0 20 26" width="${w}" height="${w*1.3}" style="vertical-align:middle"><rect x="1.5" y="1.5" width="17" height="23" rx="2.5" fill="${c.color}" stroke="#1B1730" stroke-width="2"/><rect x="1.5" y="1.5" width="4" height="23" rx="1.5" fill="${c.dark}"/><circle cx="11.5" cy="11" r="4" fill="none" stroke="#F2B937" stroke-width="1.8"/><path d="M8 18.5h7" stroke="#F2B937" stroke-width="1.8" stroke-linecap="round"/></svg>`;};
+let mapData=null,mPick=WI;
+const pinState=i=>V.destState(i,wallet);
+const pinCls={cur:'cur',ok:'done',nocoins:'lock nc',nopass:'lock np'};
+function drawCard(){const t=THEMES[mPick],s=pinState(mPick),R=V.REGIONS[s.r],vis=V.T.visits[mPick]||0,sel=(V.ALBUM[mPick]||[]).length;
+ const tag=s.st==='cur'?'ESTÁS ACÁ':s.st==='nopass'?'TE FALTA EL '+R.pass.toUpperCase():s.st==='nocoins'?'TE FALTAN ◉ '+(s.cost-wallet):'PASAJE ◉ '+s.cost;
+ $('dCard').innerHTML=`<div class="th" style="background:${t.ground}">${t.art||''}</div><div class="k" style="color:${R.dark}">${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${t.place}</b><div class="c">${t.country} · ${vis?vis+(vis>1?' visitas':' visita'):'sin visitar'} · ${sel}/3 selfies</div>`+
+  `<button class="btn ${s.st==='ok'||s.st==='cur'?'':'plain'}" id="goTrip">${s.st==='cur'?'JUGAR ACÁ':s.st==='ok'?'VIAJAR · ◉ '+s.cost:s.st==='nopass'?passMini(s.r,14)+' VER PASAPORTE · ◉ '+V.passPrice(s.r):'◉ '+s.cost+' · JUNTÁ MÁS MONEDAS'}</button>`;
+ $('goTrip').onclick=()=>{const s=pinState(mPick);
+  if(s.st==='cur'){SFX.tap();$('mapPanel').style.display='none';$('play').click();return;}
+  if(s.st==='nopass'){SFX.tap();$('mapPanel').style.display='none';openStore('pasaportes');return;}
+  if(s.st==='nocoins'){SFX.nope();buzz(40);const b=$('goTrip');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast('TE FALTAN ◉ '+(s.cost-wallet));return;}
+  if(!buy(s.cost,THEMES[mPick].place))return;if(V.travel(mPick,wallet+s.cost)==null){wallet+=s.cost;store.set('wallet',wallet);return;}
+  SFX.whoosh();$('goTrip').textContent='✈ ¡BUEN VIAJE!';setTimeout(()=>location.reload(),650);};
+ document.querySelectorAll('.mpin').forEach(e=>e.classList.toggle('sel',+e.dataset.i===mPick));
+ const arc=$('mapArc');if(arc&&mapData){const a=mapData.pts[WI],b=mapData.pts[mPick];arc.setAttribute('d',mPick===WI?'':`M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${Math.min(a[1],b[1])-Math.min(90,Math.hypot(b[0]-a[0],b[1]-a[1])*.3)} ${b[0]} ${b[1]}`);}}
+async function openMap(){audio();SFX.tap();$('mapSub').innerHTML='ESTÁS EN '+theme.place.toUpperCase()+' · ◉ '+fmt(wallet)+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').style.display='block';
  if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();const M=mapData,v=$('mapView'),sc=Math.max(.55,Math.min(1,(v.clientHeight-250)/560));
- // ruta punteada entre paradas; el cruce del Pacífico sale por un borde del mapa y entra por el otro
+ // ruta punteada entre paradas (la misma de siempre); se ve marcada donde tenés pasaporte. El cruce del Pacífico sale por un borde del mapa y entra por el otro
  const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round" fill="none"/>`;
- let segs='';for(let i=0;i<NW-1;i++){const a=M.pts[i],b=M.pts[i+1],on=allOpen||i<maxWorld;
+ let segs='';for(let i=0;i<NW-1;i++){const a=M.pts[i],b=M.pts[i+1],on=V.hasPass(V.regionOf(i))&&V.hasPass(V.regionOf(i+1));
   if(Math.abs(b[0]-a[0])>M.W/2){const y=(a[1]+b[1])/2,l=a[0]<b[0]?a:b,r=a[0]<b[0]?b:a;segs+=seg(l,[0,y],on)+seg([M.W,y],r,on);}else segs+=seg(a,b,on);}
- const pins=M.pts.map((p,i)=>{const st=pinState(i),ic=st==='cur'?BALLOON.idle[0]:st==='lock'?'🔒':i+1;return `<button class="mpin ${st}" data-i="${i}" style="left:${p[0]}px;top:${p[1]}px"><div class="t">${ic}</div><div class="n">${THEMES[i].place}</div></button>`;}).join('');
+ const pins=M.pts.map((p,i)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):'<b class="fare">'+s.cost+'</b>';return `<button class="mpin ${pinCls[s.st]}" data-i="${i}" style="left:${p[0]}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div><div class="n">${THEMES[i].place}${s.st==='cur'?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;}).join('');
  const w=$('mapWorld');w.style.cssText=`width:${M.W*sc}px;height:${M.H*sc}px;margin-top:58px`;
- w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${M.W}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><svg width="${M.W}" height="${M.H}" style="position:absolute;left:0;top:0"><path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/>${segs}</svg>${pins}</div>`;
+ w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${M.W}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><svg width="${M.W}" height="${M.H}" style="position:absolute;left:0;top:0"><path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/>${segs}<path id="mapArc" d="" stroke="#E8452C" stroke-width="5" stroke-dasharray="1 11" stroke-linecap="round" fill="none"/></svg>${pins}</div>`;
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{SFX.tap();mPick=+e.dataset.i;drawCard();}));
  mPick=WI;drawCard();v.scrollLeft=M.pts[mPick][0]*sc-v.clientWidth/2;}
 $('worldChip').addEventListener('click',openMap);
@@ -875,15 +893,22 @@ function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
  SFX.tap();const go=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
- if(stage===0&&!store.get('tuto2',0))showTuto(go,3);else go();});
+ if(DIF.P===0&&!store.get('tuto2',0))showTuto(go,3);else go();});
 function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
 $('quit').addEventListener('click',()=>{bank();location.reload();});
+// ── Puente para los módulos de pantallas (tienda.js, album.js, seleccion.js) ──
+const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
+ get owned(){return owned},saveOwned(){store.set('owned',owned);},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},
+ get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmt(wallet);},
+ tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((t,i)=>`<div><i>${i+1}</i>${fmt(t.s)}<small>${(THEMES[(t.w-1)%NW]?.place||'MUNDO '+t.w).toUpperCase()}<br>${new Date(t.t).toLocaleDateString('es')}</small></div>`).join(''):'<p class="note">Todavía no hay partidas. ¡Jugá la primera!</p>')+'</div>';}};
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';if(Ads.enabled){document.body.classList.add('ads');Ads.banner(true);}}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);}
+if(V.needsPick()&&menuOpen)import('./paper-voyager/seleccion.js').then(m=>m.showTravelerPick(ctx,()=>location.reload())).catch(e=>console.warn(e));
+else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
+if(DEBUG)window.__dbg={nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
 </script>
 </body></html>
