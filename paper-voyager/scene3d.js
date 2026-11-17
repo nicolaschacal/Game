@@ -297,7 +297,7 @@ function makeSprite(svg, size, id) {
 // Animación común: respirar, aplastarse al tocarla, saltar
 function animSprite(o, t, dt, moving = false) {
   o.squash = Math.max(0, o.squash - dt * 3); o.hop = Math.max(0, o.hop - dt * 2.2); o.flash = Math.max(0, o.flash - dt * 2.5);
-  const s = o.size, breath = Math.sin(t * 2.4 + o.ph) * .025, step = moving ? Math.abs(Math.sin(t * 9 + o.ph)) * .06 : 0;
+  const s = o.size, breath = o.still ? 0 : Math.sin(t * 2.4 + o.ph) * .025, step = moving ? Math.abs(Math.sin(t * 9 + o.ph)) * .06 : 0;
   const sq = Math.sin(o.squash * Math.PI) * .22, jump = Math.sin(o.hop * Math.PI) * .35 * s;
   o.sprite.scale.set(s * (1 - breath + sq) * o.flip, s * (1 + breath - sq), 1);
   o.sprite.position.y = -.05 * s + step * s + jump;
@@ -851,9 +851,9 @@ function sanctuary() {
           lamps.sort((a, b) => Math.abs(a.position.z - playerZ) - Math.abs(b.position.z - playerZ));
           applyLights([], nk, t); // faroles de la pista: sólo adorno, no dan luz
         }
-        // Al desembarcar, el barco se aparta hacia un costado y se hunde en el papel para no tapar la vista.
+        // Al desembarcar, el barco se aparta hacia un costado a nivel del agua para no tapar la vista.
         const left = runner.leaveBoat ? W.items.get(runner.leaveBoat) : null;
-        if (left) { const g = left.group, mode = runner.leaveMode, dir = g.position.x >= 0 ? 1 : -1; g.position.x += dt * (mode === 'up' ? 1.4 : mode === 'side' ? 5 : 2.4) * dir; g.position.y += dt * (mode === 'up' ? 2 : mode === 'side' ? 0 : -.9); if (g.position.y < -1.4 || g.position.y > 7 || Math.abs(g.position.x) > 6) { g.visible = false; runner.leaveBoat = null; } }
+        if (left) { const g = left.group, mode = runner.leaveMode, dir = g.position.x >= 0 ? 1 : -1; g.position.x += dt * (mode === 'up' ? 1.4 : mode === 'side' ? 5 : 3.2) * dir; g.position.y += dt * (mode === 'up' ? 2 : 0); /* barco (sin leave): se desliza al costado a nivel del agua, sin hundirse */ if (g.position.y < -1.4 || g.position.y > 7 || Math.abs(g.position.x) > 6) { g.visible = false; runner.leaveBoat = null; } }
         if (runner.gameOver) runner.hitPause = 999;
         runner.playerZ = playerZ;
         // Preview: todas las casillas donde se puede construir ahora (adelante, diagonal o lateral).
@@ -924,7 +924,7 @@ function sanctuary() {
         if (d.kind === 'mon' && t > w.next) { const ax = Math.max(.1, d.w / 2 - .32), az2 = Math.max(.1, d.h / 2 - .32); w.tx = (Math.random() * 2 - 1) * ax; w.tz = (Math.random() * 2 - 1) * az2; w.next = t + 2 + Math.random() * 4; }
         const vx = (w.tx - w.x) * 1.2 * dt, vz = (w.tz - w.z) * 1.2 * dt; w.x += vx; w.z += vz;
         const isRunner = W.opts.runner?.playerId === d.id; const moving = isRunner || Math.hypot(vx, vz) > .002, side = vx * Math.cos(camAz) - vz * Math.sin(camAz); if (Math.abs(side) > .0015) o.flip = side > 0 ? 1 : -1;
-        animSprite(o, t, dt, moving && !d.still);
+        o.still = d.still; animSprite(o, t, dt, moving && !d.still);
         if (o.frames) {
           const R = W.opts.runner, sailing = R?.boatId === d.id && R.onBoat;
           const st = (isRunner ? (R.started || R.hidden /* oculto en el inicio ya queda corriendo: aparece sin girar */) && !R.gameOver : sailing) ? 'run' : 'idle', set = o.frames[st] || o.frames.idle;

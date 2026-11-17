@@ -356,7 +356,9 @@ export function openAlbum(ctx, onClose, opts = {}) {
   if (opts.preload) { root.style.animation = 'none'; root.style.opacity = '0'; root.style.pointerEvents = 'none'; }
   document.body.appendChild(root); lockScroll(root);
   let region = (V.T && V.regionOf(V.T.at)) || 'am';
-  const close = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
+  let closing = false;
+  const finish = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
+  const close = () => { if (closing) return; closing = true; if (opts.closeAnim) opts.closeAnim(root, finish); else finish(); };
 
   const regCount = r => { const ds = V.destsOf(r); return { n: ds.reduce((a, d) => a + (V.ALBUM[d] || []).length, 0), t: ds.length * V.SHOTS.length }; };
   const done = () => ctx.store?.get?.('albumDone', []) || [];
@@ -452,9 +454,13 @@ const BAG_CSS = `
 .pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
 .pvb-alb .cv{position:relative;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
 .pvb-alb:active:not(.opening) .cv{transform:translateY(2px) scale(.985)}
-.pvb-fly{position:fixed;z-index:70;pointer-events:none;transform-origin:50% 50%;will-change:transform,opacity}
-.pvb-fly .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
-.pvb-fly .cv{position:absolute;inset:0}
+.pvb-flyw{position:fixed;z-index:70;pointer-events:none;overflow:hidden;will-change:opacity}
+.pvb-fly{position:absolute;pointer-events:none;transform-origin:7.8% 50%;perspective:1600px;will-change:transform,opacity}
+.pvb-fly .pg{position:absolute;left:7.8%;right:7.8%;top:2.5%;bottom:3.7%;background-color:#E7D5AE;background-image:var(--nz);background-blend-mode:multiply;border-radius:2px 8px 8px 2px}
+.pvb-fly .cv3{position:absolute;inset:0;transform-origin:7.8% 50%;transform-style:preserve-3d;will-change:transform}
+.pvb-fly .front,.pvb-fly .back{position:absolute;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.pvb-fly .front{inset:0}
+.pvb-fly .back{left:7.8%;right:7.8%;top:2.5%;bottom:3.7%;transform:rotateY(180deg);background:#D9C28F;border-radius:8px 2px 2px 8px;box-shadow:inset 0 0 0 3px #C2A56C,inset 14px 0 18px -8px rgba(60,35,10,.3)}
 .pvb-fly svg{display:block;width:100%;height:auto}
 .pvb-tag{display:inline-block;margin:-8px 0 0;padding:3px 10px 4px;background:#F6EBD0;color:#6B4E26;font:900 10px Nunito,sans-serif;letter-spacing:.9px;border-radius:3px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);position:relative;white-space:nowrap}
 .pvb-tag b{color:#C9402A;font:400 12px 'Lilita One',sans-serif;letter-spacing:.3px;margin-left:3px}
@@ -555,28 +561,50 @@ export function openBag(ctx) {
     q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
     if (sv.length) souvenirs(sv);
   }
-  // Apertura: la libreta va al centro de la pantalla y crece hasta cubrirla; recién ahí (con el álbum ya armado y pintado) se hace el crossfade
+  // ── Apertura/cierre del libro: viaja al centro, la tapa gira sobre el lomo (rotateY 0→-180°, con reverso) y la página interior crece hasta cubrir la pantalla y se funde en el álbum ya armado ──
+  const HX = .078; // el lomo está al 7.8 % del ancho del dibujo de la tapa
+  function bookFly(b, R) {
+    const cv = b.querySelector('.cv'), s = cv.getBoundingClientRect(), w = cv.offsetWidth, h = cv.offsetHeight, vw = R.width, vh = R.height, mx = R.left + vw / 2, my = R.top + vh / 2;
+    const cx = s.left + s.width / 2, cy = s.top + s.height / 2, a = w * (.5 - HX), th = -5 * Math.PI / 180;
+    const S = Math.max(vw / (w * (1 - 2 * HX)), vh / (h * .94)) * 1.03, s1 = Math.min(vw * .6 / w, vh * .56 / h), Ox = cx - a;
+    const fly = document.createElement('div'); fly.className = 'pvb-fly';
+    fly.style.cssText = `left:${cx - w / 2 - R.left}px;top:${cy - h / 2 - R.top}px;width:${w}px;height:${h}px`;
+    fly.innerHTML = `<div class="pg"></div><div class="cv3"><div class="front">${cv.innerHTML}</div><div class="back"></div></div>`;
+    fly.querySelector('.pg').style.backgroundSize = (160 / S).toFixed(2) + 'px';
+    const wrap = document.createElement('div'); wrap.className = 'pvb-flyw'; wrap.style.cssText = `left:${R.left}px;top:${R.top}px;width:${vw}px;height:${vh}px`; wrap.appendChild(fly); document.body.appendChild(wrap);
+    const move = [
+      { offset: 0, transform: `translate(${(a * (1 - Math.cos(th))).toFixed(2)}px,${(-a * Math.sin(th)).toFixed(2)}px) rotate(-5deg) scale(1)`, easing: 'cubic-bezier(.3,.7,.3,1)' },
+      { offset: .3, transform: `translate(${(mx - Ox - s1 * a).toFixed(2)}px,${(my - cy).toFixed(2)}px) rotate(0deg) scale(${s1.toFixed(4)})`, easing: 'cubic-bezier(.55,0,.2,1)' },
+      { offset: 1, transform: `translate(${(R.left - Ox).toFixed(2)}px,${(my - cy).toFixed(2)}px) rotate(0deg) scale(${S.toFixed(4)})` }];
+    const turn = [{ offset: 0, transform: 'rotateY(0deg)' }, { offset: .22, transform: 'rotateY(0deg)', easing: 'cubic-bezier(.45,.05,.25,1)' }, { offset: .8, transform: 'rotateY(-180deg)' }, { offset: 1, transform: 'rotateY(-180deg)' }];
+    return { fly: wrap, move, turn, inner: fly };
+  }
   async function flyOpen(b) {
     if (b.classList.contains('opening')) return; b.classList.add('opening'); sfx('tap');
-    const cv = b.querySelector('.cv');
-    const album = openAlbum(ctx, () => draw(), { preload: true });
+    const album = openAlbum(ctx, () => draw(), { preload: true, closeAnim: flyClose });
     const done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
-    if (!cv.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.animation = ''; album.style.opacity = ''; album.style.pointerEvents = ''; done(); return; }
+    if (!b.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.animation = ''; album.style.opacity = ''; album.style.pointerEvents = ''; done(); return; }
     try { await document.fonts?.ready; } catch (e) {}
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // el álbum ya está pintado (opacity 0) antes de tocar la tapa
-    const s = cv.getBoundingClientRect(), w = cv.offsetWidth, h = cv.offsetHeight, vw = innerWidth, vh = innerHeight;
-    const cx = s.left + s.width / 2, cy = s.top + s.height / 2, S = Math.max(vw / w, vh / h) * 1.04;
-    const fly = document.createElement('div'); fly.className = 'pvb-fly';
-    fly.style.cssText = `left:${cx - w / 2}px;top:${cy - h / 2}px;width:${w}px;height:${h}px`;
-    fly.innerHTML = `<div class="cv">${cv.innerHTML}</div>`;
-    document.body.appendChild(fly); b.style.visibility = 'hidden';
-    const grow = fly.animate([{ transform: 'translate(0,0) rotate(-5deg) scale(1)' }, { transform: `translate(${vw / 2 - cx}px,${vh / 2 - cy}px) rotate(0deg) scale(${S})` }], { duration: 580, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' });
+    const { fly, move, turn, inner } = bookFly(b, album.getBoundingClientRect()); b.style.visibility = 'hidden';
+    const D = 900, o = { duration: D, fill: 'both' };
+    inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
+    // el álbum real aparece debajo de la página (papel con papel) y recién después se retira la página
+    const up = album.animate([{ opacity: 0 }, { opacity: 0, offset: .72 }, { opacity: 1 }], { duration: D, fill: 'both' });
+    const out = fly.animate([{ opacity: 1 }, { opacity: 1, offset: .86 }, { opacity: 0 }], { duration: D, fill: 'both' });
     const cleanup = () => { album.style.opacity = ''; album.style.pointerEvents = ''; album.style.animation = ''; fly.remove(); done(); };
-    grow.finished.then(() => {
-      const fade = { duration: 260, easing: 'ease-out', fill: 'forwards' };
-      fly.animate([{ opacity: 1 }, { opacity: 0 }], fade);
-      album.animate([{ opacity: 0 }, { opacity: 1 }], fade).finished.then(cleanup, cleanup);
-    }, cleanup);
+    Promise.all([up.finished, out.finished]).then(() => { up.cancel(); cleanup(); }, cleanup);
+  }
+  // Cierre: la animación inversa, más corta
+  function flyClose(album, finish) {
+    const b = root.querySelector('[data-alb]');
+    if (!b || !b.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { finish(); return; }
+    const { fly, move, turn, inner } = bookFly(b, album.getBoundingClientRect()), F = 110, D = 520, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
+    fly.style.opacity = '0';
+    fly.animate([{ opacity: 0 }, { opacity: 1 }], { duration: F, fill: 'forwards' });
+    inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
+    setTimeout(() => { finish(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = 'hidden'; fly.style.opacity = '1'; }, F);
+    setTimeout(() => { fly.remove(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = ''; }, F + D + 30);
   }
   // Carrusel de souvenirs: uno al frente sobre una pila en abanico; toque o deslizar para rotar
   function souvenirs(sv) {

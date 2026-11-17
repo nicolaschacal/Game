@@ -246,36 +246,6 @@ export const CHEST = (() => {
     + star(108, 17, 8) + star(12, 30, 6), [front, lidF, lidT, side]);
 })();
 
-// ── Meta: aeropuerto de cartulina (terminal de techo curvo + torre de control + manga de viento + cartel con avión) ──
-const PLANE_P = 'M0 -11 C2.2 -11 2.6 -7 2.6 -4.5 L2.6 -1.5 L11 4 L11 6.8 L2.6 4.2 L2.1 8 L5.2 10.4 L5.2 12.2 L0 11 L-5.2 12.2 L-5.2 10.4 L-2.1 8 L-2.6 4.2 L-11 6.8 L-11 4 L-2.6 -1.5 L-2.6 -4.5 C-2.6 -7 -2.2 -11 0 -11Z';
-export const AIRPORT = (() => {
-  const body = P('M4 78 Q50 50 112 72 L112 108 L4 108Z'), roof = P('M2 79 Q50 49 114 71 L114 82 Q50 59 2 90Z');
-  const tower = R(88, 40, 14, 58), cab = P('M80 38 L110 38 L105 20 L85 20Z');
-  return paper(
-    // torre de control detrás: fuste, cabina de vidrio con marco y mástil con baliza
-    L(R(94.6, 3, 2.4, 10), '#5E5D66', null, { j: .15 }) + disc(95.8, 3.4, 3.2, '#E8452C', '#A82A18', { n: 10, dx: .5, dy: .8, j: .15 })
-    + L(tower, '#F6EEDD', '#C9B189', { dx: 1.2, dy: 1.6, j: .4 }) + L(R(98, 40, 4, 58), '#E3D6B8', null, { j: .3 })
-    + L(cab, '#8EC7D8', '#4F8DA3', { dx: 1, dy: 1.6, j: .4 }) + L(P('M86 22 L98 22 L92 36 L82 36Z'), '#B9E0EC', null, { j: .25 })
-    + L(RR(81, 13, 28, 8, 3), '#34333B', '#1E1D24', { dx: .8, dy: 1.2, j: .35 }) + L(R(80, 36, 30, 6), '#4E6E8E', '#2F465C', { dx: .6, dy: 1.2, j: .3 })
-    + LS([R(91, 22, 2.4, 14), R(101, 22, 2.4, 14)], '#34333B', null, { j: .15 })
-    // manga de viento: mástil con tela a franjas rojas y blancas
-    + L(R(12.6, 40, 2.6, 36), '#5E5D66', null, { j: .15 }) + disc(13.9, 40, 3, '#34333B', null, { n: 8, j: .12 })
-    + L(P('M15 41 L36 44 L36 53 L15 54Z'), '#E8452C', '#A82A18', { dx: .5, dy: 1.1, j: .25 })
-    + LS([P('M21 42 L26 42.7 L26 52.6 L21 53.2Z'), P('M31 43.4 L36 44 L36 52.7 L31 52.2Z')], '#FFF8EE', null, { j: .15 })
-    // terminal: cuerpo, alero azul, ventanas, puerta y cartel redondo con el avión
-    + L(body, '#F6EEDD', '#C9B189', { dx: 1.2, dy: 1.8, j: .5 })
-    + L(P('M4 78 Q26 64 44 61 L44 108 L4 108Z'), '#FFF9EC', null, { j: .4 })
-    + L(P('M112 72 L112 108 L98 108 L98 76Z'), '#E3D6B8', null, { j: .3 })
-    + L(roof, '#4E6E8E', '#2F465C', { dx: .8, dy: 1.6, j: .5 }) + L(P('M2 79 Q26 65 48 59 L48 64 Q26 71 2 84Z'), '#6C8FB0', null, { j: .3 })
-    + LS([RR(10, 91, 11, 13, 2), RR(25, 89, 11, 15, 2), RR(84, 89, 11, 15, 2), RR(99, 91, 9, 13, 2)], '#8EC7D8', '#4F8DA3', { dx: .5, dy: 1, j: .2 })
-    + L(P('M44 108 L44 86 Q60 74 76 86 L76 108Z'), '#2B2440', null, { j: .4 }) + L(R(58.8, 80, 2.6, 28), '#4E6E8E', null, { j: .15 })
-    + L(P('M48 108 L48 88 Q54 83 58 82 L58 108Z'), '#3E5BA9', null, { j: .25 })
-    + disc(60, 65, 13.5, '#F2B937', '#B8741A', { dx: 1, dy: 1.5, j: .35 }) + disc(60, 65, 9.6, '#F9CF5F', null, { n: 18, j: .25 })
-    + `<path d="${PLANE_P}" transform="translate(60 65) rotate(45) scale(.8)" fill="#2B2440"/>`
-    + L(P('M2 104 L44 104 L44 109 L2 109Z'), '#D9CDB4', null, { j: .3 }) + L(P('M76 104 L114 104 L114 109 L76 109Z'), '#D9CDB4', null, { j: .3 }),
-    [body, tower, cab]);
-})();
-
 // ── Vehículos: barco, globo y tren en el mismo estilo (el personaje a bordo llega ya dibujado desde runner-art.js) ──
 // Semilla fija por pose: el recorte no "tiembla" entre cuadros ni cambia entre skins.
 const WAVE = (sailing, b) => sailing ? LS([bumps(6 + b * 2, 100, 2, 14, 7, 3), bumps(72 - b * 2, 102, 2, 14, 7, 3), bumps(38 + b, 106, 2, 14, 6, 3)], '#FBFDFE', '#B9D2DD', { dx: .8, dy: 1.4, j: .4 })

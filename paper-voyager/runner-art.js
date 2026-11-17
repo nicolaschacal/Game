@@ -4,7 +4,7 @@ import { NILO } from './nilo-art.js';
 import { NILO2 } from './nilo-v2.js'; // Nilo rediseñado en papel (frames generados una vez al cargar)
 import { paperBoat, paperBalloon, paperTrain } from './runner-papel.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
-export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST } from './runner-papel.js';
+export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST } from './runner-papel.js';
 // Recorte: la silueta se dibuja primero con borde crema y encima las mismas formas sin borde + detalles.
 const cut = (shapes, details = '', under = '') => `<svg viewBox="0 0 120 120">${under}<g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${shapes}</g>${shapes}${details}</svg>`;
 const limb = (x, y, w, h, deg, fill, ox = x + w / 2, oy = y) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${w / 2}" fill="${fill}" transform="rotate(${deg} ${ox} ${oy})"/>`;
@@ -75,7 +75,15 @@ const foam = `<path d="M10 106 q8 -9 16 0 q8 -9 16 0 M78 106 q8 -9 16 0 q8 -9 16
 // ── Meta: aeropuerto ─────────────────────────────────────────────────────────
 // Pictograma de avión (el de los carteles de aeropuerto), centrado en 0,0
 export const PLANE = 'M0 -11 C2.2 -11 2.6 -7 2.6 -4.5 L2.6 -1.5 L11 4 L11 6.8 L2.6 4.2 L2.1 8 L5.2 10.4 L5.2 12.2 L0 11 L-5.2 12.2 L-5.2 10.4 L-2.1 8 L-2.6 4.2 L-11 6.8 L-11 4 L-2.6 -1.5 L-2.6 -4.5 C-2.6 -7 -2.2 -11 0 -11Z';
-// Terminal de cartulina con torre de control, manga de viento y cartel con el avión: ver AIRPORT en runner-papel.js
+// Terminal con techo curvo, puerta central por donde se entra, torre de control y cartel redondo con el avión
+export const AIRPORT = cut(
+  `<rect x="96" y="6" width="3" height="12" fill="#34333B"/><path d="M82 34 L112 34 L108 16 L86 16Z" fill="#8EC7D8"/><rect x="90" y="34" width="14" height="40" fill="#F6EEDD"/>`
+  + `<path d="M4 76 Q52 44 112 70 L112 110 L4 110Z" fill="#F6EEDD"/>`,
+  `<path d="M4 76 Q52 44 112 70 L112 80 Q52 56 4 86Z" fill="#4E6E8E"/><path d="M84 16 L110 16 L111 21 L83 21Z" fill="#34333B"/><path d="M82 34 L112 34 L111 29 L83 29Z" fill="#4E6E8E"/><path d="M92 21 L92 29 M102 21 L102 29" stroke="${CREAM}" stroke-width="2"/><circle cx="97.5" cy="6" r="3" fill="#E8452C"/>`
+  + `<g fill="#8EC7D8"><rect x="10" y="90" width="10" height="13" rx="2"/><rect x="24" y="88" width="10" height="15" rx="2"/><rect x="86" y="88" width="10" height="15" rx="2"/><rect x="100" y="90" width="8" height="13" rx="2"/></g>`
+  + `<path d="M42 110 L42 86 Q60 74 78 86 L78 110Z" fill="#2B2440"/><path d="M60 80 L60 110" stroke="#4E6E8E" stroke-width="2.5"/>`
+  + `<circle cx="60" cy="66" r="13" fill="#F2B937" stroke="${CREAM}" stroke-width="3"/><path d="${PLANE}" transform="translate(60 66) rotate(45) scale(.82)" fill="#2B2440"/>`
+  + `<path d="M4 104 L42 104 L42 110 L4 110Z M78 104 L112 104 L112 110 L78 110Z" fill="#D9CDB4"/>`);
 // Avión de papel visto desde atrás: despega hacia el horizonte en el festejo de la meta
 export const JET = cut(
   `<path d="M60 56 L4 66 L4 74 L60 72 L116 74 L116 66Z" fill="#FFF8EE"/><path d="M56 50 L60 14 L64 50Z" fill="#E8452C"/><path d="M60 44 L36 48 L36 53 L60 52 L84 53 L84 48Z" fill="#FFF8EE"/>`
