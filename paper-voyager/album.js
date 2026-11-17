@@ -448,8 +448,8 @@ export function selfieReveal(ctx, i, res) {
 // MOCHILA: el contenido volcado sobre una mesa de papel. Es el menú de álbum, pasaportes y souvenirs.
 // ═══════════════════════════════════════════════════════════════════════════
 const BAG_CSS = `
-.pvb-t{position:relative;max-width:100%;height:max(560px,calc(100dvh - var(--st) - 98px - var(--sb)));overflow:hidden;touch-action:pan-y}
-.pvb-alb{position:absolute;left:4%;top:2.5%;width:54%;transform:rotate(-5deg);transform-origin:50% 50%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
+.pvb-t{--th:max(430px,calc(100dvh - var(--st) - var(--navH,66px) - 118px));position:relative;max-width:100%;height:var(--th);overflow:hidden;touch-action:pan-y}
+.pvb-alb{position:absolute;left:4%;top:2%;width:min(54%,calc(var(--th) * .395));transform:rotate(-5deg);transform-origin:50% 50%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
 .pvb-alb .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
 .pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
 .pvb-alb .cv{position:relative;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
@@ -465,13 +465,13 @@ const BAG_CSS = `
 .pvb-tag{display:inline-block;margin:-8px 0 0;padding:3px 10px 4px;background:#F6EBD0;color:#6B4E26;font:900 10px Nunito,sans-serif;letter-spacing:.9px;border-radius:3px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);position:relative;white-space:nowrap}
 .pvb-tag b{color:#C9402A;font:400 12px 'Lilita One',sans-serif;letter-spacing:.3px;margin-left:3px}
 .pvb-alb .pvb-tag{transform:rotate(3deg);left:12%}
-.pvb-pas{position:absolute;right:7%;top:2%;width:42%;height:34%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
+.pvb-pas{position:absolute;right:7%;top:2%;width:42%;height:32%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
 .pvb-pas .bk{position:absolute;left:50%;bottom:16%;width:56%;transform-origin:50% 112%;transition:transform .3s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 5px 6px rgba(27,23,48,.3))}
 .pvb-pas .bk svg,.pvb-sc svg,.pvb-dec svg{display:block;width:100%;height:auto;overflow:visible}
 .pvb-pas:active .bk{filter:brightness(.96) drop-shadow(0 1px 1px rgba(40,24,10,.3))}
-.pvb-pas .pvb-tag{position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-2.5deg)}
+.pvb-pas .pvb-tag{z-index:20;position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-2.5deg)}
 .pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}
-.pvb-sv{position:absolute;left:6%;right:6%;top:58%;bottom:2%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.pvb-sv{position:absolute;left:6%;right:6%;top:57%;bottom:1%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
 .pvb-sc{position:absolute;left:0;top:0;transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
 .pvb-sn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;min-height:30px}
@@ -549,8 +549,8 @@ export function openBag(ctx) {
     root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>LO QUE LLEVÁS EN VIAJE</small><h2>MOCHILA</h2></div>
 <div class="pvb-t">
  <button class="pvb-alb" data-alb aria-label="Abrir el álbum"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">ÁLBUM · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
- <div class="pvb-dec" style="left:2%;top:53%;width:40%;transform:rotate(-9deg)">${pencilSVG()}</div>
- <div class="pvb-dec" style="right:5%;top:37%;width:30%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
+ <div class="pvb-dec" style="right:5%;top:53%;width:34%;transform:rotate(-8deg)">${pencilSVG()}</div>
+ <div class="pvb-dec" style="right:4%;top:37%;width:24%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
  <button class="pvb-pas" data-pas aria-label="Abrir pasaportes">${fan}<span class="pvb-tag">PASAPORTES · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
 </div>`;
@@ -583,7 +583,7 @@ export function openBag(ctx) {
     if (b.classList.contains('opening')) return; b.classList.add('opening'); sfx('tap');
     const album = openAlbum(ctx, () => draw(), { preload: true, closeAnim: flyClose });
     const done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
-    if (!b.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.animation = ''; album.style.opacity = ''; album.style.pointerEvents = ''; done(); return; }
+    if (!b.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.animation = 'none'; album.style.opacity = ''; album.style.pointerEvents = ''; done(); return; }
     try { await document.fonts?.ready; } catch (e) {}
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // el álbum ya está pintado (opacity 0) antes de tocar la tapa
     const { fly, move, turn, inner } = bookFly(b, album.getBoundingClientRect()); b.style.visibility = 'hidden';
@@ -592,7 +592,7 @@ export function openBag(ctx) {
     // el álbum real aparece debajo de la página (papel con papel) y recién después se retira la página
     const up = album.animate([{ opacity: 0 }, { opacity: 0, offset: .72 }, { opacity: 1 }], { duration: D, fill: 'both' });
     const out = fly.animate([{ opacity: 1 }, { opacity: 1, offset: .86 }, { opacity: 0 }], { duration: D, fill: 'both' });
-    const cleanup = () => { album.style.opacity = ''; album.style.pointerEvents = ''; album.style.animation = ''; fly.remove(); done(); };
+    const cleanup = () => { album.style.opacity = ''; album.style.pointerEvents = ''; album.style.animation = 'none'; fly.remove(); done(); };
     Promise.all([up.finished, out.finished]).then(() => { up.cancel(); cleanup(); }, cleanup);
   }
   // Cierre: la animación inversa, más corta

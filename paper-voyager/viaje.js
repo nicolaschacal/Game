@@ -121,6 +121,7 @@ export function initViaje(st) {
   store = st;
   T = store.get('trip', null);
   if (!T || !T.v) T = migrate();
+  if (T.migrated && T.base == null) { T.base = Math.min(T.trips || 0, NW); store.set('trip', T); } // migradas antes de que la dificultad contara destinos distintos
   ALBUM = store.get('album', {});
   PHOTO = { owned: ['f-clasico', 'a-carton', 'x-natural'], frame: 'f-clasico', cover: 'a-carton', filter: 'x-natural', deco: [], ...store.get('photo', {}) };
   return T;
@@ -139,7 +140,7 @@ function migrate() {
   const mw = Math.max(maxWorld || 0, world || 0), passports = new Set(['eu']);
   for (let i = 0; i <= Math.min(mw, NW - 1); i++) passports.add(regionOf(i));
   if (mw >= NW) REGION_ORDER.forEach(r => passports.add(r));
-  const t = { v: 1, traveler: 'nilo', at: (world || 0) % NW, passports: [...passports], trips: mw, visits: {}, migrated: true };
+  const t = { v: 1, traveler: 'nilo', at: (world || 0) % NW, passports: [...passports], trips: mw, visits: {}, migrated: true, base: Math.min(mw, NW) };
   store.set('trip', t);
   return t;
 }
@@ -176,10 +177,12 @@ export function travel(i, wallet) {
 // Ronda completada en el destino actual
 export function roundDone() { T.trips++; T.visits[T.at] = (T.visits[T.at] || 0) + 1; save(); }
 
-// Dificultad según experiencia (rondas completadas), no según qué ciudad: así empezar en Buenos Aires o Kioto es igual de amable.
-// Misma curva que antes (sube durante NW rondas y cada vuelta suma dos escalones).
+// Dificultad según cuántos destinos DISTINTOS completaste (sin importar cuáles ni en qué orden; repetir uno no la sube).
+// Así empezar en Buenos Aires o Kioto es igual de amable. Partidas migradas parten de los destinos que ya habían alcanzado.
+// Misma curva que antes: sube a lo largo de los NW destinos; con todos completados queda en el máximo de la primera vuelta.
+export const countriesDone = () => Math.max(Object.keys(T.visits || {}).length, T.base || 0);
 export function difficulty() {
-  const P = T.trips || 0, lap = Math.floor(P / NW), wi = P % NW;
+  const P = countriesDone(), lap = Math.floor(P / NW), wi = P % NW;
   return { S: Math.min(8, Math.round(wi * 6 / (NW - 1)) + lap * 2), SP: Math.min(16, wi * 10 / (NW - 1) + lap * 3), lap, wi, P };
 }
 
