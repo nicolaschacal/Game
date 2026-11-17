@@ -886,7 +886,7 @@ function heroJump(start){const h=$('mHero'),m=$('menu');
   {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
   {transform:`translateY(0) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(0) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
  const hf=h.querySelector('.hf');let ri=0;const runA=hArt.run||hArt.idle,riv=setInterval(()=>{hf.innerHTML=runA[ri++%runA.length];hf._f='run';},75);hf.innerHTML=runA[0]; // salta ya de espaldas y corriendo, como el corredor
- let done=false;const fin=()=>{if(done)return;done=true;clearInterval(riv);hBusy=false;runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
+ let done=false;const fin=()=>{if(done)return;done=true;clearInterval(riv);hBusy=false;runner.noTurn=true;setTimeout(()=>runner.noTurn=false,1500);runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');

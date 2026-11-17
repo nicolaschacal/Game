@@ -867,7 +867,8 @@ function sanctuary() {
           const R = W.opts.runner, sailing = R?.boatId === d.id && R.onBoat;
           const st = (isRunner ? (R.started || R.hidden /* oculto en el inicio ya queda corriendo: aparece sin girar */) && !R.gameOver : sailing) ? 'run' : 'idle', set = o.frames[st] || o.frames.idle;
           const fr = set[Math.floor(t * (d.fps || 10) * (isRunner ? (R.speed || 1.2) / 1.25 : 1)) % set.length];
-          if (o.state && o.state !== st) o.turn = 1; o.state = st;   // giro de papel al cambiar de pose
+          if (o.state && o.state !== st) o.turn = 1; o.state = st;
+          if (isRunner && R.noTurn) o.turn = 0; // recién aterrizado del salto del inicio: ya viene de espaldas, sin giro   // giro de papel al cambiar de pose
           o.turn = Math.max(0, o.turn - dt * 4);
           const shown = o.turn > .5 ? (o.frames[st === 'run' ? 'idle' : 'run'] || set)[0] : fr;
           if (o.sprite.material.map !== shown) { o.sprite.material.map = o.sprite.material.emissiveMap = shown; o.sprite.customDepthMaterial.map = shown; }
