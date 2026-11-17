@@ -68,6 +68,7 @@ export async function refrescarSiHaceFalta() {
 export function horaFija() {
   const h = Q.get('hora');
   if (h !== null && !isNaN(+h)) return +h;
-  if (!climaActivo() || !dato) return 12;
+  // Sin clima real, la escena sigue la hora del dispositivo (de noche se ve de noche)
+  if (!climaActivo() || !dato) { const d = new Date(); return d.getHours() + d.getMinutes() / 60; }
   return dato.dia ? 12 : 23;
 }
