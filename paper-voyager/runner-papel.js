@@ -75,8 +75,7 @@ export const COIN = paper(
   + L(arc(60, 64, 15.6, 20, 190, 280), '#FFE88A', null, { j: .25 })                        // facetas de luz de la cara
   + L(arc(60, 64, 15.6, 20, 10, 100), '#F0AE24', null, { j: .25 })
   + L(R(49.6, 53.6, 20, 20), '#8A4F1A', '#F5C14E', { dx: 1.4, dy: 1.6, j: .35 })
-  + L(R(52.4, 56.6, 14.6, 14.2), '#B9771F', null, { j: .3 })
-  + L(P('M88 33 L90 39 L96 41 L90 43 L88 49 L86 43 L80 41 L86 39Z'), '#FFF1B0', '#E5A62A', { dx: .6, dy: .8, j: .2 }),  // destello recortado
+  + L(R(52.4, 56.6, 14.6, 14.2), '#B9771F', null, { j: .3 }),
   [coinBody]);
 export const PEARL = (() => {
   const lip = P('M18 82 Q60 112 102 82 Q98 104 60 108 Q22 104 18 82Z'), top = P('M16 80 C20 44 44 26 60 26 C76 26 100 44 104 80 Q60 96 16 80Z');
@@ -306,3 +305,10 @@ export function paperTrain(k, moving, rider) {
     + [35, 85].map(x => disc(x, 98, 4.5, '#F2B937', '#B8741A', { n: 10, dx: .5, dy: .8, j: .12 })).join('') + disc(60, 98, 3.2, '#FFF0D2', null, { n: 9, j: .1 })
     + L(R(19, k ? 92 : 98, 15, 4), '#5E5D66', null, { j: .15 }) + L(R(86, k ? 98 : 92, 15, 4), '#5E5D66', null, { j: .15 }), [body, roof]);
 }
+
+// Helpers compartidos con paper-voyager/adornos.js (mismo lenguaje de recorte)
+export const seed = n => { SD = n; };
+// Igual que paper() pero el grano se recorta a la unión de todos los trazados de las capas (para piezas con muchas partes)
+const paperAll = layers => { const id = 'pp' + (++UID), ds = [...layers.matchAll(/<path d="([^"]+)"/g)].map(m => m[1]);
+  return `<svg viewBox="0 0 120 120"><defs><pattern id="${id}" width="24" height="24" patternUnits="userSpaceOnUse">${speck}</pattern><clipPath id="${id}c">${ds.map(d => `<path d="${d}"/>`).join('')}</clipPath></defs><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${layers}</g>${layers}<rect width="120" height="120" fill="url(#${id})" clip-path="url(#${id}c)"/></svg>`; };
+export { paperAll, P, E, RR, R, strip, sh, bumps, arc, L, LS, disc, paper, cub, qud };
