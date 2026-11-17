@@ -805,7 +805,7 @@ function sanctuary() {
             L.userData.far = [ridge(26, 5.2 * k, T.far[0], -9, -36), ridge(30, 6.4 * k, T.far[1], 10, -37), ridge(18, 3.6 * k, T.far[2], 0, -34), ridge(16, 3 * k, T.far[3], -13, -32), ridge(16, 3.2 * k, T.far[3], 14, -32)];
             // (sin disco de sol acá: el cielo de papel ya trae su sol y sus estrellas)
             // Monumento del destino (Cristo, pagoda, faro…): un recorte grande de papel entre las colinas; si el destino no trae uno, no se dibuja
-            if (runner.landmark) { const s = 8.5, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: paperTexture(runner.landmark), transparent: true, alphaTest: .5, fog: false })); lm.position.set(5.2, -1.2, -33); L.add(lm); L.userData.far.push(lm); }
+            if (runner.landmark) { const s = 8.5, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: paperTexture(runner.landmark), transparent: true, alphaTest: .5, fog: false, color: 0xF2EEE8 })); lm.position.set(5.2, -1.2, -33); L.add(lm); L.userData.far.push(lm); }
             const C = '#FFF4DC', wrap = inner => `<svg viewBox="0 0 120 120"><g stroke="${C}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${inner}</g>${inner}</svg>`;
             const ARTS = runner.look?.props || {
               sand: [wrap('<path d="M52 110 L52 40 Q60 26 68 40 L68 110Z" fill="#6FA255"/><path d="M52 78 L34 78 Q26 78 26 68 L26 54 Q32 46 38 54 L38 66 L52 66Z" fill="#6FA255"/><path d="M68 70 L84 70 Q92 70 92 60 L92 44 Q86 36 80 44 L80 58 L68 58Z" fill="#6FA255"/>'),

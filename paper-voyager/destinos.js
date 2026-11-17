@@ -2,7 +2,6 @@
 // y tres adornos de costado. Cada destino trae su monumento (art), su escenario (look) y el piso de la pista.
 import { LANDMARKS } from './runner-art.js';
 import { ADORNOS, LUZ, adornosDe } from './adornos.js';
-import { MON } from './monumentos.js';
 const CREAM = '#FFF4DC';
 const cut = (shapes, details = '') => `<svg viewBox="0 0 120 120"><g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${shapes}</g>${shapes}${details}</svg>`;
 const win = (x, y, cols, rows, c = '#FFE9A8', dx = 5, dy = 7) => { let s = ''; for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) s += `<rect x="${x + i * dx}" y="${y + j * dy}" width="2.6" height="3.6" fill="${c}"/>`; return s; };
@@ -164,9 +163,6 @@ L.baobabs = `<svg viewBox="0 0 120 120"><g stroke="${CREAM}" stroke-width="7" st
 L.monument = cut(
   `<path d="M0 110 Q60 98 120 110Z" fill="#E0A070"/><path d="M6 108 L10 88 L20 80 L22 46 L40 46 L42 80 L52 88 L56 108Z" fill="#C0603C"/><rect x="44" y="60" width="7" height="22" fill="#C0603C"/><path d="M64 108 L68 90 L78 82 L80 54 L88 54 L88 34 L102 34 L104 82 L112 90 L116 108Z" fill="#C0603C"/>`,
   `<path d="M32 46 L40 46 L42 80 L52 88 L56 108 L40 108 L36 84 L34 80Z M96 34 L102 34 L104 82 L112 90 L116 108 L100 108 L98 84Z" fill="#9E4A2E" opacity=".6"/><path d="M22 58 h18 M22 70 h19 M12 94 h40 M80 66 h23 M88 46 h14 M70 96 h42" stroke="#D98C6A" stroke-width="2.5" stroke-linecap="round"/><path d="M0 110 Q60 102 120 110Z" fill="#E8B488"/>`);
-
-// Monumentos rehechos en estilo papel (monumentos.js) pisan la versión anterior
-Object.assign(L, MON);
 
 // Adornos de costado: viven en adornos.js, organizados por BIOMA (ver BIOMAS). Cada destino sólo elige bioma (+ extras opcionales).
 const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
