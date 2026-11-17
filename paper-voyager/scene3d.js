@@ -558,7 +558,7 @@ function sanctuary() {
   if (E.worlds.sanct) return E.worlds.sanct;
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(FOV, 1, .5, 220);
   // CAMZ: distancia de la cámara de la partida (1 = la de siempre; menor = más zoom). ?zoom=0.9 para probar.
-  const CAMZ = +(new URLSearchParams(location.search).get('zoom')) || 1;
+  const CAMZ = +(new URLSearchParams(location.search).get('zoom')) || .9;
   // Fondo: degradado de papel + sol, luna, estrellas y nubes en el plano de la pantalla
   const bgScene = new THREE.Scene(), bgCam = new THREE.OrthographicCamera(-1, 1, 1, -1, -10, 10);
   const grad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
