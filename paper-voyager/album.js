@@ -335,7 +335,7 @@ function css() {
 const LOCK = `<svg viewBox="0 0 40 40" class="lk"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 18 V13 a8 8 0 0 1 16 0 V18" fill="none"/><rect x="7" y="17" width="26" height="19" rx="4" fill="#3A3558"/></g><path d="M12 18 V13 a8 8 0 0 1 16 0 V18" fill="none" stroke="#B8B3D6" stroke-width="3.4" stroke-linecap="round"/><rect x="7" y="17" width="26" height="19" rx="4" fill="#3A3558"/><circle cx="20" cy="25.5" r="3" fill="#F2B937"/><rect x="18.8" y="26" width="2.4" height="5.5" rx="1" fill="#F2B937"/></svg>`;
 const KINDS = [['frame', 'MARCOS', 'frame'], ['cover', 'TAPAS', 'cover'], ['filter', 'FILTROS', 'filter'], ['deco', 'ADORNOS', 'deco']];
 
-export function openAlbum(ctx) {
+export function openAlbum(ctx, onClose) {
   css();
   const V = ctx.V || VV, $ = (s, el = root) => el.querySelector(s);
   const sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
@@ -346,11 +346,11 @@ export function openAlbum(ctx) {
     return shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0];
   };
   const look = shot => ({ frame: V.PHOTO.frame, filter: V.PHOTO.filter, hero: heroFor(shot) });
-  document.querySelectorAll('.pva').forEach(e => e.remove());
-  const root = document.createElement('div'); root.className = 'panel pva'; root.style.display = 'block';
+  document.querySelectorAll('.pvalb').forEach(e => e.remove());
+  const root = document.createElement('div'); root.className = 'panel pva pvalb'; root.style.display = 'block';
   document.body.appendChild(root);
   let region = (V.T && V.regionOf(V.T.at)) || 'am';
-  const close = () => { root.remove(); sfx('tap'); };
+  const close = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
 
   const regCount = r => { const ds = V.destsOf(r); return { n: ds.reduce((a, d) => a + (V.ALBUM[d] || []).length, 0), t: ds.length * V.SHOTS.length }; };
   const done = () => ctx.store?.get?.('albumDone', []) || [];
@@ -434,4 +434,154 @@ export function selfieReveal(ctx, i, res) {
   document.body.append(fl, el);
   try { ctx.SFX?.[res.nuevo ? 'prize' : 'tap']?.(); ctx.buzz?.([20, 30, 20]); if (R) { setTimeout(() => { ctx.confetti?.(); ctx.SFX?.win?.(); }, 700); } } catch (e) {}
   setTimeout(() => { fl.remove(); el.remove(); }, long ? 2800 : 1900);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MOCHILA: el contenido volcado sobre una mesa de papel. Es el menú de álbum, pasaportes y souvenirs.
+// ═══════════════════════════════════════════════════════════════════════════
+const BAG_CSS = `
+.pvb-t{position:relative;height:max(560px,calc(100dvh - var(--st) - 98px - var(--sb)));overflow:hidden;touch-action:pan-y}
+.pvb-alb{position:absolute;left:4%;top:2.5%;width:54%;transform:rotate(-5deg);transform-origin:50% 60%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
+.pvb-alb .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
+.pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
+.pvb-alb .cv{position:relative;transform-origin:5% 50%;transition:transform .5s cubic-bezier(.5,0,.8,.4);filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
+.pvb-alb.opening .cv{transform:rotateY(-118deg)}
+.pvb-alb:active:not(.opening) .cv{transform:translateY(2px) scale(.985)}
+.pvb-tag{display:inline-block;margin:-8px 0 0;padding:3px 10px 4px;background:#F6EBD0;color:#6B4E26;font:900 10px Nunito,sans-serif;letter-spacing:.9px;border-radius:3px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);position:relative;white-space:nowrap}
+.pvb-tag b{color:#C9402A;font:400 12px 'Lilita One',sans-serif;letter-spacing:.3px;margin-left:3px}
+.pvb-alb .pvb-tag{transform:rotate(3deg);left:12%}
+.pvb-pas{position:absolute;right:3%;top:2%;width:42%;height:34%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
+.pvb-pas .bk{position:absolute;left:50%;bottom:16%;width:56%;transform-origin:50% 112%;transition:transform .3s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 5px 6px rgba(27,23,48,.3))}
+.pvb-pas .bk svg,.pvb-sc svg,.pvb-dec svg{display:block;width:100%;height:auto;overflow:visible}
+.pvb-pas:active .bk{filter:brightness(.96) drop-shadow(0 1px 1px rgba(40,24,10,.3))}
+.pvb-pas .pvb-tag{position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-2.5deg)}
+.pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}
+.pvb-sv{position:absolute;left:6%;right:6%;top:58%;bottom:2%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
+.pvb-sc{position:absolute;left:50%;top:52%;width:min(37vw,140px);transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
+.pvb-sn{display:flex;align-items:center;gap:8px;min-height:30px}
+.pvb-sn .nm{padding:4px 14px 5px;background:#F6EBD0;color:#3A2A12;font:400 16px 'Lilita One',sans-serif;letter-spacing:.4px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);clip-path:polygon(9px 0,100% 0,100% 100%,9px 100%,0 50%);padding-left:20px;transform:rotate(-1.5deg)}
+.pvb-sn small{font:900 10px Nunito,sans-serif;letter-spacing:.9px;color:#6B4E26}
+.pvb-dots{display:flex;gap:5px}.pvb-dots i{width:6px;height:6px;border-radius:50%;background:#B39463;opacity:.55}.pvb-dots i.on{background:#C9402A;opacity:1}
+.pvb-empty{flex:1;width:100%;border:2.5px dashed #A98A5A;border-radius:18px;background:#F6EBD088;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#6B4E26;font:900 12px Nunito,sans-serif;letter-spacing:.6px;text-align:center;padding:10px;transform:rotate(-1.2deg)}
+.pvb-empty svg{width:56px;height:56px;opacity:.45}.pvb-empty b{font:400 17px 'Lilita One',sans-serif;color:#4A3416;letter-spacing:.3px}
+.pvb-empty u{text-decoration:none;display:inline-block;margin-top:2px;padding:3px 12px;border-radius:99px;background:#F2BC3E;color:#3A2410;font:400 13px 'Lilita One',sans-serif;box-shadow:0 2px 0 #A9701B}
+/* pasaportes */
+.pvp-st{display:flex;gap:8px;padding:14px 14px 4px}
+.pvp-st div{flex:1;text-align:center;padding:7px 4px 6px;background:#F7ECD3;border-radius:12px;box-shadow:0 1px 1px rgba(40,24,10,.28),0 4px 7px rgba(27,23,48,.2);color:#3A2A12}
+.pvp-st b{display:block;font:400 25px/1 'Lilita One',sans-serif;color:#C9402A}.pvp-st small{font:900 9px Nunito;letter-spacing:.9px;color:#6B4E26}
+.pvp-r{margin:12px 12px 0;padding:10px 10px 10px;border-radius:16px;background:#F7ECD3;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 10px rgba(27,23,48,.22);color:#3A2A12;position:relative}
+.pvp-r:before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:6px;border-radius:0 4px 4px 0;background:var(--rc)}
+.pvp-rh{display:flex;align-items:center;gap:10px;padding-left:6px}
+.pvp-rh .bk{width:46px;flex:none;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3));transform:rotate(-4deg)}.pvp-rh .bk svg{display:block;width:100%;height:auto}
+.pvp-rh b{display:block;font:400 19px/1.05 'Lilita One',sans-serif}.pvp-rh small{font:900 10px Nunito;letter-spacing:.8px;color:#6B4E26}
+.pvp-rh u{margin-left:auto;text-decoration:none;font:400 13px 'Lilita One',sans-serif;padding:2px 11px;border-radius:99px;background:#76B85A;color:#fff;box-shadow:0 2px 0 #356F2E}
+.pvp-rh u.pr{background:#F2BC3E;color:#3A2410;box-shadow:0 2px 0 #A9701B}
+.pvp-sg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px 2px;margin-top:8px}
+.pvp-sg div{text-align:center;min-width:0}.pvp-sg svg{display:block;width:100%;height:auto;overflow:visible}
+.pvp-sg span{display:block;font:900 7.5px Nunito;color:#6B4E26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:-2px}.pvp-sg .nv span{opacity:.55}
+.pvp-go{margin-top:10px;display:flex;align-items:center;gap:10px;padding-left:6px;font:700 11.5px Nunito;color:#6B4E26}.pvp-go .btn{width:auto;flex:none;padding:0 16px;height:44px;font-size:16px}
+`;
+function bagCss() { css(); if (document.getElementById('pvBagCss')) return; const st = document.createElement('style'); st.id = 'pvBagCss'; st.textContent = BAG_CSS; document.head.appendChild(st); }
+
+// Libreta de pasaporte (lienzo 100×134), del color de la región
+function passportSVG(V, r) {
+  const R = V.REGIONS[r], u = 'pv' + (++UID);
+  const body = `<rect x="5" y="5" width="90" height="124" rx="6" fill="${R.color}"/>`;
+  return `<svg viewBox="0 0 100 134" aria-hidden="true"><rect x="5" y="5" width="90" height="124" rx="6" fill="${CREAM}" stroke="${CREAM}" stroke-width="7" stroke-linejoin="round"/>${body}<rect x="5" y="5" width="11" height="124" rx="5" fill="${R.dark}"/><path d="M5 117 Q5 129 17 129 H83 Q95 129 95 117 V111 Q50 120 5 111Z" fill="#000" opacity=".15"/>`
+    + `<rect x="22" y="12" width="66" height="110" rx="3" fill="none" stroke="${R.light}" stroke-width="1.2" stroke-dasharray="3 2.4" opacity=".85"/>`
+    + `<circle cx="55" cy="46" r="18" fill="none" stroke="${R.light}" stroke-width="2.6"/><ellipse cx="55" cy="46" rx="7.5" ry="18" fill="none" stroke="${R.light}" stroke-width="1.5"/><path d="M37 46 H73 M41 35 H69 M41 57 H69" stroke="${R.light}" stroke-width="1.4"/><path d="${plane(55, 46, 1.15)}" fill="${CREAM}" stroke="${R.dark}" stroke-width=".8"/>`
+    + `<text x="55" y="86" text-anchor="middle" font-family="${LIL}" font-size="11" fill="${CREAM}" letter-spacing="1.2">PASAPORTE</text><text x="55" y="99" text-anchor="middle" font-family="${LIL}" font-size="8" fill="${R.light}" letter-spacing="2">${esc(R.name.toUpperCase())}</text><rect x="38" y="108" width="34" height="5" rx="2.5" fill="#F2B937"/></svg>`;
+}
+function pencilSVG() {
+  return `<svg viewBox="0 0 160 22"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round"><path d="M10 3 H128 L152 11 L128 19 H10Z" fill="#F2BC3E"/></g><path d="M10 3 H128 L152 11 L128 19 H10Z" fill="#F2BC3E"/><path d="M10 11 H128" stroke="#D99A1F" stroke-width="2"/><path d="M128 3 L152 11 L128 19Z" fill="#F0D2A0"/><path d="M144 8 L152 11 L144 14Z" fill="#3A3558"/><rect x="2" y="3" width="14" height="16" rx="3" fill="#E9798C"/><rect x="16" y="3" width="6" height="16" fill="#B8BEC8"/></svg>`;
+}
+function openShopTab(ctx, tab) {
+  const sh = document.getElementById('shop'); if (sh) sh.style.display = 'block';
+  import('./tienda.js').then(m => m.openShop(ctx, tab)).catch(e => console.warn(e));
+}
+
+export function openBag(ctx) {
+  bagCss();
+  const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
+  document.querySelectorAll('.pvbag').forEach(e => e.remove());
+  const root = document.createElement('div'); root.className = 'panel pva pvbag'; root.style.display = 'block'; document.body.appendChild(root);
+  let idx = 0;
+  const close = () => { root.remove(); sfx('tap'); };
+  function draw() {
+    const P = V.PHOTO, pass = V.T.passports || [], nReg = V.REGION_ORDER.length;
+    const sv = V.SOUVENIRS.filter(s => P.owned.includes(s.id));
+    if (idx >= sv.length) idx = 0;
+    const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), souvenirs: sv.map(s => s.id), deco: P.deco.filter(d => P.owned.includes(d)) });
+    const m = pass.length, span = m < 2 ? 0 : Math.min(48, 16 * (m - 1));
+    const fan = pass.map((r, k) => { const a = m < 2 ? 4 : -span / 2 + span * k / (m - 1); return `<div class="bk" style="transform:translateX(-50%) rotate(${a.toFixed(1)}deg);z-index:${k + 1}">${passportSVG(V, r)}</div>`; }).join('');
+    const stage = sv.length
+      ? `<div class="pvb-stage" data-st>${sv.map((s, k) => `<div class="pvb-sc" data-k="${k}">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div>`).join('')}</div><div class="pvb-sn"><span class="nm" data-nm></span><small data-ct></small></div>`
+      : `<button class="pvb-empty" data-shop style="font-family:inherit">${LOCK.replace('class="lk"', '')}<b>Todavía no tenés souvenirs</b>Comprá souvenirs en la tienda<u>IR A LA TIENDA</u></button>`;
+    root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>LO QUE LLEVÁS EN VIAJE</small><h2>MOCHILA</h2></div>
+<div class="pvb-t">
+ <button class="pvb-alb" data-alb aria-label="Abrir el álbum"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">ÁLBUM · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
+ <div class="pvb-dec" style="left:2%;top:53%;width:40%;transform:rotate(-9deg)">${pencilSVG()}</div>
+ <div class="pvb-dec" style="right:1%;top:37%;width:34%;transform:rotate(11deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
+ <button class="pvb-pas" data-pas aria-label="Abrir pasaportes">${fan}<span class="pvb-tag">PASAPORTES · <b>${m}</b>/${nReg}</span></button>
+ <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
+</div>`;
+    const q = s => root.querySelector(s);
+    q('[data-x]').onclick = close;
+    q('[data-alb]').onclick = e => {
+      const b = e.currentTarget; if (b.classList.contains('opening')) return; sfx('tap'); b.classList.add('opening');
+      setTimeout(() => { openAlbum(ctx, () => draw()); setTimeout(() => b.classList.remove('opening'), 500); }, 430);
+    };
+    q('[data-pas]').onclick = () => { sfx('tap'); openPassport(ctx, () => draw()); };
+    q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
+    if (sv.length) souvenirs(sv);
+  }
+  // Carrusel de souvenirs: uno al frente sobre una pila en abanico; toque o deslizar para rotar
+  function souvenirs(sv) {
+    const n = sv.length, st = root.querySelector('[data-st]'), els = [...st.querySelectorAll('.pvb-sc')];
+    const nm = root.querySelector('[data-nm]'), ct = root.querySelector('[data-ct]');
+    const POS = [['-50%', '-50%', -4, 1, 3, 1], ['calc(-50% + 70px)', 'calc(-50% - 10px)', 9, .76, 2, .95], ['calc(-50% - 72px)', 'calc(-50% - 6px)', -14, .66, 1, .9]];
+    const place = () => {
+      els.forEach((el, k) => {
+        const rel = (k - idx + n) % n, p = POS[rel];
+        if (p) el.style.cssText = `transform:translate(${p[0]},${p[1]}) rotate(${p[2]}deg) scale(${p[3]});z-index:${p[4]};opacity:${p[5]}`;
+        else el.style.cssText = `transform:translate(calc(-50% + 90px),calc(-50% - 40px)) rotate(26deg) scale(.5);z-index:0;opacity:0`;
+      });
+      nm.textContent = sv[idx].name; ct.textContent = n > 1 ? `${idx + 1} / ${n}` : '';
+    };
+    place();
+    let x0 = null;
+    const go = d => { if (n < 2) { st.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-3deg)' }, { transform: 'rotate(2deg)' }, { transform: 'none' }], { duration: 320 }); return; } idx = (idx + d + n) % n; sfx('tap'); place(); };
+    st.addEventListener('pointerdown', e => { x0 = e.clientX; });
+    st.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; go(Math.abs(dx) > 28 ? (dx < 0 ? 1 : -1) : 1); });
+    st.addEventListener('pointercancel', () => { x0 = null; });
+  }
+  draw();
+  return root;
+}
+
+// ── Página del pasaporte: regiones, sellos de destinos visitados, viajes y lo que falta ──
+export function openPassport(ctx, onClose) {
+  bagCss();
+  const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
+  const root = document.createElement('div'); root.className = 'panel pva pvpass'; root.style.display = 'block'; document.body.appendChild(root);
+  const T = V.T, vis = T.visits || {}, have = r => (T.passports || []).includes(r);
+  const visited = Object.keys(vis).filter(k => vis[k] > 0).length;
+  const order = [...V.REGION_ORDER.filter(have), ...V.REGION_ORDER.filter(r => !have(r))];
+  const stamp = (d, i, R, k) => {
+    const rot = ((i * 37) % 21) - 10, n = vis[i] || 0;
+    if (!n) return `<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="25" fill="none" stroke="#B3A37F" stroke-width="2" stroke-dasharray="3.4 3"/><text x="30" y="38" text-anchor="middle" font-family="${LIL}" font-size="22" fill="#B3A37F" opacity=".7">?</text></svg>`;
+    return `<svg viewBox="0 0 60 60" aria-label="${esc(d.place)}"><g transform="rotate(${rot} 30 30)"><circle cx="30" cy="30" r="27" fill="#FFF8E6"/><circle cx="30" cy="30" r="27" fill="none" stroke="${R.dark}" stroke-width="2.6"/><circle cx="30" cy="30" r="23" fill="none" stroke="${R.color}" stroke-width="1.2"/>${nest(d.art, 12, 9, 36)}<path d="M8 49 q5-3 10 0 t10 0 t10 0 t10 0" stroke="${R.dark}" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/>${n > 1 ? `<circle cx="48" cy="12" r="8" fill="${R.dark}"/><text x="48" y="15.6" text-anchor="middle" font-family="${LIL}" font-size="10" fill="#fff">×${n}</text>` : ''}</g></svg>`;
+  };
+  root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>TUS VIAJES Y SELLOS</small><h2>PASAPORTES</h2></div>
+<div class="pvp-st"><div><b>${T.trips || 0}</b><small>VIAJES</small></div><div><b>${visited}</b><small>DESTINOS / ${DESTINOS.length}</small></div><div><b>${(T.passports || []).length}/${V.REGION_ORDER.length}</b><small>PASAPORTES</small></div></div>`
+    + order.map(r => {
+      const R = V.REGIONS[r], ds = V.destsOf(r), ok = have(r), v = ds.filter(i => vis[i] > 0).length;
+      return `<div class="pvp-r" style="--rc:${R.color}"><div class="pvp-rh"><div class="bk">${passportSVG(V, r)}</div><div><b>${esc(R.pass)}</b><small>${esc(R.name.toUpperCase())} · ${ds.length} DESTINOS</small></div>${ok ? `<u>${v}/${ds.length}</u>` : `<u class="pr">◉ ${V.passPrice(r)}</u>`}</div>`
+        + (ok ? `<div class="pvp-sg">${ds.map(i => `<div class="${vis[i] ? '' : 'nv'}">${stamp(DESTINOS[i], i, R)}<span>${esc(DESTINOS[i].place)}</span></div>`).join('')}</div>`
+          : `<div class="pvp-go"><span>Te falta este pasaporte. Abre ${ds.length} destinos de ${esc(R.name)}.</span><button class="btn sm" data-buy>TIENDA</button></div>`) + `</div>`;
+    }).join('');
+  root.querySelector('[data-x]').onclick = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
+  root.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { sfx('tap'); document.querySelectorAll('.pvbag').forEach(e => e.remove()); root.remove(); openShopTab(ctx, 'pasaportes'); });
+  return root;
 }

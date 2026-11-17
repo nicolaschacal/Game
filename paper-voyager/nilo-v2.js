@@ -233,20 +233,21 @@ const rTB1 = piece('rtb1', P('M-2 -3.4 C4 -5.4 9 -2 14 -3.4 L14.4 3.6 C9 5.2 4 2
 const rTB2 = piece('rtb2', P('M-1 -3.4 C5 -5 9 -2 13 -3.6 L17 -4.6 L14 0 L17 4.6 L13 3.8 C9 5.2 5 2.2 -1 3.4Z'), dark(C.scarf, .2), { j: .45 });
 const rleg = (parts, hx, y, a, sole) => g(`${tr(hx, y)} ${rot(a)}`, parts[0], sole ? parts[2] : parts[1]);
 // ciclo de 8 cuadros (contacto, bajada, paso, subida) de espaldas: cada pierna con su elevación y avance; los brazos van flexionados (~90°) y alternan con las piernas
-const LEGF = [1, .5, 0, -.6, -1, -.5, 0, .7], LEGL = [0, 0, 0, .2, .9, 1, .7, .25];
-const legPose = (parts, hx, f, by, out) => { const fw = LEGF[f], lf = LEGL[f]; return rleg(parts, hx, 83.6 + by - lf * 7 + Math.max(0, fw) * 1.2, out * (2 + 6 * lf + 3 * Math.max(0, -fw)), lf > .6); };
-const armRun = (A, side, sx, by, s) => g(tr(0, by), arm(A, sx, 60.6, side * (24 - 28 * s), -side * (64 + 28 * s)));
+const LEGF = [1, .6, 0, -.5, -1, -.6, 0, .6], LEGL = [0, 0, .1, .35, .55, 1, .9, .25];
+// pierna: avance (fw) y elevación (lf) por cuadro; la que sube dobla y muestra la suela; la apoyada baja y se abre un poco
+const legPose = (parts, hx, f, bob, out) => { const fw = LEGF[f], lf = LEGL[f]; return rleg(parts, hx + out * -1.2 * lf + out * Math.max(0, fw) * .6, 83.6 + bob * .6 - lf * 9 + Math.max(0, fw) * 1.4, out * (1 + 8 * lf + 5 * Math.max(0, -fw) + 3 * Math.max(0, fw)), lf > .5); };
+// brazos: codo a ~90° siempre a la vista por los costados; s>0 = adelante (puño al frente, alto), s<0 = atrás (codo afuera, mano abajo)
+const armRun = (A, side, sx, y, s) => g(tr(0, y), arm(A, sx, 60.6, side * (18 + 34 * (.5 + .5 * s)), side * (-44 + 140 * (.5 + .5 * s))));
 function runScene(o) {
-  const f = o.f, by = -o.b * 1.5, hy = by - o.b * .5, c = Math.cos(f / 8 * TAU);
+  const f = o.f, bob = -o.b * 3.5, by = bob - 3, hy = by * .85 + 1.6, c = Math.cos(f / 8 * TAU);
   const tailU = g(`${tr(75, 60 + by)} ${rot(-12 + o.t1)}`, tail1, g(`${tr(14.6, 0)} ${rot(2 + o.t2)}`, tail2));
   const tailD = g(`${tr(74, 63 + by)} ${rot(7 + o.t3)}`, rTB1, g(`${tr(13.6, 0)} ${rot(3 + o.t2 * .6)}`, rTB2));
-  const legA = legPose(rL, 50.6, f, by, 1), legB = legPose(rR, 69.4, (f + 4) % 8, by, -1);
+  const legA = legPose(rL, 50.6, f, bob, 1), legB = legPose(rR, 69.4, (f + 4) % 8, bob, -1);
   const body = g(`${tr(0, by)} ${rot(o.roll, 60, 84)}`, coat, hem, pack, packFlap, packBuck, packStr('ps1', 49.4), packStr('ps2', 66.8), roll, rollS('rs1', 49.4), rollS('rs2', 66.8));
-  const sL = -c, sR = c; // brazo adelante (s>0) cuando la pierna del mismo lado va atrás; el que va adelante queda detrás del torso
-  const aL = armRun(armL, 1, 40.8, by, sL), aR = armRun(armR, -1, 79.2, by, sR);
+  const aL = armRun(armL, 1, 40.8 + o.roll * .4, by, -c), aR = armRun(armR, -1, 79.2 + o.roll * .4, by, c);
   const head = g(`${tr(0, hy)} ${rot(o.tilt, 60, 58)}`, flapL, flapR, rgL, rgR, rdome, rbuck, rbuck2);
   const wrap = g(tr(0, by), rwrap);
-  return g(rot(o.sway, 60, 108), tailD, tailU, legA, legB, ...(sL > .2 ? [aL] : []), ...(sR > .2 ? [aR] : []), body, ...(sL > .2 ? [] : [aL]), ...(sR > .2 ? [] : [aR]), wrap, head);
+  return g(rot(o.sway, 60, 108), tailD, tailU, legA, legB, body, aL, aR, wrap, head);
 }
 function runFrame(o) {
   const key = 'run' + JSON.stringify(o); if (cache.has(key)) return cache.get(key);
@@ -259,9 +260,9 @@ function runFrame(o) {
 }
 // run: 8 cuadros @ 16 fps (0,5 s por ciclo). Brazos flexionados alternados con las piernas, rebote leve, bufanda hacia atrás.
 export const run = Array.from({ length: 8 }, (_, f) => {
-  const ph = f / 8 * TAU;
-  return runFrame({ f, b: [.3, 0, .6, 1, .3, 0, .6, 1][f], roll: q(1.6 * Math.cos(ph), .1), sway: q(.8 * Math.sin(ph + 1), .1), tilt: q(1.2 * Math.cos(ph), .1),
-    t1: q(5 * Math.sin(ph + .5), .5), t2: q(8 * Math.sin(2 * ph + 1), .5), t3: q(6 * Math.sin(ph + 2.4), .5) });
+  const ph = f / 8 * TAU, e = t => t * t * (3 - 2 * t);
+  return runFrame({ f, b: [.15, 0, .55, 1, .15, 0, .55, 1][f], roll: q(-2.2 * Math.cos(ph), .1), sway: q(.4 * Math.sin(ph), .1), tilt: q(1 * Math.cos(ph), .1),
+    t1: q(6 * Math.sin(ph + .5), .5), t2: q(9 * Math.sin(2 * ph + 1), .5), t3: q(7 * Math.sin(ph + 2.4), .5) });
 });
 export const runFps = 16;
 export const NILO2 = { idle, idleBase, at, clips, wave, run, runFps };
