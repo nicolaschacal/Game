@@ -84,6 +84,59 @@ function paperTexture(svg) {
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
   return t;
 }
+
+// ---------- Horizonte de papel: cada silueta se pinta una vez en un canvas (cacheado) como cartulina recortada ----------
+const ridgeCache = new Map();
+const shade = (c, t, to = '#3A2A3E') => { const a = new THREE.Color(c), b = new THREE.Color(to); return '#' + a.lerp(b, t).getHexString(); };
+function ridgeTexture(kind, w, h, color, seedN, snow) {
+  const key = [kind, w, h, color, seedN, snow].join('|');
+  if (ridgeCache.has(key)) return ridgeCache.get(key);
+  const W = 512, H = Math.max(64, Math.round(W * h / w)), PD = 16, c = canvas(W + 2 * PD, H + 2 * PD), g = c.getContext('2d'), rnd = mulberry(seedN * 977 + 13);
+  g.translate(PD, PD);
+  const X = u => (u + .5) * W, Y = v => H - v * H; // u: -.5..+.5 del ancho, v: 0..1 de la altura
+  const path = pts => { g.beginPath(); pts.forEach(([u, v], i) => i ? g.lineTo(X(u), Y(v)) : g.moveTo(X(u), Y(v))); g.closePath(); };
+  const sub = (a, b, n, j) => Array.from({ length: n }, (_, i) => { const t = i / n; return [a[0] + (b[0] - a[0]) * t, Math.max(0, a[1] + (b[1] - a[1]) * t + (i ? (rnd() - .5) * j : 0))]; });
+  const deco = []; // recortes interiores (ventanas), en coordenadas u,v,w,h
+  let pts = [];
+  if (kind === 'peak') {
+    const base = [[-.5, 0], [-.22, .62], [-.15, .56], [-.12, .5], [-.05, .78], [0, 1], [.06, .86], [.1, .7], [.14, .55], [.19, .66], [.24, .7], [.5, 0]];
+    base.forEach((p0, i) => { if (i < base.length - 1) pts.push(...sub(p0, base[i + 1], 5, .035)); }); pts.push([.5, 0]);
+  } else if (kind === 'city') {
+    let u = -.5, i = Math.round(Math.abs(seedN) + w); pts.push([-.5, 0]); const ext = [];
+    while (u < .5) {
+      const bw = .05 + ((i * 37) % 5) * .012, bh = (.38 + ((i * 53) % 7) * .09) * .8, ue = Math.min(.5, u + bw), mid = (u + ue) / 2, bi = i % 6;
+      pts.push([u, bh]);
+      if (bi === 1 && bw > .085) { for (let k = 0; k <= 8; k++) { const a = Math.PI * k / 8; pts.push([mid - (ue - u) * .4 * Math.cos(a), bh + (ue - u) * .4 * w / h * Math.sin(a) * .9]); } pts.push([ue - (ue - u) * .1, bh]); }
+      else if (bi === 3) { pts.push([mid - .004, bh], [mid - .004, bh + .17], [mid + .004, bh + .17], [mid + .004, bh]); }
+      else if (bi === 4 && bw > .055) { const tw = (ue - u) * .3; pts.push([mid - tw, bh], [mid - tw, bh + .05], [mid - tw * 1.2, bh + .05], [mid - tw * 1.2, bh + .1], [mid, bh + .13], [mid + tw * 1.2, bh + .1], [mid + tw * 1.2, bh + .05], [mid + tw, bh + .05], [mid + tw, bh]); }
+      else if (bi === 5) { pts.push([u + (ue - u) * .15, bh], [u + (ue - u) * .15, bh + .035], [u + (ue - u) * .55, bh + .035], [u + (ue - u) * .55, bh]); }
+      pts.push([ue, bh]);
+      const cols = Math.max(1, Math.floor((ue - u) / .016)), rows = Math.floor(bh / .11);
+      for (let a = 0; a < cols; a++) for (let b = 1; b < rows; b++) if (rnd() < .5) deco.push([u + (ue - u) * (a + .5) / cols, b * .1, .007, .028]);
+      ext.push([u, ue, bh]); u = ue; i++;
+    }
+    pts.push([.5, 0]);
+    pts = pts.map(([a, b]) => [a, b]);
+  } else { // colinas: la misma curva de antes con ondulaciones irregulares
+    const ph = rnd() * 6, ph2 = rnd() * 6, N = 64;
+    for (let k = 0; k <= N; k++) { const t = k / N, e = t < .5 ? (() => { const q = t * 2, u = 1 - q; return 3 * u * q * q * 1 + q * q * q; })() : (() => { const q = (1 - t) * 2, u = 1 - q; return 3 * u * q * q + q * q * q; })(); pts.push([t - .5, Math.max(0, e * (1 + .05 * Math.sin(t * 19 + ph) + .035 * Math.sin(t * 43 + ph2)))]); }
+    pts.push([.5, 0]);
+  }
+  const body = color, dark = shade(color, .16), rim = '#FFF4DC';
+  // sombra suave sobre la capa de atrás
+  g.save(); g.shadowColor = 'rgba(40,28,50,.42)'; g.shadowBlur = 10; g.shadowOffsetY = 3; g.fillStyle = body; path(pts); g.fill(); g.restore();
+  // borde crema fino arriba
+  g.lineJoin = 'round'; g.lineWidth = 4; g.strokeStyle = rim; path(pts); g.stroke();
+  g.fillStyle = body; path(pts); g.fill();
+  g.save(); path(pts); g.clip();
+  // capa inferior desplazada, más oscura (queda una franja de papel claro arriba)
+  g.translate(0, 9); g.fillStyle = dark; path(pts); g.fill(); g.translate(0, -9);
+  if (snow) { g.fillStyle = '#F8FBFD'; g.beginPath(); g.moveTo(-5, -5); g.lineTo(W + 5, -5); const zz = []; for (let k = 20; k >= 0; k--) zz.push([k / 20 * W, Y(.7 + (k % 2 ? -.07 : .01) + (rnd() - .5) * .03)]); zz.forEach(([a, b]) => g.lineTo(a, b)); g.closePath(); g.fill(); g.fillStyle = 'rgba(150,175,200,.25)'; g.translate(0, 6); g.fill(); g.translate(0, -6); }
+  deco.forEach(([u, v, dw, dh]) => { g.fillStyle = shade(body, .22); g.fillRect(X(u) - dw * W / 2, Y(v) - dh * H, dw * W, dh * H); });
+  for (let k = 0; k < 260; k++) { g.fillStyle = k % 3 ? 'rgba(90,60,30,.10)' : 'rgba(255,255,255,.13)'; g.fillRect(rnd() * W, rnd() * H, 1.6, 1.6); } // grano
+  g.restore();
+  const t = tex(c); t.anisotropy = 2; ridgeCache.set(key, t); return t;
+}
 function radialTex(stops) {
   const c = canvas(64), x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
   stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return tex(c);
@@ -742,15 +795,12 @@ function sanctuary() {
               pueblo: { fog: '#F6DFC8', ground: '#D9C4A0', far: ['#EFD2C2', '#E2B9A6', '#D0A08E', '#BE8A78'], sun: '#FFD08A', ridge: 'dune' },
             }[runner.fx] || null; if (!T) { runner.fx = null; }
             const L = W.look = new THREE.Group(); W.scene.add(L);
-            W.scene.fog = new THREE.Fog(T.fog, 13, 31);
+            W.scene.fog = new THREE.Fog(T.fog, 15, 52);
             L.userData.fogDay = new THREE.Color(T.fog); L.userData.groundDay = new THREE.Color(T.ground);
             const flat = c => new THREE.MeshBasicMaterial({ color: c, fog: false });
             const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshStandardMaterial({ color: T.ground, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.y = -.36; ground.receiveShadow = true; L.add(ground); L.userData.ground = ground;
-            const ridge = (w, h, c, x, z) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0);
-              if (T.ridge === 'peak') { sh.lineTo(-w * .22, h * .62); sh.lineTo(-w * .12, h * .5); sh.lineTo(0, h); sh.lineTo(w * .14, h * .55); sh.lineTo(w * .24, h * .7); }
-              else if (T.ridge === 'city') { let px = -w / 2, i = Math.round(Math.abs(x) + w); while (px < w / 2) { const bw = w * (.05 + ((i * 37) % 5) * .012), bh = h * (.38 + ((i * 53) % 7) * .09); sh.lineTo(px, bh); px = Math.min(w / 2, px + bw); sh.lineTo(px, bh); i++; } } // ciudad: silueta de edificios
-              else { sh.bezierCurveTo(-w / 4, 0, -w / 6, h, 0, h); sh.bezierCurveTo(w / 6, h, w / 4, 0, w / 2, 0); }
-              sh.lineTo(w / 2, 0); const m = new THREE.Mesh(new THREE.ShapeGeometry(sh, 24), flat(c)); m.position.set(x, -.4, z); L.add(m); return m; };
+            const ridge = (w, h, c, x, z) => { const W0 = 512, H0 = Math.max(64, Math.round(W0 * h / w)), PD = 16, pw = w * (W0 + 2 * PD) / W0, ph = h * (H0 + 2 * PD) / H0, g = new THREE.PlaneGeometry(pw, ph); g.translate(0, ph / 2 - PD * h / H0, 0);
+              const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: ridgeTexture(T.ridge, w, h, c, Math.round(x * 3 + z), runner.fx === 'snow'), transparent: true, alphaTest: .02, depthWrite: false, fog: false })); m.position.set(x, -.4, z); m.renderOrder = -10 + Math.round(-z); L.add(m); return m; };
             const k = T.ridge === 'peak' ? 1.5 : 1;
             L.userData.far = [ridge(26, 5.2 * k, T.far[0], -9, -36), ridge(30, 6.4 * k, T.far[1], 10, -37), ridge(18, 3.6 * k, T.far[2], 0, -34), ridge(16, 3 * k, T.far[3], -13, -32), ridge(16, 3.2 * k, T.far[3], 14, -32)];
             // (sin disco de sol acá: el cielo de papel ya trae su sol y sus estrellas)
