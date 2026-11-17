@@ -208,8 +208,10 @@ const rGT = (id, cx) => grp(
   piece(id + 'g', E(cx, 22.6, 6.9, 6.9, 18), C.gold, { sh: [[[[cx + 1, 14], [cx + 9, 14], [cx + 9, 30], [cx - 4, 30]], dark(C.gold, .1)]], dx: 1, dy: 1.5, j: .3 }),
   piece(id + 'l', E(cx, 21.8, 3.2, 3.2, 12), C.glass, { cd: false, sil: false, j: .15, gr: false }));
 const rgL = rGT('rgl', 50.4), rgR = rGT('rgr', 69.6);
+const bandPts = [[18, 40.4], ...crv([30, 40.4], [60, 46.6], [90, 40.4]), [102, 40.4], [102, 46], ...crv([90, 46], [60, 52.2], [30, 46]), [18, 46]];
 const rdome = piece('rdome', E(60, 38.6, 19, 19.4, 38), C.cap, {
-  sh: [[[[18, 40.4], ...crv([30, 40.4], [60, 46.6], [90, 40.4]), [102, 40.4], [102, 46], ...crv([90, 46], [60, 52.2], [30, 46]), [18, 46]], '#3A2F55'], [[[68, 14], [92, 14], [92, 62], [73, 62]], dark(C.cap, .12)], [[[58.8, 12], [61.4, 12], [61.4, 41], [58.8, 41]], dark(C.cap, .3)]], dx: 1.2, dy: 1.9, j: .5 });
+  // la correa de las antiparras va al final: rodea el casco de lado a lado, continua; el lado derecho en su tono de sombra
+  sh: [[[[68, 14], [92, 14], [92, 62], [73, 62]], dark(C.cap, .12)], [[[58.8, 12], [61.4, 12], [61.4, 41], [58.8, 41]], dark(C.cap, .3)], [bandPts, '#3A2F55'], [bandPts.filter(p => p[0] > 66), '#2E2548']], dx: 1.2, dy: 1.9, j: .5 });
 const rbuck = piece('rbuck', RR(56.4, 40.6, 7.2, 7.6, 1.8), C.yel, { cd: dark(C.yel, .32), dx: .5, dy: .9, sil: false, j: .2, gr: false });
 const rbuck2 = piece('rbuck2', RR(59, 43, 2.4, 3.4, 1), dark(C.yel, .45), { cd: false, sil: false, j: .1, gr: false });
 const rwrap = piece('rwrap', P('M38.6 55.4 Q60 60.4 81.4 55.4 L82.4 63 Q60 69.6 37.6 63Z'), C.scarf, { sh: [[[[61, 50], [90, 50], [90, 78], [58, 76]], dark(C.scarf, .1)], [[[36, 61], [84, 61], [84, 76], [36, 76]], dark(C.scarf, .08)]], dx: 1.1, dy: 1.7, j: .4 });
@@ -236,18 +238,19 @@ const rleg = (parts, hx, y, a, sole) => g(`${tr(hx, y)} ${rot(a)}`, parts[0], so
 const LEGF = [1, .6, 0, -.5, -1, -.6, 0, .6], LEGL = [0, 0, .1, .35, .55, 1, .9, .25];
 // pierna: avance (fw) y elevación (lf) por cuadro; la que sube dobla y muestra la suela; la apoyada baja y se abre un poco
 const legPose = (parts, hx, f, bob, out) => { const fw = LEGF[f], lf = LEGL[f]; return rleg(parts, hx + out * -1.2 * lf + out * Math.max(0, fw) * .6, 83.6 + bob * .6 - lf * 9 + Math.max(0, fw) * 1.4, out * (1 + 8 * lf + 5 * Math.max(0, -fw) + 3 * Math.max(0, fw)), lf > .5); };
-// brazos: codo a ~90° siempre a la vista por los costados; s>0 = adelante (puño al frente, alto), s<0 = atrás (codo afuera, mano abajo)
-const armRun = (A, side, sx, y, s) => g(tr(0, y), arm(A, sx, 60.6, side * (18 + 34 * (.5 + .5 * s)), side * (-44 + 140 * (.5 + .5 * s))));
+// brazos de ESPALDAS: van por delante del cuerpo (ocultos tras torso y mochila). El que va adelante sólo asoma el hombro;
+// el que va atrás sube el codo por fuera y deja ver el antebrazo (apenas la punta del puño). u: 0 = adelante, 1 = atrás
+const armRun = (A, side, sx, y, u) => g(tr(0, y), arm(A, sx, 60.6, side * (6 + 62 * u), -side * (86 - 58 * u)));
 function runScene(o) {
   const f = o.f, bob = -o.b * 3.5, by = bob - 3, hy = by * .85 + 1.6, c = Math.cos(f / 8 * TAU);
   const tailU = g(`${tr(75, 60 + by)} ${rot(-12 + o.t1)}`, tail1, g(`${tr(14.6, 0)} ${rot(2 + o.t2)}`, tail2));
   const tailD = g(`${tr(74, 63 + by)} ${rot(7 + o.t3)}`, rTB1, g(`${tr(13.6, 0)} ${rot(3 + o.t2 * .6)}`, rTB2));
   const legA = legPose(rL, 50.6, f, bob, 1), legB = legPose(rR, 69.4, (f + 4) % 8, bob, -1);
   const body = g(`${tr(0, by)} ${rot(o.roll, 60, 84)}`, coat, hem, pack, packFlap, packBuck, packStr('ps1', 49.4), packStr('ps2', 66.8), roll, rollS('rs1', 49.4), rollS('rs2', 66.8));
-  const aL = armRun(armL, 1, 40.8 + o.roll * .4, by, -c), aR = armRun(armR, -1, 79.2 + o.roll * .4, by, c);
+  const uL = .5 + .5 * c, uR = .5 - .5 * c, aL = armRun(armL, 1, 40.8 + o.roll * .4, by, uL), aR = armRun(armR, -1, 79.2 + o.roll * .4, by, uR);
   const head = g(`${tr(0, hy)} ${rot(o.tilt, 60, 58)}`, flapL, flapR, rgL, rgR, rdome, rbuck, rbuck2);
   const wrap = g(tr(0, by), rwrap);
-  return g(rot(o.sway, 60, 108), tailD, tailU, legA, legB, body, aL, aR, wrap, head);
+  return g(rot(o.sway, 60, 108), tailD, tailU, legA, legB, aL, aR, body, wrap, head);
 }
 function runFrame(o) {
   const key = 'run' + JSON.stringify(o); if (cache.has(key)) return cache.get(key);
