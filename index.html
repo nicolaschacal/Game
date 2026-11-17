@@ -750,7 +750,7 @@ const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:ar
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(DIF.P>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
-const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
+const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,lmScale:theme.lmScale||1,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">Este dispositivo no pudo iniciar WebGL.</p>';
