@@ -629,7 +629,8 @@ if(Q.get('gui')!=='clasico')document.body.classList.add('gpapel'); // GUI de pap
 // Progreso guardado con el nombre viejo del juego: se copia una vez a las claves nuevas
 try{if(!localStorage.getItem('pv.wallet'))for(const k of Object.keys(localStorage))if(k.startsWith('kanjuu.run.'))localStorage.setItem('pv.'+k.slice(11),localStorage.getItem(k));}catch{}
 const store={get(k,d){try{const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
-V.initViaje(store); // viaje libre: viajero, pasaportes, destino actual, álbum (migra partidas viejas sin borrar nada)
+V.initViaje(store);if(Q.has('demo')){if(!V.T.traveler)V.pickTraveler('nilo');V.T.passports=[...V.REGION_ORDER];store.set('trip',V.T);if(store.get('wallet',0)<5000)store.set('wallet',5000);} // ?demo: todos los pasaportes y 5000 monedas para probar
+// viaje libre: viajero, pasaportes, destino actual, álbum (migra partidas viejas sin borrar nada)
 let wallet=store.get('wallet',0),owned=store.get('owned',['nilo']),skinId=store.get('skin','nilo'),best=store.get('best',0),muted=store.get('mute',false);
 // Nilo reemplaza a Kami como personaje base: quien tenía a Kami guardado pasa a Nilo sin perder monedas
 if(V.T.traveler==='nilo'&&!owned.includes('nilo'))owned.unshift('nilo');
