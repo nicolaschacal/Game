@@ -108,11 +108,17 @@ body.home #hud{opacity:0}
 /* Inicio (maqueta Inicio.dc): arriba clima / monedas / engranaje, destino, personaje en vivo, misiones, JUGAR y barra inferior */
 #menu{position:fixed;inset:0;z-index:30;display:none;font-family:Nunito,system-ui,sans-serif}
 #menu:before{content:"";position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(#1b173000,#1b173099 75%);pointer-events:none}
-#mCol{position:absolute;inset:0;box-sizing:border-box;padding:calc(var(--st) + 12px) 16px calc(var(--sb) + 84px);display:flex;flex-direction:column;gap:10px;pointer-events:none}
+#mCol{position:absolute;inset:0;box-sizing:border-box;padding:calc(var(--st) + 12px) 16px calc(var(--sb) + 86px);display:flex;flex-direction:column;gap:10px;pointer-events:none}
 #mCol>*{pointer-events:auto}
 #mTop{position:relative;display:flex;align-items:center;gap:8px;flex:none}
 #menu .chip,#menu .arrow,#menu .ribbon{position:static;transform:none}
-#climaChip{flex:1;min-width:0;height:44px;padding:0 14px;justify-content:center;border-radius:22px;border:3px solid var(--ink);background:#FFF6E0;box-shadow:inset 0 -4px 0 #EAD9B5,0 3px 0 var(--ink);color:var(--ink);font:900 12px/1 Nunito;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:38px;text-align:left}#climaChip.on{background:#BFE3F5}
+#climaChip{flex:1;min-width:0;height:44px;padding:0 8px 0 10px;border-radius:22px;border:3px solid var(--ink);background:#FFF6E0;box-shadow:inset 0 -4px 0 #EAD9B5,0 3px 0 var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:6px;font:900 11px/1 Nunito;letter-spacing:.2px;cursor:pointer}
+#climaChip.on{background:#DCEFF9}
+#climaChip .cl{display:flex;align-items:center;gap:4px;min-width:0}#climaChip .cl svg{position:static;width:18px;height:18px;flex:none}#climaChip .ct{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#climaChip .sw{flex:none;width:42px;height:24px;border-radius:12px;border:2px solid var(--ink);box-sizing:border-box;background:#CFC6AE;display:flex;align-items:center;justify-content:flex-start;padding:1px;transition:background .2s}
+#climaChip .sw i{width:18px;height:18px;border-radius:9px;background:var(--ink);transition:transform .2s}
+#climaChip.on .sw{background:var(--green)}#climaChip.on .sw i{transform:translateX(18px);background:#FFF6E0}
+#climaChip.load .sw i{animation:cswp .7s ease-in-out infinite alternate}@keyframes cswp{to{transform:translateX(9px)}}
 #walletChip{flex:none;height:44px;display:flex;align-items:center;gap:6px;padding:0 5px 0 6px;border:3px solid var(--ink);border-radius:22px;background:var(--ink);color:#FFF6E0;box-shadow:0 3px 0 #1B173059}
 #walletChip svg.ico{width:28px;height:28px}#walletChip b{font:400 20px/1 'Lilita One',sans-serif;padding:0 2px;min-width:24px;text-align:center}
 #walletChip .plus{width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-style:normal}
@@ -127,22 +133,33 @@ body.home #hud{opacity:0}
 #worldChip:before{content:"DESTINO ACTUAL";font:900 11px/1 Nunito;letter-spacing:1.4px;color:#4E4A73}
 #worldChip small{position:absolute;right:0;top:0;bottom:0;width:78px;display:flex;align-items:center;justify-content:center;margin:0;border-left:3px dashed var(--ink);background:var(--gold);color:var(--ink);font:900 11px Nunito;letter-spacing:1.2px}
 #mMid{flex:1;min-height:0;pointer-events:none}
-#menu .arrow{position:absolute;top:calc(61% - 24px);display:flex;align-items:center;justify-content:center;padding:0 0 4px;color:var(--ink);width:48px;height:48px;font:400 30px/1 'Lilita One',sans-serif;box-shadow:inset 0 -5px 0 #EAD9B5,0 3px 0 var(--ink);background:#FFF6E0}
-#prevSkin{left:16px}#nextSkin{right:16px}
-#skinName{position:absolute!important;left:50%;top:calc(56% - 58px);transform:translateX(-50%)!important;min-width:150px;padding:4px 22px 5px;font-size:24px;line-height:1.05;pointer-events:none}
-#mission{flex:none;padding:8px 14px 8px;border-radius:20px;background:#2A2857;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);text-align:left}
+#menu .arrow{position:absolute;z-index:3;width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 30px/36px 'Lilita One',sans-serif;text-align:center;padding:0;cursor:pointer}
+#menu .arrow:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+#prevSkin{left:14px}#nextSkin{right:14px}
+#menu #skinName{position:absolute;z-index:3;left:50%;transform:translateX(-50%);min-width:160px;padding:4px 24px 5px;font-size:26px;line-height:1.05;pointer-events:none}
+#mHero{position:absolute;z-index:1;pointer-events:none;transform-origin:50% 91.7%;will-change:transform}
+#mHero .hf{width:100%;height:100%;filter:drop-shadow(0 8px 5px rgba(27,23,48,.35))}#mHero .hf svg{display:block;width:100%;height:100%}
+#mHero.locked .hf{filter:brightness(.55) saturate(.6) drop-shadow(0 8px 5px rgba(27,23,48,.35))}
+#mHero .hsh{position:absolute;left:30%;right:30%;bottom:2%;height:6%;border-radius:50%;background:#1B173055}
+#mHero.in-r .hf{animation:hR .38s cubic-bezier(.2,.9,.3,1) both}#mHero.in-l .hf{animation:hL .38s cubic-bezier(.2,.9,.3,1) both}#mHero.hop .hf{animation:hHop .5s ease}
+@keyframes hR{from{opacity:0;transform:translateX(70px) scale(.92)}}@keyframes hL{from{opacity:0;transform:translateX(-70px) scale(.92)}}
+@keyframes hHop{30%{transform:translateY(-20px) rotate(-3deg)}60%{transform:translateY(0) scaleY(.95)}80%{transform:translateY(-6px)}}
+#menu.going #mCol,#menu.going #mNav,#menu.going .arrow,#menu.going #skinName,#menu.going:before{opacity:0;transition:opacity .3s,transform .4s;pointer-events:none}
+#menu.going #mNav{transform:translateY(40px)}
+#mission .mrow:nth-of-type(n+3){display:none}#mission{flex:none;padding:8px 14px 8px;border-radius:20px;background:#2A2857;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);text-align:left}
 #mission>b{font-size:11px;margin-bottom:3px}
 .mrow{font-size:13px;line-height:22px}
 #playWrap{flex:none;padding-bottom:3px}
-#playWrap .btn{height:64px;font-size:34px;border-radius:22px;border-width:3px}
-#mNav{position:absolute;left:0;right:0;bottom:0;box-sizing:border-box;height:calc(var(--sb) + 76px);padding:6px 10px var(--sb);background:var(--ink);border-radius:26px 26px 0 0;display:flex;gap:4px;z-index:2}
+#playWrap .btn{height:64px;font-size:34px;border-radius:22px;border-width:3px}#playWrap .btn.locked{font-size:23px;white-space:nowrap}#playWrap .btn.locked svg{width:30px;height:30px}
+#mNav{position:absolute;left:0;right:0;bottom:0;box-sizing:border-box;height:calc(var(--sb) + 66px);padding:4px 10px var(--sb);background:var(--ink);border-radius:26px 26px 0 0;display:flex;gap:4px;z-index:2}
 #mNav button{flex:1;min-width:0;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#C9C6E6;font:900 11px Nunito;letter-spacing:.4px}
 #mNav .ni{position:relative;width:44px;height:34px;border-radius:14px;display:flex;align-items:center;justify-content:center}
 #mNav button.on{color:var(--gold)}#mNav button.on .ni{background:var(--gold);color:var(--ink);box-shadow:inset 0 3px 0 #ffffff73,inset 0 -4px 0 #C47E0E}
 #mNav .dot{position:absolute;top:-4px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 10px/13px Nunito;display:none}
 /* sin espacio publicitario en el inicio (#adBanner sigue en el DOM porque Ads lo referencia) */
 #adBanner,#adBanner.on{display:none!important}
-@media(max-height:700px){#mCol{gap:7px;padding-bottom:calc(var(--sb) + 74px)}#mNav{height:calc(var(--sb) + 66px)}#mNav button{font-size:10px}#mission .mrow:nth-of-type(n+2){display:none}#mission .word{display:none}#mission>b{margin-bottom:1px}#worldChip{height:56px;font-size:21px}#mission{padding:6px 12px}.mrow{line-height:19px;font-size:12px}#playWrap .btn{height:56px;font-size:30px}#skinName{font-size:20px}}
+@media(max-width:380px){#climaChip .cl svg{display:none}}
+@media(max-height:700px){#mCol{gap:7px;padding-bottom:calc(var(--sb) + 76px)}#mNav{height:calc(var(--sb) + 58px)}#mNav button{font-size:10px}#mission .mrow:nth-of-type(n+2){display:none}#mission .word{display:none}#mission>b{margin-bottom:1px}#worldChip{height:56px;font-size:21px}#mission{padding:6px 12px}.mrow{line-height:19px;font-size:12px}#playWrap .btn{height:56px;font-size:30px}#menu #skinName{font-size:22px}}
 .side{position:absolute;top:calc(var(--st) + 262px);width:66px;padding:8px 0 7px;border-radius:18px;background:var(--cream);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);color:var(--ink);font:900 9px Nunito;letter-spacing:.8px;text-align:center}
 .side i{display:block;font:400 26px/28px 'Lilita One',sans-serif;font-style:normal;color:var(--red)}
 .side:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
@@ -278,19 +295,18 @@ body.home #hud{opacity:0}
 <div id="banner" class="ribbon"></div>
 <div id="menu">
  <div class="logo" hidden><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div>
+ <div id="mHero"><i class="hsh"></i><div class="hf"></div></div>
+ <button class="arrow" id="prevSkin" aria-label="Anterior">‹</button><button class="arrow" id="nextSkin" aria-label="Siguiente">›</button>
+ <div id="skinName" class="ribbon"></div>
  <div id="mCol">
   <div id="mTop">
-   <button class="chip" id="climaChip" aria-label="Clima real"></button>
+   <button class="chip" id="climaChip" role="switch" aria-checked="false" aria-label="Clima real"><span class="cl"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A4.5 4.5 0 0 1 17.5 18H7z"/></svg><span class="ct">CLIMA REAL</span></span><span class="sw"><i></i></span></button>
    <button id="walletChip" aria-label="Monedas, abrir tienda"><span data-ico="coin"></span><b id="mWallet" class="L">0</b><i class="plus"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></i></button>
    <button id="mGear" aria-label="Ajustes: música y ayuda" aria-expanded="false"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linejoin="round"><circle cx="12" cy="12" r="5.4" stroke-width="3.4"/><path d="M18.6 12L22 12" stroke-width="4.4" stroke-linecap="butt"/><path d="M16.67 16.67L19.07 19.07" stroke-width="4.4" stroke-linecap="butt"/><path d="M12 18.6L12 22" stroke-width="4.4" stroke-linecap="butt"/><path d="M7.33 16.67L4.93 19.07" stroke-width="4.4" stroke-linecap="butt"/><path d="M5.4 12L2 12" stroke-width="4.4" stroke-linecap="butt"/><path d="M7.33 7.33L4.93 4.93" stroke-width="4.4" stroke-linecap="butt"/><path d="M12 5.4L12 2" stroke-width="4.4" stroke-linecap="butt"/><path d="M16.67 7.33L19.07 4.93" stroke-width="4.4" stroke-linecap="butt"/></svg></button>
    <div id="mSet" hidden><button id="mute" aria-label="Sonido"></button><button id="howHome" aria-label="Cómo se juega"><span class="ri">?</span>Cómo se juega</button></div>
   </div>
   <button id="worldChip"></button>
-  <div id="mMid">
-   <button class="arrow" id="prevSkin" aria-label="Anterior">‹</button>
-   <div id="skinName" class="ribbon"></div>
-   <button class="arrow" id="nextSkin" aria-label="Siguiente">›</button>
-  </div>
+  <div id="mMid"></div>
   <div id="mission"></div>
   <div id="playWrap"><button class="btn" id="play">JUGAR</button></div>
  </div>
@@ -822,26 +838,52 @@ function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shi
  $('boosts').innerHTML=L.map(([k,svg,timed])=>'<div class="pw"'+(timed?' data-k="'+k+'"':'')+'>'+svg+(timed?'<b><i style="width:100%"></i></b>':'')+'</div>').join('');}
 function useItems(){for(const k of ['shield','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);drawBoosts();}
 function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast('TE FALTAN ◉ '+(price-wallet)+' PARA '+name.toUpperCase());return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
+function setClima(t,on,load){const b=$('climaChip');b.querySelector('.ct').textContent=t;b.classList.toggle('on',!!on);b.classList.toggle('load',!!load);b.setAttribute('aria-checked',on?'true':'false');}
 function drawClima(){
- const c=climaEstado(),b=$('climaChip');
+ const c=climaEstado();
  setHour(horaFija());
- const txt={off:'☁ CLIMA REAL · ACTIVAR',load:'☁ CLIMA REAL · BUSCANDO…',denied:'☁ CLIMA REAL · SIN PERMISO',error:'☁ CLIMA REAL · SIN CONEXIÓN'}[c.estado];
- b.textContent=txt||(c.lluvia?'☂ ':'☀ ')+c.texto.toUpperCase()+' · '+c.temp+'°';
- b.classList.toggle('on',c.estado==='ok');
+ const txt={off:'CLIMA REAL',load:'BUSCANDO…',denied:'SIN PERMISO',error:'SIN CONEXIÓN'}[c.estado];
+ setClima(txt||(c.lluvia?'☂ ':'☀ ')+c.texto.toUpperCase()+' · '+c.temp+'°',c.estado==='ok',c.estado==='load');
 }
-$('climaChip').addEventListener('click',async()=>{SFX.tap();$('climaChip').textContent='☁ CLIMA REAL · BUSCANDO…';const r=await alternarClima();drawClima();
+$('climaChip').addEventListener('click',async()=>{SFX.tap();setClima('BUSCANDO…',true,true);const r=await alternarClima();drawClima();
  if(r==='denied')showToast('Activá el permiso de ubicación para ver el clima real');
  else if(r==='error')showToast('No pude leer el clima ahora');});
 setHour(horaFija());refrescarSiHaceFalta().then(drawClima);setInterval(()=>refrescarSiHaceFalta().then(drawClima),10*60e3);
 function drawHome(){
  const k=SKINS[browse],has=owned.includes(k.id);
- drawClima();
+ drawClima();heroSync();
  $('mWallet').textContent=fmt(wallet);$('sWallet').textContent=fmt(wallet);
  $('skinName').innerHTML=k.name.toUpperCase()+'<small>'+(has?k.tag.toUpperCase():RARITY[k.id][0]+' · BLOQUEADO')+'</small>';
  const p=$('play');p.className='btn'+(has?'':' locked');p.textContent=has?'JUGAR':'DESBLOQUEAR ◉ '+k.price;
  $('shopDot').style.display=SKINS.some(s=>!owned.includes(s.id)&&wallet>=s.price)?'block':'none';
  drawMission();
 }
+// ── Personaje grande del inicio (DOM, mismos frames que el corredor de la escena) ──
+const FEETY=.656,RUNW=.19; // dónde pisa y qué tan grande se ve el corredor 3D (para que el grande lo tape y el salto aterrice ahí)
+let hKey='',hArt=null,hTick=0,hWave=0,hBusy=false;
+function heroLayout(){const m=$('menu').getBoundingClientRect(),h=$('mHero');if(!m.width)return;
+ const fy=m.height*FEETY,top=$('worldChip').getBoundingClientRect().bottom-m.top+4,S=Math.min(m.width*.95,(fy-top)/.917);
+ h.style.width=h.style.height=S+'px';h.style.left=(m.width/2-S/2)+'px';h.style.top=(fy+.083*S-S)+'px';
+ const ay=fy-S*.4-23;$('prevSkin').style.top=$('nextSkin').style.top=ay+'px';$('skinName').style.top=(fy-26)+'px';
+ h._S=S;h._rs=(m.width*RUNW)/S;h._m=m;}
+function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt)return;hTick++;
+ const f=Date.now()<hWave?(hTick%3===0?hArt.idle[0]:(hArt.wave?.[0]||hArt.idle[0])):hArt.idle[hTick%hArt.idle.length];
+ if(h._f!==f){h.innerHTML=f;h._f=f;}}
+function heroSync(){const id=SKINS[browse].id,h=$('mHero');heroLayout();h.classList.toggle('locked',!owned.includes(id));
+ if(id===hKey)return;const first=!hKey,n=SKINS.length,dd=hKey?(SKINS.findIndex(k=>k.id===id)-SKINS.findIndex(k=>k.id===hKey)+n)%n:0,dir=dd&&dd<=n/2?1:-1;
+ hKey=id;hArt=artFor(id).HERO;hTick=0;hWave=Date.now()+(first?1800:2300);
+ h.className=owned.includes(id)?'':'locked';if(!first){h.classList.add(dir>0?'in-r':'in-l');}h.querySelector('.hf')._f=null;void h.offsetWidth;heroFrame();}
+setInterval(()=>{if(menuOpen&&!hBusy)heroFrame();},170);addEventListener('resize',()=>{if(menuOpen)heroLayout();});
+// Al tocar JUGAR: el personaje toma impulso, salta y cae hacia la pista achicándose hasta donde corre el de la escena
+function heroJump(start){const h=$('mHero'),m=$('menu');
+ if(hBusy)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!h.animate){start();return;}
+ hBusy=true;heroLayout();hWave=0;heroFrame();m.classList.add('going');
+ const H=h._m.height,sc=h._rs,up=-Math.min(H*.17,150);
+ SFX.tap();setTimeout(()=>SFX.whoosh(),330);setTimeout(()=>noise(.1,{f:900,to:300,v:.05}),720);
+ const an=h.animate([{transform:'translateY(0) scale(1,1)',offset:0},{transform:'translateY(0) scale(1.06,.9)',offset:.16,easing:'ease-out'},
+  {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
+  {transform:`translateY(0) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(0) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
+ let done=false;const fin=()=>{if(done)return;done=true;hBusy=false;start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
@@ -932,7 +974,8 @@ function flyCoin(){const t=$('coinPill').getBoundingClientRect(),e=document.crea
 function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','#F29BB8'];for(let i=0;i<46;i++){const e=document.createElement('div');e.className='bit';e.style.left=Math.random()*100+'%';e.style.background=C[i%C.length];e.style.animationDuration=1.4+Math.random()*1.6+'s';e.style.animationDelay=Math.random()*.5+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),3800);}}
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop('¡'+k.name.toUpperCase()+'!','big');drawHome();drawShop();return;}
- SFX.tap();const go=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
+ SFX.tap();const start=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
+ const go=()=>heroJump(start);
  if(DIF.P===0&&!store.get('tuto2',0))showTuto(go,3);else go();});
 function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',t.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='menu';$('paused').style.display='flex';});
@@ -944,7 +987,7 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},b
  get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmt(wallet);},
  tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((t,i)=>`<div><i>${i+1}</i>${fmt(t.s)}<small>${(THEMES[(t.w-1)%NW]?.place||'MUNDO '+t.w).toUpperCase()}<br>${new Date(t.t).toLocaleDateString('es')}</small></div>`).join(''):'<p class="note">Todavía no hay partidas. ¡Jugá la primera!</p>')+'</div>';}};
 Ads.init();Iap.init();
-if(menuOpen){drawHome();drawShop();$('menu').style.display='block';}
+if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);}
 if(V.needsPick()&&menuOpen)import('./paper-voyager/seleccion.js').then(m=>m.showTravelerPick(ctx,()=>location.reload())).catch(e=>console.warn(e));
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
