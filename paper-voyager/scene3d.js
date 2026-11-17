@@ -88,7 +88,13 @@ function radialTex(stops) {
   const c = canvas(64), x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
   stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return tex(c);
 }
-let _blob, _dot;
+let _blob, _dot, _glow, _pool;
+const glowTex = () => _glow ??= radialTex([[0, 'rgba(255,214,120,.95)'], [.25, 'rgba(255,190,90,.5)'], [.6, 'rgba(255,160,60,.14)'], [1, 'rgba(255,150,50,0)']]);
+const poolTex = () => _pool ??= radialTex([[0, 'rgba(255,200,110,.75)'], [.5, 'rgba(255,180,90,.3)'], [1, 'rgba(255,170,80,0)']]);
+// materiales compartidos por todos los faroles (se reutilizan; sólo cambia la opacidad según la noche)
+let _gm, _pm;
+const glowMat = () => _gm ??= new THREE.SpriteMaterial({ map: glowTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: false });
+const poolMat = () => _pm ??= new THREE.MeshBasicMaterial({ map: poolTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0, fog: false });
 const blobTex = () => _blob ??= radialTex([[0, 'rgba(20,12,30,.5)'], [.6, 'rgba(20,12,30,.22)'], [1, 'rgba(20,12,30,0)']]);
 const dotTex = () => _dot ??= radialTex([[0, 'rgba(255,255,255,1)'], [.35, 'rgba(255,255,255,.55)'], [1, 'rgba(255,255,255,0)']]);
 
@@ -481,21 +487,21 @@ function bush(s, seed) {
 const LV = .42, SLAB = .24, TIER_H = 1.25, FOV = 24, ELEV = .58;
 // Ancho en casillas del recorte de cada pieza de papel
 const ART_W = { farol: .5, pino: .74, bambu: .52, arbusto: .72, flores: .56, roca: .56, torii: 1.0, cerezo: 1.08, minka: .95, pagoda: .74, templo: .93, castillo: .92, casate: .96, komainu: .6, campana: .62, incienso: .5, ema: .64, nobori: .32, sagrada: .6, chochin: .42, refugio: .95, suzuri: .6, brasero: .55, cerca: .9, arbol: .9 };
-const NIGHT_FOG = new THREE.Color('#1A1F3A'), NIGHT_GROUND = new THREE.Color('#1E2636');
+const NIGHT_FOG = new THREE.Color('#2A3262'), NIGHT_GROUND = new THREE.Color('#38446E');
 const GLOW = { farol: { c: '#FFB45A', p: 1.6 }, chochin: { c: '#FF8A5A', p: 1.3 }, brasero: { c: '#FF7A3A', p: 1.4, always: true }, incienso: { c: '#FFC27A', p: .8 } };
 const GROUND_C = { empty: '#D9D2C2', grass: '#8DBF5E', moss: '#5F9447', dirt: '#B98D5A', sand: '#E2CE97', slate: '#AAA59B', snow: '#F3F0EA', water: '#5AA5D2', road: '#555D68', ice: '#B8E3F4', wood: '#A9794D', stone: '#858B91', lava: '#D85A35', void: '#4A426C', deep: '#2E6591', sky: '#E6F5FF', tarmac: '#4A4658' };
 const STRATA = ['#A47D55', '#93704C', '#8A8075'];
 // Cielo de papel: madrugada, amanecer, mañana, tarde, atardecer, noche
 const PK = [
-  { h: 0, in: '#3B4272', out: '#171A33', sun: '#9FB3FF', si: 1.1, amb: 1.15, night: 1 },
-  { h: 5, in: '#4A4A7A', out: '#262B4F', sun: '#9FB3FF', si: 1.1, amb: 1.15, night: .9 },
+  { h: 0, in: '#4A5390', out: '#222850', sun: '#9FB3FF', si: 1.4, amb: 1.65, night: 1 },
+  { h: 5, in: '#58588C', out: '#303660', sun: '#9FB3FF', si: 1.4, amb: 1.65, night: .9 },
   { h: 6.5, in: '#FFE2C2', out: '#E8A88A', sun: '#FFC690', si: 2.1, amb: 1.6, night: .25 },
   { h: 9, in: '#FFF6E4', out: '#E3D2B4', sun: '#FFF0D2', si: 2.8, amb: 2.0, night: 0 },
   { h: 16, in: '#FFF2DC', out: '#E6CDA8', sun: '#FFE6C0', si: 2.7, amb: 1.95, night: 0 },
   { h: 18.5, in: '#FFD9B0', out: '#D98E7A', sun: '#FFB27A', si: 2.2, amb: 1.7, night: .2 },
   { h: 20, in: '#5A4A7A', out: '#2A2550', sun: '#B0A0FF', si: 1.3, amb: 1.25, night: .75 },
-  { h: 21.5, in: '#3B4272', out: '#171A33', sun: '#9FB3FF', si: 1.1, amb: 1.15, night: 1 },
-  { h: 24, in: '#3B4272', out: '#171A33', sun: '#9FB3FF', si: 1.1, amb: 1.15, night: 1 },
+  { h: 21.5, in: '#4A5390', out: '#222850', sun: '#9FB3FF', si: 1.4, amb: 1.65, night: 1 },
+  { h: 24, in: '#4A5390', out: '#222850', sun: '#9FB3FF', si: 1.4, amb: 1.65, night: 1 },
 ];
 function paperSky(h) {
   const i = PK.findIndex(k => k.h > h), a = PK[i - 1], b = PK[i], t = (h - a.h) / (b.h - a.h);
@@ -660,7 +666,7 @@ function sanctuary() {
     const cc = new THREE.Color('#FFFFFF').lerp(new THREE.Color('#9AA3AB'), rk).lerp(new THREE.Color('#5D6592'), night * .8);
     skyClouds.forEach(c => { const u = c.userData; u.x += u.v * dt * (1 + rk); if (u.x * asp > asp + .5) u.x = -(asp + .5) / asp; c.position.set(u.x * asp, u.y, 0); c.material.color.copy(cc); c.material.opacity = u.extra ? rk : 1; });
     // luz
-    hemi.intensity = sk.amb * (1 - rk * .15); hemi.color.set('#FFF3E0').lerp(new THREE.Color('#7D8CC8'), night); hemi.groundColor.set('#7D6A58').lerp(new THREE.Color('#2C2C48'), night);
+    hemi.intensity = sk.amb * (1 - rk * .15); hemi.color.set('#FFF3E0').lerp(new THREE.Color('#7D8CC8'), night); hemi.groundColor.set('#7D6A58').lerp(new THREE.Color('#4A4C78'), night);
     sun.color.copy(sk.sun); sun.intensity = sk.si * (1 - rk * .5);
     const c0 = W.center || 0; sun.position.set(c0 - 6, 12, c0 + 5); sun.target.position.set(c0, 0, c0);
     waterMat().emissiveIntensity = .22 + Math.sin(t * 1.4) * .06;
@@ -777,14 +783,20 @@ function sanctuary() {
                 wrap('<rect x="26" y="62" width="68" height="48" rx="4" fill="#FFF0D2"/><path d="M12 64 Q60 22 108 64 L100 70 Q60 40 20 70Z" fill="#3E4A6E"/><rect x="52" y="80" width="16" height="30" rx="2" fill="#8A5F38"/><rect x="32" y="76" width="12" height="12" rx="2" fill="#8EC7D8"/><rect x="76" y="76" width="12" height="12" rx="2" fill="#8EC7D8"/>'),
                 wrap('<rect x="24" y="54" width="72" height="56" rx="3" fill="#EBB84A"/><path d="M14 58 L26 34 L94 34 L106 58Z" fill="#B5532F"/><rect x="50" y="78" width="20" height="32" rx="2" fill="#6B4A2E"/><rect x="31" y="68" width="13" height="18" rx="2" fill="#3F7F6A"/><rect x="76" y="68" width="13" height="18" rx="2" fill="#3F7F6A"/><path d="M20 46 L100 46" stroke="#8E3F24" stroke-width="3"/><ellipse cx="38" cy="62" rx="5" ry="6.5" fill="#E8452C"/><ellipse cx="60" cy="64" rx="5" ry="6.5" fill="#F2B937"/><ellipse cx="82" cy="62" rx="5" ry="6.5" fill="#E8452C"/>')],
             }[runner.fx];
-            L.userData.props = Array.from({ length: 18 }, (_, i) => { const s = i % 3 === 0 ? 1.7 : i % 3 === 1 ? 1.15 : 1.9, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lamp = !!runner.look?.lamps?.[i % ARTS.length], tex = paperTexture(ARTS[i % ARTS.length]), em = lamp ? dotMask(tex) : tex, m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ map: tex, transparent: true, alphaTest: .04, side: THREE.DoubleSide, emissive: lamp ? '#FFD27A' : '#FFFFFF', emissiveMap: em, emissiveIntensity: lamp ? 1.4 : .32 })); m.castShadow = true; m.userData = { base: i * 2.2, x: (i % 2 ? 1 : -1) * (3.5 + ((i * 7) % 5) * .9), lamp, s }; L.add(m); return m; });
+            L.userData.props = Array.from({ length: 18 }, (_, i) => { const s = i % 3 === 0 ? 1.7 : i % 3 === 1 ? 1.15 : 1.9, g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lamp = !!runner.look?.lamps?.[i % ARTS.length], tex = paperTexture(ARTS[i % ARTS.length]), em = lamp ? dotMask(tex) : tex, m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ map: tex, transparent: true, alphaTest: .04, side: THREE.DoubleSide, emissive: lamp ? '#FFD27A' : '#FFFFFF', emissiveMap: em, emissiveIntensity: lamp ? 1.4 : .32 })); m.castShadow = true; m.userData = { base: i * 2.2, x: (i % 2 ? 1 : -1) * (3.5 + ((i * 7) % 5) * .9), lamp, s }; L.add(m);
+              const li = lamp && runner.look?.lights?.[i % ARTS.length];
+              if (li) { const lx = (li.x - 60) / 120 * s, ly = (120 - li.y) / 120 * s, gs = s * 1.1 * li.r, gl = new THREE.Sprite(glowMat()); gl.scale.set(gs, gs, 1); gl.position.set(lx, ly, .03); gl.renderOrder = 3; gl.visible = false; m.add(gl);
+                const pl = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), poolMat()); pl.rotation.x = -Math.PI / 2; pl.scale.set(s * 1.5 * li.r, s * 1.5 * li.r, 1); pl.visible = false; pl.renderOrder = 1; L.add(pl); m.userData.glow = gl; m.userData.pool = pl; m.userData.lx = lx; }
+              return m; });
           }
           const U = W.look.userData; U.ground.position.z = playerZ - 20;
           U.far.forEach(m => { if (m.userData.dz == null) m.userData.dz = m.position.z; m.position.z = playerZ + m.userData.dz; });
           const nk = W.nightK || 0, lamps = [];
           // De noche la niebla y el suelo de la pista se oscurecen (antes quedaban con el verde de día y lavaban los faroles)
           if (W.look?.userData?.fogDay && W.scene.fog) { W.scene.fog.color.copy(W.look.userData.fogDay).lerp(NIGHT_FOG, nk * .9); W.look.userData.ground.material.color.copy(W.look.userData.groundDay).lerp(NIGHT_GROUND, nk * .8); }
-          U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion); if (m.userData.lamp && nk > .15) lamps.push(m); });
+          U.props.forEach(m => { const rel = (((m.userData.base - playerZ) % 39.6) + 39.6) % 39.6; m.position.set(m.userData.x, -.36, playerZ - 33 + rel); m.quaternion.copy(W.camera.quaternion); if (m.userData.lamp && nk > .15) lamps.push(m);
+            const gl = m.userData.glow; if (gl) { const on = nk > .02; gl.visible = on; m.userData.pool.visible = on; if (on) { m.userData.pool.position.set(m.position.x + m.userData.lx * .5, -.33, m.position.z + .15); } } });
+          if (U.props.some(m => m.userData.glow)) { glowMat().opacity = Math.min(1, nk * 1.1) * .95; poolMat().opacity = Math.min(1, nk * 1.1) * .45; }
           // De noche los farolillos alumbran como en el santuario: luces puntuales cálidas (las 6 de la reserva) en los más cercanos al corredor
           lamps.sort((a, b) => Math.abs(a.position.z - playerZ) - Math.abs(b.position.z - playerZ));
           applyLights([], nk, t); // faroles de la pista: sólo adorno, no dan luz

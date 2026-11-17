@@ -61,8 +61,8 @@ A.farola = () => baseP(60) + L(strip(60, 106, 60, 38, 6), '#3E3A44', '#1E1D24', 
 A.farolEuropeo = A.farola;
 A.farolModerno = () => baseP(48, 20, '#5B6270', '#363B46') + L(strip(48, 106, 48, 24, 5), '#6A7280', '#363B46', { dx: 1, dy: 0, j: .3 }) + L(parse('M44 24 Q48 8 74 8 L98 8 L98 16 L74 16 Q56 16 52 28Z'), '#6A7280', '#363B46', { dx: .8, dy: 1.2, j: .4 })
   + head(parse('M70 14 L102 14 L98 24 L74 24Z')) + headIn(parse('M74 16 L90 16 L88 21 L76 21Z'));
-A.farolPapel = () => baseP(60, 18, '#6B4A2E', '#3E2A18') + L(strip(60, 106, 60, 20, 5), '#6B4A2E', '#3E2A18', { dx: 1, dy: 0, j: .3 }) + L(parse('M60 24 L90 24 L90 30 L60 30Z'), '#6B4A2E', '#3E2A18', { dx: .6, dy: 1, j: .25 })
-  + L(strip(86, 28, 86, 36, 2), '#6B4A2E', null, { j: .1 }) + L(R(76, 34, 20, 4), '#2B1D16', null, { j: .15 }) + head(parse('M74 38 Q72 52 76 66 L96 66 Q100 52 98 38Z')) + headIn(parse('M79 42 Q78 52 80 62 L88 62 Q88 50 86 42Z')) + L(R(78, 66, 16, 4), '#2B1D16', null, { j: .15 }) + L(strip(86, 70, 86, 78, 2), '#E8452C', null, { j: .1 });
+A.farolPapel = () => baseP(60, 18, '#6B4A2E', '#3E2A18') + L(strip(60, 106, 60, 10, 5), '#6B4A2E', '#3E2A18', { dx: 1, dy: 0, j: .3 }) + L(R(40, 40, 20, 3), '#6B4A2E', null, { j: .12 }) + L(parse('M58 10 L92 10 L92 17 L58 17Z'), '#6B4A2E', '#3E2A18', { dx: .6, dy: 1, j: .25 })
+  + L(strip(86, 17, 86, 22, 2), '#6B4A2E', null, { j: .1 }) + L(R(76, 22, 20, 4), '#2B1D16', null, { j: .15 }) + head(parse('M74 26 Q72 40 76 54 L96 54 Q100 40 98 26Z')) + headIn(parse('M79 30 Q78 40 80 50 L88 50 Q88 38 86 30Z')) + L(R(78, 54, 16, 4), '#2B1D16', null, { j: .15 }) + L(strip(86, 58, 86, 68, 2), '#E8452C', null, { j: .1 });
 A.farolRojo = () => baseP(60, 18, '#6B4A2E', '#3E2A18') + L(strip(60, 106, 60, 20, 6), '#6B4A2E', '#3E2A18', { dx: 1, dy: 0, j: .3 }) + L(parse('M60 24 L88 24 L88 30 L60 30Z'), '#6B4A2E', null, { j: .25 })
   + L(parse('M74 34 Q70 50 74 66 L98 66 Q102 50 98 34Z'), '#E8452C', '#9E2A1A', { dx: .9, dy: 1.3, j: .35 }) + head(parse('M79 40 Q77 50 79 61 L93 61 Q95 50 93 40Z')) + headIn(parse('M82 43 Q81 50 82 58 L88 58 Q89 50 88 43Z')) + L(R(76, 30, 20, 6), '#2B1D16', null, { j: .15 }) + L(R(76, 66, 20, 6), '#2B1D16', null, { j: .15 });
 A.farolPiedra = () => L(R(50, 90, 20, 20), '#9AA1A6', '#5E656A', { dx: 1, dy: 1.4, j: .4 }) + L(R(54, 68, 12, 24), '#B8BEC0', '#5E656A', { dx: .8, dy: 1.2, j: .3 }) + L(R(40, 58, 40, 12), '#9AA1A6', '#5E656A', { dx: .8, dy: 1.2, j: .4 })
@@ -75,9 +75,9 @@ A.farolTiki = () => L(strip(60, 110, 60, 40, 8), '#B98D5A', '#7A5632', { dx: 1.2
   + L(parse('M40 30 L80 30 L74 48 L46 48Z'), '#8A5F38', '#5A3A1C', { dx: .8, dy: 1.2, j: .4 }) + head(parse('M60 -2 Q78 16 72 30 L48 30 Q42 16 60 -2Z'), { dy: 1 }) + headIn(parse('M60 8 Q68 18 65 28 L55 28 Q52 18 60 8Z'));
 A.farolNieve = () => baseP(60) + L(strip(60, 106, 60, 40, 6), '#3E3A44', '#1E1D24', { dx: 1, dy: 0, j: .3 }) + L(parse('M44 40 L76 40 L72 32 L48 32Z'), '#3E3A44', '#1E1D24', { dx: .8, dy: 1, j: .3 })
   + head(parse('M46 32 L74 32 L70 12 L50 12Z')) + headIn(parse('M50 29 L60 29 L58 15 L52 15Z')) + L(parse('M42 14 L60 0 L78 14Z'), '#3E3A44', '#1E1D24', { dx: .8, dy: 1, j: .3 }) + L(parse('M44 13 L60 3 L76 13 L70 16 L60 12 L50 16Z'), '#FBFDFE', '#BFD3E0', { dx: .5, dy: 1, j: .3 }) + L(parse('M50 106 Q56 96 64 100 L72 106Z'), '#FBFDFE', '#BFD3E0', { dx: .5, dy: 1, j: .3 });
-A.farolMediterraneo = () => baseP(60, 22, '#8A6A4A', '#5A4430') + L(strip(60, 106, 60, 44, 7), '#F2EBDD', '#B8A888', { dx: 1.2, dy: 0, j: .4 }) + L(parse('M60 50 Q92 50 92 32'), '#3E3A44', null, { j: 0 }).slice(0, 0)
-  + L(parse('M60 46 L96 46 L96 52 L60 52Z'), '#3E3A44', '#1E1D24', { dx: .6, dy: 1, j: .25 }) + L(strip(88, 52, 88, 58, 2.6), '#3E3A44', null, { j: .1 })
-  + head(parse('M78 58 Q76 70 82 80 L94 80 Q100 70 98 58Z')) + headIn(parse('M82 62 Q81 70 84 77 L90 77 Q92 70 91 62Z')) + L(R(78, 54, 20, 5), '#3E3A44', null, { j: .12 }) + L(R(80, 80, 16, 4), '#3E3A44', null, { j: .12 });
+A.farolMediterraneo = () => baseP(60, 22, '#8A6A4A', '#5A4430') + L(strip(60, 106, 60, 22, 7), '#F2EBDD', '#B8A888', { dx: 1.2, dy: 0, j: .4 }) + L(R(52, 80, 16, 5), '#D8CCB0', null, { j: .2 })
+  + L(parse('M54 22 L66 22 L62 14 L58 14Z'), '#3E3A44', '#1E1D24', { dx: .6, dy: 1, j: .2 }) + L(parse('M58 18 L94 18 L94 24 L58 24Z'), '#3E3A44', '#1E1D24', { dx: .6, dy: 1, j: .25 }) + L(strip(88, 24, 88, 30, 2.6), '#3E3A44', null, { j: .1 })
+  + head(parse('M78 32 Q76 44 82 56 L94 56 Q100 44 98 32Z')) + headIn(parse('M82 36 Q81 44 84 53 L90 53 Q92 44 91 36Z')) + L(R(78, 28, 20, 5), '#3E3A44', null, { j: .12 }) + L(R(80, 56, 16, 4), '#3E3A44', null, { j: .12 });
 A.farolSelva = () => L(strip(60, 110, 60, 16, 8), '#6B4A2E', '#3E2A18', { dx: 1.2, dy: 0, j: .5 }) + L(parse('M60 20 Q88 14 92 36'), '#4F7A2E', null, { j: 0 }).slice(0, 0) + L(strip(60, 22, 92, 22, 4), '#6B4A2E', '#3E2A18', { dx: .5, dy: 1, j: .25 })
   + L(strip(92, 22, 92, 34, 2), '#4F7A2E', null, { j: .1 }) + head(parse('M80 34 L104 34 L100 60 L84 60Z')) + headIn(parse('M85 38 L94 38 L92 56 L87 56Z')) + L(R(80, 30, 24, 5), '#3F7A4E', '#245540', { dx: .5, dy: 1, j: .2 })
   + L(parse('M40 70 Q30 56 44 50 Q50 64 56 70Z M64 82 Q80 70 92 78 Q80 90 64 90Z'), '#5DA35A', '#2F6B3A', { dx: .8, dy: 1.2, j: .4 });
@@ -141,6 +141,9 @@ A.morris = () => L(R(42, 42, 36, 68), '#2F6B4F', '#173A2B', { dx: 1.2, dy: 1.4, 
 A.quiosco = () => kiosco('#2F6B4F', '#245540');
 A.puesto = () => toldoP('#3E5BA9', '#FFF0D2');
 A.pagodita = () => L(R(40, 80, 40, 30), '#B5432F', '#6E2A1C', { dx: 1.2, dy: 1.4, j: .4 }) + [[78, 70], [58, 50], [38, 32]].map(([y, w], i) => L(parse(`M${60 - w * .8} ${y} L60 ${y - 14} L${60 + w * .8} ${y}Z`), '#3E4A6E', '#232B45', { dx: .8, dy: 1.2, j: .4 })).join('') + L(R(52, 90, 16, 20), '#6B4A2E', null, { j: .2 });
+// Centro de la cabeza de luz de cada farol en coordenadas del viewBox 120×120 (x, y) y radio relativo del halo; lo usa scene3d.js de noche
+export const LUZ = { farola: { x: 60, y: 23, r: 1 }, farolEuropeo: { x: 60, y: 23, r: 1 }, farolModerno: { x: 86, y: 19, r: 1 }, farolPapel: { x: 86, y: 40, r: 1 }, farolRojo: { x: 86, y: 50, r: 1 }, farolPiedra: { x: 60, y: 47, r: 1 }, farolDesierto: { x: 60, y: 28, r: 1.1 },
+  farolBosque: { x: 60, y: 24, r: 1 }, farolTiki: { x: 60, y: 16, r: 1.1 }, farolNieve: { x: 60, y: 22, r: 1 }, farolMediterraneo: { x: 88, y: 44, r: 1 }, farolSelva: { x: 92, y: 47, r: 1 }, farolMontana: { x: 60, y: 47, r: 1 } };
 export const LAMPARAS = new Set(Object.keys(A).filter(k => /^farol/.test(k)));
 // Se construyen en orden fijo con semilla propia: el recorte no cambia si se agregan adornos
 const names = Object.keys(A);

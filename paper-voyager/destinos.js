@@ -1,7 +1,7 @@
 // Los destinos del viaje, en orden de vuelta al mundo hacia el oeste (Kioto → … → Sídney → y de nuevo Kioto). Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
 // y tres adornos de costado. Cada destino trae su monumento (art), su escenario (look) y el piso de la pista.
 import { LANDMARKS } from './runner-art.js';
-import { ADORNOS, adornosDe } from './adornos.js';
+import { ADORNOS, LUZ, adornosDe } from './adornos.js';
 const CREAM = '#FFF4DC';
 const cut = (shapes, details = '') => `<svg viewBox="0 0 120 120"><g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${shapes}</g>${shapes}${details}</svg>`;
 const win = (x, y, cols, rows, c = '#FFE9A8', dx = 5, dy = 7) => { let s = ''; for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) s += `<rect x="${x + i * dx}" y="${y + j * dy}" width="2.6" height="3.6" fill="${c}"/>`; return s; };
@@ -169,9 +169,9 @@ const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i,
 // [nombre del mundo, ciudad, país, monumento, cielo/bruma, colina clara, colina oscura, suelo alrededor, piso de la pista, piso ya construido, horizonte, clima, hora, adornos]
 const PAV = '#8D919B', VEREDA = '#6F737D';
 const TABLA = [
-  ['BAMBÚ', 'Kioto', 'Japón', LANDMARKS.pagoda, '#E3F0C8', '#D2E4AA', '#A0C672', '#9FBF6A', '#A9C873', '#5F9447', 'dune', 'bamboo', 11.5, 'oriente farolPiedra'],
+  ['BAMBÚ', 'Kioto', 'Japón', LANDMARKS.pagoda, '#E3F0C8', '#D2E4AA', '#A0C672', '#9FBF6A', '#A9C873', '#5F9447', 'dune', 'bamboo', 11.5, 'oriente'],
   ['CIUDAD', 'Tokio', 'Japón', L.tokyo, '#FBE3E6', '#F2C4CE', '#DDA6B8', '#BDB9C4', PAV, VEREDA, 'city', 'petals', 10.5, 'moderna !cerezo'],
-  ['PALACIO', 'Seúl', 'Corea del Sur', L.palacio, '#FBE6E4', '#F2C8CE', '#DEA8B6', '#C9C2B4', '#C9C2AE', '#A59D86', 'peak', 'petals', 10.5, 'oriente farolPiedra'],
+  ['PALACIO', 'Seúl', 'Corea del Sur', L.palacio, '#FBE6E4', '#F2C8CE', '#DEA8B6', '#C9C2B4', '#C9C2AE', '#A59D86', 'peak', 'petals', 10.5, 'oriente'],
   ['MURALLA', 'Pekín', 'China', L.muralla, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'oriente rocaGris'],
   ['CIUDAD', 'Shanghái', 'China', L.perla, '#EFE4F2', '#DCC8E4', '#C4A8D4', '#B8B4BE', PAV, VEREDA, 'city', 'lanterns', 15.5, 'moderna neon'],
   ['TEMPLOS', 'Bangkok', 'Tailandia', L.watarun, '#FBEAD8', '#F4D4B4', '#E8BA90', '#D9C8A8', '#C9BCA4', '#A89A80', 'dune', 'petals', 15.5, 'oriente'],
@@ -218,6 +218,6 @@ const TABLA = [
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColor, ridge, wx, hour, biomaStr], idx) => { const [biome, ...extras] = biomaStr.split(' '), names = adornosDe(biome, idx, extras.filter(x => x[0] !== '!')); extras.filter(x => x[0] === '!').forEach(x => { names[0] = x.slice(1); }); return ({
   name, place, country, art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look', biome,
-  look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: names.map(k => ADORNOS[k]), lamps: names.map(k => /^farol/.test(k)) },
+  look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: names.map(k => ADORNOS[k]), lamps: names.map(k => /^farol/.test(k)), lights: names.map(k => LUZ[k] || null) },
 }); };
 export const DESTINOS = TABLA.map(armar);
