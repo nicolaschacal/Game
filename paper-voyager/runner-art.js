@@ -1,6 +1,7 @@
 // Arte del Tile Runner, con las reglas de recorte de KANJŪ: formas planas de papel, borde crema,
 // sombra inferior más oscura, ojos grandes con brillo y la paleta del juego. Lienzo 120×120, base en y≈110.
 import { NILO } from './nilo-art.js';
+import { NILO2 } from './nilo-v2.js'; // Nilo rediseñado en papel (frames generados una vez al cargar)
 import { paperBoat, paperBalloon, paperTrain } from './runner-papel.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
 export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST } from './runner-papel.js';
@@ -111,14 +112,14 @@ const recolorNilo = map => {
   const o = {}; for (const k in NILO) o[k] = Array.isArray(NILO[k]) ? NILO[k].map(f) : f(NILO[k]);
   return o;
 };
-const niloIdle = N => [...Array(16).fill(N.idle[0]), ...Array(16).fill(N.idle[1]), N.idle[2], N.idle[2], ...Array(4).fill(N.idle[0])];
+const niloIdle = N => [...Array(25).fill(N.idle[0]), ...Array(25).fill(N.idle[1]), ...Array(3).fill(N.idle[2]), ...Array(6).fill(N.idle[0])]; // ~110 ms por cuadro
 // Mora (América, Buenos Aires): verde y mostaza
 const MORA = recolorNilo({ '#E8452C': '#E8B425', '#B93322': '#A87D12', '#3E5BA9': '#4E9A4A', '#2D4585': '#2F6B30', '#A9794D': '#C9A227', '#7A5334': '#8F7218', '#6B3F22': '#5A3A1C', '#C98F55': '#B8873F' });
 // Ren (Asia, Kioto): violeta/índigo con bufanda blanca
 const REN = recolorNilo({ '#E8452C': '#FFFFFF', '#B93322': '#CFC8E6', '#3E5BA9': '#6A4FC0', '#2D4585': '#43308C', '#A9794D': '#2F2A66', '#7A5334': '#1F1B48', '#6B3F22': '#1F1B48', '#C98F55': '#8E78D0', '#9E6B3C': '#5F4A9E', '#B57C45': '#A28BDD' });
 
 export const SKINS = [
-  { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: { ...NILO, idle: [...Array(16).fill(NILO.idle[0]), ...Array(16).fill(NILO.idle[1]), NILO.idle[2], NILO.idle[2], ...Array(4).fill(NILO.idle[0])] } },
+  { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: { idle: NILO2.idle, wave: NILO2.wave, run: NILO2.run } },
   { id: 'mora', name: 'Mora', tag: 'Mapas a mano', price: 1200, head: 'nilo', c: {}, hero: { ...MORA, idle: niloIdle(MORA) } },
   { id: 'ren', name: 'Ren', tag: 'Cámara y bambú', price: 1200, head: 'nilo', c: {}, hero: { ...REN, idle: niloIdle(REN) } },
   { id: 'sakura', name: 'Sakura', tag: 'Flor de cerezo', price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },

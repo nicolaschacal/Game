@@ -343,7 +343,7 @@ export function openAlbum(ctx) {
   const heroFor = shot => {
     let H = heroCache[ctx.skinId];
     if (!H) { try { H = heroCache[ctx.skinId] = ctx.artFor(ctx.skinId).HERO; } catch (e) { H = heroCache[ctx.skinId] = {}; } }
-    return shot === 0 ? (H.wave?.[0] || H.idle?.[0]) : H.idle?.[0];
+    return shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0];
   };
   const look = shot => ({ frame: V.PHOTO.frame, filter: V.PHOTO.filter, hero: heroFor(shot) });
   document.querySelectorAll('.pva').forEach(e => e.remove());
@@ -423,7 +423,7 @@ export function openAlbum(ctx) {
 export function selfieReveal(ctx, i, res) {
   css();
   const V = ctx.V || VV;
-  let hero; try { const H = ctx.artFor(ctx.skinId).HERO; hero = res.shot === 0 ? (H.wave?.[0] || H.idle?.[0]) : H.idle?.[0]; } catch (e) {}
+  let hero; try { const H = ctx.artFor(ctx.skinId).HERO; hero = res.shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0]; } catch (e) {}
   const long = !!res.region, R = res.region && V.REGIONS[res.region];
   const fl = document.createElement('div'); fl.className = 'pvrv-flash';
   const el = document.createElement('div'); el.className = 'pvrv' + (res.nuevo ? '' : ' dup') + (long ? ' long' : '');

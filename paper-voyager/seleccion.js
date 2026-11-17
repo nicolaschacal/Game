@@ -67,7 +67,7 @@ export function showTravelerPick(ctx, onDone) {
   // Animación: saluda ~2.2 s al aparecer cada viajero (alterna wave/idle) y después pestañea con la secuencia idle
   const loop = () => {
     tick++;
-    if (Date.now() < wavingUntil) setFrame(tick % 3 === 0 ? art.idle[0] : art.wave[0]);
+    if (Date.now() < wavingUntil) setFrame(art.wave[tick % art.wave.length]);
     else setFrame(art.idle[(tick - 1) % art.idle.length]);
   };
   const show = dir => {
@@ -106,7 +106,7 @@ export function showTravelerPick(ctx, onDone) {
   };
   $('.tp-go').onclick = pick;
   document.addEventListener('keydown', key);
-  const iv = setInterval(loop, 170);
+  const iv = setInterval(loop, 110);
   (document.getElementById('stage') ? document.body : document.body).appendChild(el);
   show(0);
   return { close };
