@@ -557,6 +557,8 @@ function edges(m, parent) { const e = new THREE.LineSegments(new THREE.EdgesGeom
 function sanctuary() {
   if (E.worlds.sanct) return E.worlds.sanct;
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(FOV, 1, .5, 220);
+  // CAMZ: distancia de la cámara de la partida (1 = la de siempre; menor = más zoom). ?zoom=0.9 para probar.
+  const CAMZ = +(new URLSearchParams(location.search).get('zoom')) || 1;
   // Fondo: degradado de papel + sol, luna, estrellas y nubes en el plano de la pantalla
   const bgScene = new THREE.Scene(), bgCam = new THREE.OrthographicCamera(-1, 1, 1, -1, -10, 10);
   const grad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
@@ -710,7 +712,7 @@ function sanctuary() {
         ro.group.position.y += (groundY - ro.group.position.y) * Math.min(1, dt * 26);
         runner.camY = (runner.camY || 0) + (ro.group.position.y - (runner.camY || 0)) * Math.min(1, dt * 4);
         // En el mar el personaje desaparece y navega el barco de papel (runner.boatId) en su lugar.
-        ro.group.visible = !runner.onBoat;
+        ro.group.visible = !runner.onBoat && !runner.hidden; // hidden: en el inicio lo muestra el personaje grande del menú
         runner.lean = ((runner.lean || 0) * .8) + ((runner.visualLane - (runner.prevVisual ?? runner.visualLane)) / Math.max(dt, .001) / 4) * .2; runner.prevVisual = runner.visualLane;
         const boat = runner.boatId ? W.items.get(runner.boatId) : null;
         if (boat && runner.onBoat) {
@@ -834,7 +836,7 @@ function sanctuary() {
     else if (W.opts.closeUp && W.opts.selected && !W.grabbing) { const so = W.items.get(W.opts.selected); if (so) { so.group.getWorldPosition(tmp); halfH *= .72; tx += (tmp.x - tx) * .6; tz += (tmp.z - tz) * .6; ty = tmp.y - halfH * .18; } }
     const a = runner ? 0 : W.az + (W.dragging ? 0 : Math.sin(t * .22) * .02), D = runner ? 9.2 : halfH / hf * 1.02;
     const want = runner
-      ? new THREE.Vector3(tx, ty + 3.7, tz + 10.8)  // más alejada y con más ángulo: se ve todo el ancho y más camino por delante
+      ? new THREE.Vector3(tx, ty + 3.7 * CAMZ, tz + 10.8 * CAMZ)  // más alejada y con más ángulo: se ve todo el ancho y más camino por delante
       : new THREE.Vector3(tx + Math.sin(a) * Math.cos(el) * D, ty + Math.sin(el) * D, tz + Math.cos(a) * Math.cos(el) * D);
     const look = new THREE.Vector3(tx, ty, tz);
     W.cam ??= { p: want.clone(), l: look.clone() };

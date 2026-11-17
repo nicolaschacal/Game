@@ -831,7 +831,8 @@ const tops=store.get('tops',[]);
 {const pr=$('progress');rides.forEach(r=>pr.insertAdjacentHTML('beforeend',ico({boat:'boat',balloon:'balloon',train:'train'}[r.type],'left:'+((START-r.board)/(START-GOAL)*100)+'%')));pr.insertAdjacentHTML('beforeend',ico('gate','left:100%;top:-19px;width:34px;height:34px;margin-left:-24px'));}
 
 // ── Inicio, tienda y pausa ──
-let menuOpen=!autostart&&!carry,browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
+let menuOpen=!autostart&&!carry;runner.hidden=menuOpen; // en el inicio se ve sólo el personaje grande; al saltar se convierte en el corredor
+let browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
 const RARITY={nilo:['VIAJERO','#3E5BA9','#DCE9F7'],mora:['VIAJERA','#4E9A4A','#DDEFCF'],ren:['VIAJERO','#7B5CC4','#E4DAF5'],kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
 function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
 function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);if(boostUntil.double>now||boost.double)L.push(['double',DOUBLE,boostUntil.double>now]);
@@ -862,7 +863,7 @@ function drawHome(){
 const FEETY=.656,RUNW=.19; // dónde pisa y qué tan grande se ve el corredor 3D (para que el grande lo tape y el salto aterrice ahí)
 let hKey='',hArt=null,hTick=0,hWave=0,hBusy=false;
 function heroLayout(){const m=$('menu').getBoundingClientRect(),h=$('mHero');if(!m.width)return;
- const fy=m.height*FEETY,top=$('worldChip').getBoundingClientRect().bottom-m.top+4,S=Math.min(m.width*.95,(fy-top)/.917);
+ const fy=m.height*FEETY,top=$('worldChip').getBoundingClientRect().bottom-m.top+4,S=Math.min(m.width*.95,(fy-top)/.917)*.76;
  h.style.width=h.style.height=S+'px';h.style.left=(m.width/2-S/2)+'px';h.style.top=(fy+.083*S-S)+'px';
  const ay=fy-S*.4-23;$('prevSkin').style.top=$('nextSkin').style.top=ay+'px';$('skinName').style.top=(fy-26)+'px';
  h._S=S;h._rs=(m.width*RUNW)/S;h._m=m;}
@@ -876,14 +877,15 @@ function heroSync(){const id=SKINS[browse].id,h=$('mHero');heroLayout();h.classL
 setInterval(()=>{if(menuOpen&&!hBusy)heroFrame();},170);addEventListener('resize',()=>{if(menuOpen)heroLayout();});
 // Al tocar JUGAR: el personaje toma impulso, salta y cae hacia la pista achicándose hasta donde corre el de la escena
 function heroJump(start){const h=$('mHero'),m=$('menu');
- if(hBusy)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!h.animate){start();return;}
+ if(hBusy)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!h.animate){runner.hidden=false;start();return;}
  hBusy=true;heroLayout();hWave=0;heroFrame();m.classList.add('going');
  const H=h._m.height,sc=h._rs,up=-Math.min(H*.17,150);
  SFX.tap();setTimeout(()=>SFX.whoosh(),330);setTimeout(()=>noise(.1,{f:900,to:300,v:.05}),720);
  const an=h.animate([{transform:'translateY(0) scale(1,1)',offset:0},{transform:'translateY(0) scale(1.06,.9)',offset:.16,easing:'ease-out'},
   {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
   {transform:`translateY(0) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(0) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
- let done=false;const fin=()=>{if(done)return;done=true;hBusy=false;start();};an.onfinish=fin;setTimeout(fin,1100);}
+ setTimeout(()=>{const f=h.querySelector('.hf');if(hArt.run)f.innerHTML=hArt.run[0];f._f='run';},770); // al caer ya está de espaldas, como el corredor
+ let done=false;const fin=()=>{if(done)return;done=true;hBusy=false;runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
  $('skins').innerHTML=SKINS.map(k=>{const has=owned.includes(k.id),on=k.id===skinId,[r,rc,bg]=RARITY[k.id];return `<button class="sk${on?' on':''}${has?'':' locked'}" data-id="${k.id}" style="--rc:${rc};--bg:${bg}"><div class="art">${artFor(k.id).HERO.idle[0]}</div><div class="tag">${r}</div><b>${k.name}</b><small>${k.tag.toUpperCase()}</small><span class="price ${on?'use':has?'own':''}">${on?'EN USO':has?'USAR':'◉ '+k.price}</span></button>`;}).join('');
