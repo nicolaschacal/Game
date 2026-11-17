@@ -119,7 +119,7 @@ function polaroid(u, o) {
     win = `<defs><clipPath id="${u}c"><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="2"/></clipPath></defs><g clip-path="url(#${u}c)"><g transform="translate(${WX} ${WY})"${fb.attr}${fb.style}>${o.scene(u)}</g></g><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="2" fill="none" stroke="#1A1220" stroke-opacity=".14" stroke-width="2"/>${fr.win || ''}`;
   }
   const t1 = esc(o.title || ''), t2 = esc(o.sub || '');
-  const cap = o.noCaption ? '' : `<text x="60" y="${o.ghost ? 94 : 93}" text-anchor="middle" font-family="${HAND}" font-style="italic" font-weight="700" font-size="${fit(o.title || '', 68, 7.4)}" fill="${tcol}" transform="rotate(-1.2 60 93)">${t1}</text><text x="60" y="101.6" text-anchor="middle" font-family="${HAND}" font-style="italic" font-size="${fit(o.sub || '', 70, 4.9)}" fill="${tcol}" opacity=".85" transform="rotate(-1.2 60 101)">${t2}</text>`
+  const cap = o.noCaption ? '' : `<text x="60" y="${o.ghost ? 92 : 91.4}" text-anchor="middle" font-family="${HAND}" font-style="italic" font-weight="700" font-size="${fit(o.title || '', 68, 7.4)}" fill="${tcol}" transform="rotate(-1.2 60 91)">${t1}</text><text x="60" y="${o.ghost ? 98.2 : 97.4}" text-anchor="middle" font-family="${HAND}" font-style="italic" font-size="${fit(o.sub || '', 70, 4.9)}" fill="${tcol}" opacity=".85" transform="rotate(-1.2 60 97)">${t2}</text>`
     + (o.squiggle ? `<path d="M34 92 q4-3 8 0 t8 0 t8 0 t8 0 t8 0" stroke="${tcol}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".5"/><path d="M42 100 q3-2 6 0 t6 0 t6 0 t6 0" stroke="${tcol}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".35"/>` : '');
   return `<defs>${fr.def || ''}${fb.def}</defs><g transform="rotate(${rot} 60 58)">${outline}${body}${win}${cap}${fr.over || ''}</g>`;
 }
@@ -220,7 +220,7 @@ function decoInner(id) {
 
 // ── Souvenirs (lienzo 120×120) ──
 function souvenirSVG(id) {
-  switch (id) {
+  switch (String(id).replace(/#\d+$/, '')) {
     case 's-am': { // mate de calabaza con bombilla
       const bomb = `<path d="M62 62 L84 12 L90 15 L68 65Z" fill="#C9CED6"/><circle cx="87" cy="12.5" r="5.2" fill="#D8DCE2"/>`;
       return cutS(`<path d="M32 56 C22 82 34 108 60 110 C86 108 98 82 88 56Z" fill="#B9823F"/>` + bomb,
@@ -262,7 +262,9 @@ function css() {
   st.textContent = `
 .pvsf,.pvcv,.pvpv{display:block;width:100%;height:auto;overflow:visible}
 .pvpv{width:100%;height:100%}
-.pva{display:block;animation:panelIn .28s cubic-bezier(.2,1,.3,1)}
+.pva{display:block;animation:panelIn .28s cubic-bezier(.2,1,.3,1);overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;max-width:100vw;box-sizing:border-box}
+.pva-cfg,.pva-det{overflow-x:hidden;overscroll-behavior-x:none;max-width:100vw;box-sizing:border-box}
+.pva .tabs{touch-action:pan-x pan-y}
 .pva .head h2{font-size:30px}
 .pva .head small{bottom:50px}
 .pva-top{padding:16px 14px 6px;display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -335,7 +337,7 @@ function css() {
 const LOCK = `<svg viewBox="0 0 40 40" class="lk"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 18 V13 a8 8 0 0 1 16 0 V18" fill="none"/><rect x="7" y="17" width="26" height="19" rx="4" fill="#3A3558"/></g><path d="M12 18 V13 a8 8 0 0 1 16 0 V18" fill="none" stroke="#B8B3D6" stroke-width="3.4" stroke-linecap="round"/><rect x="7" y="17" width="26" height="19" rx="4" fill="#3A3558"/><circle cx="20" cy="25.5" r="3" fill="#F2B937"/><rect x="18.8" y="26" width="2.4" height="5.5" rx="1" fill="#F2B937"/></svg>`;
 const KINDS = [['frame', 'MARCOS', 'frame'], ['cover', 'TAPAS', 'cover'], ['filter', 'FILTROS', 'filter'], ['deco', 'ADORNOS', 'deco']];
 
-export function openAlbum(ctx, onClose) {
+export function openAlbum(ctx, onClose, opts = {}) {
   css();
   const V = ctx.V || VV, $ = (s, el = root) => el.querySelector(s);
   const sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
@@ -348,6 +350,7 @@ export function openAlbum(ctx, onClose) {
   const look = shot => ({ frame: V.PHOTO.frame, filter: V.PHOTO.filter, hero: heroFor(shot) });
   document.querySelectorAll('.pvalb').forEach(e => e.remove());
   const root = document.createElement('div'); root.className = 'panel pva pvalb'; root.style.display = 'block';
+  if (opts.preload) { root.style.animation = 'none'; root.style.opacity = '0'; root.style.pointerEvents = 'none'; }
   document.body.appendChild(root);
   let region = (V.T && V.regionOf(V.T.at)) || 'am';
   const close = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
@@ -357,7 +360,7 @@ export function openAlbum(ctx, onClose) {
 
   function draw() {
     const R = V.REGIONS, P = V.PHOTO, keep = root.scrollTop;
-    const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), souvenirs: V.SOUVENIRS.filter(s => P.owned.includes(s.id)).map(s => s.id), deco: P.deco.filter(d => P.owned.includes(d)) });
+    const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), deco: P.deco.filter(d => P.owned.includes(d)) });
     root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${V.selfieCount()} DE ${V.selfieTotal()} FOTOS</small><h2>ÁLBUM</h2></div>
 <div class="pva-top"><div class="pva-cover">${cover}</div><button class="btn sm" data-cfg>PERSONALIZAR</button></div>
 <div class="tabs">${V.REGION_ORDER.map(r => { const c = regCount(r); return `<button data-r="${r}" class="${r === region ? 'on' : ''}${done().includes(r) ? ' done' : ''}" style="--rc:${R[r].color};--rd:${R[r].dark}">${R[r].name.toUpperCase()}<small>${c.n}/${c.t}</small></button>`; }).join('')}</div>
@@ -440,13 +443,16 @@ export function selfieReveal(ctx, i, res) {
 // MOCHILA: el contenido volcado sobre una mesa de papel. Es el menú de álbum, pasaportes y souvenirs.
 // ═══════════════════════════════════════════════════════════════════════════
 const BAG_CSS = `
-.pvb-t{position:relative;height:max(560px,calc(100dvh - var(--st) - 98px - var(--sb)));overflow:hidden;touch-action:pan-y}
-.pvb-alb{position:absolute;left:4%;top:2.5%;width:54%;transform:rotate(-5deg);transform-origin:50% 60%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
+.pvb-t{position:relative;max-width:100%;height:max(560px,calc(100dvh - var(--st) - 98px - var(--sb)));overflow:hidden;touch-action:pan-y}
+.pvb-alb{position:absolute;left:4%;top:2.5%;width:54%;transform:rotate(-5deg);transform-origin:50% 50%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
 .pvb-alb .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
 .pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
-.pvb-alb .cv{position:relative;transform-origin:5% 50%;transition:transform .5s cubic-bezier(.5,0,.8,.4);filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
-.pvb-alb.opening .cv{transform:rotateY(-118deg)}
+.pvb-alb .cv{position:relative;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
 .pvb-alb:active:not(.opening) .cv{transform:translateY(2px) scale(.985)}
+.pvb-fly{position:fixed;z-index:70;pointer-events:none;perspective:900px;transform-origin:50% 50%;will-change:transform}
+.pvb-fly .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
+.pvb-fly .cv{position:absolute;inset:0;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35));will-change:transform,opacity}
+.pvb-fly svg{display:block;width:100%;height:auto}
 .pvb-tag{display:inline-block;margin:-8px 0 0;padding:3px 10px 4px;background:#F6EBD0;color:#6B4E26;font:900 10px Nunito,sans-serif;letter-spacing:.9px;border-radius:3px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);position:relative;white-space:nowrap}
 .pvb-tag b{color:#C9402A;font:400 12px 'Lilita One',sans-serif;letter-spacing:.3px;margin-left:3px}
 .pvb-alb .pvb-tag{transform:rotate(3deg);left:12%}
@@ -459,7 +465,13 @@ const BAG_CSS = `
 .pvb-sv{position:absolute;left:6%;right:6%;top:58%;bottom:2%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
 .pvb-sc{position:absolute;left:50%;top:52%;width:min(37vw,140px);transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
-.pvb-sn{display:flex;align-items:center;gap:8px;min-height:30px}
+.pvb-sn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;min-height:30px}
+.pvb-all{border:0;padding:4px 11px 5px;font:400 12px 'Lilita One',sans-serif;letter-spacing:.6px;color:#3A2410;background:#F2BC3E;border-radius:99px;box-shadow:0 2px 0 #A9701B,0 4px 6px rgba(27,23,48,.2)}.pvb-all:active{transform:translateY(2px);box-shadow:0 0 0 #A9701B}
+.pvs-g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px;padding:16px 14px 8px}
+.pvs-i{border:0;background:#F7ECD3;border-radius:14px;padding:8px 4px 7px;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 9px rgba(27,23,48,.2);transform:rotate(var(--r));text-align:center;color:#3A2A12;min-width:0}.pvs-i:active{transform:rotate(var(--r)) translateY(2px)}
+.pvs-i .th{width:78%;margin:0 auto}.pvs-i svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3))}
+.pvs-i b{display:block;margin-top:2px;font:400 12.5px/1.1 'Lilita One',sans-serif;min-height:27px;display:flex;align-items:center;justify-content:center}
+.pvs-big{width:min(70vw,280px)!important;filter:drop-shadow(0 10px 12px rgba(0,0,0,.4))}.pvs-big svg{display:block;width:100%;height:auto}
 .pvb-sn .nm{padding:4px 14px 5px;background:#F6EBD0;color:#3A2A12;font:400 16px 'Lilita One',sans-serif;letter-spacing:.4px;box-shadow:0 1px 1px rgba(40,24,10,.3),0 3px 6px rgba(27,23,48,.22);clip-path:polygon(9px 0,100% 0,100% 100%,9px 100%,0 50%);padding-left:20px;transform:rotate(-1.5deg)}
 .pvb-sn small{font:900 10px Nunito,sans-serif;letter-spacing:.9px;color:#6B4E26}
 .pvb-dots{display:flex;gap:5px}.pvb-dots i{width:6px;height:6px;border-radius:50%;background:#B39463;opacity:.55}.pvb-dots i.on{background:#C9402A;opacity:1}
@@ -512,11 +524,11 @@ export function openBag(ctx) {
     const P = V.PHOTO, pass = V.T.passports || [], nReg = V.REGION_ORDER.length;
     const sv = V.SOUVENIRS.filter(s => P.owned.includes(s.id));
     if (idx >= sv.length) idx = 0;
-    const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), souvenirs: sv.map(s => s.id), deco: P.deco.filter(d => P.owned.includes(d)) });
+    const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), deco: P.deco.filter(d => P.owned.includes(d)) });
     const m = pass.length, span = m < 2 ? 0 : Math.min(48, 16 * (m - 1));
     const fan = pass.map((r, k) => { const a = m < 2 ? 4 : -span / 2 + span * k / (m - 1); return `<div class="bk" style="transform:translateX(-50%) rotate(${a.toFixed(1)}deg);z-index:${k + 1}">${passportSVG(V, r)}</div>`; }).join('');
     const stage = sv.length
-      ? `<div class="pvb-stage" data-st>${sv.map((s, k) => `<div class="pvb-sc" data-k="${k}">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div>`).join('')}</div><div class="pvb-sn"><span class="nm" data-nm></span><small data-ct></small></div>`
+      ? `<div class="pvb-stage" data-st>${sv.map((s, k) => `<div class="pvb-sc" data-k="${k}">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div>`).join('')}</div><div class="pvb-sn"><span class="nm" data-nm></span><small data-ct></small><button class="pvb-all" data-all>VER TODOS</button></div>`
       : `<button class="pvb-empty" data-shop style="font-family:inherit">${LOCK.replace('class="lk"', '')}<b>Todavía no tenés souvenirs</b>Comprá souvenirs en la tienda<u>IR A LA TIENDA</u></button>`;
     root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>LO QUE LLEVÁS EN VIAJE</small><h2>MOCHILA</h2></div>
 <div class="pvb-t">
@@ -528,26 +540,46 @@ export function openBag(ctx) {
 </div>`;
     const q = s => root.querySelector(s);
     q('[data-x]').onclick = close;
-    q('[data-alb]').onclick = e => {
-      const b = e.currentTarget; if (b.classList.contains('opening')) return; sfx('tap'); b.classList.add('opening');
-      setTimeout(() => { openAlbum(ctx, () => draw()); setTimeout(() => b.classList.remove('opening'), 500); }, 430);
-    };
+    q('[data-alb]').onclick = e => flyOpen(e.currentTarget);
     q('[data-pas]').onclick = () => { sfx('tap'); openPassport(ctx, () => draw()); };
     q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
     if (sv.length) souvenirs(sv);
+  }
+  // Apertura continua: el DOM del álbum se arma antes; la libreta viaja hasta el lugar de su tapa, gira (rotateY) y el álbum aparece en crossfade
+  function flyOpen(b) {
+    if (b.classList.contains('opening')) return; b.classList.add('opening'); sfx('tap');
+    const cv = b.querySelector('.cv'), pg = b.querySelector('.pg');
+    const album = openAlbum(ctx, () => draw(), { preload: true });
+    const pc = album.querySelector('.pva-cover'), done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
+    if (!cv.animate || !pc || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.cssText = 'display:block'; album.style.animation = ''; done(); return; }
+    const s = cv.getBoundingClientRect(), t = pc.getBoundingClientRect(), wt = pc.offsetWidth, ht = wt * 162 / 128, ws = cv.offsetWidth;
+    const fly = document.createElement('div'); fly.className = 'pvb-fly';
+    fly.style.cssText = `left:${t.left + t.width / 2 - wt / 2}px;top:${t.top + t.height / 2 - ht / 2}px;width:${wt}px;height:${ht}px`;
+    fly.innerHTML = `<div class="pg"></div><div class="cv">${cv.innerHTML}</div>`;
+    document.body.appendChild(fly); b.style.visibility = 'hidden';
+    const T0 = `translate(${s.left + s.width / 2 - t.left - t.width / 2}px,${s.top + s.height / 2 - t.top - t.height / 2}px) rotate(-5deg) scale(${ws / wt})`;
+    const ease = 'cubic-bezier(.3,.7,.2,1)';
+    const a1 = fly.animate([{ transform: T0 }, { transform: 'translate(0,0) rotate(-1.5deg) scale(1)' }], { duration: 340, easing: ease, fill: 'forwards' });
+    const a2 = fly.querySelector('.cv').animate([{ transform: 'rotateY(0)', opacity: 1 }, { transform: 'rotateY(-75deg)', opacity: 1, offset: .62 }, { transform: 'rotateY(-120deg)', opacity: 0 }], { delay: 280, duration: 480, easing: 'ease-in-out', fill: 'both' });
+    const a3 = fly.querySelector('.pg').animate([{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0 }], { delay: 280, duration: 480, fill: 'both' });
+    const a4 = album.animate([{ opacity: 0 }, { opacity: 1 }], { delay: 360, duration: 420, easing: 'ease-out', fill: 'both' });
+    a4.finished.then(() => { album.style.opacity = ''; album.style.pointerEvents = ''; album.style.animation = ''; a4.cancel(); fly.remove(); done(); }).catch(() => { fly.remove(); done(); });
   }
   // Carrusel de souvenirs: uno al frente sobre una pila en abanico; toque o deslizar para rotar
   function souvenirs(sv) {
     const n = sv.length, st = root.querySelector('[data-st]'), els = [...st.querySelectorAll('.pvb-sc')];
     const nm = root.querySelector('[data-nm]'), ct = root.querySelector('[data-ct]');
-    const POS = [['-50%', '-50%', -4, 1, 3, 1], ['calc(-50% + 70px)', 'calc(-50% - 10px)', 9, .76, 2, .95], ['calc(-50% - 72px)', 'calc(-50% - 6px)', -14, .66, 1, .9]];
+    const hash = k => { let h = (k + 1) * 2654435761 % 4294967296; h ^= h >>> 13; h = h * 1597334677 % 4294967296; return h; };
     const place = () => {
+      const W = st.clientWidth || 300, H = st.clientHeight || 160;
       els.forEach((el, k) => {
-        const rel = (k - idx + n) % n, p = POS[rel];
-        if (p) el.style.cssText = `transform:translate(${p[0]},${p[1]}) rotate(${p[2]}deg) scale(${p[3]});z-index:${p[4]};opacity:${p[5]}`;
-        else el.style.cssText = `transform:translate(calc(-50% + 90px),calc(-50% - 40px)) rotate(26deg) scale(.5);z-index:0;opacity:0`;
+        const rel = (k - idx + n) % n;
+        if (rel === 0) { el.style.cssText = `transform:translate(-50%,-52%) rotate(-3deg) scale(1.12);z-index:${n + 5};opacity:1`; return; }
+        const h = hash(k), fx = ((h % 1000) / 1000 - .5) * 2, fy = (((h >> 10) % 1000) / 1000 - .5) * 2, rot = (((h >> 4) % 1000) / 1000 - .5) * 62, sc = .72 + ((h >> 7) % 100) / 380;
+        // la pila se abre hacia los costados y queda detrás; los más cercanos en el orden quedan más arriba
+        el.style.cssText = `transform:translate(calc(-50% + ${(fx * W * .22).toFixed(0)}px),calc(-50% + ${(fy * H * .14 + H * .1).toFixed(0)}px)) rotate(${rot.toFixed(0)}deg) scale(${sc.toFixed(2)});z-index:${n - rel + 1};opacity:.97`;
       });
-      nm.textContent = sv[idx].name; ct.textContent = n > 1 ? `${idx + 1} / ${n}` : '';
+      nm.textContent = sv[idx].name; ct.textContent = n > 1 ? `${idx + 1}/${n}` : '';
     };
     place();
     let x0 = null;
@@ -555,6 +587,20 @@ export function openBag(ctx) {
     st.addEventListener('pointerdown', e => { x0 = e.clientX; });
     st.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; go(Math.abs(dx) > 28 ? (dx < 0 ? 1 : -1) : 1); });
     st.addEventListener('pointercancel', () => { x0 = null; });
+    root.querySelector('[data-all]').onclick = () => { sfx('tap'); souvenirGrid(sv); };
+  }
+  // Vista ordenada de todos los souvenirs; al tocar uno se ve grande
+  function souvenirGrid(sv) {
+    const g = document.createElement('div'); g.className = 'panel pva pvsouv'; g.style.display = 'block';
+    g.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${sv.length} EN TU MOCHILA</small><h2>SOUVENIRS</h2></div><div class="pvs-g">${sv.map((s, k) => `<button class="pvs-i" data-k="${k}" style="--r:${(((k * 7) % 9) - 4) * .9}deg"><div class="th">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><b>${esc(s.name)}</b></button>`).join('')}</div>`;
+    document.body.appendChild(g);
+    g.querySelector('[data-x]').onclick = () => { g.remove(); sfx('tap'); };
+    g.querySelectorAll('.pvs-i').forEach(b => b.onclick = () => {
+      sfx('tap'); const s = sv[+b.dataset.k], R = V.REGIONS[s.region], ov = document.createElement('div'); ov.className = 'pva-det';
+      ov.innerHTML = `<button class="round close" aria-label="Cerrar">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${R ? esc(R.name) : ''} · souvenir</small></div>`;
+      ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) { ov.remove(); sfx('tap'); } };
+      g.appendChild(ov);
+    });
   }
   draw();
   return root;

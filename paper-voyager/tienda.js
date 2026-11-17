@@ -1,10 +1,17 @@
-// Tienda de 5 secciones dentro del panel #shop: Viajeros · Pasaportes · Fotografía · Objetos · Récords.
-// Uso: openShop(ctx, 'viajeros'|'pasaportes'|'foto'|'objetos'|'records'). Reemplaza el contenido de #shop salvo el .head.
+// Tienda de 5 secciones dentro del panel #shop: Viajeros · Pasaportes · Fotografía · Objetos.
+// Uso: openShop(ctx, 'viajeros'|'pasaportes'|'foto'|'objetos'). Reemplaza el contenido de #shop salvo el .head.
 import { photoPreview } from './album.js';
 
 const TABS = [
-  ['viajeros', '☺', 'VIAJEROS'], ['pasaportes', '▣', 'PASAPORTES'], ['foto', '◎', 'FOTOS'], ['objetos', '✦', 'OBJETOS'], ['records', '★', 'RÉCORDS'],
+  ['viajeros', 'viajero', 'VIAJEROS'], ['pasaportes', 'pasaporte', 'PASAPORTES'], ['foto', 'foto', 'FOTOS'], ['objetos', 'objeto', 'OBJETOS'],
 ];
+const SV = (d) => `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const TAB_ICO = {
+  viajero: SV('<path d="M8.5 7.5a3.5 3.5 0 0 1 7 0"/><path d="M7 8h10"/><circle cx="12" cy="10.5" r="2.5"/><path d="M8 21v-5a4 4 0 0 1 8 0v5"/><path d="M16.5 14.5h2.5v5.5h-2.5"/>'),
+  pasaporte: SV('<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 17h6"/>'),
+  foto: SV('<rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2.5h5L16 6"/>'),
+  objeto: SV('<path d="M3.5 8.5L12 4l8.5 4.5v7L12 20l-8.5-4.5z"/><path d="M3.5 8.5L12 13l8.5-4.5M12 13v7"/>'),
+};
 const RARITY = { nilo: ['COMÚN', '#8a8069', '#DCE9F7'], kami: ['COMÚN', '#8a8069', '#DCE9F7'], sakura: ['RARO', '#3E8FD9', '#FBD9E3'], kitsu: ['ÉPICO', '#8E5CD9', '#FFE1D6'], shinobi: ['ÉPICO', '#8E5CD9', '#DAD5F2'], oro: ['LEGENDARIO', '#D98A1E', '#FFF0B8'] };
 const rarityOf = k => RARITY[k.id] || (k.price >= 2000 ? ['LEGENDARIO', '#D98A1E', '#FFF0B8'] : k.price >= 400 ? ['ÉPICO', '#8E5CD9', '#DAD5F2'] : k.price > 0 ? ['RARO', '#3E8FD9', '#DCE9F7'] : ['COMÚN', '#8a8069', '#DCE9F7']);
 const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9' };
@@ -27,8 +34,8 @@ function injectCSS() {
   const s = document.createElement('style'); s.id = 'tiendaCSS';
   s.textContent = `
 .vtabs{display:flex;gap:4px;padding:12px 8px 4px;overflow-x:auto;scrollbar-width:none}.vtabs::-webkit-scrollbar{display:none}
-.vtabs button{flex:1 0 auto;min-width:44px;height:52px;padding:0 5px;border-radius:14px;border:3px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 11px/1 'Lilita One',sans-serif;letter-spacing:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
-.vtabs button i{font-style:normal;font-size:17px;line-height:1}.vtabs .on{background:var(--ink);color:var(--cream)}
+.vtabs button{flex:1 1 0;min-width:0;height:52px;padding:0 5px;border-radius:14px;border:3px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 11px/1 'Lilita One',sans-serif;letter-spacing:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.vtabs button i{font-style:normal;line-height:0;display:block}.vtabs button i svg{display:block}.vtabs .on{background:var(--ink);color:var(--cream)}
 .vsec{padding:14px 18px 0;font:400 21px 'Lilita One',sans-serif;color:var(--ink)}.vsec small{display:block;font:700 11px Nunito;color:var(--mute);margin-top:1px}
 .vg{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 14px}.vg3{grid-template-columns:repeat(3,1fr);gap:9px}
 .vg .it,.vg .vwide{grid-column:1/3}
@@ -134,7 +141,7 @@ function shell(panel) {
   panel.dataset.tienda = '1';
   const head = panel.querySelector('.head');
   [...panel.children].forEach(n => { if (n !== head) n.remove(); });
-  panel.insertAdjacentHTML('beforeend', `<div class="vtabs" id="vTabs">${TABS.map(([k, i, t]) => `<button data-t="${k}"><i>${i}</i>${t}</button>`).join('')}</div><div id="vBody"></div>`);
+  panel.insertAdjacentHTML('beforeend', `<div class="vtabs" id="vTabs">${TABS.map(([k, i, t]) => `<button data-t="${k}"><i>${TAB_ICO[i]}</i>${t}</button>`).join('')}</div><div id="vBody"></div>`);
   panel.addEventListener('click', onClick);
 }
 function render() {
@@ -143,8 +150,7 @@ function render() {
   const w = panel.querySelector('#sWallet'); if (w) w.textContent = c.wallet;
   panel.querySelectorAll('#vTabs button').forEach(b => { const on = b.dataset.t === tab; b.classList.toggle('on', on); if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
   const body = panel.querySelector('#vBody'), st = panel.scrollTop;
-  if (tab === 'records') { body.innerHTML = '<div class="top5" id="vRec"></div>'; c.drawRecords(body.firstChild); }
-  else body.innerHTML = { viajeros, pasaportes, foto, objetos }[tab](c);
+  body.innerHTML = { viajeros, pasaportes, foto, objetos }[tab](c);
   panel.scrollTop = st;
 }
 function bad(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }

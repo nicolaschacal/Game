@@ -510,8 +510,6 @@ body.gpapel #splash .load{border:0;height:12px;border-radius:0;background:#171C4
 body.gpapel #splash .load i{background:#F2BC3E}
 body.gpapel #mapView{background-color:#5E9BB8;background-image:var(--nz),radial-gradient(circle at 50% 40%,#8CC3D8,#4F8CAB);background-size:160px,auto;background-blend-mode:multiply,normal}
 body.gpapel .mpin .fare{color:#2B2236}
-body.gpapel .mpin .t{filter:drop-shadow(0 2px 2px rgba(20,16,40,.45))}
-body.gpapel .mpin .n{filter:drop-shadow(0 2px 2px rgba(20,16,40,.4))}
 body.gpapel .pva-det{background:rgba(20,16,44,.82)}
 body.gpapel .pva-det .info{position:relative;isolation:isolate;padding:8px 30px 12px;color:#2B2236;filter:var(--sh)}
 body.gpapel .pva-det .info:before,body.gpapel .pva-det .info:after{content:"";position:absolute;z-index:-1;background-image:var(--nz);background-size:160px;background-blend-mode:multiply}
@@ -536,8 +534,17 @@ body.gpapel .pk i{--top:#2F3E78;--bot:#1C2352;background-color:#2F3E78}
 
 /* mapa plano: mar de papel liso con grano, pins con sombra corta */
 body.gpapel #mapView{background-color:#6FA6C0;background-image:var(--nz);background-size:160px;background-blend-mode:multiply}
-body.gpapel .mpin .t{filter:drop-shadow(0 1px 1.5px rgba(20,16,40,.3))}
-body.gpapel .mpin .n{filter:drop-shadow(0 1px 1.5px rgba(20,16,40,.28))}
+/* mapa: pines livianos (son ~300 por las 3 copias): sin clip-path ni capas de grano */
+body.gpapel .mpin .t{clip-path:none;border-radius:9px;background-image:none;background-color:var(--top);box-shadow:0 2px 0 var(--bot)}
+body.gpapel .mpin.np .t{background-color:var(--rc)}
+body.gpapel .mpin .n{clip-path:none;border-radius:8px;background-image:none;background-color:var(--top);box-shadow:0 2px 0 var(--bot)}
+body.gpapel .mpin.sel:before{clip-path:none;border-radius:50%;background-image:none}
+body.gpapel #mapWorld{contain:layout paint}
+/* HUD y pausa */
+body.gpapel #coinPill{padding:0 18px 0 46px}
+body.gpapel #coinPill svg{left:-1px;top:-6px}
+#paused .row2{gap:10px}#paused .row2 .btn,#paused .row2 .btn+.btn{flex:1 1 0;min-width:0;padding:0 6px;white-space:nowrap}
+#paused .pnote{position:absolute;left:0;right:0;top:calc(100% + 16px);font:900 11px Nunito;letter-spacing:.6px;color:#FFF4DCD9;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 /* gpapel:end */
 /* nilo-inicio: personaje, cinta bajo los pies, misiones y JUGAR un poco más abajo para que todo respire */
 #mHero{transform-origin:50% 92.7%}#mHero .hf{pointer-events:auto;cursor:pointer}
@@ -625,7 +632,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
 <div id="paused" class="dim"><div class="card"><div class="ribbon">PAUSA</div>
  <button class="btn green" id="resume">▶ SEGUIR</button>
  <button class="link" id="howTo" style="margin-top:8px">? CÓMO SE JUEGA</button>
- <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR <small style="display:block;font-size:10px;opacity:.7">PERDÉS LAS MONEDAS</small></button></div></div></div>
+ <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ SALIR</button></div><div class="pnote">Si salís, perdés las monedas de esta ronda</div></div></div>
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, setGroundColor, setHour, freezeMovers } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
@@ -1150,23 +1157,23 @@ function heroLayout(){const m=$('menu').getBoundingClientRect(),h=$('mHero');if(
  h._S=S;h._rs=(m.width*RUNW)/S;h._dy=fy0-fy;h._m=m;}
 // Idle del inicio como máquina de estados: BASE (respira + parpadea cada 2–5 s) · SEGUIR el puntero/último toque (cabeza girada, suave) · ACCIÓN ocasional única (saludar / mirar a los lados / acomodarse la gorra) tras 6–12 s sin interacción · tocar = saluda
 const hs={ph:0,blinkAt:0,blinkK:-1,lx:0,ly:0,tx:0,ty:0,pt:0,actAt:0,act:null,actK:0,actPh:0,last:''},hr=(a,b)=>a+Math.random()*(b-a);
-function hsReset(){const n=Date.now();Object.assign(hs,{ph:0,blinkAt:n+hr(2000,5000),blinkK:-1,lx:0,ly:0,tx:0,ty:0,pt:0,actAt:n+hr(6000,10000),act:null});}
+function hsReset(){const n=Date.now();Object.assign(hs,{ph:0,blinkAt:n+hr(2000,5000),blinkK:-1,lx:0,ly:0,tx:0,ty:0,pt:0,actAt:n+hr(5000,9000),act:null});}
 function hsPoint(e){if(!menuOpen||hBusy||!hArt||!hArt.at)return;const r=$('mHero').getBoundingClientRect(),n=Date.now();
  hs.tx=Math.max(-1,Math.min(1,(e.clientX-(r.left+r.width/2))/(r.width*.55)));const dy=((r.top+r.height*.4)-e.clientY)/(r.height*.7);hs.ty=dy>.5?1:dy>.25?.5:0;
- hs.pt=n;hs.act=null;hs.actAt=Math.max(hs.actAt,n+hr(6000,10000));}
-function heroWave(ms){hWave=Date.now()+ms;hs.act=null;hs.actAt=Date.now()+hr(6000,12000);}
+ hs.pt=n;hs.act=null;hs.actAt=Math.max(hs.actAt,n+hr(3000,5000));}
+function heroWave(ms){hWave=Date.now()+ms;hs.act=null;hs.actAt=Date.now()+ms+hr(8000,14000);}
 function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt||document.hidden)return;hTick++;const now=Date.now();let f;hs.ph=(hs.ph+1)%27;
  if(now<hWave){const W=hArt.wave;f=W?W[hTick%W.length]:hArt.idle[0];}
  else if(!hArt.at)f=hArt.idle[hTick%hArt.idle.length]; // arte viejo (Mora / Ren): su secuencia de siempre
- else if(hs.act){const c=hArt.clips[hs.act];if(hs.actK>=c.len){hs.act=null;hs.actAt=now+hr(6000,12000);f=hArt.at(hs.ph);}else f=c.frame(hs.actK++,hs.actPh);}
+ else if(hs.act){const c=hArt.clips[hs.act];if(hs.actK>=c.len){hs.act=null;hs.actAt=now+hr(8000,14000);f=hArt.at(hs.ph);}else f=c.frame(hs.actK++,hs.actPh);}
  else{
   if(now-hs.pt>1800){hs.tx=0;hs.ty=0;} // el puntero se fue: vuelve al centro
   hs.lx+=Math.max(-.25,Math.min(.25,hs.tx-hs.lx));hs.ly+=Math.max(-.5,Math.min(.5,hs.ty-hs.ly)); // un paso por cuadro: giro suave
   let bl=0;if(hs.blinkK>=0){bl=[1,2,1][hs.blinkK++];if(hs.blinkK>2){hs.blinkK=-1;hs.blinkAt=now+hr(2000,5000);}}else if(now>=hs.blinkAt){hs.blinkK=1;bl=1;}
   f=hArt.at(hs.ph,{lx:hs.lx,ly:hs.ly,blink:bl});
-  if(now>=hs.actAt&&!hs.lx&&!hs.ly&&now-hs.pt>6000&&bl===0){const L=['wave','lookAround','fixHat'].filter(x=>x!==hs.last),k=L[Math.floor(Math.random()*L.length)];hs.last=k;
+  if(now>=hs.actAt&&!hs.lx&&!hs.ly&&bl===0){const L=['wave','lookAround','fixHat'].filter(x=>x!==hs.last),k=L[Math.floor(Math.random()*L.length)];hs.last=k;
    if(k==='wave')heroWave(1500);else{hs.act=k;hs.actK=0;hs.actPh=hs.ph;}}
-  else if(now>=hs.actAt)hs.actAt=Math.max(now+1000,hs.pt+hr(6000,10000));
+  else if(now>=hs.actAt)hs.actAt=now+700;
  }
  if(h._f!==f){h.innerHTML=f;h._f=f;}}
 function heroSync(){const id=SKINS[browse].id,h=$('mHero');heroLayout();h.classList.toggle('locked',!owned.includes(id));
@@ -1187,7 +1194,7 @@ function heroJump(start){const h=$('mHero'),m=$('menu');
  const an=h.animate([{transform:'translateY(0) scale(1,1)',offset:0},{transform:'translateY(0) scale(1.06,.9)',offset:.16,easing:'ease-out'},
   {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
   {transform:`translateY(${dy}px) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(${dy}px) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
- const hf=h.querySelector('.hf');let ri=0;const runA=hArt.run||hArt.idle,riv=setInterval(()=>{hf.innerHTML=runA[ri++%runA.length];hf._f='run';},Math.round(1000/(hArt.runFps||12)));hf.innerHTML=runA[0]; // salta ya de espaldas y corriendo, como el corredor
+ const hf=h.querySelector('.hf');const runA=hArt.run||hArt.idle,riv=0;hf.innerHTML=runA[runA.length>5?5:0];hf._f='run'; // en el aire: UN solo cuadro de corrida (pie levantado), congelado; corre recién al pisar el suelo
  let done=false;const fin=()=>{if(done)return;done=true;clearInterval(riv);hBusy=false;runner.noTurn=true;setTimeout(()=>runner.noTurn=false,1500);runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
@@ -1220,7 +1227,8 @@ $('pro').addEventListener('click',async e=>{audio();const pw=e.target.closest('#
  else if(rs){SFX.tap();if(Iap.pro){if(!await Iap.centroCliente())showToast('LA SUSCRIPCIÓN SE GESTIONA DESDE LA APP');}else{showToast(await Iap.restaurar()?'¡COMPRAS RESTAURADAS!':'NO HAY COMPRAS PARA RESTAURAR');drawShop();drawHome();}}});
 Iap.onCambio(()=>{drawShop();drawHome();import('./paper-voyager/tienda.js').then(m=>m.refreshShop?.()).catch(()=>{});if(Iap.pro){Ads.banner(false);document.body.classList.remove('ads');}});
 const openPanel=id=>{audio();SFX.tap();drawHome();drawShop();$(id).style.display='block';};
-function openStore(tab){audio();SFX.tap();$('shop').style.display='block';import('./paper-voyager/tienda.js').then(m=>m.openShop(ctx,tab)).catch(e=>{console.warn(e);drawHome();drawShop();});}
+import('./paper-voyager/tienda.js').catch(()=>{}); // precarga: la tienda se muestra recién cuando está armada (sin salto de layout)
+function openStore(tab){audio();SFX.tap();import('./paper-voyager/tienda.js').then(m=>m.openShop(ctx,tab)).catch(e=>{console.warn(e);$('shop').style.display='block';drawHome();drawShop();});}
 $('openShop').addEventListener('click',()=>openStore());
 $('openAlbum').addEventListener('click',()=>{audio();SFX.tap();import('./paper-voyager/album.js').then(m=>m.openBag(ctx)).catch(e=>console.warn(e));});$('openScores').addEventListener('click',()=>openPanel('scores'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{SFX.tap();$('shop').style.display='none';$('scores').style.display='none';$('mapPanel').style.display='none';const k=SKINS[browse];if(!owned.includes(k.id))pickSkin(SKINS.findIndex(x=>x.id===skinId));drawHome();}));
@@ -1244,8 +1252,11 @@ function drawCard(){const t=THEMES[mPick],s=pinState(mPick),R=V.REGIONS[s.r],vis
  document.querySelectorAll('.mpin').forEach(e=>e.classList.toggle('sel',+e.dataset.i===mPick));
  const arcs=document.querySelectorAll('.mapArc');if(arcs.length&&mapData){const M=mapData,a=M.pts[WI];let b=M.pts[mPick];if(b[0]-a[0]>M.W/2)b=[b[0]-M.W,b[1]];else if(a[0]-b[0]>M.W/2)b=[b[0]+M.W,b[1]];
   const d=mPick===WI?'':`M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${Math.min(a[1],b[1])-Math.min(90,Math.hypot(b[0]-a[0],b[1]-a[1])*.3)} ${b[0]} ${b[1]}`;arcs.forEach(e=>e.setAttribute('d',d));}}
-async function openMap(){audio();SFX.tap();$('mapSub').innerHTML='ESTÁS EN '+theme.place.toUpperCase()+' · ◉ '+fmt(wallet)+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').style.display='block';
- if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();const M=mapData,v=$('mapView'),GP=document.body.classList.contains('gpapel'),sc=Math.max(.55,Math.min(1,(v.clientHeight-250)/560));
+let mapKey='',mapSc=1;
+async function buildMap(){
+ if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();
+ const M=mapData,v=$('mapView'),GP=document.body.classList.contains('gpapel'),sc=Math.max(.55,Math.min(1,((v.clientHeight||innerHeight-100)-250)/560));
+ const key=[wallet,V.T.passports.join(),WI,GP,sc].join('|');if(key===mapKey)return;mapKey=key;mapSc=sc;
  // ruta punteada entre paradas (la misma de siempre); se ve marcada donde tenés pasaporte. El cruce del Pacífico sale por un borde del mapa y entra por el otro
  const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" ${GP?`stroke="${on?'#7A4A2B':'#7A4A2B66'}" stroke-width="2.6" stroke-dasharray="7 6"`:`stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10"`} stroke-linecap="round" fill="none"/>`;
  let segs='';for(let i=0;i<NW-1;i++){const a=M.pts[i],b=M.pts[i+1],on=V.hasPass(V.regionOf(i))&&V.hasPass(V.regionOf(i+1));
@@ -1253,14 +1264,20 @@ async function openMap(){audio();SFX.tap();$('mapSub').innerHTML='ESTÁS EN '+th
  const pins1=(p,i,ox)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):'<b class="fare">'+s.cost+'</b>';return `<button class="mpin ${pinCls[s.st]}" data-i="${i}" style="left:${p[0]+ox}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div><div class="n">${THEMES[i].place}${s.st==='cur'?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;};
  const w=$('mapWorld'),W3=M.W*3;w.style.cssText=`width:${W3*sc}px;height:${M.H*sc}px;margin-top:58px`;
  const nz=(getComputedStyle(document.body).getPropertyValue('--nz').match(/url\("?(.*?)"?\)$/)||[])[1]||'';
- const landG=GP?`<g filter="url(#gpSh)"><path d="${M.land}" fill="#F0E2BE" stroke="#FFF6E0" stroke-width="6" stroke-linejoin="round"/></g><path d="${M.land}" fill="url(#gpNz)" style="mix-blend-mode:multiply" opacity=".85"/>`:`<path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/>`;
+ // tierra: se rasteriza una sola vez como imagen SVG (sombra, cartulina y grano) y se repite 3 veces como background: sin filtros ni 3 copias de un path enorme
+ const landSvg=GP?`<svg xmlns="http://www.w3.org/2000/svg" width="${M.W}" height="${M.H}"><defs><pattern id="n" width="160" height="160" patternUnits="userSpaceOnUse"><image href="${nz}" width="160" height="160"/></pattern></defs><path d="${M.land}" transform="translate(0,2.5)" fill="#1B1730" opacity=".2"/><path d="${M.land}" fill="#F0E2BE" stroke="#FFF6E0" stroke-width="6" stroke-linejoin="round"/><path d="${M.land}" fill="url(#n)" opacity=".5"/></svg>`:`<svg xmlns="http://www.w3.org/2000/svg" width="${M.W}" height="${M.H}"><path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
  const arcAttr=GP?'stroke="#E14E34" stroke-width="3.4" stroke-dasharray="9 6"':'stroke="#E8452C" stroke-width="5" stroke-dasharray="1 11"';
- let gs='',pn='';for(let k=0;k<3;k++){gs+=`<g transform="translate(${k*M.W},0)">${landG}${segs}<path class="mapArc" d="" ${arcAttr} stroke-linecap="round" fill="none"/></g>`;
+ let gs='',pn='';for(let k=0;k<3;k++){gs+=`<g transform="translate(${k*M.W},0)">${segs}<path class="mapArc" d="" ${arcAttr} stroke-linecap="round" fill="none"/></g>`;
   pn+=M.pts.map((p,i)=>pins1(p,i,k*M.W)).join('');}
- w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><svg width="${W3}" height="${M.H}" style="position:absolute;left:0;top:0">${GP?`<defs><filter id="gpSh" x="-3%" y="-3%" width="106%" height="108%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1B1730" flood-opacity=".28"/></filter><pattern id="gpNz" width="160" height="160" patternUnits="userSpaceOnUse"><image href="${nz}" width="160" height="160"/></pattern></defs>`:''}${gs}</svg>${pn}</div>`;
+ w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;background:url('data:image/svg+xml,${encodeURIComponent(landSvg).replace(/'/g,'%27')}') repeat-x 0 0/${M.W}px ${M.H}px"></div><svg width="${W3}" height="${M.H}" style="position:absolute;left:0;top:0">${gs}</svg>${pn}</div>`;
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{SFX.tap();mPick=+e.dataset.i;drawCard();}));
- mPick=WI;drawCard();const cw=M.W*sc;v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2;
+}
+async function openMap(){audio();SFX.tap();$('mapSub').innerHTML='ESTÁS EN '+theme.place.toUpperCase()+' · ◉ '+fmt(wallet)+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').style.display='block';
+ await buildMap();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;
+ mPick=WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2;
  v.onscroll=()=>{if(v.scrollLeft<cw*.5)v.scrollLeft+=cw;else if(v.scrollLeft>cw*1.5)v.scrollLeft-=cw;};}
+// prearma el mapa cuando el navegador está libre, así abre al instante
+(window.requestIdleCallback||(f=>setTimeout(f,1500)))(()=>setTimeout(()=>buildMap().catch(()=>{}),2500));
 $('worldChip').addEventListener('click',openMap);
 $('mGear').addEventListener('click',e=>{e.stopPropagation();SFX.tap();const o=$('mSet').hidden;$('mSet').hidden=!o;$('mGear').setAttribute('aria-expanded',o);});
 $('menu').addEventListener('click',e=>{if(!e.target.closest('#mSet,#mGear'))$('mSet').hidden=true;});
