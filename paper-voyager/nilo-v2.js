@@ -238,9 +238,8 @@ const rleg = (parts, hx, y, a, sole) => g(`${tr(hx, y)} ${rot(a)}`, parts[0], so
 const LEGF = [1, .6, 0, -.5, -1, -.6, 0, .6], LEGL = [0, 0, .1, .35, .55, 1, .9, .25];
 // pierna: avance (fw) y elevación (lf) por cuadro; la que sube dobla y muestra la suela; la apoyada baja y se abre un poco
 const legPose = (parts, hx, f, bob, out) => { const fw = LEGF[f], lf = LEGL[f]; return rleg(parts, hx + out * -1.2 * lf + out * Math.max(0, fw) * .6, 83.6 + bob * .6 - lf * 9 + Math.max(0, fw) * 1.4, out * (1 + 8 * lf + 5 * Math.max(0, -fw) + 3 * Math.max(0, fw)), lf > .5); };
-// brazos de ESPALDAS: van por delante del cuerpo (ocultos tras torso y mochila). El que va adelante sólo asoma el hombro;
-// el que va atrás sube el codo por fuera y deja ver el antebrazo (apenas la punta del puño). u: 0 = adelante, 1 = atrás
-const armRun = (A, side, sx, y, u) => g(tr(0, y), arm(A, sx, 60.6, side * (6 + 62 * u), -side * (86 - 58 * u)));
+// brazos de ESPALDAS (referencia sprite 8 direcciones): pegados al torso y casi ocultos; el que va atrás asoma apenas el codo/antebrazo junto al cuerpo. u: 0 = adelante, 1 = atrás
+const armRun = (A, side, sx, y, u) => g(tr(0, y), arm(A, sx, 60.6, side * (3 + 13 * u), -side * (34 - 28 * u)));
 function runScene(o) {
   const f = o.f, bob = -o.b * 3.5, by = bob - 3, hy = by * .85 + 1.6, c = Math.cos(f / 8 * TAU);
   const tailU = g(`${tr(75, 60 + by)} ${rot(-12 + o.t1)}`, tail1, g(`${tr(14.6, 0)} ${rot(2 + o.t2)}`, tail2));
