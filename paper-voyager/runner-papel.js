@@ -1,6 +1,7 @@
 // Objetos de la pista en "estilo papel": piezas de cartulina recortada a tijera (bordes levemente irregulares),
 // capas apiladas con un canto más oscuro desplazado, grano de cartulina barato (patrón de motitas) y SIN brillos,
 // reflejos ni contornos de tinta. Misma paleta y lenguaje que el bloque gpapel de index.html.
+// Borde crema de recorte (7 de grosor, igual que antes) siguiendo la silueta irregular nueva.
 // Lienzo 120×120 como siempre; mismos nombres y encuadre que el arte anterior.
 const INK = '#2B2236';
 let SD = 11;                                              // semilla corrida: el recorte es estable entre cargas
@@ -54,7 +55,7 @@ const paper = (layers, grainOf = []) => {
   const id = 'pp' + (++UID);
   const clip = grainOf.length ? `<clipPath id="${id}c">${grainOf.map(p => `<path d="${cutD(p, .4)}"/>`).join('')}</clipPath>` : '';
   const g = grainOf.length ? `<rect width="120" height="120" fill="url(#${id})" clip-path="url(#${id}c)"/>` : '';
-  return `<svg viewBox="0 0 120 120"><defs><pattern id="${id}" width="24" height="24" patternUnits="userSpaceOnUse">${speck}</pattern>${clip}</defs>${layers}${g}</svg>`;
+  return `<svg viewBox="0 0 120 120"><defs><pattern id="${id}" width="24" height="24" patternUnits="userSpaceOnUse">${speck}</pattern>${clip}</defs><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${layers}</g>${layers}${g}</svg>`;
 };
 // ojitos de papel (sin brillo)
 const eyes = (xs, y, rx = 4.2, ry = 5.4) => xs.map(x => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${INK}"/>`).join('');
