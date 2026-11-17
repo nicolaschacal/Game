@@ -151,9 +151,9 @@ function scene(o) {
   const torso = g(tr(0, ty), coat, hem, placket, btn(67), btn(75), pocket('pkL', 42), pocket('pkR', 67), strapL, strapR, buckle('bkL', 45.4, 66), buckle('bkR', 68.8, 66));
   const aL = g(tr(0, ty * .8 + (o.armLag || 0)), arm(armL, 40.8, 60.6, o.aL, o.bL));
   const aR = g(tr(0, ty * .8 + (o.armLag || 0)), arm(armR, 79.2, 60.6, o.aR, o.bR));
-  const head = g(`${tr(look * 1.3 + (o.hx || 0), hy)} ${rot((o.tilt || 0) + look * 2.2, 60, 58)}`,
+  const head = g(`${tr(look * 1.3 + (o.hx || 0), hy - (o.lookY || 0) * .6)} ${rot((o.tilt || 0) + look * 2.2, 60, 58)}`,
     flapL, flapR, face,
-    g(tr(look * 2.1, 0), feats(o)),
+    g(tr(look * 2.1, -(o.lookY || 0) * 1.5), feats(o)),
     dome,
     g(tr(0, o.gy || 0), bridge, lens('gl', 50.4, 27.4), lens('gr', 69.6, 27.4)));
   const wrapBk = g(tr(0, ty), wrapB), wrap = g(tr(0, ty), wrapF, pleat1, pleat2);
@@ -178,26 +178,27 @@ const REST = { aL: 12, bL: 5, aR: -12, bR: -5 };
 const lerp = (a, b, t) => a + (b - a) * t;
 const kf = (pts, f) => { for (let i = 0; i < pts.length - 1; i++) { const [f0, v0] = pts[i], [f1_, v1] = pts[i + 1]; if (f >= f0 && f <= f1_) { const t = (f - f0) / (f1_ - f0 || 1); return lerp(v0, v1, t * t * (3 - 2 * t)); } } return pts[pts.length - 1][1]; };
 const q = (v, s = .1) => Math.round(v / s) * s;
-const N = 36, TAU = Math.PI * 2;
-// idle: 36 cuadros @ ~9 fps (4 s). respira, mira a un costado, se acomoda las antiparras (la mano sube a la gorra), parpadea, la bufanda flamea.
-export const idle = Array.from({ length: N }, (_, f) => {
-  const ph = f / N * TAU;
-  const look = kf([[0, 0], [4, 0], [6, -1], [11, -1], [13, 0], [35, 0]], f);
-  const raise = kf([[0, 0], [19, 0], [22, .5], [23, 1], [28, 1], [30, .5], [32, 0], [35, 0]], f);
-  const blink = [14, 15].includes(f) ? (f === 14 ? 1 : 2) : f === 16 ? 1 : f === 33 ? 1 : f === 34 ? 2 : f === 35 ? 1 : 0;
-  const gy = f >= 25 && f <= 27 ? -1 : 0;
-  return frame({
-    br: q(.5 - .5 * Math.cos(ph), .25), sway: q(.7 * Math.sin(ph), .1), look: q(look, .25), tilt: q(raise * -1.2, .1), blink,
-    t1: q(3.2 * Math.sin(ph + .6), .5), t2: q(8 * Math.sin(2 * ph + 1.5), .5), te: q(2 * Math.sin(ph - .5), .5),
-    aL: q(lerp(REST.aL, 10, raise) + .6 * Math.sin(ph + .4), .5), bL: REST.bL,
-    aR: q(lerp(REST.aR, -158, raise), .5), bR: q(lerp(REST.bR, -38, raise), .5), up: raise > .2, gy, mouth: 'smile', armLag: q(.3 * Math.sin(ph - .6), .1)
-  });
-});
+const N = 27, TAU = Math.PI * 2;
+// BASE: respiración muy sutil (torso ~0,8 px), bufanda que se mece y un vaivén mínimo. 27 cuadros a ~9 fps ≈ 3 s, loop limpio.
+const baseOpts = ph => { const a = (ph % N) / N * TAU; return { br: q((.5 - .5 * Math.cos(a)) * .8, .2), sway: q(.5 * Math.sin(a), .1), t1: q(2.6 * Math.sin(a + .6), .5), t2: q(6 * Math.sin(2 * a + 1.5), .5), te: q(1.6 * Math.sin(a - .5), .5),
+  aL: q(REST.aL + .5 * Math.sin(a + .4), .5), bL: REST.bL, aR: REST.aR, bR: REST.bR, mouth: 'smile', armLag: q(.3 * Math.sin(a - .6), .1), blink: 0, look: 0, lookY: 0, tilt: 0, up: false, gy: 0 }; };
+// at(fase, {lx: -1..1 (de a .25), ly: 0..1 (de a .5), blink: 0|1|2}): cabeza girada / parpadeo sobre la MISMA fase de respiración (sin saltos)
+const at = (ph, o = {}) => frame({ ...baseOpts(ph), look: q(o.lx || 0, .25), lookY: q(o.ly || 0, .5), blink: o.blink || 0 });
+export const idleBase = Array.from({ length: N }, (_, i) => at(i));
+// idle compatible (tienda / selección / álbum): el loop base con un parpadeo
+export const idle = idleBase.map((f, i) => i === 20 || i === 22 ? at(i, { blink: 1 }) : i === 21 ? at(i, { blink: 2 }) : f);
+// Clips de acción: arrancan en la fase de respiración en que se disparan (frame(k, fase))
+const FIX = 20;
+const fixHat = (k, ph) => { const raise = kf([[0, 0], [4, 1], [14, 1], [18, 0], [19, 0]], k), o = baseOpts(ph + k);
+  return frame({ ...o, tilt: q(-1.2 * raise, .1), aL: q(lerp(o.aL, 10, raise), .5), aR: q(lerp(REST.aR, -158, raise), .5), bR: q(lerp(REST.bR, -38, raise), .5), up: raise > .2, gy: k >= 7 && k <= 9 ? -1 : 0, blink: k === 12 ? 1 : 0 }); };
+const LOOK = 24;
+const lookAround = (k, ph) => frame({ ...baseOpts(ph + k), look: q(kf([[0, 0], [2, -.75], [3, -1], [8, -1], [10, 0], [11, 0], [13, .75], [14, 1], [19, 1], [22, 0], [23, 0]], k), .25), blink: k === 11 ? 2 : 0 });
+export const clips = { fixHat: { len: FIX, frame: fixHat }, lookAround: { len: LOOK, frame: lookAround } };
 // wave: 6 cuadros @ ~10 fps, loop de saludo (brazo derecho en alto, antebrazo oscilando, boca abierta, rebotecito)
 export const wave = Array.from({ length: 6 }, (_, f) => {
   const ph = f / 6 * TAU;
   return frame({
-    br: [0, .5, 1, .5, 0, .5][f] * .8, sway: q(1.2 * Math.sin(ph), .1), look: .4, tilt: 2.4, blink: f === 4 ? 1 : 0, hop: f % 3 === 2 ? -.8 : 0,
+    br: [0, .5, 1, .5, 0, .5][f] * .8, sway: q(1.2 * Math.sin(ph), .1), look: .5, tilt: 2.4, blink: f === 4 ? 1 : 0, hop: f % 3 === 2 ? -.8 : 0,
     t1: q(4 * Math.sin(ph), .5), t2: q(10 * Math.sin(ph + 1.2), .5), te: q(2.4 * Math.sin(ph - .4), .5),
     aL: 11, bL: 5, aR: -118, bR: q(-52 + 20 * Math.cos(ph), .5), up: true, gy: 0, mouth: 'open'
   });
@@ -231,18 +232,21 @@ const rL = [rLeg(0), rBoot(0), rSole(0)], rR = [rLeg(1), rBoot(1), rSole(1)];
 const rTB1 = piece('rtb1', P('M-2 -3.4 C4 -5.4 9 -2 14 -3.4 L14.4 3.6 C9 5.2 4 2 -2 3.6Z'), dark(C.scarf, .2), { j: .45 });
 const rTB2 = piece('rtb2', P('M-1 -3.4 C5 -5 9 -2 13 -3.6 L17 -4.6 L14 0 L17 4.6 L13 3.8 C9 5.2 5 2.2 -1 3.4Z'), dark(C.scarf, .2), { j: .45 });
 const rleg = (parts, hx, y, a, sole) => g(`${tr(hx, y)} ${rot(a)}`, parts[0], sole ? parts[2] : parts[1]);
+// ciclo de 8 cuadros (contacto, bajada, paso, subida) de espaldas: cada pierna con su elevación y avance; los brazos van flexionados (~90°) y alternan con las piernas
+const LEGF = [1, .5, 0, -.6, -1, -.5, 0, .7], LEGL = [0, 0, 0, .2, .9, 1, .7, .25];
+const legPose = (parts, hx, f, by, out) => { const fw = LEGF[f], lf = LEGL[f]; return rleg(parts, hx, 83.6 + by - lf * 7 + Math.max(0, fw) * 1.2, out * (2 + 6 * lf + 3 * Math.max(0, -fw)), lf > .6); };
+const armRun = (A, side, sx, by, s) => g(tr(0, by), arm(A, sx, 60.6, side * (24 - 28 * s), -side * (64 + 28 * s)));
 function runScene(o) {
-  const b = o.b, by = -b * 1.5, hy = by - b * .5, s = o.s;
+  const f = o.f, by = -o.b * 1.5, hy = by - o.b * .5, c = Math.cos(f / 8 * TAU);
   const tailU = g(`${tr(75, 60 + by)} ${rot(-12 + o.t1)}`, tail1, g(`${tr(14.6, 0)} ${rot(2 + o.t2)}`, tail2));
   const tailD = g(`${tr(74, 63 + by)} ${rot(7 + o.t3)}`, rTB1, g(`${tr(13.6, 0)} ${rot(3 + o.t2 * .6)}`, rTB2));
-  const lift = v => Math.max(0, v), fw = v => Math.max(0, -v);
-  const legA = rleg(rL, 50.6, 83.6 + by - lift(s) * 8 + fw(s) * 1.2, lift(s) * 10 + fw(s) * 3, lift(s) > .45);
-  const legB = rleg(rR, 69.4, 83.6 + by - lift(-s) * 8 + fw(-s) * 1.2, -(lift(-s) * 10 + fw(-s) * 3), lift(-s) > .45);
+  const legA = legPose(rL, 50.6, f, by, 1), legB = legPose(rR, 69.4, (f + 4) % 8, by, -1);
   const body = g(`${tr(0, by)} ${rot(o.roll, 60, 84)}`, coat, hem, pack, packFlap, packBuck, packStr('ps1', 49.4), packStr('ps2', 66.8), roll, rollS('rs1', 49.4), rollS('rs2', 66.8));
-  const aL = g(tr(0, by), arm(armL, 40.8, 60.6, 24 - 20 * s, 8 + 6 * (1 - s))), aR = g(tr(0, by), arm(armR, 79.2, 60.6, -(24 + 20 * s), -(8 + 6 * (1 + s))));
+  const sL = -c, sR = c; // brazo adelante (s>0) cuando la pierna del mismo lado va atrás; el que va adelante queda detrás del torso
+  const aL = armRun(armL, 1, 40.8, by, sL), aR = armRun(armR, -1, 79.2, by, sR);
   const head = g(`${tr(0, hy)} ${rot(o.tilt, 60, 58)}`, flapL, flapR, rgL, rgR, rdome, rbuck, rbuck2);
   const wrap = g(tr(0, by), rwrap);
-  return g(rot(o.sway, 60, 108), tailD, tailU, legA, legB, body, aL, aR, wrap, head);
+  return g(rot(o.sway, 60, 108), tailD, tailU, legA, legB, ...(sL > .2 ? [aL] : []), ...(sR > .2 ? [aR] : []), body, ...(sL > .2 ? [] : [aL]), ...(sR > .2 ? [] : [aR]), wrap, head);
 }
 function runFrame(o) {
   const key = 'run' + JSON.stringify(o); if (cache.has(key)) return cache.get(key);
@@ -253,10 +257,11 @@ function runFrame(o) {
   const k = ++FID; svg = svg.replace(/(id="|href="#|url\(#)/g, `$1n${k}_`);
   cache.set(key, svg); return svg;
 }
-// run: 6 cuadros @ 12 fps (igual que NILO.run). Piernas alternando desde la cadera, brazos contrarios, rebote, bufanda hacia atrás.
-export const run = Array.from({ length: 6 }, (_, f) => {
-  const ph = f / 6 * TAU, s = Math.sin(ph);
-  return runFrame({ s: q(s, .01), b: [0, 1, .7, 0, 1, .7][f], roll: q(1.6 * s, .1), sway: q(.8 * Math.sin(ph + 1), .1), tilt: q(-1.2 * s, .1),
+// run: 8 cuadros @ 16 fps (0,5 s por ciclo). Brazos flexionados alternados con las piernas, rebote leve, bufanda hacia atrás.
+export const run = Array.from({ length: 8 }, (_, f) => {
+  const ph = f / 8 * TAU;
+  return runFrame({ f, b: [.3, 0, .6, 1, .3, 0, .6, 1][f], roll: q(1.6 * Math.cos(ph), .1), sway: q(.8 * Math.sin(ph + 1), .1), tilt: q(1.2 * Math.cos(ph), .1),
     t1: q(5 * Math.sin(ph + .5), .5), t2: q(8 * Math.sin(2 * ph + 1), .5), t3: q(6 * Math.sin(ph + 2.4), .5) });
 });
-export const NILO2 = { idle, wave, run };
+export const runFps = 16;
+export const NILO2 = { idle, idleBase, at, clips, wave, run, runFps };

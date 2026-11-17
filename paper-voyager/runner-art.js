@@ -118,8 +118,10 @@ const MORA = recolorNilo({ '#E8452C': '#E8B425', '#B93322': '#A87D12', '#3E5BA9'
 // Ren (Asia, Kioto): violeta/índigo con bufanda blanca
 const REN = recolorNilo({ '#E8452C': '#FFFFFF', '#B93322': '#CFC8E6', '#3E5BA9': '#6A4FC0', '#2D4585': '#43308C', '#A9794D': '#2F2A66', '#7A5334': '#1F1B48', '#6B3F22': '#1F1B48', '#C98F55': '#8E78D0', '#9E6B3C': '#5F4A9E', '#B57C45': '#A28BDD' });
 
+// Nilo v2: frames (idle/wave/run) enumerables para la escena 3D; la máquina de estados del inicio (at, clips) y runFps van como propiedades NO enumerables
+const niloHero = () => { const h = { idle: NILO2.idle, wave: NILO2.wave, run: NILO2.run }; Object.defineProperties(h, { runFps: { value: NILO2.runFps }, at: { value: NILO2.at }, clips: { value: NILO2.clips } }); return h; };
 export const SKINS = [
-  { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: { idle: NILO2.idle, wave: NILO2.wave, run: NILO2.run } },
+  { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: niloHero() },
   { id: 'mora', name: 'Mora', tag: 'Mapas a mano', price: 1200, head: 'nilo', c: {}, hero: { ...MORA, idle: niloIdle(MORA) } },
   { id: 'ren', name: 'Ren', tag: 'Cámara y bambú', price: 1200, head: 'nilo', c: {}, hero: { ...REN, idle: niloIdle(REN) } },
   { id: 'sakura', name: 'Sakura', tag: 'Flor de cerezo', price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },

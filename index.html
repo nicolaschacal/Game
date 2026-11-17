@@ -539,6 +539,7 @@ body.gpapel .pk i{--top:#2F3E78;--bot:#1C2352;background-color:#2F3E78}
 #mHero{transform-origin:50% 92.7%}#mHero .hf{pointer-events:auto;cursor:pointer}
 body.gpapel #menu #skinName{padding:3px 30px 8px;font-size:23px}body.gpapel #menu #skinName.sm{padding:2px 24px 6px;font-size:19px}
 body.gpapel #menu #skinName.sm small{font-size:8px;margin-top:-2px}
+body.gpapel #menu #skinName.xs{padding:1px 22px 5px;font-size:18px}body.gpapel #menu #skinName.xs small{display:none}
 body.gpapel #mCol{padding-bottom:calc(var(--sb) + 74px);gap:8px}
 body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px}body.gpapel #mission{padding-bottom:9px}
 @media(max-height:700px){body.gpapel #mCol{padding-bottom:calc(var(--sb) + 64px);gap:6px}body.gpapel #playWrap #play{height:54px;font-size:28px}body.gpapel #mission{padding-bottom:8px}body.gpapel #menu #skinName small{display:none}}
@@ -753,7 +754,7 @@ cur-=7;const GOAL=cur+2;
 const goal={id:'goal',kind:'paper',svg:AIRPORT,x:0,y:GOAL-1,w:5,h:3};
 // Tamaño del corredor en la pista (1 = un tile). Para probar otros: ?size=1.7
 const PSIZE=+Q.get('size')||1.8;
-const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.run.length===6?12:9,x:2,y:START,w:PSIZE,h:PSIZE};
+const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.runFps||(art.HERO.run.length===6?12:9),x:2,y:START,w:PSIZE,h:PSIZE};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(DIF.P>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
@@ -1105,7 +1106,7 @@ const tops=store.get('tops',[]);
 let menuOpen=!autostart&&!carry;runner.hidden=menuOpen; // en el inicio se ve sólo el personaje grande; al saltar se convierte en el corredor
 let browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
 const RARITY={nilo:['VIAJERO','#3E5BA9','#DCE9F7'],mora:['VIAJERA','#4E9A4A','#DDEFCF'],ren:['VIAJERO','#7B5CC4','#E4DAF5'],kami:['COMÚN','#8a8069','#DCE9F7'],sakura:['RARO','#3E8FD9','#FBD9E3'],kitsu:['ÉPICO','#8E5CD9','#FFE1D6'],shinobi:['ÉPICO','#8E5CD9','#DAD5F2'],oro:['LEGENDARIO','#D98A1E','#FFF0B8']};
-function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
+function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;player.fps=art.HERO.runFps||(art.HERO.run.length===6?12:9);const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
 function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);if(boostUntil.double>now||boost.double)L.push(['double',DOUBLE,boostUntil.double>now]);
  $('boosts').innerHTML=L.map(([k,svg,timed])=>'<div class="pw"'+(timed?' data-k="'+k+'"':'')+'>'+svg+(timed?'<b><i style="width:100%"></i></b>':'')+'</div>').join('');}
 function useItems(){for(const k of ['shield','double'])if(stock[k]>0&&!boost[k]){stock[k]--;boost[k]=true;}store.set('items',stock);drawBoosts();}
@@ -1134,31 +1135,55 @@ function drawHome(){
 const FEETY=.675,RUNW=.25*(PSIZE/1.4)*(.9/(+Q.get('zoom')||.9)); // dónde pisa y qué tan grande se ve el corredor 3D (para que el grande lo tape y el salto aterrice ahí)
 let hKey='',hArt=null,hTick=0,hWave=0,hBusy=false;
 function heroLayout(){const m=$('menu').getBoundingClientRect(),h=$('mHero');if(!m.width)return;
- const fy=m.height*FEETY,top=$('worldChip').getBoundingClientRect().bottom-m.top+4,S=Math.min(m.width*.95,(fy-top)/.917)*.64;
- h.style.width=h.style.height=S+'px';h.style.left=(m.width/2-S/2)+'px';h.style.top=(fy+.083*S-S)+'px';
- // personaje arriba, cinta del nombre DEBAJO de sus pies y después misiones/JUGAR/barra (nada se superpone)
- const sn=$('skinName'),mt=$('mission').getBoundingClientRect().top-m.top;sn.classList.remove('sm');sn.style.top=(fy+6)+'px';
- if(fy+6+sn.offsetHeight+6>mt){sn.classList.add('sm');sn.style.top=Math.max(fy+3,Math.min(fy+6,mt-6-sn.offsetHeight))+'px';}
+ // Todo sale de las posiciones REALES: tarjeta de destino (arriba) y cuadro de misiones (abajo). Cinta del nombre ≥8px sobre las misiones y el personaje apoyado sobre la cinta.
+ const sn=$('skinName'),top=$('worldChip').getBoundingClientRect().bottom-m.top+4,mt=$('mission').getBoundingClientRect().top-m.top,fy0=m.height*FEETY,GAP=8,TOUCH=3;
+ let rh=0;for(const c of ['','sm','xs']){sn.className='ribbon'+(c?' '+c:'');rh=sn.offsetHeight;if(fy0+TOUCH+rh<=mt-GAP)break;}
+ const fy=Math.min(fy0,mt-GAP-TOUCH-rh); // si no entra, el personaje sube (el salto compensa con h._dy para aterrizar donde corre el 3D)
+ const S=Math.max(80,Math.min(m.width*.95,(fy-top)/.917)*.64);
+ h.style.width=h.style.height=S+'px';h.style.left=(m.width/2-S/2)+'px';h.style.top=(fy-.927*S)+'px';
+ sn.style.top=(fy+TOUCH)+'px';
  $('prevSkin').style.top=$('nextSkin').style.top=(fy-S*.4-23)+'px';
- h._S=S;h._rs=(m.width*RUNW)/S;h._m=m;}
-function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt)return;hTick++;
- const W=hArt.wave,f=Date.now()<hWave?(W?W[hTick%W.length]:hArt.idle[0]):hArt.idle[hTick%hArt.idle.length]; // saluda con todos sus cuadros; el resto del tiempo hace su idle completo
+ h._S=S;h._rs=(m.width*RUNW)/S;h._dy=fy0-fy;h._m=m;}
+// Idle del inicio como máquina de estados: BASE (respira + parpadea cada 2–5 s) · SEGUIR el puntero/último toque (cabeza girada, suave) · ACCIÓN ocasional única (saludar / mirar a los lados / acomodarse la gorra) tras 6–12 s sin interacción · tocar = saluda
+const hs={ph:0,blinkAt:0,blinkK:-1,lx:0,ly:0,tx:0,ty:0,pt:0,actAt:0,act:null,actK:0,actPh:0,last:''},hr=(a,b)=>a+Math.random()*(b-a);
+function hsReset(){const n=Date.now();Object.assign(hs,{ph:0,blinkAt:n+hr(2000,5000),blinkK:-1,lx:0,ly:0,tx:0,ty:0,pt:0,actAt:n+hr(6000,10000),act:null});}
+function hsPoint(e){if(!menuOpen||hBusy||!hArt||!hArt.at)return;const r=$('mHero').getBoundingClientRect(),n=Date.now();
+ hs.tx=Math.max(-1,Math.min(1,(e.clientX-(r.left+r.width/2))/(r.width*.55)));const dy=((r.top+r.height*.4)-e.clientY)/(r.height*.7);hs.ty=dy>.5?1:dy>.25?.5:0;
+ hs.pt=n;hs.act=null;hs.actAt=Math.max(hs.actAt,n+hr(6000,10000));}
+function heroWave(ms){hWave=Date.now()+ms;hs.act=null;hs.actAt=Date.now()+hr(6000,12000);}
+function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt||document.hidden)return;hTick++;const now=Date.now();let f;hs.ph=(hs.ph+1)%27;
+ if(now<hWave){const W=hArt.wave;f=W?W[hTick%W.length]:hArt.idle[0];}
+ else if(!hArt.at)f=hArt.idle[hTick%hArt.idle.length]; // arte viejo (Mora / Ren): su secuencia de siempre
+ else if(hs.act){const c=hArt.clips[hs.act];if(hs.actK>=c.len){hs.act=null;hs.actAt=now+hr(6000,12000);f=hArt.at(hs.ph);}else f=c.frame(hs.actK++,hs.actPh);}
+ else{
+  if(now-hs.pt>1800){hs.tx=0;hs.ty=0;} // el puntero se fue: vuelve al centro
+  hs.lx+=Math.max(-.25,Math.min(.25,hs.tx-hs.lx));hs.ly+=Math.max(-.5,Math.min(.5,hs.ty-hs.ly)); // un paso por cuadro: giro suave
+  let bl=0;if(hs.blinkK>=0){bl=[1,2,1][hs.blinkK++];if(hs.blinkK>2){hs.blinkK=-1;hs.blinkAt=now+hr(2000,5000);}}else if(now>=hs.blinkAt){hs.blinkK=1;bl=1;}
+  f=hArt.at(hs.ph,{lx:hs.lx,ly:hs.ly,blink:bl});
+  if(now>=hs.actAt&&!hs.lx&&!hs.ly&&now-hs.pt>6000&&bl===0){const L=['wave','lookAround','fixHat'].filter(x=>x!==hs.last),k=L[Math.floor(Math.random()*L.length)];hs.last=k;
+   if(k==='wave')heroWave(1500);else{hs.act=k;hs.actK=0;hs.actPh=hs.ph;}}
+  else if(now>=hs.actAt)hs.actAt=Math.max(now+1000,hs.pt+hr(6000,10000));
+ }
  if(h._f!==f){h.innerHTML=f;h._f=f;}}
 function heroSync(){const id=SKINS[browse].id,h=$('mHero');heroLayout();h.classList.toggle('locked',!owned.includes(id));
  if(id===hKey)return;const first=!hKey,n=SKINS.length,dd=hKey?(SKINS.findIndex(k=>k.id===id)-SKINS.findIndex(k=>k.id===hKey)+n)%n:0,dir=dd&&dd<=n/2?1:-1;
- hKey=id;hArt=artFor(id).HERO;hTick=0;hWave=Date.now()+(first?1800:2300);
+ hKey=id;hArt=artFor(id).HERO;hTick=0;hsReset();hWave=Date.now()+(first?1800:2300);
  h.className=owned.includes(id)?'':'locked';if(!first){h.classList.add(dir>0?'in-r':'in-l');}h.querySelector('.hf')._f=null;void h.offsetWidth;heroFrame();}
 setInterval(()=>{if(menuOpen&&!hBusy)heroFrame();},110); // ~9 fps (idle de 36 cuadros ≈ 4 s)addEventListener('resize',()=>{if(menuOpen)heroLayout();});
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(menuOpen)heroLayout();});
+if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(menuOpen)heroLayout();});['mission','worldChip','menu'].forEach(i=>ro.observe($(i)));}
+{const m=$('menu');m.addEventListener('pointermove',hsPoint,{passive:true});m.addEventListener('pointerdown',hsPoint,{passive:true});m.addEventListener('pointerleave',()=>{hs.pt=Math.min(hs.pt,Date.now()-1500);});
+ $('mHero').querySelector('.hf').addEventListener('click',()=>{if(hBusy||!menuOpen)return;heroWave(1500);const x=$('mHero');x.classList.remove('hop');void x.offsetWidth;x.classList.add('hop');try{SFX.tap();}catch(e){}});}
 // Al tocar JUGAR: el personaje toma impulso, salta y cae hacia la pista achicándose hasta donde corre el de la escena
 function heroJump(start){const h=$('mHero'),m=$('menu');
  if(hBusy)return;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!h.animate){runner.hidden=false;start();return;}
  hBusy=true;heroLayout();hWave=0;heroFrame();m.classList.add('going');
- const H=h._m.height,sc=h._rs,up=-Math.min(H*.17,150);
+ const H=h._m.height,sc=h._rs,dy=h._dy||0,up=-Math.min(H*.17,150)+dy/2;
  SFX.tap();setTimeout(()=>SFX.whoosh(),330);setTimeout(()=>noise(.1,{f:900,to:300,v:.05}),720);
  const an=h.animate([{transform:'translateY(0) scale(1,1)',offset:0},{transform:'translateY(0) scale(1.06,.9)',offset:.16,easing:'ease-out'},
   {transform:`translateY(${up}px) scale(${(1+sc)/2+.02},${(1+sc)/2+.1}) rotate(-5deg)`,offset:.45,easing:'ease-in'},
-  {transform:`translateY(0) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(0) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
- const hf=h.querySelector('.hf');let ri=0;const runA=hArt.run||hArt.idle,riv=setInterval(()=>{hf.innerHTML=runA[ri++%runA.length];hf._f='run';},83);hf.innerHTML=runA[0]; // salta ya de espaldas y corriendo, como el corredor
+  {transform:`translateY(${dy}px) scale(${sc*1.05},${sc*.96}) rotate(0deg)`,offset:.86},{transform:`translateY(${dy}px) scale(${sc},${sc})`,offset:1}],{duration:900,fill:'forwards'});
+ const hf=h.querySelector('.hf');let ri=0;const runA=hArt.run||hArt.idle,riv=setInterval(()=>{hf.innerHTML=runA[ri++%runA.length];hf._f='run';},Math.round(1000/(hArt.runFps||12)));hf.innerHTML=runA[0]; // salta ya de espaldas y corriendo, como el corredor
  let done=false;const fin=()=>{if(done)return;done=true;clearInterval(riv);hBusy=false;runner.noTurn=true;setTimeout(()=>runner.noTurn=false,1500);runner.hidden=false;h.style.visibility='hidden';start();};an.onfinish=fin;setTimeout(fin,1100);}
 function drawShop(){if(!$('skins'))return; // la tienda nueva (tienda.js) reemplaza este contenido
 
