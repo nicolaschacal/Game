@@ -91,3 +91,11 @@ El runner se llama **Paper Voyager** ("Build your way"). Logo en dos líneas con
 - Tocar la etiqueta del mundo abre **DESTINOS**, un mapa del mundo de papel que se desliza de lado. Muestra la ruta, un pin por destino (visitado, actual o bloqueado) y una tarjeta con el botón VIAJAR.
 - Cada destino tiene su monumento de fondo (`LANDMARKS` en `runner-art.js`, campo `lm` en `THEMES`). Si borrás el `lm`, el monumento desaparece; para sumar uno, agregás el SVG y le ponés su id.
 - El mapa sale de `paper-voyager/world-map.json`: la silueta de tierra y los 8 puntos ya proyectados.
+
+## Viaje libre: viajeros, pasaportes, mapa, tienda y álbum
+
+- **Primera vez**: elegís viajero (Mora · Buenos Aires, Nilo · Berlín, Ren · Kioto). Define tu ciudad de origen y tu primer pasaporte. Se guarda y no se vuelve a pedir (`seleccion.js`).
+- **Rondas**: cada destino es una ronda; al llegar al aeropuerto volvés al mapa y elegís adónde ir. Pasaje según distancia real y conexiones; pasaportes regionales permanentes (`viaje.js`, reglas y números en `PLAN-viajes.md`).
+- **Tienda** de 5 secciones: Viajeros, Pasaportes, Fotografía, Objetos y Récords (`tienda.js`).
+- **Selfies y álbum**: la cámara polaroid de la pista da una selfie del destino (3 tomas por destino, 135 en total), que se ven y personalizan en el Álbum (`album.js`).
+- Partidas anteriores migran solas: siguen como Nilo, con sus monedas, personajes, ítems y pasaportes de las regiones a las que ya habían llegado.
