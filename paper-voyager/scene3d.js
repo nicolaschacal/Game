@@ -137,6 +137,7 @@ function ridgeTexture(kind, w, h, color, seedN, snow) {
   g.restore();
   const t = tex(c); t.anisotropy = 2; ridgeCache.set(key, t); return t;
 }
+export const ridgeURL = (kind, w, h, color, seedN, snow) => ridgeTexture(kind, w, h, color, seedN, snow).image.toDataURL(); // para el splash del primer arranque (HTML)
 function radialTex(stops) {
   const c = canvas(64), x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
   stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return tex(c);
