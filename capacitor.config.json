@@ -3,10 +3,28 @@
   "appName": "Paper Voyager",
   "webDir": "www",
   "backgroundColor": "#1B1730",
-  "ios": { "contentInset": "never", "backgroundColor": "#1B1730" },
-  "android": { "backgroundColor": "#1B1730", "allowMixedContent": false },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#1B1730"
+  },
+  "android": {
+    "backgroundColor": "#1B1730",
+    "allowMixedContent": false
+  },
   "plugins": {
-    "SplashScreen": { "launchShowDuration": 1200, "launchAutoHide": true, "backgroundColor": "#1B1730", "showSpinner": false, "androidScaleType": "CENTER_CROP" },
-    "StatusBar": { "overlaysWebView": true, "style": "DARK" }
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#1B1730",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    }
+  },
+  "server": {
+    "androidScheme": "https"
   }
 }

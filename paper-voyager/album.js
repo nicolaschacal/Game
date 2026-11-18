@@ -268,9 +268,11 @@ function css() {
 .pva .head h2{font-size:30px}
 body.gpapel .pva .head:before,body.gpapel .pva .head:after{left:0!important;right:0!important;transform:none!important}
 html.pvlock,html.pvlock body{overflow:hidden!important;overscroll-behavior:none}
-.pva{position:fixed;inset:0;width:100%}
+.pva{position:fixed;top:0;left:0;right:0;bottom:var(--navH,0px);width:100%;padding-bottom:30px}
+.pva-cfg,.pva-det{top:0;left:0;right:0;bottom:var(--navH,0px)}
+.pva-cfg{padding-bottom:30px}
 .pva .head small{bottom:50px}
-.pva-top{padding:16px 14px 6px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.pva-top{padding:16px 14px 4px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .pva-cover{width:min(58vw,230px);filter:drop-shadow(0 7px 0 rgba(27,23,48,.35));transform:rotate(-1.5deg)}
 .pva-top .btn{width:min(86vw,300px);height:52px;font-size:21px}
 .pva .tabs{padding:10px 12px 4px;overflow-x:auto;scrollbar-width:none}.pva .tabs::-webkit-scrollbar{display:none}
@@ -365,9 +367,8 @@ export function openAlbum(ctx, onClose, opts = {}) {
 
   function draw() {
     const R = V.REGIONS, P = V.PHOTO, keep = root.scrollTop;
-    const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), deco: P.deco.filter(d => P.owned.includes(d)) });
     root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${V.selfieCount()} DE ${V.selfieTotal()} FOTOS</small><h2>ÁLBUM</h2></div>
-<div class="pva-top"><div class="pva-cover">${cover}</div><button class="btn sm" data-cfg>PERSONALIZAR</button></div>
+<div class="pva-top"><button class="btn sm" data-cfg>PERSONALIZAR ÁLBUM</button></div>
 <div class="tabs">${V.REGION_ORDER.map(r => { const c = regCount(r); return `<button data-r="${r}" class="${r === region ? 'on' : ''}${done().includes(r) ? ' done' : ''}" style="--rc:${R[r].color};--rd:${R[r].dark}">${R[r].name.toUpperCase()}<small>${c.n}/${c.t}</small></button>`; }).join('')}</div>
 <div id="pvaList"></div>`;
     $('[data-x]').onclick = close;

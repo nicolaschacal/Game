@@ -8,6 +8,13 @@ El repo ya trae el proyecto nativo de Capacitor (`android/` e `ios/`), los ícon
 - **Android:** Android Studio (Ladybug o más nuevo) con SDK 36 instalado.
 - **iOS:** una Mac con Xcode 26 (iOS 26 SDK, obligatorio en App Store desde abril 2026) y CocoaPods (`sudo gem install cocoapods`).
 
+## 0.1 Estado del empaquetado (verificado)
+
+- `npm run build` y `npx cap sync` corren sin errores (iOS: el paso `pod install` y `xcodebuild` se saltan en Linux; hacelos en la Mac).
+- Fuentes Lilita One, Nunito y Yuji Syuku (recortada a los kanji usados) viven en `assets/fonts/` y el build las copia a `www/fonts/` y reemplaza el `<link>` de Google Fonts: la app funciona sin internet. **Si agregás kanji nuevos al juego, regenerá `YujiSyuku-subset.ttf`** (fonttools `pyftsubset` con los caracteres nuevos) o se verán con la fuente de respaldo.
+- Íconos/splash: `npm run assets` lee `assets/icon.png`, `assets/splash.png`, `assets/splash-dark.png`. Para elegir entre las variantes icon-A / icon-B, copiá la elegida a `assets/icon.png` (1024x1024) y corré `npm run assets`.
+- `capacitor.config.json`: cambiá `appId` (hoy `com.nicolaschacal.papervoyager`) ANTES de publicar y, si lo cambiás, también `applicationId`/`namespace` en `android/app/build.gradle` y el Bundle Identifier en Xcode.
+
 ## 1. Flujo diario
 
 ```bash
@@ -100,7 +107,8 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 
 ## 7. Lo que todavía no está
 
-- **Música**: `paper-voyager/music.mp3` no existe en el repo. Si la agregás, el build la incluye solo.
+- **i18n**: otros idiomas pendientes (hoy la interfaz está en español).
+- **Música**: las pistas van en `paper-voyager/audio/` (menu.mp3, run.mp3); el build avisa si faltan.
 - **IDs reales** de AdMob y RevenueCat (puntos 2 y 3).
 - **Probar en teléfonos reales**: sonido, vibración (en iOS va por Haptics), rendimiento del WebGL en gama baja, y los flujos de compra con cuentas de prueba (License testers en Play, Sandbox testers en App Store Connect).
 - **Capturas y textos de las fichas**.

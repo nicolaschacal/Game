@@ -106,7 +106,7 @@ body.home #hud{opacity:0}
 @keyframes tgR{0%,8%{opacity:0}12%,26%{opacity:.9}34%,100%{opacity:0}}@keyframes tgL{0%,48%{opacity:0}52%,64%{opacity:.9}72%,100%{opacity:0}}
 #tuto h3{margin:0 0 6px;font:400 24px 'Lilita One',sans-serif;color:var(--red)}#tuto p{margin:0 0 14px;font:700 14px/1.4 Nunito;color:var(--ink)}#tuto .no{display:inline-block;background:var(--ink);color:var(--cream);border-radius:8px;padding:1px 7px;font:900 10px Nunito;letter-spacing:1px;margin-bottom:8px}
 @keyframes arrSlide{0%,100%{transform:translateX(-22px);opacity:.3}50%{transform:translateX(22px);opacity:1}}
-.pw svg{position:absolute;inset:2px;width:40px;height:40px}.pw b{position:absolute;left:5px;right:5px;bottom:-9px;height:6px;border-radius:3px;background:var(--ink)}.pw b i{display:block;height:100%;border-radius:3px;background:#86D66F}
+.pw svg{position:absolute;inset:0;margin:auto;width:38px;height:38px}.pw b{position:absolute;left:5px;right:5px;bottom:-9px;height:6px;border-radius:3px;background:var(--ink)}.pw b i{display:block;height:100%;border-radius:3px;background:#86D66F}
 #nav{position:fixed;z-index:33;left:0;right:0;bottom:0;height:calc(var(--sb) + 76px);padding-bottom:var(--sb);background:var(--cream);border-top:3.5px solid var(--ink);display:none}
 #nav button{flex:1;background:none;border:0;text-align:center;padding-top:8px;color:#7c7460;font:900 10px Nunito;letter-spacing:.8px;position:relative}
 #nav button i{display:block;font:400 25px/28px 'Lilita One',sans-serif;font-style:normal;color:#a39a82}
@@ -217,6 +217,7 @@ body.home #hud{opacity:0}
 .wxp.grain{top:auto;left:-12px;animation-name:grain}@keyframes grain{to{transform:translate(115vw,var(--sway)) rotate(300deg)}}
 /* Congelar: botón al alcance del pulgar y escarcha en los bordes mientras dura */
 #freezeBtn{display:none;right:16px;bottom:calc(var(--sb) + 64px);width:58px;height:58px;border-radius:50%;font-size:28px;line-height:50px;color:#2C8FB8;pointer-events:auto}
+#freezeBtn{align-items:center;justify-content:center;padding:0}#freezeBtn svg.fz{position:static;width:30px;height:30px;display:block;margin:auto}
 #freezeBtn b{position:absolute;right:-6px;top:-6px;min-width:22px;height:22px;padding:0 4px;border-radius:99px;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 11px/17px Nunito}
 #freezeBtn.on{background:#BFE8FF;animation:bump .5s infinite alternate}
 #frost{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .4s;box-shadow:inset 0 0 70px 26px #bfe8ffcc,inset 0 0 0 6px #e8f8ff}
@@ -564,10 +565,26 @@ body.gpapel .mpin .n{clip-path:none;border-radius:8px;background-image:none;back
 body.gpapel .mpin.sel:before{clip-path:none;border-radius:50%;background-image:none}
 body.gpapel #mapWorld{contain:layout paint}
 /* HUD y pausa */
-body.gpapel #coinPill{padding:0 18px 0 46px}
-body.gpapel #coinPill svg{left:-1px;top:-6px}
+body.gpapel #coinPill{padding:0 15px 0 47px}
+body.gpapel #coinPill svg{left:4px;top:-3px;width:40px;height:40px}
+body.gpapel .head .chip{padding:0 15px 0 47px}body.gpapel .head .chip svg{left:4px;top:-2px;width:40px;height:40px} /* coin con el mismo aire a izquierda y derecha */
 #paused .row2{gap:10px}#paused .row2 .btn,#paused .row2 .btn+.btn{flex:1 1 0;min-width:0;padding:0 6px;white-space:nowrap}
 #paused .pnote{position:absolute;left:0;right:0;top:calc(100% + 16px);font:900 11px Nunito;letter-spacing:.6px;color:#FFF4DCD9;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+
+/* intro primer arranque */
+#intro{position:fixed;inset:0;z-index:61;overflow:hidden;background:#8FD0F0;cursor:pointer;transition:opacity .35s}#intro.out{opacity:0;pointer-events:none}
+#intro .isky{position:absolute;inset:0;width:100%;height:100%}#intro .isun{transform-origin:300px 232px;animation:isun 40s linear infinite}@keyframes isun{to{transform:rotate(360deg)}}
+#intro .icl{animation:icl 14s ease-in-out infinite alternate}#intro .c2{animation-duration:18s;animation-direction:alternate-reverse}@keyframes icl{to{transform:translateX(46px)}}
+#intro .ilogo .logo{top:calc(var(--st,0px) + 54px)}
+#intro .ilogo .logo b{text-shadow:0 3px 0 #8F2C1E,0 5px 0 #6c2016,0 10px 14px rgba(0,0,0,.35)}#intro .ilogo .logo b+b{text-shadow:0 3px 0 #A9701B,0 5px 0 #7d5010,0 10px 14px rgba(0,0,0,.35)}
+#intro .ib{position:absolute;left:50%;top:40%;width:250px;height:250px;margin-left:-125px;animation:ibDrop 1.35s cubic-bezier(.3,0,.7,1) both}
+#intro .ib i{display:block;width:100%;height:100%;filter:drop-shadow(0 10px 6px rgba(27,26,58,.25));transform-origin:50% 8%;animation:ibFloat 3.6s ease-in-out 1.4s infinite}#intro .ib i svg{display:block;width:100%;height:100%}
+#intro .ib u{position:absolute;left:50%;bottom:-34px;width:120px;height:18px;margin-left:-60px;border-radius:50%;background:rgba(27,26,58,.18);animation:ibSh 3.6s ease-in-out 1.4s infinite}
+@keyframes ibDrop{0%{transform:translateY(-110vh) rotate(-9deg)}42%{transform:translateY(34px) rotate(5deg);animation-timing-function:ease-out}58%{transform:translateY(-26px) rotate(-3deg);animation-timing-function:ease-in}72%{transform:translateY(10px) rotate(1.5deg);animation-timing-function:ease-out}84%{transform:translateY(-5px) rotate(-.6deg)}100%{transform:translateY(0) rotate(0)}}
+@keyframes ibFloat{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-12px) rotate(2.5deg)}}@keyframes ibSh{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.8);opacity:.7}}
+#intro .itap{position:absolute;left:0;right:0;bottom:calc(var(--sb,0px) + 70px);text-align:center;font:900 14px Nunito;letter-spacing:2.6px;color:#FFF4DC;opacity:0;animation:itap 1.8s ease-in-out 1.9s infinite;text-shadow:0 2px 0 #1B1A3A,0 0 8px #1B1A3A88}@keyframes itap{0%,100%{opacity:.35}50%{opacity:.95}}
+body.pickstart #mNav{display:none}body.pickstart #mapPanel .close{display:none}
+@media (prefers-reduced-motion:reduce){#intro .ib,#intro .ib i,#intro .isun,#intro .icl{animation:none}#intro .itap{animation:none;opacity:.8}}
 /* gpapel:end */
 /* nilo-inicio: personaje, cinta bajo los pies, misiones y JUGAR un poco más abajo para que todo respire */
 #mHero{transform-origin:50% 92.7%}#mHero .hf{pointer-events:auto;cursor:pointer}
@@ -584,6 +601,14 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="wx"></div><div id="frost"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
 <div id="splash"><div class="logo"><b>PAPER</b><b>VOYAGER</b><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div><div class="load"><i></i></div></div>
+<div id="intro" style="display:none"><svg class="isky" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="isg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FD0F0"/><stop offset=".62" stop-color="#CBEAF4"/><stop offset="1" stop-color="#F7E8BE"/></linearGradient></defs><rect width="390" height="844" fill="url(#isg)"/>
+<g class="isun" stroke="#FFF4DC" stroke-width="6" stroke-linejoin="round"><g fill="#F6C94C" stroke="none"><path d="M300 150 L292 176 L308 176 Z" transform="rotate(0 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(30 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(60 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(90 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(120 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(150 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(180 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(210 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(240 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(270 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(300 300 232)"/><path d="M300 150 L292 176 L308 176 Z" transform="rotate(330 300 232)"/></g><circle cx="300" cy="232" r="46" fill="#F2B937"/><circle cx="300" cy="232" r="30" fill="#F8D26B" stroke="none"/></g>
+<g class="icl c1" fill="#FFF8E8" stroke="#FFF4DC" stroke-width="6" stroke-linejoin="round"><path d="M40 330 q0-26 28-26 q10-24 40-14 q30-8 36 22 q24 2 20 24 H48 q-8 0-8-6Z"/></g>
+<g class="icl c2" fill="#FFF8E8" stroke="#FFF4DC" stroke-width="6" stroke-linejoin="round"><path d="M230 420 q0-20 22-20 q8-18 32-10 q24-6 28 16 q18 2 14 18 H236 q-6 0-6-4Z"/></g>
+<g stroke="#FFF4DC" stroke-width="6" stroke-linejoin="round"><path d="M-10 640 L70 520 L110 570 L170 470 L250 600 L300 540 L400 650 V860 H-10Z" fill="#8DB1CF"/><path d="M170 470 L150 500 L170 492 L186 506 L196 490Z" fill="#FFF8E8" stroke="none"/>
+<path d="M-10 700 L60 610 L130 690 L210 590 L290 700 L350 640 L400 700 V860 H-10Z" fill="#6FA583"/><path d="M-10 770 Q100 720 200 760 T400 750 V860 H-10Z" fill="#5DB84F"/></g>
+<path d="M-10 640 L70 520 L110 570 L170 470 L250 600 L300 540 L400 650" fill="none" stroke="#fff" stroke-opacity=".0"/></svg>
+<div class="ilogo"></div><div class="ib"><u></u><i></i></div><div class="itap">TOCÁ PARA EMPEZAR</div></div>
 <div id="hud">
  <div id="progress"><i></i></div>
  <div id="score" class="L out">0</div>
@@ -591,7 +616,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <div class="chip" id="coinPill"><span data-ico="coin"></span><b id="coinsN" class="L">0</b></div>
  <button class="round" id="pause" aria-label="Pausa">Ⅱ</button>
  <div id="boosts"></div>
- <button class="round" id="freezeBtn" aria-label="Congelar">❄<b id="freezeN"></b></button>
+ <button class="round" id="freezeBtn" aria-label="Congelar"><svg class="fz" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="M9.5 4.5L12 6.5l2.5-2M9.5 19.5L12 17.5l2.5 2" stroke-width="1.8"/></g></svg><b id="freezeN"></b></button>
  <div id="hint"></div>
 </div>
 <div id="toast"></div>
@@ -843,27 +868,18 @@ const SFX={
 // Van por Web Audio (GainNode), porque en iOS el volumen de <audio> no se puede bajar. Pasan de una a otra con un fundido
 // cruzado suave; en pausa la de carrera queda muy baja; al ocultar la app se detienen. Arrancan con el primer toque (regla de autoplay).
 const Music={mode:'menu',tr:{},applied:null,
- LV:{menu:.3,run:.26,pause:.08}, // run es un bucle de 16 s algo más bajo de origen (-17,5 LUFS vs -16): por eso .26
- track(m){return m==='menu'?'menu':'run';},
+ LV:{menu:.3,run:.24,pause:.08}, // una sola canción en todo el juego (Along the Dotted Line): en la carrera baja un poco y en pausa casi nada
+ track(m){return 'menu';},
  init(){if(this.tr.menu)return true;const a=audio();if(!a)return false;
-  // menú: la canción entera por streaming (<audio> loop). carrera: bucle de 8 compases decodificado a memoria → sin hueco en la unión
+  // la canción entera por streaming (<audio> loop), la misma en menú y carrera
   const el=new Audio('./paper-voyager/audio/menu.mp3');el.loop=true;el.preload='auto';
   const gm=a.createGain();gm.gain.value=0;try{a.createMediaElementSource(el).connect(gm).connect(a.destination);}catch{gm.connect(a.destination);}
   this.tr.menu={g:gm,playing:()=>!el.paused,play:()=>el.play().catch(()=>{}),pause:()=>el.pause()};
-  const gr=a.createGain();gr.gain.value=0;gr.connect(a.destination);const R={g:gr,buf:null,src:null,want:false};
-  R.playing=()=>!!R.src;
-  R.play=()=>{R.want=true;if(R.src||!R.buf)return;const s=a.createBufferSource();s.buffer=R.buf;s.loop=true;s.connect(gr);s.start();R.src=s;};
-  R.pause=()=>{R.want=false;if(R.src){try{R.src.stop();}catch{}R.src.disconnect();R.src=null;}};
-  fetch('./paper-voyager/audio/run.mp3').then(r=>r.arrayBuffer()).then(d=>new Promise((ok,ko)=>a.decodeAudioData(d,ok,ko))).then(b=>{
-   // quita el relleno de silencio que agrega el codificador MP3 al principio y al final, para que el bucle cierre exacto
-   const c=b.getChannelData(0),n=c.length,th=1e-4;let i=0,j=n-1;while(i<n&&Math.abs(c[i])<th&&i<4000)i++;while(j>i&&Math.abs(c[j])<th&&n-j<4000)j--;
-   const L=j-i+1,nb=a.createBuffer(b.numberOfChannels,L,b.sampleRate);for(let k=0;k<b.numberOfChannels;k++)nb.copyToChannel(b.getChannelData(k).subarray(i,j+1),k);
-   R.buf=nb;if(R.want)R.play();}).catch(()=>{});
-  this.tr.run=R;return true;},
+  return true;},
  apply(){const a=ac;if(!a||!this.tr.menu)return;const want=this.track(this.mode),t=a.currentTime,from=this.applied;
   for(const k in this.tr){const T=this.tr[k],on=k===want,target=on?this.LV[this.mode]:0,g=T.g;
    g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(target,t+(on&&from===null?.8:1.4));
-   if(on){if(k==='run'&&from==='menu')T.pause(); /* cada ronda arranca el bucle desde el principio */ T.play();}
+   if(on)T.play();
    else if(T.playing())setTimeout(()=>{if(this.track(this.mode)!==k)T.pause();},1500);}
   this.applied=this.mode;},
  start(){if(muted||!this.init())return;if(Object.values(this.tr).every(x=>!x.playing()))this.applied=null;this.apply();},
@@ -1286,14 +1302,16 @@ const REG=V.REGIONS[V.regionOf(WI)];
 $('worldChip').innerHTML=theme.place.toUpperCase()+' · '+theme.country.toUpperCase()+'<small>MAPA ▾</small>';
 const passMini=(r,w=18)=>{const c=V.REGIONS[r];return `<svg viewBox="0 0 20 26" width="${w}" height="${w*1.3}" style="vertical-align:middle"><rect x="1.5" y="1.5" width="17" height="23" rx="2.5" fill="${c.color}" stroke="#1B1730" stroke-width="2"/><rect x="1.5" y="1.5" width="4" height="23" rx="1.5" fill="${c.dark}"/><circle cx="11.5" cy="11" r="4" fill="none" stroke="#F2B937" stroke-width="1.8"/><path d="M8 18.5h7" stroke="#F2B937" stroke-width="1.8" stroke-linecap="round"/></svg>`;};
 let mapData=null,mPick=WI;
-const pinState=i=>V.destState(i,wallet);
+let startPick=false; // primer arranque: el mapa elige la ciudad de partida (gratis)
+const pinState=i=>startPick?{st:'ok',r:V.regionOf(i),cost:0}:V.destState(i,wallet);
 const pinCls={cur:'cur',ok:'done',nocoins:'lock nc',nopass:'lock np'};
 // Carrusel de destinos: se recorren en el orden de siempre desde el actual; sólo se arman la tarjeta visible y sus dos vecinas
 const dSlide=i=>{const t=THEMES[i],s=pinState(i),R=V.REGIONS[s.r],vis=V.T.visits[i]||0,sel=(V.ALBUM[i]||[]).length;
- const tag=s.st==='cur'?'ESTÁS ACÁ':s.st==='nopass'?'TE FALTA EL '+R.pass.toUpperCase():s.st==='nocoins'?'TE FALTAN ◉ '+(s.cost-wallet):'PASAJE ◉ '+s.cost;
+ const tag=startPick?'SIN COSTO':s.st==='cur'?'ESTÁS ACÁ':s.st==='nopass'?'TE FALTA EL '+R.pass.toUpperCase():s.st==='nocoins'?'TE FALTAN ◉ '+(s.cost-wallet):'PASAJE ◉ '+s.cost;
  return `<div class="dsl" data-i="${i}"><div class="th" style="background:${t.ground}">${t.art||''}</div><div class="k" style="color:${R.dark}">${i+1} · ${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${t.place}</b><div class="c">${t.country} · ${vis?vis+(vis>1?' visitas':' visita'):'sin visitar'} · ${sel}/3 selfies</div>`+
-  `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${s.st==='cur'?'JUGAR ACÁ':s.st==='ok'?'VIAJAR · ◉ '+s.cost:s.st==='nopass'?passMini(s.r,14)+' VER PASAPORTE · ◉ '+V.passPrice(s.r):'◉ '+s.cost+' · JUNTÁ MÁS MONEDAS'}</button></div>`;};
+  `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${startPick?'EMPEZAR ACÁ':s.st==='cur'?'JUGAR ACÁ':s.st==='ok'?'VIAJAR · ◉ '+s.cost:s.st==='nopass'?passMini(s.r,14)+' VER PASAPORTE · ◉ '+V.passPrice(s.r):'◉ '+s.cost+' · JUNTÁ MÁS MONEDAS'}</button></div>`;};
 function goTrip(b){const i=+b.dataset.i,s=pinState(i);
+ if(startPick){SFX.whoosh();b.textContent='✈ ¡A VOLAR!';V.pickStart(i);setTimeout(()=>location.reload(),650);return;}
  if(s.st==='cur'){SFX.tap();$('mapPanel').style.display='none';$('play').click();return;}
  if(s.st==='nopass'){SFX.tap();$('mapPanel').style.display='none';openStore('pasaportes');return;}
  if(s.st==='nocoins'){SFX.nope();buzz(40);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast('TE FALTAN ◉ '+(s.cost-wallet));return;}
@@ -1304,27 +1322,31 @@ let mKp=0,dTmr=0;
 function mapSelect(smooth){
  document.querySelectorAll('.mpin').forEach(e=>e.classList.toggle('sel',+e.dataset.i===mPick));
  if(!mapData)return;const M=mapData,a=M.pts[WI];let b=M.pts[mPick];if(b[0]-a[0]>M.W/2)b=[b[0]-M.W,b[1]];else if(a[0]-b[0]>M.W/2)b=[b[0]+M.W,b[1]];
- const d=mPick===WI?'':`M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${Math.min(a[1],b[1])-Math.min(90,Math.hypot(b[0]-a[0],b[1]-a[1])*.3)} ${b[0]} ${b[1]}`;document.querySelectorAll('.mapArc').forEach(e=>e.setAttribute('d',d));
+ const d=mPick===WI||startPick?'':`M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${Math.min(a[1],b[1])-Math.min(90,Math.hypot(b[0]-a[0],b[1]-a[1])*.3)} ${b[0]} ${b[1]}`;document.querySelectorAll('.mapArc').forEach(e=>e.setAttribute('d',d));
  if(smooth){const v=$('mapView'),cw=M.W*mapSc,c=v.scrollLeft+v.clientWidth/2;let best=null;for(let k=0;k<3;k++){const x=k*cw+M.pts[mPick][0]*mapSc;if(best===null||Math.abs(x-c)<Math.abs(best-c))best=x;}v.scrollTo({left:best-v.clientWidth/2,behavior:'smooth'});}}
 function dRender(){const card=$('dCard');let tr=card.firstElementChild;
  if(!tr||!tr.classList.contains('dtrack')){card.innerHTML='<div class="dtrack"></div>';tr=card.firstElementChild;
   tr.addEventListener('click',e=>{const b=e.target.closest('.goTrip');if(b)goTrip(b);});
+  const settle=()=>{if(tr._down)return;const w=tr.clientWidth||1,k=Math.round(tr.scrollLeft/w);if(Math.abs(tr.scrollLeft-k*w)>2){clearTimeout(dTmr);dTmr=setTimeout(settle,160);return;} /* sigue en movimiento: no recentrar a mitad del gesto */if(k!==2){mKp=(mKp+k-2+NW*2)%NW;dRender();}};
+  tr.addEventListener('touchstart',()=>{tr._down=1;clearTimeout(dTmr);},{passive:true});
+  tr.addEventListener('touchend',()=>{tr._down=0;clearTimeout(dTmr);dTmr=setTimeout(settle,140);},{passive:true});tr.addEventListener('touchcancel',()=>{tr._down=0;clearTimeout(dTmr);dTmr=setTimeout(settle,140);},{passive:true});
   tr.addEventListener('scroll',()=>{const w=tr.clientWidth;if(!w)return;const idx=Math.round(tr.scrollLeft/w);
    if(idx!==tr._idx){tr._idx=idx;const i=+tr.children[idx]?.dataset.i;if(i>=0&&i!==mPick){mPick=i;mapSelect(true);}}
-   clearTimeout(dTmr);dTmr=setTimeout(()=>{const k=Math.round(tr.scrollLeft/tr.clientWidth);if(k!==1){mKp=(mKp+k-1+NW)%NW;dRender();}},110);},{passive:true});}
- tr.innerHTML=[-1,0,1].map(o=>dSlide((WI+(mKp+o+NW)%NW)%NW)).join('');tr._idx=1;
- tr.style.scrollSnapType='none';tr.scrollLeft=tr.clientWidth;requestAnimationFrame(()=>{tr.style.scrollSnapType='';});}
+   clearTimeout(dTmr);dTmr=setTimeout(settle,tr._down?9e9:140);},{passive:true});}
+ // 5 tarjetas (±2): da margen para deslizar seguido mientras se reacomoda; siempre se vuelve a centrar en la del medio
+ tr.innerHTML=[-2,-1,0,1,2].map(o=>dSlide((WI+(mKp+o+NW*2)%NW)%NW)).join('');tr._idx=2;
+ tr.style.scrollSnapType='none';tr.scrollLeft=tr.clientWidth*2;requestAnimationFrame(()=>{tr.style.scrollSnapType='';});}
 function drawCard(){mKp=(mPick-WI+NW)%NW;dRender();mapSelect(false);}
 let mapKey='',mapSc=1;
 async function buildMap(){
  if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();
  const M=mapData,v=$('mapView'),GP=document.body.classList.contains('gpapel'),sc=Math.max(.55,Math.min(1,((v.clientHeight||innerHeight-100)-250)/560));
- const key=[wallet,V.T.passports.join(),WI,GP,sc].join('|');if(key===mapKey)return;mapKey=key;mapSc=sc;
+ const key=[wallet,V.T.passports.join(),WI,GP,sc,startPick].join('|');if(key===mapKey)return;mapKey=key;mapSc=sc;
  // ruta punteada entre paradas (la misma de siempre); se ve marcada donde tenés pasaporte. El cruce del Pacífico sale por un borde del mapa y entra por el otro
  const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" ${GP?`stroke="${on?'#7A4A2B':'#7A4A2B66'}" stroke-width="2.6" stroke-dasharray="7 6"`:`stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10"`} stroke-linecap="round" fill="none"/>`;
  let segs='';for(let i=0;i<NW-1;i++){const a=M.pts[i],b=M.pts[i+1],on=V.hasPass(V.regionOf(i))&&V.hasPass(V.regionOf(i+1));
   if(Math.abs(b[0]-a[0])>M.W/2){const y=(a[1]+b[1])/2,l=a[0]<b[0]?a:b,r=a[0]<b[0]?b:a;segs+=seg(l,[0,y],on)+seg([M.W,y],r,on);}else segs+=seg(a,b,on);}
- const pins1=(p,i,ox)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):'<b class="fare">'+s.cost+'</b>';return `<button class="mpin ${pinCls[s.st]}" data-i="${i}" style="left:${p[0]+ox}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div><div class="n">${THEMES[i].place}${s.st==='cur'?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;};
+ const pins1=(p,i,ox)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):(startPick?'<b class="fare">✈</b>':'<b class="fare">'+s.cost+'</b>');return `<button class="mpin ${pinCls[s.st]}" data-i="${i}" style="left:${p[0]+ox}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div><div class="n">${THEMES[i].place}${s.st==='cur'||startPick?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;};
  const w=$('mapWorld'),W3=M.W*3;w.style.cssText=`width:${W3*sc}px;height:${M.H*sc}px;margin-top:58px`;
  const nz=(getComputedStyle(document.body).getPropertyValue('--nz').match(/url\("?(.*?)"?\)$/)||[])[1]||'';
  // tierra: se rasteriza una sola vez como imagen SVG (sombra, cartulina y grano) y se repite 3 veces como background: sin filtros ni 3 copias de un path enorme
@@ -1335,7 +1357,7 @@ async function buildMap(){
  w.innerHTML=`<div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;transform:scale(${sc});transform-origin:0 0"><div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;background:url('data:image/svg+xml,${encodeURIComponent(landSvg).replace(/'/g,'%27')}') repeat-x 0 0/${M.W}px ${M.H}px"></div><svg width="${W3}" height="${M.H}" style="position:absolute;left:0;top:0">${gs}</svg>${pn}</div>`;
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{SFX.tap();mPick=+e.dataset.i;drawCard();mapSelect(true);}));
 }
-async function openMap(){audio();SFX.tap();$('mapSub').innerHTML='ESTÁS EN '+theme.place.toUpperCase()+' · ◉ '+fmt(wallet)+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').style.display='block';
+async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?'ELEGÍ TU PRIMERA CIUDAD · SIN COSTO':'ESTÁS EN '+theme.place.toUpperCase()+' · ◉ '+fmt(wallet)+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?'¿DÓNDE EMPEZAMOS?':'DESTINOS';$('mapPanel').style.display='block';
  await buildMap();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;
  mPick=WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2;
  v.onscroll=()=>{if(v.scrollLeft<cw*.5)v.scrollLeft+=cw;else if(v.scrollLeft>cw*1.5)v.scrollLeft-=cw;};}
@@ -1366,7 +1388,7 @@ $('navHome').addEventListener('click',()=>{SFX.tap();});
  else if(W)for(let i=0;i<W[2];i++){const w=R(...W[4]);add('wxp '+W[0],`left:${R(0,100)}%;width:${w}px;height:${W[5]?R(...W[5]):w}px;border-radius:${W[3]};background:${W[1][i%W[1].length]};opacity:${R(.6,.95)};--sway:${R(-70,70)}px;animation-duration:${R(...W[6])}s;animation-delay:${-R(0,W[6][1])}s`);}}
 // Congelar: detiene 8 s a los obstáculos vivos (tiburones, nubarrones, vagonetas)
 let frozenUntil=0;
-function drawFreeze(){const b=$('freezeBtn');b.style.display=stock.freeze>0||frozenUntil?'block':'none';$('freezeN').textContent=stock.freeze||'';}
+function drawFreeze(){const b=$('freezeBtn');b.style.display=stock.freeze>0||frozenUntil?'flex':'none';$('freezeN').textContent=stock.freeze||'';}
 $('freezeBtn').addEventListener('click',()=>{if(frozenUntil||stock.freeze<1||ended||!runner.started)return;stock.freeze--;store.set('items',stock);frozenUntil=1;freezeMovers(true);
  $('frost').style.opacity=1;$('freezeBtn').classList.add('on');pop('¡CONGELADOS!','big');[1568,1319,1047,784].forEach((f,i)=>tone(f,.18,'sine',.05,0,i*.05));noise(.3,{f:6000,q:2,v:.05});buzz([10,30,10]);drawFreeze();
  setTimeout(()=>{frozenUntil=0;freezeMovers(false);$('frost').style.opacity=0;$('freezeBtn').classList.remove('on');drawFreeze();},8000);});
@@ -1383,6 +1405,13 @@ function banner(t,over=''){const b=$('banner');b.textContent=t;if(over)b.insertA
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='pause';Music.sync();$('paused').style.display='flex';});
 $('resume').addEventListener('click',()=>{$('paused').style.display='none';paused=false;begin();});
 $('quit').addEventListener('click',()=>{location.reload();}); // salir antes de llegar: no se cobran las monedas
+// ── Primer arranque: Nilo baja en el globo, flota hasta que se toca; luego carga y el mapa pide la ciudad de partida ──
+let introOn=false;
+function firstRunIntro(){introOn=true;const it=$('intro'),sp=$('splash');it.querySelector('.ilogo').innerHTML=sp.querySelector('.logo').outerHTML;it.querySelector('.ib i').innerHTML=art.BALLOON.idle[0];
+ it.style.display='block';document.body.classList.add('pickstart');let done=false;
+ const go=()=>{if(done)return;done=true;try{audio();SFX.tap();}catch(e){}it.classList.add('out');setTimeout(()=>{it.remove();},380);
+  setTimeout(()=>{sp.style.opacity=0;setTimeout(()=>sp.remove(),520);startPick=true;introOn=false;openMap();},1100);};
+ it.addEventListener('click',go);}
 // ── Puente para los módulos de pantallas (tienda.js, album.js, seleccion.js) ──
 const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
  get owned(){return owned},saveOwned(){store.set('owned',owned);},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},
@@ -1391,9 +1420,9 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},b
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);}
-if(V.needsPick()&&menuOpen)import('./paper-voyager/seleccion.js').then(m=>m.showTravelerPick(ctx,()=>location.reload())).catch(e=>console.warn(e));
+if(V.needsPick()&&menuOpen)firstRunIntro();
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
-(document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
+(document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{if(introOn)return;const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
 if(DEBUG)window.__dbg={Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT};
 </script>
 </body></html>

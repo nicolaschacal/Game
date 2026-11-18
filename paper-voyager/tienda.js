@@ -14,6 +14,12 @@ const TAB_ICO = {
 };
 const RARITY = { nilo: ['COMÚN', '#8a8069', '#DCE9F7'], kami: ['COMÚN', '#8a8069', '#DCE9F7'], sakura: ['RARO', '#3E8FD9', '#FBD9E3'], kitsu: ['ÉPICO', '#8E5CD9', '#FFE1D6'], shinobi: ['ÉPICO', '#8E5CD9', '#DAD5F2'], oro: ['LEGENDARIO', '#D98A1E', '#FFF0B8'] };
 const rarityOf = k => RARITY[k.id] || (k.price >= 2000 ? ['LEGENDARIO', '#D98A1E', '#FFF0B8'] : k.price >= 400 ? ['ÉPICO', '#8E5CD9', '#DAD5F2'] : k.price > 0 ? ['RARO', '#3E8FD9', '#DCE9F7'] : ['COMÚN', '#8a8069', '#DCE9F7']);
+const IT_SVG = {
+  revive: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.7a4.3 4.3 0 0 1 7.5 2.6c0 5.6-7.5 10.2-7.5 10.2z" fill="currentColor"/>',
+  shield: '<path d="M12 3.5l7 2.6v5.4c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6.1z" fill="currentColor"/>',
+  freeze: '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="M9.5 4.5L12 6.5l2.5-2M9.5 19.5L12 17.5l2.5 2" fill="none" stroke-width="1.8"/></g>',
+};
+const itemIco = k => IT_SVG[k.id] ? `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">${IT_SVG[k.id]}</svg>` : esc(k.icon);
 const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9' };
 const PHOTO_GROUPS = [['frame', 'Marcos'], ['cover', 'Diseños de álbum'], ['filter', 'Filtros'], ['deco', 'Adornos']];
 const GLYPH = { // motivo del escudo de cada región
@@ -49,7 +55,7 @@ function injectCSS() {
 .pp .bk svg{width:100%;height:100%;overflow:visible}
 .pp b{display:block;font:400 18px 'Lilita One',sans-serif}.pp small{display:block;font:900 9px Nunito;letter-spacing:1.2px;color:var(--rd)}
 .pp .ds{font:700 10.5px/1.25 Nunito;color:#5d5640;margin:5px 4px 3px;min-height:26px}.pp .pm{font:900 8.5px Nunito;letter-spacing:.5px;color:var(--mute);margin-bottom:8px}
-.pp.wide{grid-column:1/3;display:flex;align-items:center;gap:10px;text-align:left;padding:12px}.pp.wide::before{inset:0 auto 0 0;width:44%;height:auto}.pp.wide .bk{margin:0;flex:none;width:98px;height:130px}.pp.wide>div{flex:1;min-width:0}.pp.wide .ds{margin-left:0;min-height:0}
+.pp.solo{grid-column:1/3;justify-self:center;width:calc(50% - 6px)}
 .pp.own{background:#FFF9E8}
 .stp{transform:rotate(-16deg);transform-box:fill-box;transform-origin:center}.stp.new{animation:vstamp .55s cubic-bezier(.2,1.3,.3,1) both}
 @keyframes vstamp{0%{transform:scale(3) rotate(-40deg);opacity:0}55%{transform:scale(.88) rotate(-16deg);opacity:1}100%{transform:scale(1) rotate(-16deg);opacity:1}}
@@ -62,6 +68,9 @@ function injectCSS() {
 .price.lockp{background:#EADBB8;color:#7c7460;box-shadow:0 3px 0 var(--ink);font-size:13px}.price.tk{background:#EADBB8}.price.cant{opacity:.85}
 .vnote{padding:2px 18px 0;font:700 11px Nunito;color:var(--mute)}.vnote.hd{text-align:center;padding:10px 18px 0;font-size:12px;color:#5d5640}
 .vpro .it{grid-column:1/3}
+.vg .it i,.vpro .it i{display:flex;align-items:center;justify-content:center;line-height:1;padding:0;font:400 20px 'Lilita One',sans-serif;color:#fff}.vg .it i svg{display:block;margin:auto;color:#fff;fill:#fff}
+.it.pk.best::after{content:none!important}
+.it.pk.best b::after{content:'MEJOR VALOR';display:inline-block;margin-left:8px;vertical-align:2px;background:var(--gold);color:var(--ink);border-radius:99px;padding:2px 8px 1px;font:900 8.5px/1.3 Nunito;letter-spacing:.8px}
 `;
   document.head.appendChild(s);
 }
@@ -97,8 +106,8 @@ function pasaportes(c) {
   const cards = V.REGION_ORDER.map((r, i, a) => {
     const R = V.REGIONS[r], own = V.hasPass(r), ds = V.destsOf(r), p = V.passPrice(r);
     const names = ds.slice(0, 4).map(d => c.DESTINOS[d]?.place).filter(Boolean).join(', ') + (ds.length > 4 ? '…' : '');
-    const wide = i === a.length - 1 && a.length % 2 === 1;
-    return `<button class="pp${own ? ' own' : ''}${wide ? ' wide' : ''}${fresh === r ? ' pulse' : ''}" data-v="pass" data-id="${r}" style="--rl:${R.light};--rd:${R.dark}"><span class="bk">${booklet(R, own, fresh === r)}</span>
+    const solo = i === a.length - 1 && a.length % 2 === 1;
+    return `<button class="pp${own ? ' own' : ''}${solo ? ' solo' : ''}${fresh === r ? ' pulse' : ''}" data-v="pass" data-id="${r}" style="--rl:${R.light};--rd:${R.dark}"><span class="bk">${booklet(R, own, fresh === r)}</span>
 <div><b>${esc(R.name)}</b><small>${ds.length} ${ds.length === 1 ? 'DESTINO' : 'DESTINOS'}</small><div class="ds">${esc(names)}</div><div class="pm">Permanente · no se gasta al viajar</div>
 <span class="price ${own ? 'use' : ''}">${own ? '✓ POSEÍDO' : coin(p)}</span></div></button>`;
   }).join('');
@@ -122,7 +131,7 @@ function foto(c) {
 
 function objetos(c) {
   const V = c.V, I = c.Iap;
-  const items = c.ITEMS.map(k => `<button class="it" data-v="item" data-id="${k.id}"><i style="background:${ITEM_COL[k.id] || '#3E5BA9'}">${k.icon}</i><div><b>${esc(k.name)}${c.stock[k.id] ? `<u>x${c.stock[k.id]}</u>` : ''}</b><small>${esc(k.tag)}</small></div><span class="price">${coin(k.price)}</span></button>`).join('');
+  const items = c.ITEMS.map(k => `<button class="it" data-v="item" data-id="${k.id}"><i style="background:${ITEM_COL[k.id] || '#3E5BA9'};color:#fff">${itemIco(k)}</i><div><b>${esc(k.name)}${c.stock[k.id] ? `<u>x${c.stock[k.id]}</u>` : ''}</b><small>${esc(k.tag)}</small></div><span class="price">${coin(k.price)}</span></button>`).join('');
   const sou = V.SOUVENIRS.map(s => {
     const R = V.REGIONS[s.region], pass = V.hasPass(s.region), has = V.PHOTO.owned.includes(s.id);
     return `<button class="ph${pass || has ? '' : ' lock'}" data-v="sou" data-id="${s.id}"><div class="pv">${photoPreview(s.id)}</div><b>${esc(s.name)}</b>` +

@@ -155,6 +155,13 @@ export function pickTraveler(id) {
   const owned = store.get('owned', null) || []; if (!owned.includes(id)) { owned.push(id); store.set('owned', owned); }
   store.set('skin', id);
 }
+// Primer arranque: Nilo por defecto; el jugador elige cualquier ciudad como origen (sin costo) y recibe el pasaporte de esa región.
+export function pickStart(i) {
+  T.traveler = 'nilo'; T.at = i; T.passports = [regionOf(i)]; T.fresh = false;
+  save(); store.set('world', i);
+  const owned = store.get('owned', null) || []; if (!owned.includes('nilo')) { owned.push('nilo'); store.set('owned', owned); }
+  store.set('skin', 'nilo');
+}
 export const hasPass = r => T.passports.includes(r);
 export function buyPass(r, wallet) {
   if (hasPass(r)) return { ok: false, why: 'own' };
