@@ -579,7 +579,7 @@ body.gpapel .head .chip{padding:0 15px 0 47px}body.gpapel .head .chip svg{left:4
 #intro .igr{position:absolute;left:0;right:0;bottom:0;height:7%;background:#78B157;animation:imtUp .75s cubic-bezier(.2,1.4,.4,1) .85s both}
 #intro .imt.h1{margin-left:-410px}#intro .imt.h2{margin-left:-150px}#intro .imt[data-x]{margin-left:-450px}
 #intro .imt{left:50%;margin-left:-300px;width:600px;animation:imtUp .75s cubic-bezier(.2,1.4,.4,1) both}
-@keyframes imtUp{from{transform:translateY(120%)}to{transform:translateY(0)}}
+@keyframes imtUp{from{transform:translateY(120%);opacity:0}15%{opacity:1}to{transform:translateY(0);opacity:1}}
 #intro .icl{animation:icIn .9s ease-out both,icA 16s ease-in-out 1s infinite alternate}#intro .icl.c2,#intro .icl.c3{animation-name:icIn,icB}
 @keyframes icIn{from{opacity:0;transform:translateX(-60px) scale(.6)}to{opacity:1}}@keyframes icA{to{transform:translateX(38px)}}@keyframes icB{to{transform:translateX(-30px)}}
 #intro .ilogo{left:0;right:0;top:0;animation:lgPop .95s cubic-bezier(.25,1.5,.4,1) .18s both}
@@ -594,7 +594,7 @@ body.gpapel .head .chip{padding:0 15px 0 47px}body.gpapel .head .chip svg{left:4
 @keyframes ibFloat{0%,100%{transform:translateY(0) rotate(-2.6deg)}50%{transform:translateY(-12px) rotate(2.6deg)}}
 #intro .itap{position:absolute;left:0;right:0;bottom:calc(var(--sb,0px) + 48px);text-align:center;font:400 27px/1 'Lilita One',sans-serif;letter-spacing:1.5px;color:#FFF4DC;text-shadow:0 3px 0 #1B1730,2px 0 0 #1B1730,-2px 0 0 #1B1730,0 -2px 0 #1B1730,2px 2px 0 #1B1730,-2px 2px 0 #1B1730,-2px -2px 0 #1B1730,2px -2px 0 #1B1730;opacity:0;animation:itapIn .5s ease-out 2.1s both,itapP 1.4s ease-in-out 2.6s infinite}
 @keyframes itapIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}@keyframes itapP{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
-body.pickstart #mNav{display:none}body.pickstart #mapPanel .close{display:none}
+body.pickstart #mNav{display:none}body.pickstart #mapPanel{bottom:0;padding-bottom:0}body.pickstart #mapPanel .dcard{bottom:calc(var(--sb) + 14px)}body.pickstart #mapPanel .close{display:none}
 @media (prefers-reduced-motion:reduce){#intro *{animation:none!important}#intro .itap{opacity:1}}
 /* gpapel:end */
 /* nilo-inicio: personaje, cinta bajo los pies, misiones y JUGAR un poco más abajo para que todo respire */
