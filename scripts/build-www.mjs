@@ -21,6 +21,6 @@ writeFileSync(out + '/capacitor.js', `// Puente mínimo: Capacitor inyecta windo
   // Vibración: en iOS navigator.vibrate no existe; usamos Haptics
   if (!navigator.vibrate && P.Haptics) navigator.vibrate = function(p){ try { var n = Array.isArray(p) ? p.length : 1; for (var i = 0; i < Math.min(n, 3); i++) setTimeout(function(){ P.Haptics.impact({ style: 'LIGHT' }); }, i * 60); } catch (e) {} return true; };
 })();`);
-if (existsSync('paper-voyager/music.mp3')) console.log('música incluida');
-else console.log('aviso: paper-voyager/music.mp3 no existe; la app va sin música (sólo efectos)');
+if (existsSync('paper-voyager/audio/menu.mp3') && existsSync('paper-voyager/audio/run.mp3')) console.log('música incluida (menú y carrera)');
+else console.log('aviso: faltan las pistas de paper-voyager/audio/; la app va sin música (sólo efectos)');
 console.log('www/ listo');
