@@ -843,24 +843,35 @@ const SFX={
 // Van por Web Audio (GainNode), porque en iOS el volumen de <audio> no se puede bajar. Pasan de una a otra con un fundido
 // cruzado suave; en pausa la de carrera queda muy baja; al ocultar la app se detienen. Arrancan con el primer toque (regla de autoplay).
 const Music={mode:'menu',tr:{},applied:null,
- LV:{menu:.3,run:.22,pause:.07},
+ LV:{menu:.3,run:.26,pause:.08}, // run es un bucle de 16 s algo más bajo de origen (-17,5 LUFS vs -16): por eso .26
  track(m){return m==='menu'?'menu':'run';},
  init(){if(this.tr.menu)return true;const a=audio();if(!a)return false;
-  for(const k of ['menu','run']){const el=new Audio('./paper-voyager/audio/'+k+'.mp3');el.loop=true;el.preload=k==='menu'?'auto':'metadata';
-   const g=a.createGain();g.gain.value=0;try{a.createMediaElementSource(el).connect(g).connect(a.destination);}catch{g.connect(a.destination);}this.tr[k]={el,g};}
-  return true;},
+  // menú: la canción entera por streaming (<audio> loop). carrera: bucle de 8 compases decodificado a memoria → sin hueco en la unión
+  const el=new Audio('./paper-voyager/audio/menu.mp3');el.loop=true;el.preload='auto';
+  const gm=a.createGain();gm.gain.value=0;try{a.createMediaElementSource(el).connect(gm).connect(a.destination);}catch{gm.connect(a.destination);}
+  this.tr.menu={g:gm,playing:()=>!el.paused,play:()=>el.play().catch(()=>{}),pause:()=>el.pause()};
+  const gr=a.createGain();gr.gain.value=0;gr.connect(a.destination);const R={g:gr,buf:null,src:null,want:false};
+  R.playing=()=>!!R.src;
+  R.play=()=>{R.want=true;if(R.src||!R.buf)return;const s=a.createBufferSource();s.buffer=R.buf;s.loop=true;s.connect(gr);s.start();R.src=s;};
+  R.pause=()=>{R.want=false;if(R.src){try{R.src.stop();}catch{}R.src.disconnect();R.src=null;}};
+  fetch('./paper-voyager/audio/run.mp3').then(r=>r.arrayBuffer()).then(d=>new Promise((ok,ko)=>a.decodeAudioData(d,ok,ko))).then(b=>{
+   // quita el relleno de silencio que agrega el codificador MP3 al principio y al final, para que el bucle cierre exacto
+   const c=b.getChannelData(0),n=c.length,th=1e-4;let i=0,j=n-1;while(i<n&&Math.abs(c[i])<th&&i<4000)i++;while(j>i&&Math.abs(c[j])<th&&n-j<4000)j--;
+   const L=j-i+1,nb=a.createBuffer(b.numberOfChannels,L,b.sampleRate);for(let k=0;k<b.numberOfChannels;k++)nb.copyToChannel(b.getChannelData(k).subarray(i,j+1),k);
+   R.buf=nb;if(R.want)R.play();}).catch(()=>{});
+  this.tr.run=R;return true;},
  apply(){const a=ac;if(!a||!this.tr.menu)return;const want=this.track(this.mode),t=a.currentTime,from=this.applied;
-  for(const k in this.tr){const {el,g}=this.tr[k],on=k===want,target=on?this.LV[this.mode]:0;
+  for(const k in this.tr){const T=this.tr[k],on=k===want,target=on?this.LV[this.mode]:0,g=T.g;
    g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(target,t+(on&&from===null?.8:1.4));
-   if(on){if(k==='run'&&from==='menu')el.currentTime=0; /* cada ronda arranca la pista de carrera desde el principio */ if(el.paused)el.play().catch(()=>{});}
-   else if(!el.paused)setTimeout(()=>{if(this.track(this.mode)!==k)el.pause();},1500);}
+   if(on){if(k==='run'&&from==='menu')T.pause(); /* cada ronda arranca el bucle desde el principio */ T.play();}
+   else if(T.playing())setTimeout(()=>{if(this.track(this.mode)!==k)T.pause();},1500);}
   this.applied=this.mode;},
- start(){if(muted||!this.init())return;if(this.applied===null||Object.values(this.tr).every(x=>x.el.paused)){this.applied=null;}this.apply();},
- stop(){for(const k in this.tr){this.tr[k].el.pause();this.tr[k].g.gain.value=0;}this.applied=null;},
+ start(){if(muted||!this.init())return;if(Object.values(this.tr).every(x=>!x.playing()))this.applied=null;this.apply();},
+ stop(){for(const k in this.tr){this.tr[k].pause();this.tr[k].g.gain.value=0;}this.applied=null;},
  sync(){if(!muted&&this.tr.menu&&this.applied!==null&&this.applied!==this.mode)this.apply();}
 };
 document.addEventListener('pointerdown',()=>{if(!muted)Music.start();},{once:true,capture:true});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in Music.tr)Music.tr[k].el.pause();Music.applied=null;}else if(!muted&&Music.tr.menu)Music.start();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in Music.tr)Music.tr[k].pause();Music.applied=null;}else if(!muted&&Music.tr.menu)Music.start();});
 const buzz=p=>{try{navigator.vibrate?.(p)}catch{}};
 const setMuteIcon=()=>{$('mute').innerHTML='<span class="ri">'+(muted?'×':'♪')+'</span>'+(muted?'Música apagada':'Música y sonido')+'<em>'+(muted?'NO':'SÍ')+'</em>';$('mute2').textContent=muted?'× SONIDO':'♪ SONIDO';};setMuteIcon();
 function toggleMute(){muted=!muted;store.set('mute',muted);setMuteIcon();if(muted)Music.stop();else{audio();Music.start();SFX.tap();}}
