@@ -198,7 +198,7 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #play:after{content:"";position:absolute;top:0;bottom:0;width:46px;left:-60px;background:linear-gradient(100deg,#fff0,#fff9,#fff0);transform:skewX(-18deg);animation:shine 2.8s ease-in-out infinite}
 #play{overflow:hidden}@keyframes shine{0%,55%{left:-60px}100%{left:110%}}
 /* Jugo: líneas de velocidad, chispas, moneda que vuela al contador, sacudida, papel picado, pantalla de carga */
-#speed{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .6s;background:repeating-conic-gradient(from 0deg at 50% 46%,#fff0 0 5.2deg,#ffffff2e 5.6deg 6deg,#fff0 6.4deg 11deg);-webkit-mask:radial-gradient(ellipse at 50% 46%,#0000 38%,#000 85%);mask:radial-gradient(ellipse at 50% 46%,#0000 38%,#000 85%);animation:spin 1.2s steps(6) infinite}
+#speed{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .6s;background:repeating-conic-gradient(from 0deg at 50% 46%,#fff0 0 5.2deg,#ffffff2e 5.6deg 6deg,#fff0 6.4deg 11deg);-webkit-mask:radial-gradient(ellipse at 50% 46%,#0000 38%,#000 85%);mask:radial-gradient(ellipse at 50% 46%,#0000 38%,#000 85%);}#speed.on{animation:spin 1.2s steps(6) infinite}
 @keyframes spin{to{transform:rotate(11deg) scale(1.06)}}
 .spark{position:fixed;z-index:8;width:9px;height:9px;border-radius:2px;background:#FFD46B;border:2px solid var(--ink);pointer-events:none}
 .fly{position:fixed;z-index:9;width:34px;height:34px;pointer-events:none}
@@ -714,7 +714,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <button class="link" id="howTo" style="margin-top:8px">? <span data-i18n="pause.how">CÓMO SE JUEGA</span></button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ <span data-i18n="pause.quit">SALIR</span></button></div><div class="pnote" data-i18n="pause.note">Si salís, perdés las monedas de esta ronda</div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, driftSwoosh, driftOff, markDecoys, setGroundColor, setHour, freezeMovers, renderPolicy } from './paper-voyager/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, driftSwoosh, driftOff, markDecoys, setGroundColor, setHour, freezeMovers, renderPolicy, setWeather, qualityInfo } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
@@ -1180,7 +1180,7 @@ let revives=carry?.revives||0,reviveTimer=0;
 const revivePrice=()=>120*(revives+1);
 function fitText(el,min){if(!el)return;el.style.fontSize='';let f=parseFloat(getComputedStyle(el).fontSize);while(el.scrollWidth>el.clientWidth+1&&f>min){f-=1;el.style.fontSize=f+'px';}}
 function onGameOver(){
- const [title,reason]=deathText();host.classList.remove('quake');void host.offsetWidth;host.classList.add('quake');$('speed').style.opacity=0;
+ const [title,reason]=deathText();host.classList.remove('quake');void host.offsetWidth;host.classList.add('quake');$('speed').style.opacity=0;$('speed').classList.remove('on');
  if(boost.shield){boost.shield=false;rescue();pop(t('toast.shield'),'big');return;}
  if(revives<2){
   const own=stock.revive>0,pay=own||wallet>=revivePrice();$('rvBtn').style.display=pay?'block':'none';$('rvSub').style.display=pay?'block':'none';$('rvTitle').textContent=title;$('rvBtn').innerHTML='♥ '+t('revive.btn')+'<div class="ring"><span id="rvN">5</span></div>';$('rvSub').textContent=own?t('revive.have',{n:stock.revive}):t('revive.cost',{cost:revivePrice(),wallet});
@@ -1302,7 +1302,7 @@ function enterRow(r){
  const prog=(START-r)/(START-GOAL);$('progress').firstElementChild.style.width=Math.min(100,prog*100)+'%';
  const base=speedAt(prog);runner.speed=base*(runner.onBoat?RIDES[runner.rideType].boost:1);
  const g=Math.floor((base-speedAt(0))/.25);if(g>gear){gear=g;pop(t('toast.faster'),'big');SFX.faster();buzz(25);}
- $('speed').style.opacity=Math.max(0,Math.min(.9,(runner.speed-1.9)/1.3));
+ {const so=Math.max(0,Math.min(.9,(runner.speed-1.9)/1.3));$('speed').style.opacity=so;$('speed').classList.toggle('on',so>0);}
  if(r<=RUNWAY&&!runner.gameOver){runner.buildLane=2;buildToward(2);} // en la pista Nilo se acomoda solo al centro para entrar por la puerta
  if(r<=GOAL)nextWorld();
 }
@@ -1650,12 +1650,13 @@ $('walletChip').addEventListener('click',()=>$('openShop').click());
 $('navMap').addEventListener('click',()=>$('worldChip').click());
 $('navHome').addEventListener('click',()=>{SFX.tap();});
 // clima del mundo: cae, sube o sopla según el bioma
-{const wx=$('wx'),R=(a,b)=>a+Math.random()*(b-a),add=(cls,css)=>{const e=document.createElement('i');e.className=cls;e.style.cssText=css;wx.appendChild(e);};wx.className=theme.wx;
- const leaf='80% 10% 80% 10%',W={petals:['fall',['#F7B7C8'],12,'70% 10% 70% 10%',[9,13],[6,9],[4,8]],snow:['fall',['#FFFFFF'],22,'50%',[5,10],0,[4,8]],leaves:['fall',['#C9A23C','#7FA84F'],12,leaf,[10,14],[6,9],[4,8]],
-  bamboo:['fall',['#9CCB5A','#6FA84A'],12,leaf,[12,17],[4,6],[4,8]],bubbles:['rise',['#FFFFFFCC','#CFF1FA'],12,'50%',[6,12],0,[5,9]],embers:['rise',['#FF9A3C','#FFD46B','#FF6A2B'],20,'50%',[4,8],0,[2.5,5]],lanterns:['rise',['#FFD46B','#F29BB8','#E8452C'],10,'35%',[8,11],[10,14],[7,11]]}[theme.wx];
- if(theme.wx==='sand'){for(let i=0;i<9;i++)add('gust',`top:${R(4,96)}%;height:${R(2,5)}px;opacity:${R(.35,.85)};animation-duration:${R(1.1,2.4)}s;animation-delay:${-R(0,3)}s`);
-  for(let i=0;i<16;i++)add('wxp grain',`top:${R(0,100)}%;width:${R(3,6)}px;height:${R(3,6)}px;border-radius:50%;background:#f3e2b2;--sway:${R(-60,60)}px;animation-duration:${R(.9,2)}s;animation-delay:${-R(0,2)}s`);}
- else if(W)for(let i=0;i<W[2];i++){const w=R(...W[4]);add('wxp '+W[0],`left:${R(0,100)}%;width:${w}px;height:${W[5]?R(...W[5]):w}px;border-radius:${W[3]};background:${W[1][i%W[1].length]};opacity:${R(.6,.95)};--sway:${R(-70,70)}px;animation-duration:${R(...W[6])}s;animation-delay:${-R(0,W[6][1])}s`);}}
+{const wx=$('wx'),R=(a,b)=>a+Math.random()*(b-a),list=[],add=(k,o)=>list.push({k,...o});wx.className=theme.wx; // el clima se dibuja dentro del canvas 3D (setWeather): ya no hay <i> con animaciones CSS sobre el lienzo
+ const leaf=[.8,.1,.8,.1],pet=[.7,.1,.7,.1],cir=[.5,.5,.5,.5],lan=[.35,.35,.35,.35],W={petals:[0,['#F7B7C8'],12,pet,[9,13],[6,9],[4,8]],snow:[0,['#FFFFFF'],22,cir,[5,10],0,[4,8]],leaves:[0,['#C9A23C','#7FA84F'],12,leaf,[10,14],[6,9],[4,8]],
+  bamboo:[0,['#9CCB5A','#6FA84A'],12,leaf,[12,17],[4,6],[4,8]],bubbles:[1,['#FFFFFFCC','#CFF1FA'],12,cir,[6,12],0,[5,9]],embers:[1,['#FF9A3C','#FFD46B','#FF6A2B'],20,cir,[4,8],0,[2.5,5]],lanterns:[1,['#FFD46B','#F29BB8','#E8452C'],10,lan,[8,11],[10,14],[7,11]]}[theme.wx];
+ if(theme.wx==='sand'){for(let i=0;i<9;i++)add(3,{x:0,y:0,w:0,h:R(2,5),col:'#f6e7bd',op:R(.35,.85),dur:R(1.1,2.4),delay:R(0,3),...{x:R(4,96)/100}});
+  for(let i=0;i<16;i++){const w=R(3,6);add(2,{x:R(0,100)/100,w,h:w,rad:cir,col:'#f3e2b2',op:1,sway:R(-60,60),dur:R(.9,2),delay:R(0,2)});}}
+ else if(W)for(let i=0;i<W[2];i++){const w=R(...W[4]);add(W[0],{x:R(0,100)/100,w,h:W[5]?R(...W[5]):w,rad:W[3],col:W[1][i%W[1].length],op:R(.6,.95),sway:R(-70,70),dur:R(...W[6]),delay:R(0,W[6][1])});}
+ setWeather(list);}
 // Congelar: detiene 8 s a los obstáculos vivos (tiburones, nubarrones, vagonetas)
 let frozenUntil=0;
 function drawFreeze(){const b=$('freezeBtn');b.style.display=stock.freeze>0||frozenUntil?'flex':'none';$('freezeN').textContent=stock.freeze||'';}
@@ -1706,6 +1707,6 @@ else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts
 if(V.needsPick()&&menuOpen)firstRunIntro();
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{if(introOn)return;const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={pop,cust,custClosed,custItems,spans,EQ,DELAYED,route,rollDelay,goRoute,blockSet,movers,prevExit,refreshHints,driftTramos,decoyIds,boost,stock,useItems,driftLand,Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,driftRows,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
+if(DEBUG)window.__dbg={setWeather,qualityInfo,pop,cust,custClosed,custItems,spans,EQ,DELAYED,route,rollDelay,goRoute,blockSet,movers,prevExit,refreshHints,driftTramos,decoyIds,boost,stock,useItems,driftLand,Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,driftRows,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
 </script>
 </body></html>
