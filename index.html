@@ -767,7 +767,8 @@ const NW=DESTINOS.length,WI=stage%NW,DIF=V.difficulty(),LAP=DIF.lap;
 // ── Ruta especial en curso (store 'route' = {id,i}) y vuelo demorado (store 'delay' = {k,at}) ──
 // La ruta se cancela sola si el destino actual ya no es el que toca (viajaste a otro lado). El vuelo demorado vale solo para el destino al que se viajó.
 let route=store.get('route',null),RT=route&&V.ROUTES.find(r=>r.id===route.id);
-if(!RT||RT.cities[route.i]!==WI){route=null;RT=null;if(store.get('route',null))store.set('route',null);}
+if(RT&&!route.seq)route.seq=RT.cities; // partidas guardadas antes del recorrido rotativo: el orden era el de la tabla
+if(!RT||route.seq[route.i]!==WI){route=null;RT=null;if(store.get('route',null))store.set('route',null);}
 const DKINDS=['sea','rail','sky'],QD=DKINDS.includes(Q.get('delay'))?Q.get('delay'):null,dlSt=store.get('delay',null);
 const DELAYED=route?null:QD||(dlSt&&dlSt.at===WI&&DKINDS.includes(dlSt.k)?dlSt.k:null); // medio único de punta a punta, o null // destino actual · la dificultad sale de las rondas completadas, no de la ciudad
 // ── Mecánicas por mundo (mundo que se juega = mundos completados + 1). Una sola tabla para el generador, las tarjetas (MECH_INTRO) y la tienda. ──
@@ -819,16 +820,18 @@ let cur=START-1,uid=0;
 const OBST={land:[ROCK,STUMP],sea:[REEF,FIN,BARREL],sky:[PEAK,PEAK,CLOUD,STORM],rail:[BARRIER,CRATE,ROCK]};
 const LIVE={sea:FIN,sky:STORM,rail:CART};
 const movSeen={}; // con ?mech=all cada medio tiene al menos un obstáculo móvil
-function fill(n,kind,{gap,lead,extra}){
- spans.push({top:cur,len:n,kind});let safe=2;const air=kind==='sky',lift=air?SKY:0;
+function fill(n,kind,{gap,lead,extra,ramp}){
+ spans.push({top:cur,len:n,kind});let safe=2,nxt=lead,ex=extra;const air=kind==='sky',lift=air?SKY:0;
  // Monedas en varios caminos: además de la del carril seguro, hay monedas de los costados que se juntan cambiando de carril
  const sideCoins=(lanes,y,lift)=>{const got=[];if(rnd()>=D.side)return got;const ls=lanes.slice().sort(()=>rnd()-.5).slice(0,rnd()<.5?1:2);for(const x of ls){coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift,side:true});got.push(x);}return got;};
  for(let i=0;i<n;i++){const y=cur-i;zone[y]=kind;paintRow(y,'empty');
   const coin=x=>coins.push({id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift});
-  if(i>=lead&&(i-lead)%gap===0&&i<n-1){
+  const go=ramp?i===nxt:i>=lead&&(i-lead)%gap===0;
+  if(go&&ramp){const q=i/n;ex=q<.3?1:q<.65?(rnd()<.5?1:2):2;nxt=i+(q<.25?4:q<.5?3:q<.8?(rnd()<.5?3:2):2);} // trayecto continuo: la densidad crece
+  if(go&&i<n-1){
    const prev=safe;safe=pick([-2,-1,1,2].map(d=>prev+d).filter(x=>x>=0&&x<COLS));
    const blocked=new Set([prev]),pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
-   for(let k=0;k<extra&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
+   for(let k=0;k<ex&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
    // Desde MECH.mov algunos obstáculos están vivos: tiburones, nubarrones y gallinas van y vienen entre dos carriles
    // (nunca pisan el carril seguro). Cuanto más avanzado el mundo, más de ellos se mueven.
    let alive=null;if(LIVE[kind]&&mechOn('mov')&&((MECH_ALL&&!movSeen[kind])||rnd()<D.movP)){alive=[...blocked].map(x=>[x,[x-1,x+1].filter(n=>n>=0&&n<COLS&&n!==safe&&!blocked.has(n))]).find(([x,ns])=>ns.length)||null;if(alive)movSeen[kind]=1;}
@@ -875,10 +878,10 @@ function guaranteeRide(top,len,i0){
   let done=false;for(let i=i0;i<len&&!done;i++){const y=top-i,j=blockers.findIndex(b=>b.cy===y);if(j>=0){blockers.splice(j,1);done=true;}}
   if(!done)return true;}
  return false;}
-const markDrift=(kind,top,len,hard)=>{const m=DRIFT_K[kind];if(!mechOn(m))return;
+const markDrift=(kind,top,len,hard,nm=1)=>{const m=DRIFT_K[kind];if(!mechOn(m))return;
  const first=mechFirst(m)&&!driftSeen[m];
  if(mechFirst(m)&&!MECH_ALL&&!hard)return; // primera aparición: solo en la ruta difícil
- const ks=D.kSince(m),plan=first?[2]:Array.from({length:MECH_ALL?1:hard?D.dHard:D.dEasy(ks)},()=>MECH_ALL?3:Math.max(2,Math.min(4,D.dLen-(rnd()<.3?1:0))));
+ const ks=D.kSince(m),plan=first?[2]:Array.from({length:MECH_ALL?1:(hard?D.dHard:D.dEasy(ks))*nm},()=>MECH_ALL?3:Math.max(2,Math.min(4,D.dLen-(rnd()<.3?1:0))));
  let cursor=4,i0first=-1;
  for(const want of plan){if(i0first>=0&&cursor>len-4)break;
   const lo=Math.min(cursor,len-4),L=Math.min(want,len-2-lo);if(L<2)break;
@@ -891,7 +894,7 @@ const markDrift=(kind,top,len,hard)=>{const m=DRIFT_K[kind];if(!mechOn(m))return
  if(i0first>=0&&!first)guaranteeRide(top,len,i0first);};
 // Señuelos: monedas que invitan a ir a donde no conviene (hacia una roca, o al carril desde el que la corriente te empuja a una roca). Nunca sobre una roca.
 const decoyIds=[];
-function decoys(kind,top,len){let n=D.decoys;if(!n)return;const lift=kind==='sky'?SKY:0,has=(x,y)=>coins.some(c=>c.x===x&&c.y===y);
+function decoys(kind,top,len){let n=D.decoys*(DELAYED?3:1);if(!n)return;const lift=kind==='sky'?SKY:0,has=(x,y)=>coins.some(c=>c.x===x&&c.y===y);
  const put=(x,y)=>{if(x<0||x>=COLS||rockAt(x,y)||has(x,y))return false;const c={id:'c'+uid++,kind:'paper',svg:COIN,x,y,w:.62,h:.62,value:10,lift,decoy:true};coins.push(c);decoyIds.push(c.id);return true;};
  const cand=blockers.filter(b=>!b.mv&&b.cy<=top-3&&b.cy>top-len).sort(()=>rnd()-.5);
  for(const b of cand){if(n<=0)break;const d=drift[b.cy];
@@ -899,21 +902,21 @@ function decoys(kind,top,len){let n=D.decoys;if(!n)return;const lift=kind==='sky
   else{let k=0;for(let i=1;i<=3&&b.cy+i<=top;i++)if(put(b.cx,b.cy+i))k++;if(k)n--;}}}
 const RIDE={
  // Mar: muelle → barco → ruta de agua → playa
- sea(len,hard){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);const top=cur;fill(len,'sea',diff(hard));markDrift('sea',top,len,hard);decoys('sea',top,len);const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
+ sea(len,hard,o={}){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);const top=cur;fill(len,'sea',{...diff(hard),...o.f});markDrift('sea',top,len,hard,o.nm);decoys('sea',top,len);const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
  // Cielo: escalón ya hecho → cima con globo → tiles de cielo → otra cima y bajada
- sky(len,hard){
+ sky(len,hard,o={}){
   for(let k=0;k<LEVELS;k++)free(1,{g:theme.hill,h:k,r:[0,-1]});
   const board=cur;free(2,{g:theme.hill,h:LEVELS});const id=park('balloon',art.BALLOON,board,2,SKY); // el globo espera parado sobre la cima
-  const top=cur;fill(len,'sky',diff(hard));markDrift('sky',top,len,hard);decoys('sky',top,len);
+  const top=cur;fill(len,'sky',{...diff(hard),...o.f});markDrift('sky',top,len,hard,o.nm);decoys('sky',top,len);
   const land=cur;free(2,{g:theme.hill,h:LEVELS});for(let k=LEVELS-1;k>=0;k--)free(1,{g:theme.hill,h:k,r:[0,1]});
   rides.push({board,land,id,type:'balloon'});},
  // Vías: estación → tren → rieles → estación
- rail(len,hard){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.6);const top=cur;fill(len,'rail',diff(hard));markDrift('rail',top,len,hard);decoys('rail',top,len);const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
+ rail(len,hard,o={}){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.6);const top=cur;fill(len,'rail',{...diff(hard),...o.f});markDrift('rail',top,len,hard,o.nm);decoys('rail',top,len);const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
 };
 const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S>=3?2:1});
 {const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
  // VUELO DEMORADO: un solo medio de punta a punta (sin tramos de tierra entre medio), seis recorridos más largos para que el viaje dure lo mismo.
- if(DELAYED){const k=DELAYED,more=Math.min(S,4),b=k==='rail'?16:14;land(QUICK?8:6,true);for(let n=0;n<(QUICK?3:6);n++)RIDE[k](QUICK?6:n<3?b+more+8:b+4+more+10,!QUICK&&n>=3);}
+ if(DELAYED){land(3,true);RIDE[DELAYED](QUICK?44:150,true,{f:{gap:4,lead:2,extra:1,ramp:true},nm:3});} // UN solo viaje continuo: aborda en las primeras filas y no se baja hasta la llegada. El desafío es la velocidad.
  else if(QUICK){land(8,true);order.forEach(k=>{RIDE[k](6,false);land(4);});}
  else{const more=Math.min(S,4);land(12,stage===0);order.forEach((k,i)=>{RIDE[k]((k==='rail'?16:14)+more,false);land(8);});order.forEach((k,i)=>{RIDE[k]((k==='rail'?20:18)+more,true);land(i<2?8:6);});}}
 // ── ADUANA por color: filas con 1-3 casillas de un color de región. Con el pasaporte equipado de ese color se construye y se pasa (con bonus de monedas); si no, la casilla es una roca.
@@ -950,7 +953,8 @@ const PSIZE=+Q.get('size')||1.8;
 const player={id:'nilo',kind:'paper',svg:art.HERO.idle[0],frames:art.HERO,fps:art.HERO.runFps||(art.HERO.run.length===6?12:9),x:2,y:START,w:PSIZE,h:PSIZE};
 const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
-const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(D.vCap,D.v0+D.vGain*Math.pow(p,1.2)+early);};
+const DL0=DELAYED?DIFF(Math.min(100,DIF.P+10)).v0:0; // vuelo demorado: arranca como ~10 mundos más adelante y acelera hasta el techo
+const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));if(DELAYED)return Math.min(D.vCap,DL0+(D.vCap-DL0)*p);const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(D.vCap,D.v0+D.vGain*Math.pow(p,1.2)+early);};
 const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,lmScale:theme.lmScale||1,lmX:theme.lmX||0,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
 const opts={cols:COLS,rows:ROWS,tiles,drift,zone,items:[player,goal,...vehicles,...blockers,...custItems,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
@@ -958,7 +962,7 @@ if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding
 const toast=$('toast'),hint=$('hint'),gameover=$('gameover');
 // Barra de ruta / vuelo demorado: progreso de la ruta especial (1/3, 2/3) o aviso del vuelo demorado
 function drawRouteBar(){const b=$('routeBar');if(!b)return;
- if(route){b.className='on rt';b.innerHTML='<b>'+t(RT.name).toUpperCase()+'</b><span>'+RT.cities.map((c,k)=>'<i class="'+(k<route.i?'dn':k===route.i?'cu':'')+'">'+(k<route.i?'✓':k+1)+'</i>').join('')+'</span><em>'+(route.i+1)+'/'+RT.cities.length+'</em>';}
+ if(route){b.className='on rt';b.innerHTML='<b>'+t(RT.name).toUpperCase()+'</b><span>'+route.seq.map((c,k)=>'<i class="'+(k<route.i?'dn':k===route.i?'cu':'')+'">'+(k<route.i?'✓':k+1)+'</i>').join('')+'</span><em>'+(route.i+1)+'/'+route.seq.length+'</em>';}
  else if(DELAYED){b.className='on dl';b.innerHTML='<b>'+t('delay.bar',{m:V.DELAY_MULT}).toUpperCase()+'</b>';}
  else b.className='';}
 drawRouteBar();
@@ -1103,13 +1107,13 @@ $('goDouble').addEventListener('click',async()=>{if(adDouble)return;audio();adDo
  if(await Ads.recompensa('double')){wallet+=Math.round(coinCount*(Iap.pro?1.25:1));store.set('wallet',wallet);$('goCoins').textContent='+'+coinCount*2;pop(t('toast.coins2'),'big');SFX.prize();confetti();}});
 function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Nilo entra a la terminal */Music.mode='menu';Music.sync();V.roundDone();store.set('maxWorld',Math.max(store.get('maxWorld',0),V.T.trips));
  let rtNext=null,rtDone=null;if(DELAYED)store.set('delay',null); // el vuelo demorado se consume al llegar
- if(route){const R=RT;if(route.i+1<R.cities.length){route={id:R.id,i:route.i+1};store.set('route',route);rtNext=R.cities[route.i];V.hop(rtNext);}else{rtDone=R;store.set('route',null);V.routeComplete(R.id);}} // en ruta: siguiente ciudad sin tarifa; al final, premio
+ if(route){const R=RT;if(route.i+1<route.seq.length){route={...route,i:route.i+1};store.set('route',route);rtNext=route.seq[route.i];V.hop(rtNext);}else{rtDone=R;store.set('route',null);V.routeComplete(R.id);}} // en ruta: siguiente ciudad sin tarifa; al final, premio
  confetti();runner.hitPause=999;const bonus=500*(DIF.P+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
  for(let i=0;i<chests;i++)setTimeout(openChest,2300+i*450);chests=0; // los cofres de la ronda se abren solos al llegar
  SFX.win();buzz([20,40,20,40,60]);pop(t('toast.worldDone',{place:theme.place.toUpperCase(),bonus}),'big');
  if(rtNext==null)try{sessionStorage.setItem('pv.map','1');}catch{} // al volver, el inicio abre el mapa para elegir el próximo viaje (en ruta sigue la próxima ciudad)
- if(rtNext!=null)setTimeout(()=>banner(t('route.next',{place:THEMES[rtNext].place.toUpperCase()}),t(RT.name).toUpperCase()+' · '+route.i+'/'+RT.cities.length),900);
+ if(rtNext!=null)setTimeout(()=>banner(t('route.next',{place:THEMES[rtNext].place.toUpperCase()}),t(RT.name).toUpperCase()+' · '+route.i+'/'+route.seq.length),900);
  if(rtDone){const rw=V.ROUTE_REWARDS[rtDone.id]||{};if(rw.coins){wallet+=rw.coins;store.set('wallet',wallet);}setTimeout(()=>{banner(t('route.done',{name:t(rtDone.name).toUpperCase()}),t('route.reward',{n:rw.coins||0}));confetti();SFX.prize();buzz([20,40,20,40,60]);},900);}
  takeoff();setTimeout(()=>location.reload(),5250);}
 // Festejo de la meta: entra el pasaporte por la izquierda, le ponen el sello de la ciudad, se cierra y sale por la derecha;
@@ -1501,7 +1505,7 @@ const dSlide=i=>{const th=THEMES[i],s=pinState(i),R=V.REGIONS[s.r],vis=V.T.visit
  const cu=!startPick&&mechOn('customs')?V.customsColors(i).filter(c=>c!==V.passEq()).map(c=>`<div class="cu"><i style="background:${V.REGIONS[c].color}"></i>${t('customs.hint',{color:t('customs.color.'+c)})}</div>`).join(''):'';
  // ruta especial: se ofrece además de jugar solo esta ciudad (si falta algún pasaporte de la ruta, solo se avisa)
  const rt=!startPick&&V.routeOf(i),rtHave=rt&&rt.cities.every(c=>V.hasPass(V.regionOf(c))),rtName=rt?t(rt.name).toUpperCase():'';
- const rtHtml=!rt?'':rtHave?`<button class="btn green rt goRoute" data-route="${rt.id}">${t('route.offer',{name:rtName,n:rt.cities.length})}</button>`:`<div class="rtn">${t('route.needPass',{name:rtName,pass:V.routeRegions(rt).filter(r=>!V.hasPass(r)).map(r=>V.REGIONS[r].pass.toUpperCase()).join(' + ')})}</div>`;
+ const rtHtml=!rt?'':rtHave?`<button class="btn green rt goRoute" data-route="${rt.id}" data-start="${i}">${t('route.offer',{name:rtName,n:rt.cities.length})}</button>`:`<div class="rtn">${t('route.needPass',{name:rtName,pass:V.routeRegions(rt).filter(r=>!V.hasPass(r)).map(r=>V.REGIONS[r].pass.toUpperCase()).join(' + ')})}</div>`;
  return `<div class="dsl" data-i="${i}"><div class="th" style="background:${th.ground}">${th.art||''}</div><div class="k" style="color:${R.dark}">${i+1} · ${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${th.place}</b><div class="c">${th.country} · ${vis?t(vis>1?'map.visits':'map.visit',{n:vis}):t('map.unvisited')} · ${t('map.selfies',{n:sel})}</div>${cu}`+
   `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${startPick?t('map.startHere'):s.st==='cur'?t('map.playHere'):s.st==='ok'?t('map.travel',{n:s.cost}):s.st==='nopass'?passMini(s.r,14)+' '+t('map.seePass',{n:V.passPrice(s.r)}):t('map.moreCoins',{n:s.cost})}</button>${rtHtml}</div>`;};
 function goTrip(b){const i=+b.dataset.i,s=pinState(i);
@@ -1520,13 +1524,13 @@ function rollDelay(i){const cool=store.get('delayCool',0);store.set('delayCool',
  const k=QD||DKINDS[Math.floor(Math.random()*3)];store.set('delay',{k,at:i});store.set('delayCool',1);store.set('delaySeen',1);return k;}
 // Cartel de aeropuerto de papel (pizarra con letras de tablero): se muestra antes de despegar
 function showDelay(i,k){const bd=$('delayBd'),place=THEMES[i].place.toUpperCase(),ic={sea:art.BOAT,rail:art.TRAIN,sky:art.BALLOON}[k].idle[0];
- bd.innerHTML=`<div class="dbd"><div class="dh">✈ ${t('delay.title')}</div><div class="dr"><em>${t('delay.board')}</em><span>${[...place].map(c=>'<i>'+(c===' '?'&nbsp;':c)+'</i>').join('')}</span><u>${t('delay.status')}</u></div><div class="dm">${ic}<div>${t('delay.sub',{medium:t('delay.'+k)})}</div></div><div class="dp">${t('delay.pay',{m:V.DELAY_MULT})}</div><button class="btn green" id="delayOk">${t('delay.ok')}</button></div>`;
+ bd.innerHTML=`<div class="dbd"><div class="dh">✈ ${t('delay.title')}</div><div class="dr"><em>${t('delay.board')}</em><span>${[...place].map(c=>'<i>'+(c===' '?'&nbsp;':c)+'</i>').join('')}</span><u>${t('delay.status')}</u></div><div class="dm">${ic}<div>${t('delay.sub2',{medium:t('delay.'+k)})}</div></div><div class="dp">${t('delay.pay',{m:V.DELAY_MULT})}</div><button class="btn green" id="delayOk">${t('delay.ok')}</button></div>`;
  bd.classList.add('on');SFX.nope();buzz([30,60,30]);$('mapPanel').style.display='none';
  $('delayOk').onclick=()=>{SFX.whoosh();bd.classList.remove('on');setTimeout(()=>location.reload(),350);};}
 // Ruta especial: se paga el viaje al primer destino y las demás ciudades son gratis (premio al completarla)
-function goRoute(b){const rt=V.ROUTES.find(r=>r.id===b.dataset.route);if(!rt)return;const first=rt.cities[0],s=pinState(first);
+function goRoute(b){const rt=V.ROUTES.find(r=>r.id===b.dataset.route);if(!rt)return;const first=+b.dataset.start,seq=V.routeSeq(rt,first),s=pinState(first);
  if(rt.cities.some(c=>!V.hasPass(V.regionOf(c)))){SFX.tap();$('mapPanel').style.display='none';openStore('pasaportes');return;}
- const go=()=>{store.set('route',{id:rt.id,i:0});store.set('delay',null);SFX.whoosh();b.textContent='✈ '+t('map.bonVoyage');setTimeout(()=>location.reload(),650);};
+ const go=()=>{store.set('route',{id:rt.id,i:0,seq});store.set('delay',null);SFX.whoosh();b.textContent='✈ '+t('map.bonVoyage');setTimeout(()=>location.reload(),650);};
  if(s.st==='cur'){go();return;}
  if(s.st==='nocoins'){SFX.nope();buzz(40);b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');showToast(t('map.need',{n:s.cost-wallet}));return;}
  if(!buy(s.cost,THEMES[first].place))return;if(V.travel(first,wallet+s.cost)==null){wallet+=s.cost;store.set('wallet',wallet);return;}

@@ -111,17 +111,29 @@ export const SOUVENIRS = [
 ];
 
 // ── Rutas especiales ──
-// Tres ciudades que se juegan seguidas, en orden. Se ofrecen en la tarjeta del destino (mapa) y se guardan en store 'route' = { id, i } (i = ciudad actual).
+// Ciudades que se juegan seguidas. Se ofrecen en la tarjeta de cada ciudad de la ruta (mapa). Al elegir una, la ruta arranca ahí
+// y sigue con las demás en su orden, rotando (golden desde Kioto → Kioto, Osaka, Tokio). Se guardan en store 'route' = { id, i, seq }
+// (seq = ciudades en el orden del recorrido, i = posición actual dentro de seq).
 // Perder una partida (game over sin revivir) o viajar a otro lado la cancela. Completarla sin perder da el premio y se anota en store 'routesDone'.
-// Las ciudades se buscan por su nombre en español (IDX); name = clave i18n.
+//
+// Cómo agregar una ruta: sumá un objeto a ROUTES con
+//   id:     identificador corto (se guarda en el progreso; no lo cambies después)
+//   name:   clave i18n del nombre (agregala en los 7 JSON de paper-voyager/i18n/, p. ej. "route.golden")
+//   cities: nombres de las ciudades tal como figuran en DESTINOS (en español, en el orden de la ruta)
+// Y su premio en ROUTE_REWARDS con la misma id.
+// Una ruta sólo se ofrece si TODAS sus ciudades existen en DESTINOS: si falta alguna, queda fuera sin romper nada.
 export const ROUTES = [
-  { id: 'golden', name: 'route.golden', cities: ['Tokio', 'Kioto', 'Osaka'].map(n => IDX[n]) },
-  { id: 'classic', name: 'route.classic', cities: ['Londres', 'París', 'Roma'].map(n => IDX[n]) },
-  { id: 'andes', name: 'route.andes', cities: ['Cartagena', 'Machu Picchu', 'Río de Janeiro'].map(n => IDX[n]) },
-].filter(r => r.cities.every(c => c != null));
+  { id: 'golden', name: 'route.golden', cities: ['Tokio', 'Kioto', 'Osaka'] },
+  { id: 'classic', name: 'route.classic', cities: ['Londres', 'París', 'Roma'] },
+  { id: 'andes', name: 'route.andes', cities: ['Cartagena', 'Machu Picchu', 'Río de Janeiro'] },
+  // inactiva: se activa sola cuando existan las 3 ciudades
+  { id: 'thai', name: 'route.thai', cities: ['Bangkok', 'Krabi', 'Phi Phi'] },
+].map(r => ({ ...r, cities: r.cities.map(n => IDX[n]) })).filter(r => r.cities.every(c => c != null));
 // PROVISORIO: el premio de cada ruta son monedas. El dueño definirá trajes/souvenirs exclusivos después (agregar acá, p. ej. { coins, suit, souvenir }).
-export const ROUTE_REWARDS = { golden: { coins: 500 }, classic: { coins: 500 }, andes: { coins: 500 } };
+export const ROUTE_REWARDS = { golden: { coins: 500 }, classic: { coins: 500 }, andes: { coins: 500 }, thai: { coins: 500 } };
 export const routeOf = i => ROUTES.find(r => r.cities.includes(i)) || null;
+// Orden del recorrido que arranca en la ciudad `start` (la elegida en el mapa): las demás siguen en su orden, rotando.
+export const routeSeq = (r, start) => { const k = Math.max(0, r.cities.indexOf(start)); return [...r.cities.slice(k), ...r.cities.slice(0, k)]; };
 export const routeRegions = r => [...new Set(r.cities.map(regionOf))];
 export const routesDone = () => store.get('routesDone', []);
 export function routeComplete(id) { const d = routesDone(); if (!d.includes(id)) { d.push(id); store.set('routesDone', d); } return d.length; }
