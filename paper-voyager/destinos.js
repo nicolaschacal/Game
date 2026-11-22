@@ -463,7 +463,7 @@ const NIEBLA = `<svg viewBox="0 0 120 120"><path d="M0 120 L0 108 Q6 102 14 105 
 const JIRON = `<svg viewBox="0 0 120 120"><path d="M6 108 Q14 100 26 103 Q34 95 48 100 Q58 94 70 100 Q82 97 92 102 Q104 101 114 106 Q104 111 86 109 Q60 112 34 110 Q14 112 6 108Z" fill="#F4F6F8"/></svg>`; // jirón de niebla suelto
 const FORE = {
   'San Francisco': [
-    { t: 'band', z0: -3, z1: .6, x: .5, w: 1, c: [2, '#7E9DB8', .5] }, // la bahía: franja de agua gris azulada solo detrás del puente, entre las colinas
+    { t: 'hill', x: .5, w: 7, h: 2.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // loma baja al centro: tapa el pie de las torres bajo el tablero (sin ella se ve el suelo claro como un rectángulo)
     { t: 'hill', x: .04, w: 9, h: 3.6, c: [2, 3, .55], dz: .5, kind: 'dune' }, // Marin Headlands: tapan el anclaje norte y el arranque del tablero
     { t: 'hill', x: .98, w: 8, h: 3.3, c: [2, 3, .55], dz: .5, kind: 'dune' }, // lomas de San Francisco (Presidio): tapan el anclaje sur
     { t: 'hill', x: -.1, w: 7, h: 1.9, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.1, w: 6, h: 1.7, c: 3, dz: .8, kind: 'dune' }, // lomas más cercanas, un tono más oscuras
