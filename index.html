@@ -804,11 +804,27 @@ const diff=hard=>({gap:hard||S>=2?2:3,lead:2,extra:hard||S>=1?2:1});
 // Deriva: un tramo de ~6 filas con empuje fijo (izq./der.) por tipo de zona: sea = MAREA, sky = VIENTO, rail = DESVÍO (misma regla para los tres).
 // Primer mundo con la mecánica: solo en la ruta difícil (en modo prueba, en el primer tramo) y con 4 filas sin rocas; luego, en las dos rutas.
 const DRIFT_K={sea:'tide',sky:'wind',rail:'rail'};
+const driftRows={};let fullSeen=0; // driftRows[y]=dirección de la franja que pasa por la fila y
+const rockAt=(x,y)=>blockers.some(b=>b.cy===y&&(b.mv?(x===b.mv.a||x===b.mv.b):b.cx===x));
 const markDrift=(kind,top,len,hard)=>{const m=DRIFT_K[kind],first=mechFirst(m);if(!mechOn(m)||len<11||(first&&(MECH_TEST?hard:!hard)))return;
- const L=first?4:6,d=pick([-1,1]),i0=4+Math.floor(rnd()*(len-11));
- for(let k=0;k<L;k++)drift[top-i0-k]=d;
- if(first){const lo=top-i0-L+1,hi=top-i0+1; // primer tramo de aprendizaje: sin rocas ni obstáculos en el tramo ni en la fila previa
-  for(let i=blockers.length-1;i>=0;i--)if(blockers[i].cy>=lo&&blockers[i].cy<=hi)blockers.splice(i,1);}};
+ const L=first?4:6,d=pick([-1,1]),i0=4+Math.floor(rnd()*(len-11)),ys=[];
+ for(let k=0;k<L;k++)ys.push(top-i0-k); // de cerca a lejos
+ if(first){const lo=ys[L-1],hi=ys[0]+1; // primer tramo de aprendizaje: sin rocas ni obstáculos en el tramo ni en la fila previa
+  for(let i=blockers.length-1;i>=0;i--)if(blockers[i].cy>=lo&&blockers[i].cy<=hi)blockers.splice(i,1);}
+ // Franja de 1-2 carriles (a veces serpentea). Garantía: en cada fila queda un carril sin corriente ni roca alcanzable desde la fila anterior.
+ let reach=[0,1,2,3,4].filter(x=>!rockAt(x,ys[0]+1));if(!reach.length)reach=[0,1,2,3,4];
+ let w=1+(rnd()<.5?1:0),c=Math.floor(rnd()*(COLS-w+1));const snake=!first||S>=1;
+ const fullK=!first&&(MECH_TEST?!fullSeen:S>=2&&rnd()<.4)?1+Math.floor(rnd()*(L-2)):-1;
+ ys.forEach((y,k)=>{
+  const near=r=>x=>r.some(q=>Math.abs(q-x)<=1);
+  if(k===fullK&&![0,1,2,3,4].some(x=>rockAt(x,y))){for(let x=0;x<COLS;x++)drift[x+','+y]=d;driftRows[y]=d;fullSeen=1;
+   const R=[0,1,2,3,4].filter(near(reach));if(R.length)reach=R;return;}
+  if(k>0&&snake&&rnd()<.5)c=Math.max(0,Math.min(COLS-w,c+pick([-1,1])));
+  const cands=[];for(const ww of w===2?[2,1]:[1])for(const cc of [c,...[0,1,2,3,4].sort(()=>rnd()-.5)])if(cc+ww<=COLS)cands.push([cc,ww]);
+  for(const [cc,ww] of cands){const lanes=[...Array(ww).keys()].map(i=>cc+i);
+   const R=[0,1,2,3,4].filter(x=>!lanes.includes(x)&&!rockAt(x,y)&&near(reach)(x));
+   if(R.length){lanes.forEach(x=>drift[x+','+y]=d);driftRows[y]=d;reach=R;c=cc;w=ww;return;}}
+  const R=[0,1,2,3,4].filter(x=>!rockAt(x,y)&&near(reach)(x));if(R.length)reach=R;});};
 const RIDE={
  // Mar: muelle → barco → ruta de agua → playa
  sea(len,hard){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);const top=cur;fill(len,'sea',diff(hard));markDrift('sea',top,len,hard);const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
@@ -1078,8 +1094,11 @@ function moved(){const now=performance.now();if(now-lastWhoosh>90){lastWhoosh=no
 let driftFx=null;
 // Deriva (marea/viento/desvío): la corriente corre 1 carril el tile recién puesto, salvo borde, roca/obstáculo o si lo desconecta de la fila anterior.
 // En vía además se exige que el carril de origen esté libre: así el tile desviado siempre queda con una vía en L bien conectada (si no, no se desvía).
-function driftX(x,y,from){const d=drift[y];if(!d||!DRIFT_K[zone[y]])return x;const n=x+d;
+function driftX(x,y,from){const d=drift[x+','+y];if(!d||!DRIFT_K[zone[y]])return x;const n=x+d;
  return n<0||n>=COLS||isRockCell(n,y)||Math.abs(n-from)>1||(zone[y]==='rail'&&isRockCell(from,y))?x:n;}
+// Extensión lateral: si la casilla nueva tiene corriente se corre 1 carril, solo si el destino queda unido a la fila (en vía no: la vía se conecta sola)
+function latX(nx,y,row){const d=drift[nx+','+y];if(!d||!DRIFT_K[zone[y]]||zone[y]==='rail'||nx in row.lanes)return nx;const n=nx+d;
+ return n<0||n>=COLS||isRockCell(n,y)||n in row.lanes||!Object.keys(row.lanes).some(l=>Math.abs(l-n)<=1)?nx:n;}
 function buildToward(lane){
  if(runner.gameOver)return false;
  const y=targetRow();if(y<0)return false;
@@ -1113,12 +1132,13 @@ function buildToward(lane){
   return true;
  }
  if(lane===row.x)return false;
- if(drift[y]&&Math.sign(lane-row.x)===-drift[y])return false; // contra la corriente no se vuelve atrás: apunta un carril antes
- const nx=row.x+Math.sign(lane-row.x);
- if(isRockCell(nx,y))return false;
+ const nx0=row.x+Math.sign(lane-row.x);
+ if(isRockCell(nx0,y))return false;
+ const nx=latX(nx0,y,row);
  if(zone[y]==='rail')railSide(row.x,nx,y);
  if(!(nx in row.lanes)){setTile(nx,y,true);row.lanes[nx]=1;runner.steps++;}
  row.x=nx;runner.lastBuildLane=nx;moved();
+ if(nx!==nx0){driftSwoosh(nx0,y,nx-nx0);noise(.16,{f:1500,to:450,v:.035});}
  return true;
 }
 function refreshHints(){
@@ -1126,8 +1146,8 @@ function refreshHints(){
  const z=zone[y];runner.hintColor=z==='sea'?'#FFFFFF':z==='sky'?'#7FC8FF':'#F2B937';
  const liftOf=x=>z==='sky'&&!tiles[x+','+y]?.float?SKY:0;
  const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),o=[];
- if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const hx=driftX(x,y,from);if(!o.some(h=>h.x===hx))o.push({x:hx,y,lift:liftOf(hx),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}}
- else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y))o.push({x,y,lift:liftOf(x),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});
+ if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const hx=driftX(x,y,from);if(!o.some(h=>h.x===hx))o.push({x:hx,src:x,y,lift:liftOf(hx),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}}
+ else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const hx=latX(x,y,row);o.push({x:hx,src:x,y,lift:liftOf(hx),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});}
  runner.hints=o;
 }
 function laneFromPointer(e){const lane=runnerLaneAtScreen(e.clientX,e.clientY);if(lane!==null)runner.buildLane=lane;}
@@ -1157,8 +1177,8 @@ let inDrift=false;
 function refreshUI(){
  const y=targetRow(),ride=rides[rideIndex],toBoard=ride&&!runner.onBoat?y-ride.board:99;
  const name=t('ride.name.'+ride?.type);
- const dk=DRIFT_K[zone[y]],td=runner.started&&!runner.gameOver&&dk?drift[y]:0,arr=d=>d>0?'\u2192':'\u2190';
- if(td&&!inDrift)banner(t('toast.'+dk,{a:arr(td)}));inDrift=!!td;
+ const dk=DRIFT_K[zone[y]],rd=runner.started&&!runner.gameOver&&dk?driftRows[y]||0:0,hm=rd&&runner.hints?.find(h=>h.main),td=hm&&drift[hm.src+','+y]?rd:0,arr=d=>d>0?'\u2192':'\u2190';
+ if(rd&&!inDrift)banner(t('toast.'+dk,{a:arr(rd)}));inDrift=!!rd;
  if(td&&!paused){hint.textContent=t('hint.'+dk,{a:arr(td),b:arr(-td)});return;}
  hint.textContent=paused?'':!runner.started?t('hint.start'):runner.onBoat?t('hint.dodge'):toBoard<12?t('hint.ahead',{name}):t('hint.any');
 }
@@ -1179,7 +1199,7 @@ const TUTO=[
 // id = clave de MECH (mundo desde el que aplica; en MECH_TEST todas desde el 1.º). Agregar una mecánica = agregar una fila (y sus claves i18n).
 // key lleva sufijo 2: el modo prueba hace que todas las tarjetas se vuelvan a ver una vez. Si hay varias pendientes salen como pasos de una sola tarjeta.
 const lanesPic=()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('');
-const driftPic=cls=>()=>lanesPic()+[0,1,2,3,4].map(n=>'<div class="t w '+cls+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"><b>&#10140;</b></div>').join('')+'<div class="t new tdn" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdf" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdh">&#9758;</div>'+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"');
+const driftPic=cls=>()=>lanesPic()+[0,1,2,3,4].map(n=>'<div class="t'+(n===1||n===2?' w '+cls:n%2?' g':'')+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px">'+(n===1||n===2?'<b>&#10140;</b>':'')+'</div>').join('')+'<div class="t new tdn" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdf" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdh">&#9758;</div>'+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"');
 const MECH_INTRO=[
  {id:'mov',key:'tutoMov2',card:{no:t('tuto.mov.no'),h:t('tuto.mov.h'),p:t('tuto.mov.p'),
   pic:()=>lanesPic()+[0,1,2,3,4].map(n=>'<div class="t'+(n%2?' g':'')+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"></div>').join('')+'<div class="t new" style="left:70%;bottom:114px;margin-left:-22px"></div>'+FIN.replace('<svg','<svg class="mvo"')+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}},
@@ -1512,6 +1532,6 @@ else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts
 if(V.needsPick()&&menuOpen)firstRunIntro();
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{if(introOn)return;const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
+if(DEBUG)window.__dbg={Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,driftRows,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
 </script>
 </body></html>

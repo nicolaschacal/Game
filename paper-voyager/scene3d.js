@@ -988,18 +988,19 @@ function buildIsland(W, cols, rows, tiles, items) {
   W.driftM = new Map();
   if (W.opts.runner && W.opts.drift) {
     const geo = new THREE.PlaneGeometry(.86, .86), kindOf = y => W.opts.zone?.[y];
-    for (const ys of Object.keys(W.opts.drift)) {
-      const y = +ys, d = W.opts.drift[ys], kind = kindOf(y); if (y < 0 || y >= rows || !DRIFT_PAINT[kind]) continue;
+    const rowD = {}, rowX = {};
+    for (const key of Object.keys(W.opts.drift)) {
+      const [xs, ys] = key.split(','), x = +xs, y = +ys, d = W.opts.drift[key], kind = kindOf(y); if (!d || y < 0 || y >= rows || x < 0 || x >= cols || !DRIFT_PAINT[kind]) continue;
       const tex = driftTex(kind);
-      for (let x = 0; x < cols; x++) {
-        const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
-        m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(x + ',' + y, m);
-      }
+      const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
+      m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(key, m);
+      rowD[y] = d; (rowX[y] ||= []).push(x);
     }
-    const ys = Object.keys(W.opts.drift).map(Number).filter(v => v >= 0 && v < rows).sort((a, b) => a - b);
-    for (const ey of ys.filter(v => W.opts.drift[v + 1] === undefined)) {
-      const d = W.opts.drift[ey], kind = kindOf(ey), mkSign = { sea: buoyMesh, sky: windsockMesh, rail: switchSignMesh }[kind]; if (!mkSign) continue;
-      [ey + 4, ey + 2].forEach(by => { if (by >= rows) return; [-.72, cols - 1 + .72].forEach(bx => {
+    const ys = Object.keys(rowD).map(Number).sort((a, b) => a - b);
+    for (const ey of ys.filter(v => rowD[v + 1] === undefined)) {
+      const d = rowD[ey], kind = kindOf(ey), mkSign = { sea: buoyMesh, sky: windsockMesh, rail: switchSignMesh }[kind]; if (!mkSign) continue;
+      const avg = rowX[ey].reduce((a, b) => a + b, 0) / rowX[ey].length, sides = rowX[ey].length >= cols ? [-.72, cols - 1 + .72] : avg < (cols - 1) / 2 - .01 ? [-.72] : avg > (cols - 1) / 2 + .01 ? [cols - 1 + .72] : [-.72, cols - 1 + .72];
+      [ey + 4, ey + 2].forEach(by => { if (by >= rows) return; sides.forEach(bx => {
         const g = mkSign(d); g.position.set(bx - ox, tY(Math.min(cols - 1, Math.max(0, Math.round(bx))), by) + .02, by - oz); island.add(g); });
       });
     }
