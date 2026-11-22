@@ -208,6 +208,19 @@ L.faro = cut(
     `<path d="${hill(6)}" fill="none"/>` + tws.map(([x, y, k]) => `<path d="M${x} ${y - 18 * k} L${x + 4 * k} ${y - 16 * k} L${x + 4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 14 * k} L${x + 6 * k} ${y - 14 * k} L${x + 6 * k} ${y - 1} L${x} ${y - 1}Z" fill="#B99E74" opacity=".5"/><path d="M${x - 2 * k} ${y - 1} L${x - 2 * k} ${y - 6 * k} Q${x} ${y - 8.4 * k} ${x + 2 * k} ${y - 6 * k} L${x + 2 * k} ${y - 1}Z" fill="#7A6442"/><rect x="${x - 1.4 * k}" y="${y - 12 * k}" width="${2.8 * k}" height="${3.4 * k}" rx="1" fill="#7A6442"/>`).join('')
     + pts.slice(1).map((p, i) => i % 2 ? '' : `<path d="M${pts[i][0]} ${pts[i][1] - 2} L${p[0]} ${p[1] - 2}" stroke="#A88E66" stroke-width="1.6" stroke-dasharray="3 3" fill="none"/>`).join('')
     + ``); }
+// Ciudad Prohibida (Pekín): puerta del Mediodía, pabellón de doble techo dorado sobre el muro rojo con tres arcos y dos pabellones laterales.
+// SIN suelo propio: el muro baja hasta el borde del recorte y las colinas del destino (FORE) tapan su pie y sus extremos
+{ const eave = (x0, x1, y, d, c) => `<path d="M${x0} ${y + 2} Q${x0 + d * .5} ${y + 1} ${x0 + d} ${y - 6} L${x1 - d} ${y - 6} Q${x1 - d * .5} ${y + 1} ${x1} ${y + 2} L${x1 - 4} ${y + 4} L${x0 + 4} ${y + 4}Z" fill="${c}"/>`;
+  const side = x => `<rect x="${x - 9}" y="62" width="18" height="10" fill="#C23A2C"/>` + eave(x - 14, x + 14, 58, 6, '#EDB53E') + `<rect x="${x - 7}" y="50" width="14" height="3" fill="#D9A032"/>`;
+  L.prohibida = cut(`<path d="M4 120 L4 74 L116 74 L116 120Z" fill="#B8382A"/><rect x="2" y="70" width="116" height="5" fill="#8E3226"/>`
+    + side(16) + side(104) + `<rect x="24" y="67" width="72" height="4" fill="#EFE8DA"/><rect x="28" y="48" width="64" height="19" fill="#C8402E"/>` + eave(12, 108, 46, 12, '#EDB53E')
+    + `<rect x="36" y="32" width="48" height="12" fill="#C8402E"/>` + eave(22, 98, 30, 12, '#F2C14E') + `<rect x="38" y="18" width="44" height="5" fill="#E2A836"/><path d="M36 23 L38 16 L41 18 L41 23Z M84 23 L82 16 L79 18 L79 23Z" fill="#E2A836"/>`,
+    [44, 60, 76].map(x => `<path d="M${x - 5} 120 L${x - 5} 94 Q${x} 87 ${x + 5} 94 L${x + 5} 120Z" fill="#5A2A22"/>`).join('')
+    + `<path d="M4 80 L116 80" stroke="#9A2E24" stroke-width="1.4"/><rect x="4" y="74" width="112" height="2.4" fill="#E2A836" opacity=".7"/>`
+    + [32, 40, 48, 56, 64, 72, 80, 88].map(x => `<rect x="${x - 1}" y="50" width="2" height="17" fill="#8E2A20"/>`).join('') + `<path d="M28 50 L92 50" stroke="#2F6A6A" stroke-width="2.4"/><path d="M36 34 L84 34" stroke="#2F6A6A" stroke-width="2"/>`
+    + [40, 48, 56, 64, 72, 80].map(x => `<rect x="${x - 1}" y="35" width="2" height="9" fill="#8E2A20"/>`).join('')
+    + `<path d="M18 46 Q40 44 60 44 Q80 44 102 46 M30 30 Q46 28 60 28 Q74 28 90 30" stroke="#C99A2E" stroke-width="1.4" fill="none"/><path d="M60 40 L108 48 L104 50 L60 50Z M60 26 L98 32 L94 34 L60 34Z" fill="#C99A2E" opacity=".35"/>`
+    + [16, 104].map(x => `<rect x="${x - 1}" y="62" width="2" height="10" fill="#8E2A20"/><path d="M${x} 52 L${x + 12} 58 L${x + 8} 62 L${x} 62Z" fill="#C99A2E" opacity=".35"/>`).join('')); }
 
 const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
 // ── Monumentos de la tanda de ciudades nuevas (mismo formato cut()) ──
@@ -252,28 +265,24 @@ M.angkor = cut(
   `<path d="M60 12 Q69 26 70 48 L70 78 L60 78Z M44 32 Q51 44 52 56 L52 80 L44 80Z M76 32 Q83 44 84 56 L84 80 L76 80Z" fill="#8A7656" opacity=".4"/>`
   + `<path d="M50 40 h20 M50 52 h20 M50 64 h20 M36 50 h16 M36 62 h16 M68 50 h16 M68 62 h16 M23 66 h14 M83 66 h14" stroke="#8A7656" stroke-width="1.6"/>`
   + win(22, 81, 14, 1, '#6B5A44', 6, 0, 2.6, 5) + win(14, 91, 16, 1, '#6B5A44', 6, 0, 2.6, 6) + `<path d="M55 100 L55 92 Q60 87 65 92 L65 100Z" fill="#6B5A44"/><path d="M8 106 Q60 101 112 106 L112 110 L8 110Z" fill="#7FB7CF"/>`);
-// 5 Chiang Mai: chedi dorado (Doi Suthep) y su templo de techos rojos
+// 5 Chiang Mai: chedi dorado (Doi Suthep) y su templo de techos rojos. SIN suelo propio: las bases bajan hasta el borde y las lomas del destino (FORE) las tapan
 M.chiang = cut(
-  `<rect x="2" y="84" width="34" height="26" fill="#F1EADC"/><path d="M-2 88 L18 62 L40 88Z" fill="#C0392B"/><path d="M4 74 L18 54 L32 74Z" fill="#A8301E"/>`
-  + `<rect x="36" y="96" width="50" height="14" fill="#E4B23A"/><rect x="41" y="88" width="40" height="8" fill="#E4B23A"/><path d="M44 88 Q42 66 61 58 Q80 66 78 88Z" fill="#F2C14E"/><rect x="53" y="52" width="16" height="6" fill="#E4B23A"/><path d="M55 52 L61 8 L67 52Z" fill="#F2C14E"/>`
-  + `<rect x="94" y="98" width="20" height="12" fill="#E4B23A"/><path d="M96 98 Q96 86 104 82 Q112 86 112 98Z" fill="#F2C14E"/><path d="M102 82 L104 62 L106 82Z" fill="#F2C14E"/>`,
+  `<rect x="2" y="84" width="34" height="36" fill="#F1EADC"/><path d="M-2 88 L18 62 L40 88Z" fill="#C0392B"/><path d="M4 74 L18 54 L32 74Z" fill="#A8301E"/>`
+  + `<rect x="36" y="96" width="50" height="24" fill="#E4B23A"/><rect x="41" y="88" width="40" height="8" fill="#E4B23A"/><path d="M44 88 Q42 66 61 58 Q80 66 78 88Z" fill="#F2C14E"/><rect x="53" y="52" width="16" height="6" fill="#E4B23A"/><path d="M55 52 L61 8 L67 52Z" fill="#F2C14E"/>`
+  + `<rect x="94" y="98" width="20" height="22" fill="#E4B23A"/><path d="M96 98 Q96 86 104 82 Q112 86 112 98Z" fill="#F2C14E"/><path d="M102 82 L104 62 L106 82Z" fill="#F2C14E"/>`,
   `<path d="M61 58 Q80 66 78 88 L62 88Z M61 8 L67 52 L61 52Z M104 82 Q112 86 112 98 L104 98Z" fill="#C99A2E" opacity=".55"/><path d="M45 80 Q61 74 77 80 M47 72 Q61 66 75 72 M56 40 h10 M57 28 h8" stroke="#FFE27A" stroke-width="1.6" fill="none"/>`
   + `<path d="M36 100 h50 M41 92 h40" stroke="#C99A2E" stroke-width="1.6"/><path d="M18 62 L18 56 M18 54 L19 49" stroke="#F2B937" stroke-width="1.6"/><path d="M-2 88 L40 88" stroke="#F2B937" stroke-width="1.8"/>`
-  + `<rect x="13" y="94" width="10" height="16" rx="5" fill="#8A5F38"/>` + win(5, 92, 2, 1, '#C99A2E', 24, 0, 3, 8));
-// 6 Krabi: barca long-tail con cintas en la proa frente a un acantilado de caliza
+  + `<rect x="13" y="94" width="10" height="26" rx="5" fill="#8A5F38"/>` + win(5, 92, 2, 1, '#C99A2E', 24, 0, 3, 8));
+// 6 Krabi: torre de caliza (karst) con su copa de selva. SIN agua ni suelo propio: el mar y las lomas los pone el paisaje del destino (FORE)
 M.krabi = cut(
-  `<path d="M38 102 Q30 62 46 32 Q62 12 82 22 Q100 34 98 66 Q104 88 108 102Z" fill="#BBA68A"/><path d="M0 110 L0 100 Q30 96 60 99 Q90 102 120 98 L120 110Z" fill="#4FC3C8"/>`
-  + `<path d="M8 96 L98 96 Q106 92 112 80 L108 96 Q100 106 88 106 L22 106 Q12 104 8 96Z" fill="#B07A44"/><rect x="30" y="82" width="44" height="4" fill="#3E5BA9"/><rect x="8" y="86" width="9" height="8" fill="#5A5666"/>`,
-  `<path d="M46 32 Q62 12 82 22 Q92 28 96 40 Q80 26 66 30 Q54 30 46 40Z" fill="#5E9A5A"/><path d="M98 66 Q104 88 108 102 L94 102 Q96 80 90 62Z" fill="#8E7A62" opacity=".5"/><path d="M58 40 L60 62 M70 36 L69 54 M80 40 L82 58" stroke="#9A866C" stroke-width="2" stroke-linecap="round"/>`
-  + `<path d="M12 100 L104 100" stroke="#3E9AC4" stroke-width="2.4"/><path d="M14 103 L96 103" stroke="#E8452C" stroke-width="1.6"/><path d="M33 86 L33 96 M71 86 L71 96" stroke="#6B4A2E" stroke-width="1.6"/>`
-  + `<path d="M112 80 L106 70 M112 80 L116 70 M112 80 L110 68" stroke="#E8452C" stroke-width="1.8"/><path d="M111 80 L104 74" stroke="#F2B937" stroke-width="1.8"/><path d="M17 90 L4 108" stroke="#5A5666" stroke-width="1.6"/><path d="M30 108 h16 M70 108 h18" stroke="#CFF0EE" stroke-width="1.6" stroke-linecap="round"/>`);
-// 7 Phi Phi: dos acantilados que encierran la bahía, playa blanca y una palmera
+  `<path d="M34 120 Q30 62 46 32 Q62 12 82 22 Q100 34 98 66 Q102 92 106 120Z" fill="#BBA68A"/>`,
+  `<path d="M46 32 Q62 12 82 22 Q92 28 96 40 Q80 26 66 30 Q54 30 46 40Z" fill="#5E9A5A"/><path d="M98 66 Q102 92 106 120 L92 120 Q94 80 90 62Z" fill="#8E7A62" opacity=".5"/><path d="M58 40 L60 62 M70 36 L69 54 M80 40 L82 58 M50 70 L52 90 M76 72 L78 92" stroke="#9A866C" stroke-width="2" stroke-linecap="round"/>`);
+// 7 Phi Phi: dos acantilados que encierran la bahía y una palmera. SIN agua ni playa propias: el paisaje del destino (FORE) tapa los pies
 M.phiphi = cut(
-  `<path d="M2 102 L6 52 Q12 24 26 20 Q38 22 40 46 L46 102Z" fill="#A39278"/><path d="M76 102 L80 58 Q86 30 100 28 Q114 32 116 60 L118 102Z" fill="#978670"/>`
-  + `<path d="M0 104 Q60 88 120 104 L120 110 L0 110Z" fill="#4FC3C8"/><path d="M0 110 L0 106 Q40 98 70 104 Q96 108 120 106 L120 110Z" fill="#F4E6BC"/>`
-  + `<path d="M58 104 Q56 82 64 66 L68 67 Q62 84 62 104Z" fill="#B98D5A"/><path d="M66 66 Q52 56 40 64 Q54 62 64 70Z M66 66 Q80 54 92 62 Q80 62 68 70Z M66 66 Q62 52 52 48 Q62 56 64 68Z M66 66 Q74 52 84 50 Q74 58 68 68Z" fill="#4FA85A"/>`,
-  `<path d="M6 52 Q12 24 26 20 Q38 22 40 46 Q30 34 22 36 Q12 40 6 52Z M80 58 Q86 30 100 28 Q114 32 116 60 Q108 44 98 42 Q88 44 80 58Z" fill="#5E9A5A"/><path d="M40 46 L46 102 L34 102 Q36 70 32 52Z M116 60 L118 102 L106 102 Q108 76 104 60Z" fill="#6E5E4C" opacity=".45"/>`
-  + `<path d="M14 64 L16 80 M26 56 L24 72 M90 70 L92 86 M102 64 L100 78" stroke="#8A7A62" stroke-width="2" stroke-linecap="round"/><path d="M30 100 h14 M74 99 h16" stroke="#CFF0EE" stroke-width="1.6" stroke-linecap="round"/>`);
+  `<path d="M2 120 L6 52 Q12 24 26 20 Q38 22 40 46 L46 120Z" fill="#A39278"/><path d="M76 120 L80 58 Q86 30 100 28 Q114 32 116 60 L118 120Z" fill="#978670"/>`
+  + `<path d="M58 120 Q56 82 64 66 L68 67 Q62 84 62 120Z" fill="#B98D5A"/><path d="M66 66 Q52 56 40 64 Q54 62 64 70Z M66 66 Q80 54 92 62 Q80 62 68 70Z M66 66 Q62 52 52 48 Q62 56 64 68Z M66 66 Q74 52 84 50 Q74 58 68 68Z" fill="#4FA85A"/>`,
+  `<path d="M6 52 Q12 24 26 20 Q38 22 40 46 Q30 34 22 36 Q12 40 6 52Z M80 58 Q86 30 100 28 Q114 32 116 60 Q108 44 98 42 Q88 44 80 58Z" fill="#5E9A5A"/><path d="M40 46 L46 120 L34 120 Q36 70 32 52Z M116 60 L118 120 L106 120 Q108 76 104 60Z" fill="#6E5E4C" opacity=".45"/>`
+  + `<path d="M14 64 L16 80 M26 56 L24 72 M90 70 L92 86 M102 64 L100 78" stroke="#8A7A62" stroke-width="2" stroke-linecap="round"/>`);
 // 8 Singapur: tres superárboles frente al Marina Bay Sands
 const stree = (x, top, w, h) => `<path d="M${x - w} ${top} L${x + w} ${top} L${x + w * .22} ${top + 14} L${x - w * .22} ${top + 14}Z" fill="#9A7AC4"/><path d="M${x - w * .22} ${top + 12} L${x - 2.4} ${top + h * .7} L${x - 5} 110 L${x + 5} 110 L${x + 2.4} ${top + h * .7} L${x + w * .22} ${top + 12}Z" fill="#7A5C9A"/>`;
 M.singapur = cut(
@@ -321,20 +330,22 @@ M.nairobi = cut(
   + `<g transform="translate(0 110)">${gir(62, .62, false)}${gir(98, .82, true)}</g>`,
   win(56, 68, 2, 5, '#9A8CB0', 4, 7, 2, 3) + win(73, 80, 2, 3, '#A89CBE', 5, 7, 2, 3) + `<path d="M4 48 Q24 42 46 47" stroke="#86B456" stroke-width="3" fill="none" stroke-linecap="round"/>`
   + `<g transform="translate(0 110)">` + [[62, .62, 1], [98, .82, -1]].map(([tx, s, f]) => `<g transform="translate(${tx} 0) scale(${f * s} ${s})" fill="#9A5A2A"><circle cx="-10" cy="-48" r="3.4"/><circle cx="2" cy="-50" r="3.8"/><circle cx="14" cy="-46" r="3.2"/><circle cx="-2" cy="-42" r="2.6"/><circle cx="24" cy="-66" r="2.6"/><circle cx="28" cy="-80" r="2.2"/><circle cx="21" cy="-54" r="2.4"/><circle cx="36" cy="-91" r="1.4" fill="#2B2236"/></g>`).join('') + `</g>`);
-// 14 Zanzíbar: dhow de vela latina en el mar y puerta tallada de Stone Town
+// 14 Zanzíbar: casa de Stone Town con su puerta tallada y la vela latina de un dhow asomando detrás de la loma. SIN mar ni suelo propios:
+// el casco del dhow y el pie de la casa los tapan las lomas del destino (FORE)
 M.zanzibar = cut(
-  `<rect x="50" y="30" width="66" height="80" fill="#EDE4D2"/><path d="M62 110 L62 56 Q83 36 104 56 L104 110Z" fill="#8A5A34"/><rect x="68" y="62" width="30" height="48" fill="#6B4228"/>`
-  + `<path d="M0 110 L0 98 Q24 94 50 98 L50 110Z" fill="#4FC3C8"/><path d="M4 94 L46 94 L40 104 L10 104Z" fill="#8A5A34"/><path d="M8 50 L44 26 L30 92Z" fill="#F6EEDC"/>`,
-  `<path d="M62 56 Q83 36 104 56 L100 58 Q83 42 66 58Z" fill="#A8743E"/><path d="M83 62 L83 110" stroke="#4A2C18" stroke-width="1.6"/>` + win(71, 66, 5, 6, '#F2C14E', 5.4, 7.4, 2, 2)
-  + `<path d="M68 62 L98 62" stroke="#A8743E" stroke-width="2"/><path d="M50 30 L116 30 L116 34 L50 34Z" fill="#D9CDB4"/><path d="M108 30 L116 30 L116 110 L108 110Z" fill="#D2C6AE" opacity=".6"/>`
-  + `<path d="M28 94 L30 30" stroke="#5E3E22" stroke-width="1.6"/><path d="M8 50 L44 26" stroke="#8A5F38" stroke-width="1.8"/><path d="M30 92 L44 26 L36 70Z" fill="#E2D6BC" opacity=".7"/><path d="M8 98 L42 98" stroke="#C99A5A" stroke-width="1.4"/><path d="M6 108 h12 M28 107 h14" stroke="#CFF0EE" stroke-width="1.6" stroke-linecap="round"/>`);
-// 15 Ciudad del Cabo: Table Mountain con su "mantel" de nube y casas de Bo-Kaap
+  `<path d="M50 120 L50 34 L56 34 L56 30 L62 30 L62 34 L70 34 L70 30 L76 30 L76 34 L90 34 L90 30 L96 30 L96 34 L104 34 L104 30 L110 30 L110 34 L116 34 L116 120Z" fill="#EDE4D2"/><path d="M62 120 L62 56 Q83 36 104 56 L104 120Z" fill="#8A5A34"/><rect x="68" y="62" width="30" height="58" fill="#6B4228"/>`
+  + `<path d="M4 96 L46 96 L40 110 L10 110Z" fill="#8A5A34"/><path d="M6 56 L44 28 L30 94Z" fill="#E9CF98"/>`,
+  `<path d="M62 56 Q83 36 104 56 L100 58 Q83 42 66 58Z" fill="#A8743E"/><path d="M83 62 L83 120" stroke="#4A2C18" stroke-width="1.6"/>` + win(71, 66, 5, 6, '#F2C14E', 5.4, 7.4, 2, 2)
+  + `<path d="M68 62 L98 62" stroke="#A8743E" stroke-width="2"/><path d="M50 38 L116 38 L116 41 L50 41Z" fill="#D9CDB4"/><path d="M108 34 L116 34 L116 120 L108 120Z" fill="#D2C6AE" opacity=".6"/>`
+  + `<path d="M28 96 L30 36" stroke="#5E3E22" stroke-width="1.6"/><path d="M6 56 L44 28" stroke="#6B4A2E" stroke-width="2"/><path d="M30 94 L44 28 L36 72Z" fill="#C9A86E" opacity=".6"/><path d="M15 50 L31 92 M24 43 L32 84 M34 36 L34 74" stroke="#C9A86E" stroke-width="1.2"/><path d="M8 100 L42 100" stroke="#6B4228" stroke-width="1.4"/>`);
+// 15 Ciudad del Cabo: Table Mountain con su "mantel" de nube y casas de Bo-Kaap al pie. SIN fondo ni suelo propios: la montaña baja en
+// laderas hasta el borde y las lomas del destino (FORE) tapan su pie y el de las casas
 const boc = ['#F29BB8', '#F2C14E', '#6FB5A0', '#8FA8E0', '#E8735A', '#B5D96A', '#C9A8E0'];
 M.cabo = cut(
-  `<path d="M0 78 L12 50 L24 38 L96 38 L106 46 L120 72 L120 110 L0 110Z" fill="#7E8C9A"/><path d="M22 40 Q26 32 34 34 Q40 28 48 32 Q56 26 64 32 Q72 26 80 32 Q88 28 94 34 Q100 34 98 40Z" fill="#FFFFFF"/>`
-  + boc.map((c, i) => `<rect x="${4 + i * 16}" y="${80 - (i * 7 % 3) * 4}" width="16" height="${30 + (i * 7 % 3) * 4}" fill="${c}"/>`).join(''),
-  `<path d="M96 38 L106 46 L120 72 L120 84 L104 84 Q104 60 94 44Z" fill="#5E6B78" opacity=".5"/><path d="M30 46 L32 66 M48 44 L46 62 M66 46 L68 64 M84 44 L82 60" stroke="#6E7C8A" stroke-width="2" stroke-linecap="round"/>`
-  + boc.map((c, i) => { const y = 80 - (i * 7 % 3) * 4, x = 4 + i * 16; return `<rect x="${x}" y="${y}" width="16" height="2.4" fill="${shade(c, .25)}"/><rect x="${x + 3}" y="${y + 6}" width="4" height="6" fill="#FFF8EE"/><rect x="${x + 9}" y="${y + 6}" width="4" height="6" fill="#FFF8EE"/><rect x="${x + 5}" y="${y + 18}" width="6" height="${12 + (i * 7 % 3) * 4}" fill="${shade(c, .35)}"/>`; }).join(''));
+  `<path d="M-2 104 Q4 90 10 74 Q14 62 18 60 L22 48 L92 46 Q98 46 102 56 Q106 62 110 60 Q116 62 118 72 Q120 86 122 104 L122 120 L-2 120Z" fill="#8E9FB2"/><path d="M21 48 L93 46 L94 50 Q60 56 22 58Z" fill="#B2C0CE"/>`
+  + boc.slice(0, 6).map((c, i) => `<rect x="${24 + i * 12}" y="${86 - (i * 7 % 3) * 3}" width="12" height="${34 + (i * 7 % 3) * 3}" fill="${c}"/>`).join(''),
+  `<path d="M92 46 Q98 46 102 56 L104 74 L96 70 Q96 56 90 50Z M110 60 Q116 62 118 72 Q120 86 122 104 L112 96 Q114 76 108 64Z" fill="#6E7C8A" opacity=".45"/><path d="M30 54 L32 74 M46 52 L44 70 M62 52 L64 72 M78 52 L76 70 M12 76 L14 90" stroke="#7E8C9A" stroke-width="2" stroke-linecap="round"/>`
+  + boc.slice(0, 6).map((c, i) => { const y = 86 - (i * 7 % 3) * 3, x = 24 + i * 12; return `<rect x="${x}" y="${y}" width="12" height="2.2" fill="${shade(c, .25)}"/><rect x="${x + 2.4}" y="${y + 5}" width="3" height="5" fill="#FFF8EE"/><rect x="${x + 6.6}" y="${y + 5}" width="3" height="5" fill="#FFF8EE"/>`; }).join(''));
 // 16 Chefchaouen: casas azules escalonadas en la ladera del Rif, escalera y macetas
 const azules = [[4, 78, 22, 32, '#7FAEE6'], [24, 66, 22, 44, '#5B8FD0'], [44, 56, 24, 54, '#A9CCF2'], [66, 66, 20, 44, '#4A78C0'], [84, 76, 32, 34, '#7FAEE6'], [30, 92, 26, 18, '#A9CCF2'], [60, 90, 30, 20, '#5B8FD0']];
 M.chaouen = cut(
@@ -353,15 +364,12 @@ M.sf = cut(
   + [14, 22, 28].map(x => `<path d="M${x} ${(66 - (x - 6) * 1.5).toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`).join('')
   + [92, 98, 106].map(x => `<path d="M${x} ${(66 - (114 - x) * 1.5).toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`).join('')
   + `<rect x="2" y="77" width="116" height="2" fill="#A8402A"/><rect x="33" y="20" width="3" height="98" fill="#A8402A" opacity=".5"/><rect x="87" y="20" width="3" height="98" fill="#A8402A" opacity=".5"/>`);
-// 18 Ciudad de México: Palacio de Bellas Artes (cúpula naranja) y trajinera de Xochimilco
+// 18 Ciudad de México: Palacio de Bellas Artes (cúpula naranja). SIN suelo propio: el zócalo baja hasta el borde y las capas del destino (FORE) tapan su pie
 M.cdmx = cut(
   `<path d="M38 62 Q38 30 60 24 Q82 30 82 62Z" fill="#E8A040"/><rect x="57" y="12" width="6" height="12" fill="#E8A040"/><path d="M14 64 Q14 52 24 50 Q34 52 34 64Z M86 64 Q86 52 96 50 Q106 52 106 64Z" fill="#E8A040"/>`
-  + `<rect x="10" y="62" width="100" height="34" fill="#F2ECE0"/><rect x="6" y="94" width="108" height="6" fill="#E2D8C6"/>`
-  + `<path d="M0 110 L0 102 L120 102 L120 110Z" fill="#6FA8A0"/><path d="M8 98 L72 98 L68 108 L12 108Z" fill="#3E9A5A"/><path d="M16 98 L16 84 M64 98 L64 84" stroke="#F2B937"/><path d="M12 86 Q40 74 68 86 L68 82 Q40 70 12 82Z" fill="#F2B937"/>`,
+  + `<rect x="10" y="62" width="100" height="58" fill="#F2ECE0"/><rect x="6" y="94" width="108" height="26" fill="#E2D8C6"/>`,
   `<path d="M60 24 Q82 30 82 62 L62 62Z M96 50 Q106 52 106 64 L97 64Z" fill="#C97A28" opacity=".55"/><path d="M44 48 Q60 40 76 48 M48 36 Q60 30 72 36" stroke="#F6D27A" stroke-width="1.6" fill="none"/>`
-  + win(16, 68, 4, 1, '#C9BCA4', 6, 0, 2.4, 22) + win(82, 68, 4, 1, '#C9BCA4', 6, 0, 2.4, 22) + `<path d="M46 96 L46 74 Q53 66 60 74 Q67 66 74 74 L74 96Z" fill="#B8A684"/><path d="M10 62 L110 62 L110 65 L10 65Z" fill="#D9CDB4"/>`
-  + `<path d="M12 100 L70 100" stroke="#E8452C" stroke-width="2"/><rect x="28" y="77" width="24" height="5" fill="#E8452C"/>` + [[18, 103, '#E8452C'], [30, 103, '#F29BB8'], [42, 103, '#F2B937'], [54, 103, '#3E5BA9']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="2" fill="${c}"/>`).join('')
-  + `<path d="M76 106 h18 M96 108 h16" stroke="#CFEDE6" stroke-width="1.6" stroke-linecap="round"/>`);
+  + win(16, 68, 4, 2, '#C9BCA4', 6, 10, 2.4, 6) + win(82, 68, 4, 2, '#C9BCA4', 6, 10, 2.4, 6) + `<path d="M46 96 L46 74 Q53 66 60 74 Q67 66 74 74 L74 96Z" fill="#B8A684"/><path d="M10 62 L110 62 L110 65 L10 65Z" fill="#D9CDB4"/><path d="M6 94 L114 94" stroke="#C9BCA4" stroke-width="1.6"/>`);
 // 20 Ámsterdam: casas angostas de gablete sobre el canal
 M.amsterdam = cut(
   `<path d="M6 100 L6 40 L10 40 L10 33 L14 33 L14 26 L22 26 L22 33 L26 33 L26 40 L30 40 L30 100Z" fill="#8A5A44"/><path d="M30 100 L30 42 Q30 34 36 32 Q36 22 42 19 Q48 22 48 32 Q54 34 54 42 L54 100Z" fill="#C9503E"/>`
@@ -381,7 +389,7 @@ const TABLA = [
   ['BAMBÚ', 'Kioto', 'Japón', LANDMARKS.pagoda, '#E3F0C8', '#D2E4AA', '#A0C672', '#9FBF6A', '#A9C873', '#5F9447', 'dune', 'bamboo', 11.5, 'oriente'],
   ['CIUDAD', 'Tokio', 'Japón', L.tokyo, '#FBE3E6', '#F2C4CE', '#DDA6B8', '#BDB9C4', PAV, VEREDA, 'city', 'petals', 10.5, 'moderna !cerezo'],
   ['PALACIO', 'Seúl', 'Corea del Sur', L.palacio, '#FBE6E4', '#F2C8CE', '#DEA8B6', '#C9C2B4', '#C9C2AE', '#A59D86', 'peak', 'petals', 10.5, 'oriente'],
-  ['MURALLA', 'Pekín', 'China', L.muralla, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'oriente rocaGris'],
+  ['MURALLA', 'Pekín', 'China', L.prohibida, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'oriente rocaGris'],
   ['CIUDAD', 'Shanghái', 'China', L.perla, '#EFE4F2', '#DCC8E4', '#C4A8D4', '#B8B4BE', PAV, VEREDA, 'city', 'lanterns', 15.5, 'moderna neon'],
   ['TEMPLOS', 'Bangkok', 'Tailandia', L.watarun, '#FBEAD8', '#F4D4B4', '#E8BA90', '#D9C8A8', '#C9BCA4', '#A89A80', 'dune', 'petals', 15.5, 'oriente'],
   ['CIUDAD', 'Kuala Lumpur', 'Malasia', L.petronas, '#E0EEF4', '#BCD6E2', '#98BCD0', '#B0B8BC', PAV, VEREDA, 'city', 'leaves', 13, 'moderna !palmeraTropical'],
@@ -447,9 +455,9 @@ const TABLA = [
 ];
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base
-const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
+const LM_ESCALA = { 'Pekín': .88, 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
 // Desplazamiento horizontal opcional del monumento (unidades de mundo; negativo = hacia la izquierda/centro): evita que se corte contra el borde derecho de la pantalla
-const LM_X = { 'Pekín': -1.3, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0, 'San Francisco': -.8 };
+const LM_X = { 'Pekín': -1.3, 'Zanzíbar': -.8, 'Ciudad del Cabo': -.8, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0, 'San Francisco': -.8 };
 // Capas DELANTERAS del paisaje por destino (opcional): se dibujan entre el monumento y la cámara para "meterlo" en la escena
 // (como Kioto o Buenos Aires, donde el suelo y las colinas tapan la base). Usar cuando el recorte del monumento NO trae suelo propio.
 // Coordenadas relativas al monumento: x = fracción de su ancho (0 = borde izquierdo, 1 = derecho; puede salirse), dz = cuánto más
@@ -467,6 +475,42 @@ const FORE = {
     { t: 'hill', x: .04, w: 9, h: 3.6, c: [2, 3, .55], dz: .5, kind: 'dune' }, // Marin Headlands: tapan el anclaje norte y el arranque del tablero
     { t: 'hill', x: .98, w: 8, h: 3.3, c: [2, 3, .55], dz: .5, kind: 'dune' }, // lomas de San Francisco (Presidio): tapan el anclaje sur
     { t: 'hill', x: -.1, w: 7, h: 1.9, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.1, w: 6, h: 1.7, c: 3, dz: .8, kind: 'dune' }, // lomas más cercanas, un tono más oscuras
+  ],
+  // Mismo esquema para los recortes sin suelo propio: loma baja al centro (pie del monumento) + lomas laterales (extremos) + capa más cercana y oscura
+  'Pekín': [
+    { t: 'hill', x: .5, w: 7, h: 1.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie del muro y de los tres arcos
+    { t: 'hill', x: -.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, // extremos del muro
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Chiang Mai': [
+    { t: 'hill', x: .55, w: 7, h: 1.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie del chedi
+    { t: 'hill', x: .02, w: 6, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 1.9, c: [2, 3, .5], dz: .5, kind: 'dune' }, // templo y chedi chico
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.4, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Krabi': [
+    { t: 'hill', x: .6, w: 7, h: 1.5, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de la torre de caliza
+    { t: 'hill', x: .15, w: 6, h: 2.1, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.0, w: 5, h: 2.3, c: [2, 3, .5], dz: .5, kind: 'dune' },
+    { t: 'hill', x: -.1, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Phi Phi': [
+    { t: 'hill', x: .5, w: 6, h: 1.5, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de la palmera entre los acantilados
+    { t: 'hill', x: .05, w: 5, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: .98, w: 5, h: 2.1, c: [2, 3, .5], dz: .5, kind: 'dune' },
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Zanzíbar': [
+    { t: 'hill', x: .2, w: 6, h: 1.6, c: [2, 3, .6], dz: .45, kind: 'dune' }, // casco del dhow: sólo asoma la vela
+    { t: 'hill', x: .7, w: 7, h: 1.1, c: [2, 3, .7], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 2.0, c: [2, 3, .5], dz: .5, kind: 'dune' }, // pie de la casa
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.4, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Ciudad del Cabo': [
+    { t: 'hill', x: .5, w: 7, h: 1.1, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de las casas de Bo-Kaap
+    { t: 'hill', x: -.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, // laderas
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Ciudad de México': [
+    { t: 'hill', x: .5, w: 7, h: 1.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // zócalo del palacio
+    { t: 'hill', x: -.02, w: 6, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.0, c: [2, 3, .5], dz: .5, kind: 'dune' },
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
   ],
 };
 const BIOMA_DE = { arbolUrbano: 'moderna', castano: 'europa', palmeraTropical: 'tropical', sombrilla: 'tropical', bambu: 'oriente', pino: 'oriente', cipres: 'mediterraneo', acacia: 'sabana', palmera: 'desierto', olivo: 'mediterraneo', jacaranda: 'europa', liana: 'selva' };
