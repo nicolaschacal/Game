@@ -442,5 +442,11 @@
  "wx.snowShowers": "Chutes de neige",
  "wx.storm": "Orage",
  "wx.stormHail": "Orage avec grêle",
- "wx.variable": "Variable"
+ "wx.variable": "Variable",
+ "home.current": "DESTINATION ACTUELLE",
+ "hud.streak": "SÉRIE",
+ "shop.secPower": "Bonus",
+ "shop.secPowerNote": "Revivre s’utilise quand tu tombes. Geler a son bouton ❄ pendant la course. Le reste est utilisé au début de ta prochaine partie.",
+ "shop.secSou": "Souvenirs",
+ "shop.secSouNote": "Objets de collection pour la couverture de ton album. S’achètent avec le passeport de leur région."
 }

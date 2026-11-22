@@ -442,5 +442,11 @@
  "wx.snowShowers": "Schneeschauer",
  "wx.storm": "Gewitter",
  "wx.stormHail": "Gewitter mit Hagel",
- "wx.variable": "Wechselhaft"
+ "wx.variable": "Wechselhaft",
+ "home.current": "AKTUELLES ZIEL",
+ "hud.streak": "SERIE",
+ "shop.secPower": "Power-ups",
+ "shop.secPowerNote": "Wiederbeleben wird genutzt, wenn du stürzt. Einfrieren hat im Lauf seinen ❄-Knopf. Der Rest wird beim Start der nächsten Runde verbraucht.",
+ "shop.secSou": "Souvenirs",
+ "shop.secSouNote": "Sammelstücke für dein Albumcover. Kaufbar mit dem Pass ihrer Region."
 }

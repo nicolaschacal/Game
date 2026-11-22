@@ -442,5 +442,11 @@
  "wx.snowShowers": "Nevadas",
  "wx.storm": "Tormenta",
  "wx.stormHail": "Tormenta con granizo",
- "wx.variable": "Variable"
+ "wx.variable": "Variable",
+ "home.current": "DESTINO ACTUAL",
+ "hud.streak": "RACHA",
+ "shop.secPower": "Potenciadores",
+ "shop.secPowerNote": "Revivir se usa cuando caes. Congelar tiene su botón ❄ en la carrera. El resto se gasta al empezar tu próxima partida.",
+ "shop.secSou": "Souvenirs",
+ "shop.secSouNote": "Coleccionables para la tapa de tu álbum. Se compran con el pasaporte de su región."
 }

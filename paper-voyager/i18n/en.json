@@ -442,5 +442,11 @@
  "wx.snowShowers": "Snow showers",
  "wx.storm": "Thunderstorm",
  "wx.stormHail": "Thunderstorm with hail",
- "wx.variable": "Variable"
+ "wx.variable": "Variable",
+ "home.current": "CURRENT DESTINATION",
+ "hud.streak": "STREAK",
+ "shop.secPower": "Power-ups",
+ "shop.secPowerNote": "Revive is used when you crash. Freeze has its own ❄ button during the run. The rest is spent when your next run starts.",
+ "shop.secSou": "Souvenirs",
+ "shop.secSouNote": "Collectibles for your album cover. Bought with the passport of their region."
 }

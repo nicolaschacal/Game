@@ -442,5 +442,11 @@
  "wx.snowShowers": "Nevascas",
  "wx.storm": "Tempestade",
  "wx.stormHail": "Tempestade com granizo",
- "wx.variable": "Variável"
+ "wx.variable": "Variável",
+ "home.current": "DESTINO ATUAL",
+ "hud.streak": "SEQUÊNCIA",
+ "shop.secPower": "Power-ups",
+ "shop.secPowerNote": "Reviver é usado quando você cai. Congelar tem seu botão ❄ na corrida. O resto é gasto ao começar sua próxima partida.",
+ "shop.secSou": "Lembranças",
+ "shop.secSouNote": "Colecionáveis para a capa do seu álbum. Comprados com o passaporte da região."
 }

@@ -141,8 +141,8 @@ function objetos(c) {
   const pro = !I ? '' : `<div class="vsec">★ PRO</div><div class="vnote">${tt(I.pro ? 'shop.proOwn' : 'shop.proInfo')}</div>
 <div class="vg vpro">${I.pro ? '' : '<button class="btn green" data-v="paywall" style="grid-column:1/3;height:52px;font-size:19px">' + tt('shop.getPro') + '</button>'}${I.paquetes.map(p => `<button class="it pk${p.destacado ? ' best' : ''}${I.pro ? ' own' : ''}" data-v="pk" data-id="${p.id}"><i>${p.icono}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.pro ? tt('shop.active') : I.precio(p.id)}</span></button>`).join('')}
 <button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>`;
-  return `<div class="vsec">Power-ups<small>Revivir se usa cuando caés. Congelar tiene su botón ❄ en la carrera. El resto se gasta solo al empezar tu próxima partida.</small></div><div class="vg">${items}</div>
-<div class="vsec">Souvenirs<small>Coleccionables para la tapa de tu álbum. Se compran con el pasaporte de su región.</small></div><div class="vg">${sou}</div>${pro}`;
+  return `<div class="vsec">${tt('shop.secPower')}<small>${tt('shop.secPowerNote')}</small></div><div class="vg">${items}</div>
+<div class="vsec">${tt('shop.secSou')}<small>${tt('shop.secSouNote')}</small></div><div class="vg">${sou}</div>${pro}`;
 }
 
 // ── Estructura y render ──

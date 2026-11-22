@@ -442,5 +442,11 @@
  "wx.snowShowers": "Nevicate",
  "wx.storm": "Temporale",
  "wx.stormHail": "Temporale con grandine",
- "wx.variable": "Variabile"
+ "wx.variable": "Variabile",
+ "home.current": "DESTINAZIONE ATTUALE",
+ "hud.streak": "SERIE",
+ "shop.secPower": "Potenziamenti",
+ "shop.secPowerNote": "Rivivi si usa quando cadi. Congela ha il suo pulsante ❄ durante la corsa. Il resto si usa all’inizio della prossima partita.",
+ "shop.secSou": "Souvenir",
+ "shop.secSouNote": "Oggetti da collezione per la copertina del tuo album. Si comprano con il passaporto della loro regione."
 }

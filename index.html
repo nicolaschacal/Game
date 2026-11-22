@@ -140,7 +140,7 @@ body.home #hud{opacity:0}
 #mSet .lr{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 10px;border-top:2px dashed #CDBE9A}#mSet .lr label{font:900 14px Nunito;letter-spacing:.3px;color:var(--ink)}
 #mSet .lr select{margin-left:auto;min-width:0;max-width:116px;height:34px;padding:0 24px 0 10px;border:2.5px solid var(--ink);border-radius:10px;background:#FFF6E0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231B1730' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center/10px;color:var(--ink);font:900 13px Nunito;-webkit-appearance:none;appearance:none}#mSet .lr select:active{background-color:#EAD9B5}
 #worldChip{flex:none;position:relative;height:66px;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 14px;border:3px solid var(--ink);border-radius:18px;background:#FFF6E0;color:var(--ink);box-shadow:inset 0 -5px 0 #EAD9B5,0 4px 0 var(--ink);text-align:left;font:400 24px/1 'Lilita One',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
-#worldChip:before{content:"DESTINO ACTUAL";font:900 11px/1 Nunito;letter-spacing:1.4px;color:#4E4A73}
+#worldChip:before{content:attr(data-label);font:900 11px/1 Nunito;letter-spacing:1.4px;color:#4E4A73}
 #worldChip small{position:absolute;right:0;top:0;bottom:0;width:78px;display:flex;align-items:center;justify-content:center;margin:0;border-left:3px dashed var(--ink);background:var(--gold);color:var(--ink);font:900 11px Nunito;letter-spacing:1.2px}
 #mMid{flex:1;min-height:0;pointer-events:none}
 #menu .arrow{position:absolute;z-index:3;width:46px;height:46px;border-radius:50%;background:var(--cream);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);color:var(--ink);font:400 30px/36px 'Lilita One',sans-serif;text-align:center;padding:0;cursor:pointer}
@@ -254,7 +254,7 @@ body.home #hud{opacity:0}
 .head small{position:absolute;left:20px;bottom:48px;font:900 9px Nunito;letter-spacing:1.5px;color:#ffe3b0}
 #mapView{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);bottom:0;overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;overscroll-behavior:contain;scrollbar-width:none;cursor:grab;background:radial-gradient(circle at 50% 40%,#9CCDE0,#6FA9C3)}
 #mapView.zm{overflow-y:auto}#mapView.drag{cursor:grabbing}
-#mapPanel .head .chip{display:flex}body.pickstart #mapChip{display:none}
+#mapPanel .head .chip{display:flex}body.pickstart #mapPanel #mapChip{display:none}#mapPanel .head h2,#mapPanel .head small{right:178px;white-space:nowrap;overflow:hidden}body.pickstart #mapPanel .head h2,body.pickstart #mapPanel .head small{right:18px}
 #mapView::-webkit-scrollbar{display:none}
 #mapWorld{position:relative;--pk:1}
 #mapView.zm #mapWorld{margin-bottom:260px}
@@ -736,8 +736,7 @@ function missionAdd(kind,n=1){let hit=false;
   else{prog.level++;const reward=150*prog.level;wallet+=reward;store.set('wallet',wallet);prog.set=newSet(prog.level);setTimeout(()=>{pop(t('toast.levelUp',{level:prog.level+1,mult:baseMult(),reward}),'big');SFX.win();confetti();showCombo();},500);}}
  store.set('prog',prog);}
 // Palabra del día: una letra por partida, escondida en la pista. Completarla da monedas y un revivir.
-const WORDS=['VIAJE','PAPEL','GLOBO','TREN','BARCO','MAPA','VUELO','PISTA','NUBE','SELLO','AVION','RUTA'];
-const today=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),WORD=WORDS[today%WORDS.length];
+const today=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
 let wd=store.get('word',null);if(!wd||wd.day!==today)wd={day:today,got:0,done:false};
 // Lo que se arrastra de un mundo al siguiente dentro de la misma partida
 let carry=null,autostart=false;
@@ -918,7 +917,7 @@ const POWER_MS=10000,boostUntil={double:0};let chests=carry?.chests||0;
 const fmt=n=>n.toLocaleString(lang);
 function addScore(n){score+=n;$('score').textContent=fmt(score);}
 let maxMult=carry?.maxMult||1;
-function showCombo(){const c=$('combo'),m=mult();maxMult=Math.max(maxMult,m);if(m>1){c.textContent='x'+m+(m>baseMult()?' RACHA':'');c.style.opacity='1';}else c.style.opacity='0';if(streak>0)missionAdd('streak',Math.min(4,Math.floor(streak/6))+1);}
+function showCombo(){const c=$('combo'),m=mult();maxMult=Math.max(maxMult,m);if(m>1){c.textContent='x'+m+(m>baseMult()?' '+t('hud.streak'):'');c.style.opacity='1';}else c.style.opacity='0';if(streak>0)missionAdd('streak',Math.min(4,Math.floor(streak/6))+1);}
 showCombo();
 // las monedas de la pista se cobran sólo al llegar al aeropuerto: si perdés o salís, se pierden
 function bank(){const n=coinCount-banked;if(n>0)wallet+=Math.round(n*(Iap.pro?1.25:1));banked=coinCount;store.set('wallet',wallet);} // PRO: +25% al guardar
@@ -999,8 +998,8 @@ function takeoff(){
  setTimeout(()=>SFX.arrive(),P+1500);
 }
 function deathText(){
- const y=targetRow(),t=runner.onBoat?runner.rideType:null,z=zone[y];
- const air=t==='balloon'||z==='sky',sea=!air&&(t==='boat'||z==='sea'),rail=!air&&!sea&&(t==='train'||z==='rail');
+ const y=targetRow(),rt=runner.onBoat?runner.rideType:null,z=zone[y];
+ const air=rt==='balloon'||z==='sky',sea=!air&&(rt==='boat'||z==='sea'),rail=!air&&!sea&&(rt==='train'||z==='rail');
  if(runner.blockedByRock!=null&&runner.blockedByRock>=y)return [t(air?'crash.air':sea?'crash.sea':rail?'crash.rail':'crash.land'),t(air?'crash.air.msg':sea?'crash.sea.msg':rail?'crash.rail.msg':'crash.land.msg')];
  return [t(air?'end.air':sea?'end.sea':rail?'end.rail':'end.land'),t('end.msg')];
 }
@@ -1013,6 +1012,7 @@ function rescue(){
 }
 let revives=carry?.revives||0,reviveTimer=0;
 const revivePrice=()=>120*(revives+1);
+function fitText(el,min){if(!el)return;el.style.fontSize='';let f=parseFloat(getComputedStyle(el).fontSize);while(el.scrollWidth>el.clientWidth+1&&f>min){f-=1;el.style.fontSize=f+'px';}}
 function onGameOver(){
  const [title,reason]=deathText();host.classList.remove('quake');void host.offsetWidth;host.classList.add('quake');$('speed').style.opacity=0;
  if(boost.shield){boost.shield=false;rescue();pop(t('toast.shield'),'big');return;}
@@ -1319,7 +1319,7 @@ $('openAlbum').addEventListener('click',()=>{audio();SFX.tap();import('./paper-v
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{SFX.tap();$('shop').style.display='none';$('scores').style.display='none';$('mapPanel').style.display='none';const k=SKINS[browse];if(!owned.includes(k.id))pickSkin(SKINS.findIndex(x=>x.id===skinId));drawHome();}));
 // Viaje libre: el inicio está en la ciudad donde estás; el mapa deja viajar a cualquier destino con pasaporte, pagando el pasaje.
 const REG=V.REGIONS[V.regionOf(WI)];
-$('worldChip').innerHTML=theme.place.toUpperCase()+' · '+theme.country.toUpperCase()+'<small>'+t('map.chip')+'</small>';
+$('worldChip').dataset.label=t('home.current');$('worldChip').innerHTML=theme.place.toUpperCase()+' · '+theme.country.toUpperCase()+'<small>'+t('map.chip')+'</small>';
 const passMini=(r,w=18)=>{const c=V.REGIONS[r];return `<svg viewBox="0 0 20 26" width="${w}" height="${w*1.3}" style="vertical-align:middle"><rect x="1.5" y="1.5" width="17" height="23" rx="2.5" fill="${c.color}" stroke="#1B1730" stroke-width="2"/><rect x="1.5" y="1.5" width="4" height="23" rx="1.5" fill="${c.dark}"/><circle cx="11.5" cy="11" r="4" fill="none" stroke="#F2B937" stroke-width="1.8"/><path d="M8 18.5h7" stroke="#F2B937" stroke-width="1.8" stroke-linecap="round"/></svg>`;};
 let mapData=null,mPick=WI;
 let startPick=false; // primer arranque: el mapa elige la ciudad de partida (gratis)
@@ -1399,7 +1399,7 @@ async function buildMap(){
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{if(mapNoTap)return;SFX.tap();mPick=+e.dataset.i;drawCard();mapSelect(true);}));
  applyZoom();
 }
-async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';
+async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
  await buildMap();mapZoomInit();$('mapWallet').textContent=fmt(wallet);mapZ=1;applyZoom();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;v.scrollTop=0;
  mPick=WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2;
  v.onscroll=()=>{const c=M.W*mapSc*mapZ;if(v.scrollLeft<c*.5)v.scrollLeft+=c;else if(v.scrollLeft>c*1.5)v.scrollLeft-=c;};}

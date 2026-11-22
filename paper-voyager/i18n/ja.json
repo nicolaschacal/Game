@@ -442,5 +442,11 @@
  "wx.snowShowers": "にわか雪",
  "wx.storm": "雷雨",
  "wx.stormHail": "雹を伴う雷雨",
- "wx.variable": "不安定"
+ "wx.variable": "不安定",
+ "home.current": "現在の目的地",
+ "hud.streak": "連続",
+ "shop.secPower": "パワーアップ",
+ "shop.secPowerNote": "復活はぶつかった時に使われます。フリーズはプレイ中の❄ボタンで使えます。その他は次のプレイ開始時に使われます。",
+ "shop.secSou": "おみやげ",
+ "shop.secSouNote": "アルバムの表紙を飾るコレクション。その地域のパスポートで購入できます。"
 }
