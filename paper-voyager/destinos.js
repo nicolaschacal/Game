@@ -309,13 +309,11 @@ M.peter = cut(
   + win(11, 68, 5, 2, '#4E7F78', 5.6, 16, 3, 7) + win(84, 68, 5, 2, '#4E7F78', 5.6, 16, 3, 7) + `<path d="M54 102 L54 92 Q60 86 66 92 L66 102Z" fill="#4E7F78"/>`
   + `<path d="M4 80 h112 M42 52 h36" stroke="#F1EADC" stroke-width="2"/>` + win(6, 50, 19, 1, '#E4B23A', 6, 0, 1.6, 4) + `<circle cx="60" cy="44" r="2.4" fill="#E4B23A"/>`
   + `<path d="M8 106 h20 M50 105 h22 M90 107 h18" stroke="#D2E6F2" stroke-width="1.6" stroke-linecap="round"/><path d="M104 58 L116 58 L116 102 L104 102Z" fill="#5E9A88" opacity=".35"/>`);
-// 11 Melbourne: estación Flinders Street (cúpula verde y torre del reloj) y tranvía verde y dorado
+// 11 Melbourne: estación Flinders Street (cúpula verde y torre del reloj)
 M.melbourne = cut(
-  `<rect x="6" y="60" width="104" height="38" fill="#E6A85A"/><path d="M42 60 Q42 36 60 32 Q78 36 78 60Z" fill="#5E9A5A"/><rect x="58" y="22" width="4" height="10" fill="#5E9A5A"/><rect x="92" y="30" width="16" height="30" fill="#E6A85A"/><path d="M92 30 Q100 18 108 30Z" fill="#5E9A5A"/>`
-  + `<rect x="10" y="80" width="78" height="22" rx="4" fill="#3F8F5A"/><path d="M8 80 L14 74 L84 74 L90 80Z" fill="#2F6B48"/><circle cx="24" cy="104" r="4" fill="#34333B"/><circle cx="74" cy="104" r="4" fill="#34333B"/>`,
+  `<rect x="6" y="60" width="104" height="38" fill="#E6A85A"/><path d="M42 60 Q42 36 60 32 Q78 36 78 60Z" fill="#5E9A5A"/><rect x="58" y="22" width="4" height="10" fill="#5E9A5A"/><rect x="92" y="30" width="16" height="30" fill="#E6A85A"/><path d="M92 30 Q100 18 108 30Z" fill="#5E9A5A"/>`,
   win(12, 64, 6, 1, '#FFF0D2', 5, 0, 3, 7) + win(82, 64, 4, 1, '#FFF0D2', 5, 0, 3, 7) + `<circle cx="100" cy="40" r="4.4" fill="#FFF8EE"/><path d="M100 40 L100 37.4 M100 40 L102 41" stroke="#3E3A44" stroke-width="1"/>`
-  + `<path d="M60 32 Q78 36 78 60 L62 60Z" fill="#3F7A44" opacity=".5"/><rect x="6" y="60" width="104" height="3" fill="#C9874A"/>`
-  + `<rect x="10" y="94" width="78" height="3" fill="#F2B937"/>` + win(15, 83, 7, 1, '#BFE3EC', 10, 0, 7, 7) + `<path d="M48 74 L56 60 M56 60 L40 60" stroke="#3E3A44" stroke-width="1.2" fill="none"/><path d="M0 59 L120 59" stroke="#3E3A44" stroke-width=".9" opacity=".6"/>`);
+  + `<path d="M60 32 Q78 36 78 60 L62 60Z" fill="#3F7A44" opacity=".5"/><rect x="6" y="60" width="104" height="3" fill="#C9874A"/>`);
 // 12 Uluru: la roca roja con sus surcos, matas de spinifex al pie
 M.uluru = cut(
   `<path d="M2 106 Q4 82 14 74 Q30 64 60 64 Q92 64 106 72 Q116 82 118 106Z" fill="#C8553A"/><path d="M0 110 L0 104 L120 104 L120 110Z" fill="#D98A5C"/>`
@@ -330,14 +328,12 @@ M.nairobi = cut(
   + `<g transform="translate(0 110)">${gir(62, .62, false)}${gir(98, .82, true)}</g>`,
   win(56, 68, 2, 5, '#9A8CB0', 4, 7, 2, 3) + win(73, 80, 2, 3, '#A89CBE', 5, 7, 2, 3) + `<path d="M4 48 Q24 42 46 47" stroke="#86B456" stroke-width="3" fill="none" stroke-linecap="round"/>`
   + `<g transform="translate(0 110)">` + [[62, .62, 1], [98, .82, -1]].map(([tx, s, f]) => `<g transform="translate(${tx} 0) scale(${f * s} ${s})" fill="#9A5A2A"><circle cx="-10" cy="-48" r="3.4"/><circle cx="2" cy="-50" r="3.8"/><circle cx="14" cy="-46" r="3.2"/><circle cx="-2" cy="-42" r="2.6"/><circle cx="24" cy="-66" r="2.6"/><circle cx="28" cy="-80" r="2.2"/><circle cx="21" cy="-54" r="2.4"/><circle cx="36" cy="-91" r="1.4" fill="#2B2236"/></g>`).join('') + `</g>`);
-// 14 Zanzíbar: casa de Stone Town con su puerta tallada y la vela latina de un dhow asomando detrás de la loma. SIN mar ni suelo propios:
-// el casco del dhow y el pie de la casa los tapan las lomas del destino (FORE)
+// 14 Zanzíbar: casa de Stone Town con su puerta tallada. SIN mar ni suelo propios:
+// el pie de la casa lo tapan las lomas del destino (FORE)
 M.zanzibar = cut(
-  `<path d="M50 120 L50 34 L56 34 L56 30 L62 30 L62 34 L70 34 L70 30 L76 30 L76 34 L90 34 L90 30 L96 30 L96 34 L104 34 L104 30 L110 30 L110 34 L116 34 L116 120Z" fill="#EDE4D2"/><path d="M62 120 L62 56 Q83 36 104 56 L104 120Z" fill="#8A5A34"/><rect x="68" y="62" width="30" height="58" fill="#6B4228"/>`
-  + `<path d="M4 96 L46 96 L40 110 L10 110Z" fill="#8A5A34"/><path d="M6 56 L44 28 L30 94Z" fill="#E9CF98"/>`,
+  `<path d="M50 120 L50 34 L56 34 L56 30 L62 30 L62 34 L70 34 L70 30 L76 30 L76 34 L90 34 L90 30 L96 30 L96 34 L104 34 L104 30 L110 30 L110 34 L116 34 L116 120Z" fill="#EDE4D2"/><path d="M62 120 L62 56 Q83 36 104 56 L104 120Z" fill="#8A5A34"/><rect x="68" y="62" width="30" height="58" fill="#6B4228"/>`,
   `<path d="M62 56 Q83 36 104 56 L100 58 Q83 42 66 58Z" fill="#A8743E"/><path d="M83 62 L83 120" stroke="#4A2C18" stroke-width="1.6"/>` + win(71, 66, 5, 6, '#F2C14E', 5.4, 7.4, 2, 2)
-  + `<path d="M68 62 L98 62" stroke="#A8743E" stroke-width="2"/><path d="M50 38 L116 38 L116 41 L50 41Z" fill="#D9CDB4"/><path d="M108 34 L116 34 L116 120 L108 120Z" fill="#D2C6AE" opacity=".6"/>`
-  + `<path d="M28 96 L30 36" stroke="#5E3E22" stroke-width="1.6"/><path d="M6 56 L44 28" stroke="#6B4A2E" stroke-width="2"/><path d="M30 94 L44 28 L36 72Z" fill="#C9A86E" opacity=".6"/><path d="M15 50 L31 92 M24 43 L32 84 M34 36 L34 74" stroke="#C9A86E" stroke-width="1.2"/><path d="M8 100 L42 100" stroke="#6B4228" stroke-width="1.4"/>`);
+  + `<path d="M68 62 L98 62" stroke="#A8743E" stroke-width="2"/><path d="M50 38 L116 38 L116 41 L50 41Z" fill="#D9CDB4"/><path d="M108 34 L116 34 L116 120 L108 120Z" fill="#D2C6AE" opacity=".6"/>`);
 // 15 Ciudad del Cabo: Table Mountain con su "mantel" de nube y casas de Bo-Kaap al pie. SIN fondo ni suelo propios: la montaña baja en
 // laderas hasta el borde y las lomas del destino (FORE) tapan su pie y el de las casas
 const boc = ['#F29BB8', '#F2C14E', '#6FB5A0', '#8FA8E0', '#E8735A', '#B5D96A', '#C9A8E0'];
@@ -346,14 +342,14 @@ M.cabo = cut(
   + boc.slice(0, 6).map((c, i) => `<rect x="${24 + i * 12}" y="${86 - (i * 7 % 3) * 3}" width="12" height="${34 + (i * 7 % 3) * 3}" fill="${c}"/>`).join(''),
   `<path d="M92 46 Q98 46 102 56 L104 74 L96 70 Q96 56 90 50Z M110 60 Q116 62 118 72 Q120 86 122 104 L112 96 Q114 76 108 64Z" fill="#6E7C8A" opacity=".45"/><path d="M30 54 L32 74 M46 52 L44 70 M62 52 L64 72 M78 52 L76 70 M12 76 L14 90" stroke="#7E8C9A" stroke-width="2" stroke-linecap="round"/>`
   + boc.slice(0, 6).map((c, i) => { const y = 86 - (i * 7 % 3) * 3, x = 24 + i * 12; return `<rect x="${x}" y="${y}" width="12" height="2.2" fill="${shade(c, .25)}"/><rect x="${x + 2.4}" y="${y + 5}" width="3" height="5" fill="#FFF8EE"/><rect x="${x + 6.6}" y="${y + 5}" width="3" height="5" fill="#FFF8EE"/>`; }).join(''));
-// 16 Chefchaouen: casas azules escalonadas en la ladera del Rif, escalera y macetas
-const azules = [[4, 78, 22, 32, '#7FAEE6'], [24, 66, 22, 44, '#5B8FD0'], [44, 56, 24, 54, '#A9CCF2'], [66, 66, 20, 44, '#4A78C0'], [84, 76, 32, 34, '#7FAEE6'], [30, 92, 26, 18, '#A9CCF2'], [60, 90, 30, 20, '#5B8FD0']];
+// 16 Chefchaouen: casas azules escalonadas en la ladera del Rif, escalera y macetas. SIN suelo propio: ladera y casas bajan hasta el borde y las lomas del destino (FORE) tapan su pie
+const azules = [[4, 78, 22, 42, '#7FAEE6'], [24, 66, 22, 54, '#5B8FD0'], [44, 56, 24, 64, '#A9CCF2'], [66, 66, 20, 54, '#4A78C0'], [84, 76, 32, 44, '#7FAEE6'], [30, 92, 26, 28, '#A9CCF2'], [60, 90, 30, 30, '#5B8FD0']];
 M.chaouen = cut(
-  `<path d="M0 80 L22 40 L40 56 L62 26 L88 50 L104 38 L120 60 L120 110 L0 110Z" fill="#A8A08A"/><rect x="50" y="34" width="10" height="24" fill="#F1EADC"/><path d="M49 34 L61 34 L55 28Z" fill="#E6D9BC"/>`
+  `<path d="M0 80 L22 40 L40 56 L62 26 L88 50 L104 38 L120 60 L120 120 L0 120Z" fill="#A8A08A"/><rect x="50" y="34" width="10" height="24" fill="#F1EADC"/><path d="M49 34 L61 34 L55 28Z" fill="#E6D9BC"/>`
   + azules.map(([x, y, w, h, c]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`).join(''),
   `<path d="M62 26 L88 50 L104 38 L120 60 L120 70 L96 56 L88 60 L66 34Z" fill="#8A8270" opacity=".5"/>`
   + azules.map(([x, y, w, h, c]) => `<rect x="${x}" y="${y}" width="${w}" height="2.4" fill="#F6F2EA"/><path d="M${x + w * .3} ${y + h} L${x + w * .3} ${y + Math.min(h, 16) * .4 + h - Math.min(h, 16)} Q${x + w / 2} ${y + h - Math.min(h, 16) + 1} ${x + w * .7} ${y + Math.min(h, 16) * .4 + h - Math.min(h, 16)} L${x + w * .7} ${y + h}Z" fill="${shade(c, .35)}"/><rect x="${x + w * .2}" y="${y + 6}" width="3.4" height="4" fill="#2F5A9A"/>`).join('')
-  + `<path d="M52 110 L56 102 L60 102 L62 96 L66 96 L68 90" stroke="#F6F2EA" stroke-width="3" fill="none"/>` + [[22, 64], [42, 54], [82, 74], [64, 88]].map(([x, y]) => `<rect x="${x - 2}" y="${y - 3}" width="4" height="3.4" fill="#D9733A"/><circle cx="${x}" cy="${y - 4.6}" r="2.4" fill="#E8452C"/>`).join(''));
+  + `<path d="M52 120 L52 110 L56 102 L60 102 L62 96 L66 96 L68 90" stroke="#F6F2EA" stroke-width="3" fill="none"/>` + [[22, 64], [42, 54], [82, 74], [64, 88]].map(([x, y]) => `<rect x="${x - 2}" y="${y - 3}" width="4" height="3.4" fill="#D9733A"/><circle cx="${x}" cy="${y - 4.6}" r="2.4" fill="#E8452C"/>`).join(''));
 // 17 San Francisco: Golden Gate completo (dos torres, cables a anclajes, tablero). SIN suelo propio: las torres bajan hasta el borde del recorte
 // y la bahía, las colinas de Marin/SF y la niebla baja (Karl the Fog) las pone el paisaje del destino delante (ver FORE más abajo)
 M.sf = cut(
@@ -498,12 +494,16 @@ const FORE = {
     { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
   ],
   'Zanzíbar': [
-    { t: 'hill', x: .2, w: 6, h: 1.6, c: [2, 3, .6], dz: .45, kind: 'dune' }, // casco del dhow: sólo asoma la vela
     { t: 'hill', x: .7, w: 7, h: 1.1, c: [2, 3, .7], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 2.0, c: [2, 3, .5], dz: .5, kind: 'dune' }, // pie de la casa
     { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.4, c: 3, dz: .8, kind: 'dune' },
   ],
   'Ciudad del Cabo': [
     { t: 'hill', x: .5, w: 7, h: 1.1, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de las casas de Bo-Kaap
+    { t: 'hill', x: -.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, // laderas
+    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
+  ],
+  'Chefchaouen': [
+    { t: 'hill', x: .5, w: 7, h: 1.1, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de las casas azules
     { t: 'hill', x: -.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, // laderas
     { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
   ],
