@@ -104,6 +104,7 @@ body.home #hud{opacity:0}
 @keyframes tgR{0%,8%{opacity:0}12%,26%{opacity:.9}34%,100%{opacity:0}}@keyframes tgL{0%,48%{opacity:0}52%,64%{opacity:.9}72%,100%{opacity:0}}
 #tuto h3{margin:0 0 6px;font:400 24px 'Lilita One',sans-serif;color:var(--red)}#tuto p{margin:0 0 14px;font:700 14px/1.4 Nunito;color:var(--ink)}#tuto .no{display:inline-block;background:var(--ink);color:var(--cream);border-radius:8px;padding:1px 7px;font:900 10px Nunito;letter-spacing:1px;margin-bottom:8px}
 #tuto .pic .t.w{background:#5AA5D2;color:#fff;font:700 22px/40px sans-serif;text-align:center;overflow:hidden;opacity:.9}#tuto .pic .t.w b{display:block;animation:tdArr 1.6s linear infinite}@keyframes tdArr{0%{transform:translateX(-26px)}100%{transform:translateX(26px)}}#tuto .pic .t.tdn{animation:tdSlide 3s ease-in-out infinite}@keyframes tdSlide{0%{left:50%;transform:scale(.4);opacity:0}15%{left:50%;transform:scale(1.08);opacity:1}30%{left:50%;transform:scale(1);opacity:1}62%,90%{left:70%;transform:scale(1);opacity:1}100%{left:70%;opacity:0}}#tuto .pic .tdf{position:absolute;width:44px;height:44px;border-radius:7px;border:2.5px dashed var(--ink);opacity:.35}#tuto .pic .tdh{position:absolute;left:50%;bottom:104px;margin-left:-8px;font-size:30px;animation:tdFinger 3s ease-in-out infinite}@keyframes tdFinger{0%{transform:translateY(-14px);opacity:0}12%{transform:translateY(0);opacity:1}32%{transform:translateY(0);opacity:1}45%,100%{transform:translateY(-14px);opacity:0}}
+#tuto .pic .t.w.sk{background:#DDEFFB;color:#3E6FA3;animation-duration:.9s}#tuto .pic .t.w.sk b{animation-duration:.8s}#tuto .pic .t.w.rl{background:#8A8F98;background-image:repeating-linear-gradient(90deg,transparent 0 9px,rgba(58,42,28,.55) 9px 12px);color:#F2B937;text-shadow:0 0 2px #3a2a1c,0 0 2px #3a2a1c}
 #tuto .pic svg.mvo{left:10%;margin-left:-30px;bottom:114px;animation:mvLn 2.4s ease-in-out infinite alternate}
 @keyframes mvLn{0%,10%{left:10%}90%,100%{left:30%}}
 @keyframes arrSlide{0%,100%{transform:translateX(-22px);opacity:.3}50%{transform:translateX(22px);opacity:1}}
@@ -693,7 +694,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <button class="link" id="howTo" style="margin-top:8px">? <span data-i18n="pause.how">CÓMO SE JUEGA</span></button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ <span data-i18n="pause.quit">SALIR</span></button></div><div class="pnote" data-i18n="pause.note">Si salís, perdés las monedas de esta ronda</div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, tideSwoosh, setGroundColor, setHour, freezeMovers } from './paper-voyager/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, driftSwoosh, setGroundColor, setHour, freezeMovers } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
@@ -761,13 +762,20 @@ const LEVELS=2,LV=.42,SKY=LEVELS*LV; // altura de la cima y del cielo (LV = alto
 const rnd=(()=>{let a=(Date.now()^0x9E3779B9)>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
 const pick=a=>a[Math.floor(rnd()*a.length)];
 let art=artFor(skinId);
-const tiles={},tide={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
+const tiles={},drift={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
 const paintRow=(y,t)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]=typeof t==='string'?{g:t,h:0}:{...t};};
 setGroundColor('empty',theme.ground);if(theme.hillColor)setGroundColor(theme.hill,theme.hillColor);
 for(let y=0;y<ROWS;y++)paintRow(y,theme.hill);
 let cur=START-1,uid=0;
 const OBST={land:[ROCK,STUMP],sea:[REEF,FIN,BARREL],sky:[PEAK,PEAK,CLOUD,STORM],rail:[BARRIER,CRATE,ROCK]};
-const LIVE={sea:FIN,sky:STORM,rail:CART},MOV_FROM=2,TIDE_FROM=3; // móviles desde el 2.º mundo, marea desde el 3.º (ver MECH_INTRO)
+const LIVE={sea:FIN,sky:STORM,rail:CART};
+// ── Mecánicas por mundo completado (mundo = DIF.P+1). Una sola tabla para el generador y las tarjetas (MECH_INTRO). ──
+// mov = obstáculos móviles · tide = MAREA (mar) · wind = VIENTO (cielo) · rail = DESVÍO (vía). Mundos 1-5 tranquilos.
+const MECH={mov:6,tide:20,wind:30,rail:40};
+// MODO PRUEBA: todas las mecánicas desde el mundo 1 (para probarlas en el teléfono). MECH_TEST=false para volver a los niveles definitivos
+const MECH_TEST=true;
+const mechOn=k=>MECH_TEST||DIF.P>=MECH[k]-1,mechFirst=k=>MECH_TEST?DIF.P===0:DIF.P===MECH[k]-1; // first = primer mundo con la mecánica (tramo de aprendizaje)
+const movSeen={}; // en modo prueba cada medio tiene al menos un obstáculo móvil
 function fill(n,kind,{gap,lead,extra}){
  let safe=2;const air=kind==='sky',lift=air?SKY:0;
  // Monedas en varios caminos: además de la del carril seguro, hay monedas de los costados que se juntan cambiando de carril
@@ -778,9 +786,9 @@ function fill(n,kind,{gap,lead,extra}){
    const prev=safe;safe=pick([-2,-1,1,2].map(d=>prev+d).filter(x=>x>=0&&x<COLS));
    const blocked=new Set([prev]),pool=[0,1,2,3,4].filter(x=>x!==safe&&x!==prev);
    for(let k=0;k<extra&&pool.length>1;k++)blocked.add(pool.splice(Math.floor(rnd()*pool.length),1)[0]);
-   // Desde el mundo 2 algunos obstáculos están vivos: tiburones, nubarrones y gallinas van y vienen entre dos carriles
+   // Desde MECH.mov algunos obstáculos están vivos: tiburones, nubarrones y gallinas van y vienen entre dos carriles
    // (nunca pisan el carril seguro). Cuanto más avanzado el mundo, más de ellos se mueven.
-   let alive=LIVE[kind]&&DIF.P>=MOV_FROM-1&&rnd()<(S>=3?.6:.38)?[...blocked].map(x=>[x,[x-1,x+1].filter(n=>n>=0&&n<COLS&&n!==safe&&!blocked.has(n))]).find(([x,ns])=>ns.length):null;
+   let alive=null;if(LIVE[kind]&&mechOn('mov')&&((MECH_TEST&&!movSeen[kind])||rnd()<(S>=3?.6:.38))){alive=[...blocked].map(x=>[x,[x-1,x+1].filter(n=>n>=0&&n<COLS&&n!==safe&&!blocked.has(n))]).find(([x,ns])=>ns.length)||null;if(alive)movSeen[kind]=1;}
    for(const x of blocked){const live=alive&&alive[0]===x,b={id:'b'+uid++,kind:'paper',svg:live?LIVE[kind]:pick(OBST[kind]),x:air?x-.15:x,y:air?y-.15:y,w:air?1.3:1,h:air?1.3:1,lift,cx:x,cy:y};
     if(live)b.mv={a:x,b:pick(alive[1]),period:2.6+rnd()*1.2-S*.12,phase:rnd()*3};
     blockers.push(b);}
@@ -793,24 +801,26 @@ const free=(n,t)=>{for(let i=0;i<n;i++){zone[cur-i]='free';paintRow(cur-i,t);}cu
 const park=(type,frames,board,size,lift=0)=>{const id='ride'+rides.length;vehicles.push({id,type,kind:'paper',svg:frames.idle[0],frames,fps:type==='boat'?5:6,x:2-(size-1)/2,y:board-(size-1)/2,w:size,h:size,lift});return id;};
 // Cada mundo aprieta más: obstáculos más seguidos, más carriles cerrados y tramos más largos
 const diff=hard=>({gap:hard||S>=2?2:3,lead:2,extra:hard||S>=1?2:1});
-// Marea: un tramo de ~6 filas de mar con corriente fija (izq./der.). 3.er mundo: solo en la ruta difícil; luego, en las dos.
-const markTide=(top,len,hard)=>{if(DIF.P<TIDE_FROM-1||len<11||!(hard||DIF.P>=TIDE_FROM))return;
- const first=DIF.P===TIDE_FROM-1,L=first?4:6,d=pick([-1,1]),i0=4+Math.floor(rnd()*(len-11));
- for(let k=0;k<L;k++)tide[top-i0-k]=d;
- if(first){const lo=top-i0-L+1,hi=top-i0+1; // primer tramo de aprendizaje: sin rocas ni obstáculos en la corriente ni en la fila previa
+// Deriva: un tramo de ~6 filas con empuje fijo (izq./der.) por tipo de zona: sea = MAREA, sky = VIENTO, rail = DESVÍO (misma regla para los tres).
+// Primer mundo con la mecánica: solo en la ruta difícil (en modo prueba, en el primer tramo) y con 4 filas sin rocas; luego, en las dos rutas.
+const DRIFT_K={sea:'tide',sky:'wind',rail:'rail'};
+const markDrift=(kind,top,len,hard)=>{const m=DRIFT_K[kind],first=mechFirst(m);if(!mechOn(m)||len<11||(first&&(MECH_TEST?hard:!hard)))return;
+ const L=first?4:6,d=pick([-1,1]),i0=4+Math.floor(rnd()*(len-11));
+ for(let k=0;k<L;k++)drift[top-i0-k]=d;
+ if(first){const lo=top-i0-L+1,hi=top-i0+1; // primer tramo de aprendizaje: sin rocas ni obstáculos en el tramo ni en la fila previa
   for(let i=blockers.length-1;i>=0;i--)if(blockers[i].cy>=lo&&blockers[i].cy<=hi)blockers.splice(i,1);}};
 const RIDE={
  // Mar: muelle → barco → ruta de agua → playa
- sea(len,hard){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);const top=cur;fill(len,'sea',diff(hard));markTide(top,len,hard);const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
+ sea(len,hard){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);const top=cur;fill(len,'sea',diff(hard));markDrift('sea',top,len,hard);const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
  // Cielo: escalón ya hecho → cima con globo → tiles de cielo → otra cima y bajada
  sky(len,hard){
   for(let k=0;k<LEVELS;k++)free(1,{g:theme.hill,h:k,r:[0,-1]});
   const board=cur;free(2,{g:theme.hill,h:LEVELS});const id=park('balloon',art.BALLOON,board,2,SKY); // el globo espera parado sobre la cima
-  fill(len,'sky',diff(hard));
+  const top=cur;fill(len,'sky',diff(hard));markDrift('sky',top,len,hard);
   const land=cur;free(2,{g:theme.hill,h:LEVELS});for(let k=LEVELS-1;k>=0;k--)free(1,{g:theme.hill,h:k,r:[0,1]});
   rides.push({board,land,id,type:'balloon'});},
  // Vías: estación → tren → rieles → estación
- rail(len,hard){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.6);fill(len,'rail',diff(hard));const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
+ rail(len,hard){const board=cur;free(2,'stone');const id=park('train',art.TRAIN,board,1.6);const top=cur;fill(len,'rail',diff(hard));markDrift('rail',top,len,hard);const land=cur;free(3,'stone');rides.push({board,land,id,type:'train'});},
 };
 const land=(n,first)=>fill(n,'land',{gap:S>=2?3:4,lead:first?7:3,extra:first?0:S>=3?2:1});
 {const order=['sea','sky','rail'];for(let i=0;i<stage%3;i++)order.push(order.shift());
@@ -835,7 +845,7 @@ const path={[START]:{x:2,e:2,lanes:{2:1}}};
 // Velocidad: sube suave y continua dentro del mundo; cada mundo arranca un poco más rápido y acelera más
 const speedAt=prog=>{const p=Math.max(0,Math.min(1,prog));const early=DIF.P===0?.3*(1-p):DIF.P===1?.12*(1-p):0;return Math.min(3.8+Math.min(LAP,3)*.15,1.3+(DIF.P>=1?.22:0)+SP*.13+(.8+S*.09)*Math.pow(p,1.2)+early);};
 const runner={fx:theme.id,look:theme.look,landmark:theme.art||null,lmScale:theme.lmScale||1,lmX:theme.lmX||0,playerId:player.id,startRow:START,lane:2,visualLane:2,speed:speedAt(0),distance:0,steps:0,autoAdvance:true,started:false,obstacles:[],coins,path,buildRow:START-1,buildLane:2,lastBuildLane:2,boatId:null,onBoat:false,onCoin,onCoinMiss,onGameOver};
-const opts={cols:COLS,rows:ROWS,tiles,tide,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
+const opts={cols:COLS,rows:ROWS,tiles,drift,zone,items:[player,goal,...vehicles,...blockers,...coins],mode:'placing',preview:false,rain:lluviaAhora,tool:'move',paints:false,valid:null,selected:null,OBJS:{},runner,onTap:()=>{},onCell:()=>{},onMiss:()=>{},onTile:()=>{}};
 const host=$('stage');
 if(!mountScene(host,opts))document.body.innerHTML='<p style="color:white;padding:24px">'+t('error.webgl')+'</p>';
 const toast=$('toast'),hint=$('hint'),gameover=$('gameover');
@@ -1065,10 +1075,11 @@ function railSide(cx,nx,y){const d=nx>cx?'E':'W',c=railT[cx+','+y];
  railNew(nx,y,OPP[d]);return true;}
 function setTile(x,y,extra){const z=zone[y];if(z==='free')return;const g=MAT[z],tile=z==='sky'?{g,h:LEVELS,float:true}:z==='rail'?(railT[x+','+y]||={g,h:0,in:'S',out:'N'}):{g,h:0};tiles[x+','+y]=tile;updateRunnerTile(x,y,tile);addScore(1);missionAdd('tile');SFX.tile(g,extra);}
 function moved(){const now=performance.now();if(now-lastWhoosh>90){lastWhoosh=now;SFX.whoosh();buzz(6);}}
-let tideFx=null;
-// Marea: la corriente corre 1 carril el tile de agua recién puesto, salvo borde, roca o si lo desconecta de la fila anterior
-function tideX(x,y,from){const d=tide[y];if(!d||zone[y]!=='sea')return x;const n=x+d;
- return n<0||n>=COLS||isRockCell(n,y)||Math.abs(n-from)>1?x:n;}
+let driftFx=null;
+// Deriva (marea/viento/desvío): la corriente corre 1 carril el tile recién puesto, salvo borde, roca/obstáculo o si lo desconecta de la fila anterior.
+// En vía además se exige que el carril de origen esté libre: así el tile desviado siempre queda con una vía en L bien conectada (si no, no se desvía).
+function driftX(x,y,from){const d=drift[y];if(!d||!DRIFT_K[zone[y]])return x;const n=x+d;
+ return n<0||n>=COLS||isRockCell(n,y)||Math.abs(n-from)>1||(zone[y]==='rail'&&isRockCell(from,y))?x:n;}
 function buildToward(lane){
  if(runner.gameOver)return false;
  const y=targetRow();if(y<0)return false;
@@ -1082,7 +1093,7 @@ function buildToward(lane){
    if(x!==from&&!isRockCell(from,y))x=from;
    else{runner.blockedByRock=y;return false;}
   }
-  const tx=tideX(x,y,from);if(tx!==x){tideFx=[x,tx-x];x=tx;}
+  const tx=driftX(x,y,from);if(tx!==x){driftFx=[x,tx-x];x=tx;}
   if(zone[y]==='rail'&&x!==from&&!isRockCell(from,y)){ // vías: cambiar de carril arma dos tiles en la fila (adelante y al costado), así la vía dobla en L sin cortar esquinas
    railNew(from,y,'S');railOut(from,y+1,'N');setTile(from,y,false);
    railSide(from,x,y);setTile(x,y,true);runner.path[y]={x,e:x,lanes:{[from]:1,[x]:1}};
@@ -1098,11 +1109,11 @@ function buildToward(lane){
   }
   setTile(x,y,false);runner.path[y]={x,e:x,lanes:{[x]:1}};
   runner.lastBuildLane=x;runner.steps++;if(x!==from)moved();
-  if(tideFx){tideSwoosh(tideFx[0],y,tideFx[1]);noise(.16,{f:1500,to:450,v:.035});tideFx=null;}
+  if(driftFx){driftSwoosh(driftFx[0],y,driftFx[1]);noise(.16,{f:1500,to:450,v:.035});driftFx=null;}
   return true;
  }
  if(lane===row.x)return false;
- if(tide[y]&&Math.sign(lane-row.x)===-tide[y])return false; // contra la corriente no se vuelve atrás: apunta un carril antes
+ if(drift[y]&&Math.sign(lane-row.x)===-drift[y])return false; // contra la corriente no se vuelve atrás: apunta un carril antes
  const nx=row.x+Math.sign(lane-row.x);
  if(isRockCell(nx,y))return false;
  if(zone[y]==='rail')railSide(row.x,nx,y);
@@ -1115,7 +1126,7 @@ function refreshHints(){
  const z=zone[y];runner.hintColor=z==='sea'?'#FFFFFF':z==='sky'?'#7FC8FF':'#F2B937';
  const liftOf=x=>z==='sky'&&!tiles[x+','+y]?.float?SKY:0;
  const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),o=[];
- if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const hx=tideX(x,y,from);if(!o.some(h=>h.x===hx))o.push({x:hx,y,lift:liftOf(hx),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}}
+ if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const hx=driftX(x,y,from);if(!o.some(h=>h.x===hx))o.push({x:hx,y,lift:liftOf(hx),main:x===(Math.abs(want-from)>1?from+Math.sign(want-from):want)});}}
  else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y))o.push({x,y,lift:liftOf(x),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});
  runner.hints=o;
 }
@@ -1142,13 +1153,13 @@ function enterRow(r){
  if(r<=RUNWAY&&!runner.gameOver){runner.buildLane=2;buildToward(2);} // en la pista Nilo se acomoda solo al centro para entrar por la puerta
  if(r<=GOAL)nextWorld();
 }
-let inTide=false;
+let inDrift=false;
 function refreshUI(){
  const y=targetRow(),ride=rides[rideIndex],toBoard=ride&&!runner.onBoat?y-ride.board:99;
  const name=t('ride.name.'+ride?.type);
- const td=runner.started&&!runner.gameOver&&zone[y]==='sea'?tide[y]:0,arr=d=>d>0?'\u2192':'\u2190';
- if(td&&!inTide)banner(t('toast.tide',{a:arr(td)}));inTide=!!td;
- if(td&&!paused){hint.textContent=t('hint.tide',{a:arr(td),b:arr(-td)});return;}
+ const dk=DRIFT_K[zone[y]],td=runner.started&&!runner.gameOver&&dk?drift[y]:0,arr=d=>d>0?'\u2192':'\u2190';
+ if(td&&!inDrift)banner(t('toast.'+dk,{a:arr(td)}));inDrift=!!td;
+ if(td&&!paused){hint.textContent=t('hint.'+dk,{a:arr(td),b:arr(-td)});return;}
  hint.textContent=paused?'':!runner.started?t('hint.start'):runner.onBoat?t('hint.dodge'):toBoard<12?t('hint.ahead',{name}):t('hint.any');
 }
 
@@ -1165,19 +1176,22 @@ const TUTO=[
   pic:()=>'<div class="t g" style="left:50%;bottom:66px;margin-left:-22px"></div>'+ROCK.replace('<svg','<svg style="left:50%;bottom:108px;margin-left:-30px"')+'<div class="t new" style="left:50%;bottom:66px;margin-left:-70px"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-70px;animation-delay:.3s"></div>'+'<div class="t new" style="left:50%;bottom:114px;margin-left:-22px;animation-delay:.6s;margin-left:-22px;bottom:162px"></div>'+art.HERO.idle[0].replace('<svg','<svg style="left:50%;bottom:4px;margin-left:-30px"')},
 ];
 // ── Mecánicas nuevas por etapas: cada fila avisa con una tarjeta (#tuto) la primera vez que se juega un destino con esa mecánica. ──
-// fromWorld = número de destino completado +1 (1 = el primero, sin la mecánica; 2 = desde el segundo). Agregar una mecánica = agregar una fila (y su claves i18n).
+// id = clave de MECH (mundo desde el que aplica; en MECH_TEST todas desde el 1.º). Agregar una mecánica = agregar una fila (y sus claves i18n).
+// key lleva sufijo 2: el modo prueba hace que todas las tarjetas se vuelvan a ver una vez. Si hay varias pendientes salen como pasos de una sola tarjeta.
+const lanesPic=()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('');
+const driftPic=cls=>()=>lanesPic()+[0,1,2,3,4].map(n=>'<div class="t w '+cls+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"><b>&#10140;</b></div>').join('')+'<div class="t new tdn" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdf" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdh">&#9758;</div>'+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"');
 const MECH_INTRO=[
- {id:'mov',fromWorld:MOV_FROM,key:'tutoMov',card:{no:t('tuto.mov.no'),h:t('tuto.mov.h'),p:t('tuto.mov.p'),
-  pic:()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('')+[0,1,2,3,4].map(n=>'<div class="t'+(n%2?' g':'')+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"></div>').join('')+'<div class="t new" style="left:70%;bottom:114px;margin-left:-22px"></div>'+FIN.replace('<svg','<svg class="mvo"')+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}},
- {id:'tide',fromWorld:TIDE_FROM,key:'tutoTide',card:{no:t('tuto.tide.no'),h:t('tuto.tide.h'),p:t('tuto.tide.p'),
-  pic:()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('')+[0,1,2,3,4].map(n=>'<div class="t w" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"><b>&#10140;</b></div>').join('')+'<div class="t new tdn" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdf" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdh">&#9758;</div>'+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}}];
-const mechOn=m=>DIF.P>=m.fromWorld-1;
-const mechDue=()=>MECH_INTRO.find(m=>mechOn(m)&&!store.get(m.key,0));
+ {id:'mov',key:'tutoMov2',card:{no:t('tuto.mov.no'),h:t('tuto.mov.h'),p:t('tuto.mov.p'),
+  pic:()=>lanesPic()+[0,1,2,3,4].map(n=>'<div class="t'+(n%2?' g':'')+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"></div>').join('')+'<div class="t new" style="left:70%;bottom:114px;margin-left:-22px"></div>'+FIN.replace('<svg','<svg class="mvo"')+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}},
+ {id:'tide',key:'tutoTide2',card:{no:t('tuto.tide.no'),h:t('tuto.tide.h'),p:t('tuto.tide.p'),pic:driftPic('')}},
+ {id:'wind',key:'tutoWind2',card:{no:t('tuto.wind.no'),h:t('tuto.wind.h'),p:t('tuto.wind.p'),pic:driftPic('sk')}},
+ {id:'rail',key:'tutoRail2',card:{no:t('tuto.rail.no'),h:t('tuto.rail.h'),p:t('tuto.rail.p'),pic:driftPic('rl')}}];
+const mechDue=()=>MECH_INTRO.filter(m=>mechOn(m.id)&&!store.get(m.key,0));
 let tutoStep=0,tutoAfter=null,tutoN=3,tutoSet=TUTO,tutoKey=null;
 function showTuto(after,n=3,set=TUTO,key=null){tutoStep=0;tutoAfter=after;tutoN=n;tutoSet=set;tutoKey=key;drawTuto();$('tuto').style.display='flex';}
-function showMech(m,after){showTuto(after,1,[m.card],m.key);}
-function drawTuto(){const tu=tutoSet[tutoStep];$('tutoPic').innerHTML=tu.pic();$('tutoNo').textContent=tu.no;$('tutoH').textContent=tu.h;$('tutoP').textContent=tu.p;$('tutoNext').textContent=t(tutoStep<tutoN-1?'tuto.next':'tuto.play');document.querySelectorAll('#tuto .steps i').forEach((e,i)=>{e.style.display=i<tutoN?'':'none';e.classList.toggle('on',i<=tutoStep);});}
-$('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<tutoN-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';if(tutoKey)store.set(tutoKey,1);else if(tutoAfter)store.set('tuto2',Math.max(1,store.get('tuto2',0)));tutoKey=null;if(tutoAfter){const f=tutoAfter;tutoAfter=null;f();}});
+function showMech(list,after){showTuto(after,list.length,list.map(m=>m.card),list.map(m=>m.key));}
+function drawTuto(){const tu=tutoSet[tutoStep];$('tutoPic').innerHTML=tu.pic();$('tutoNo').textContent=tu.no;$('tutoH').textContent=tu.h;$('tutoP').textContent=tu.p;$('tutoNext').textContent=t(tutoStep<tutoN-1?'tuto.next':'tuto.play');{const st=document.querySelector('#tuto .steps');if(st.children.length!==tutoN)st.innerHTML='<i></i>'.repeat(tutoN);}document.querySelectorAll('#tuto .steps i').forEach((e,i)=>{e.style.display=i<tutoN?'':'none';e.classList.toggle('on',i<=tutoStep);});}
+$('tutoNext').addEventListener('click',()=>{SFX.tap();if(tutoStep<tutoN-1){tutoStep++;drawTuto();return;}$('tuto').style.display='none';if(tutoKey)[].concat(tutoKey).forEach(k=>store.set(k,1));else if(tutoAfter)store.set('tuto2',Math.max(1,store.get('tuto2',0)));tutoKey=null;if(tutoAfter){const f=tutoAfter;tutoAfter=null;f();}});
 $('howTo').addEventListener('click',()=>{SFX.tap();showTuto(null,3);});
 $('howHome').addEventListener('click',()=>{SFX.tap();showTuto(null,3);});
 function begin(){if(!runner.started&&!paused){runner.started=true;audio();Music.start();Music.mode='run';document.body.classList.remove('home');}}
@@ -1461,7 +1475,7 @@ function confetti(){const C=['#F2B937','#E8452C','#5DB84F','#3E5BA9','#FFF4DC','
 $('play').addEventListener('click',()=>{audio();const k=SKINS[browse];
  if(!owned.includes(k.id)){const p=$('play');if(!buy(k.price,k.name)){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}owned.push(k.id);store.set('owned',owned);skinId=k.id;store.set('skin',skinId);pop(t('toast.prize',{name:k.name.toUpperCase()}),'big');drawHome();drawShop();return;}
  SFX.tap();const start=()=>{useItems();menuOpen=false;$('menu').style.display='none';document.body.classList.remove('ads');Ads.banner(false);banner(theme.place.toUpperCase());begin();};
- const go0=()=>heroJump(start),go=()=>{const m=mechDue();if(m)showMech(m,go0);else go0();};
+ const go0=()=>heroJump(start),go=()=>{const m=mechDue();if(m.length)showMech(m,go0);else go0();};
  if(DIF.P===0&&!store.get('tuto2',0))showTuto(go,3);else go();});
 function banner(txt,over=''){const b=$('banner');b.textContent=txt;if(over)b.insertAdjacentHTML('afterbegin','<small>'+over+'</small>');b.classList.toggle('long',txt.length>11);b.classList.remove('show');void b.offsetWidth;b.classList.add('show');}
 $('pause').addEventListener('click',()=>{if(ended||!runner.started)return;paused=true;runner.started=false;Music.mode='pause';Music.sync();$('paused').style.display='flex';});
@@ -1494,10 +1508,10 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},b
  tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((e,i)=>`<div><i>${i+1}</i>${fmt(e.s)}<small>${(THEMES[(e.w-1)%NW]?.place||t('scores.world',{n:e.w})).toUpperCase()}<br>${new Date(e.t).toLocaleDateString(lang)}</small></div>`).join(''):'<p class="note">'+t('scores.empty')+'</p>')+'</div>';}};
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
-else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);{const m=mechDue();if(m&&!carry)showMech(m,null);}}
+else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);{const m=mechDue();if(m.length&&!carry)showMech(m,null);}}
 if(V.needsPick()&&menuOpen)firstRunIntro();
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{if(introOn)return;const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,tide};
+if(DEBUG)window.__dbg={Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
 </script>
 </body></html>

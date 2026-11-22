@@ -877,7 +877,7 @@ function sanctuary() {
     W.wind = .35 + .25 * Math.sin(t * .5) + rk * .5;
     if (W.pvMesh) W.pvMesh.rotation.y = camAz;
     W.tufts.forEach(m => { m.rotation.y = camAz; m.rotation.z = Math.sin(t * 2.3 + m.userData.p) * .14 * (.5 + W.wind) - W.wind * .1; });
-    if (W.tideM?.size && tideT) { tideT.r.map.offset.x = -(t * .22 % 1); tideT.l.map.offset.x = t * .22 % 1; }
+    if (W.driftM?.size) for (const k in driftT) { const sp = DRIFT_SPEED[k]; driftT[k].r.map.offset.x = -(t * sp % 1); driftT[k].l.map.offset.x = t * sp % 1; }
     W.foams.forEach(f => { const s = 1 + Math.round(Math.sin(t * 5 + f.userData.p) * 2) * .06; f.scale.set(1, s, 1); });
     seaClouds.forEach(m => { const u = m.userData; u.a += u.v * dt * .1; const R = W.N * .9 + 3; m.position.set(c0 + Math.cos(u.a) * R, -bd * .75 - 1 - u.y * 1.4, c0 + Math.sin(u.a) * R); m.rotation.y = camAz; m.material.color.copy(cc); });
     const lit = [];
@@ -984,26 +984,23 @@ function buildIsland(W, cols, rows, tiles, items) {
       }
     }
   }
-  // Marea: flechas de papel en las filas con corriente (se deslizan lento en su dirección)
-  W.tideM = new Map();
-  if (W.opts.runner && W.opts.tide) {
-    const tex = tideTex(); const geo = new THREE.PlaneGeometry(.86, .86);
-    for (const ys of Object.keys(W.opts.tide)) {
-      const y = +ys, d = W.opts.tide[ys]; if (y < 0 || y >= rows) continue;
+  // Deriva (marea / viento / desvío): flechas de papel en las filas afectadas (se deslizan en su dirección) + señales de aviso 4 y 2 filas antes
+  W.driftM = new Map();
+  if (W.opts.runner && W.opts.drift) {
+    const geo = new THREE.PlaneGeometry(.86, .86), kindOf = y => W.opts.zone?.[y];
+    for (const ys of Object.keys(W.opts.drift)) {
+      const y = +ys, d = W.opts.drift[ys], kind = kindOf(y); if (y < 0 || y >= rows || !DRIFT_PAINT[kind]) continue;
+      const tex = driftTex(kind);
       for (let x = 0; x < cols; x++) {
         const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
-        m.position.set(x - ox, tY(x, y) + .05, y - oz); island.add(m); W.tideM.set(x + ',' + y, m);
+        m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(x + ',' + y, m);
       }
     }
-  }
-  // Marea: banderines de papel con flecha a los costados, 3 y 1 filas antes de que empiece la corriente (se ven de lejos)
-  if (W.opts.runner && W.opts.tide) {
-    const ys = Object.keys(W.opts.tide).map(Number).filter(v => v >= 0 && v < rows).sort((a, b) => a - b);
-    const entries = ys.filter(v => W.opts.tide[v + 1] === undefined);
-    for (const ey of entries) {
-      const d = W.opts.tide[ey];
+    const ys = Object.keys(W.opts.drift).map(Number).filter(v => v >= 0 && v < rows).sort((a, b) => a - b);
+    for (const ey of ys.filter(v => W.opts.drift[v + 1] === undefined)) {
+      const d = W.opts.drift[ey], kind = kindOf(ey), mkSign = { sea: buoyMesh, sky: windsockMesh, rail: switchSignMesh }[kind]; if (!mkSign) continue;
       [ey + 4, ey + 2].forEach(by => { if (by >= rows) return; [-.72, cols - 1 + .72].forEach(bx => {
-        const g = buoyMesh(d); g.position.set(bx - ox, tY(Math.min(cols - 1, Math.max(0, Math.round(bx))), by) + .02, by - oz); island.add(g); });
+        const g = mkSign(d); g.position.set(bx - ox, tY(Math.min(cols - 1, Math.max(0, Math.round(bx))), by) + .02, by - oz); island.add(g); });
       });
     }
   }
@@ -1218,17 +1215,25 @@ function railMaterial(a, b, br = []) {
   const mat = new THREE.MeshStandardMaterial({ map: tx, roughness: .9, transparent: true, alphaTest: .5 }); mat.userData.big = big;
   return cache[key] = mat;
 }
-// Marea: textura de chevrones (derecha/izquierda) que se desliza por offset
-let tideT = null;
-function tideTex() {
-  if (tideT) return tideT;
-  const c = document.createElement('canvas'); c.width = c.height = 256; const k = c.getContext('2d');
-  k.lineCap = k.lineJoin = 'round';
-  [128].forEach(cx => { const pts = [[cx - 52, 40], [cx + 36, 128], [cx - 52, 216]]; [[70, 'rgba(20,70,110,.85)'], [44, 'rgba(255,255,255,1)']].forEach(([w, col]) => { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); pts.forEach(([px, py], i) => i ? k.lineTo(px, py) : k.moveTo(px, py)); k.stroke(); }); });
+// Deriva: textura de flechas por tipo (derecha/izquierda) que se desliza por offset. sea = chevrones de agua, sky = trazos de viento, rail = flechas de aguja
+const driftT = {}, DRIFT_SPEED = { sea: .22, sky: .5, rail: .3 }, DRIFT_SKY_Y = 2 * LV; // sky: los tiles de cielo flotan a 2 niveles
+const DRIFT_PAINT = {
+  sea(k) { k.lineCap = k.lineJoin = 'round';
+    const pts = [[76, 40], [164, 128], [76, 216]]; [[70, 'rgba(20,70,110,.85)'], [44, 'rgba(255,255,255,1)']].forEach(([w, col]) => { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); pts.forEach(([px, py], i) => i ? k.lineTo(px, py) : k.moveTo(px, py)); k.stroke(); }); },
+  sky(k) { k.lineCap = k.lineJoin = 'round'; // tres trazos de viento con rulo al final
+    [[64, 20, 150, 0], [118, 22, 190, 1], [176, 18, 120, 0]].forEach(([y, x0, x1, curl]) => { [[30, 'rgba(70,120,175,.8)'], [17, 'rgba(255,255,255,1)']].forEach(([w, col]) => { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); k.moveTo(x0, y); k.lineTo(x1, y);
+      if (curl) k.arc(x1, y - 22, 22, Math.PI / 2, -Math.PI * .9, true); k.stroke(); }); }); },
+  rail(k) { k.lineCap = k.lineJoin = 'round'; // flecha de aguja: tallo + punta, ámbar con borde de tinta
+    const draw = (w, col) => { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); k.moveTo(34, 128); k.lineTo(208, 128); k.moveTo(150, 70); k.lineTo(212, 128); k.lineTo(150, 186); k.stroke(); };
+    draw(52, '#3a2a1c'); draw(30, '#F2B937'); },
+};
+function driftTex(kind) {
+  if (driftT[kind]) return driftT[kind];
+  const c = document.createElement('canvas'); c.width = c.height = 256; DRIFT_PAINT[kind](c.getContext('2d'));
   const mk = flip => { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d'); if (flip) { g.translate(256, 0); g.scale(-1, 1); } g.drawImage(c, 0, 0);
     const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = tx.wrapT = THREE.RepeatWrapping;
     return new THREE.MeshBasicMaterial({ map: tx, transparent: true, depthWrite: false, opacity: .95 }); };
-  return tideT = { r: mk(false), l: mk(true) };
+  return driftT[kind] = { r: mk(false), l: mk(true) };
 }
 // Marea: banderín (palo + bandera de papel con flecha grande) que avisa de la corriente antes del tramo
 const buoyC = {};
@@ -1250,20 +1255,60 @@ function buoyMesh(d) {
   g.add(b, p, f); g.traverse(o => { o.userData.keepGeo = true; o.renderOrder = 4; }); g.userData.keepGeo = true;
   return g;
 }
-// Marea: estela de papel que se desliza de un carril al otro cuando la corriente corre el tile
-export function tideSwoosh(x, y, dir) {
+// Viento: manga de viento de papel (palo + cono a franjas naranja/blanco que apunta hacia donde sopla)
+const sockC = {};
+function windsockMesh(d) {
+  if (!sockC.pole) {
+    sockC.pole = new THREE.CylinderGeometry(.03, .04, 1.15, 6); sockC.polem = new THREE.MeshBasicMaterial({ color: 0x3a2a1c });
+    sockC.base = new THREE.SphereGeometry(.12, 8, 6); sockC.o = new THREE.MeshBasicMaterial({ color: 0xF07A2A, side: THREE.DoubleSide }); sockC.w = new THREE.MeshBasicMaterial({ color: 0xFFF4DC, side: THREE.DoubleSide });
+    sockC.ring = new THREE.TorusGeometry(.17, .025, 5, 12);
+  }
+  const g = new THREE.Group(), a = d > 0 ? 1 : -1;
+  const b = new THREE.Mesh(sockC.base, sockC.polem); b.position.y = .05;
+  const p = new THREE.Mesh(sockC.pole, sockC.polem); p.position.y = .58; g.add(b, p);
+  const sock = new THREE.Group(); sock.position.set(0, 1.08, 0); sock.rotation.z = -a * .12;
+  for (let i = 0; i < 4; i++) { const r0 = .17 - i * .03, r1 = .17 - (i + 1) * .03, seg = new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, .17, 10, 1, true), i % 2 ? sockC.w : sockC.o);
+    seg.rotation.z = a * Math.PI / 2; seg.position.x = a * (.1 + i * .17); sock.add(seg); }
+  const ring = new THREE.Mesh(sockC.ring, sockC.polem); ring.rotation.y = Math.PI / 2; ring.position.x = a * .02; sock.add(ring); g.add(sock);
+  g.traverse(o => { o.userData.keepGeo = true; o.renderOrder = 4; }); g.userData.keepGeo = true;
+  return g;
+}
+// Desvío: señal ferroviaria de papel (poste + placa con flecha grande y farol) que avisa de la aguja antes del tramo
+const swC = {};
+function switchSignMesh(d) {
+  if (!swC.pole) {
+    swC.pole = new THREE.CylinderGeometry(.035, .035, .9, 6); swC.polem = new THREE.MeshBasicMaterial({ color: 0x3a2a1c });
+    swC.foot = new THREE.BoxGeometry(.2, .1, .2); swC.footm = new THREE.MeshBasicMaterial({ color: 0x8A8F98 }); swC.plate = new THREE.PlaneGeometry(.58, .58);
+    swC.lamp = new THREE.SphereGeometry(.07, 8, 6); swC.lampm = new THREE.MeshBasicMaterial({ color: 0xE24B3B });
+    const mk = dir => { const c = document.createElement('canvas'); c.width = c.height = 256; const k = c.getContext('2d');
+      k.fillStyle = '#FFF4DC'; k.fillRect(0, 0, 256, 256); k.strokeStyle = '#3a2a1c'; k.lineWidth = 16; k.strokeRect(8, 8, 240, 240);
+      k.fillStyle = '#E8452C'; k.beginPath(); k.arc(128, 54, 20, 0, 7); k.fill(); k.stroke();
+      k.save(); if (dir < 0) { k.translate(256, 0); k.scale(-1, 1); } k.lineCap = k.lineJoin = 'round';
+      [[30, '#3a2a1c'], [16, '#F2B937']].forEach(([w, col]) => { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); k.moveTo(46, 170); k.lineTo(190, 170); k.moveTo(142, 124); k.lineTo(196, 170); k.lineTo(142, 216); k.stroke(); }); k.restore();
+      const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: tx, side: THREE.DoubleSide }); };
+    swC.r = mk(1); swC.l = mk(-1);
+  }
+  const g = new THREE.Group();
+  const f = new THREE.Mesh(swC.foot, swC.footm); f.position.y = .05;
+  const p = new THREE.Mesh(swC.pole, swC.polem); p.position.y = .5;
+  const pl = new THREE.Mesh(swC.plate, d > 0 ? swC.r : swC.l); pl.position.y = 1.08;
+  g.add(f, p, pl); g.traverse(o => { o.userData.keepGeo = true; o.renderOrder = 4; }); g.userData.keepGeo = true;
+  return g;
+}
+// Deriva: estela de papel + el tile aparece en el carril donde lo pusiste y se desliza (200 ms) al carril final; el tile real espera oculto
+export function driftSwoosh(x, y, dir) {
   const W = E?.worlds.sanct; if (!W?.tY) return;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(.9, .9), new THREE.MeshBasicMaterial({ map: tideTex()[dir > 0 ? 'r' : 'l'].map, transparent: true, opacity: 1, depthWrite: false }));
+  const kind = W.opts.zone?.[y] || 'sea', key = (x + dir) + ',' + y, top = W.tops.get(key);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(.9, .9), new THREE.MeshBasicMaterial({ map: driftTex(kind)[dir > 0 ? 'r' : 'l'].map, transparent: true, opacity: 1, depthWrite: false }));
   m.rotation.x = -Math.PI / 2; m.renderOrder = 7; W.fx.add(m);
-  // el tile aparece en el carril donde lo pusiste y se desliza (200 ms) al carril final; el tile real espera oculto
-  const fin = W.tops.get((x + dir) + ',' + y);
+  const fin = kind === 'sky' ? W.floats?.get(key) : kind === 'rail' ? top?.userData.rail : top;
   if (fin) {
-    const g = new THREE.Mesh(fin.geometry, fin.material); g.renderOrder = 6; W.fx.add(g);
+    const g = new THREE.Mesh(fin.geometry, fin.material); g.renderOrder = 6; g.rotation.copy(fin.rotation); g.scale.copy(fin.scale); W.fx.add(g);
     const sx = fin.position.x - dir, t1 = performance.now(); fin.visible = false;
     const sl = () => { const k = Math.min(1, (performance.now() - t1) / 200); g.position.set(sx + dir * (1 - Math.pow(1 - k, 2)), fin.position.y + .02, fin.position.z); if (k >= 1) { fin.visible = true; W.fx.remove(g); return; } requestAnimationFrame(sl); };
     sl();
   }
-  const ox = (W.cols - 1) / 2, z = y - (W.rows - 1) / 2, yy = W.tY(x + dir, y) + .09, t0 = performance.now();
+  const ox = (W.cols - 1) / 2, z = y - (W.rows - 1) / 2, yy = (kind === 'sky' ? DRIFT_SKY_Y : W.tY(x + dir, y)) + .09, t0 = performance.now();
   const step = () => { const k = (performance.now() - t0) / 520; if (k >= 1) { W.fx.remove(m); m.geometry.dispose(); m.material.dispose(); return; } m.position.set(x + dir * (1 - Math.pow(1 - k, 2)) - ox, yy + k * .1, z); m.material.opacity = 1 - k * k; requestAnimationFrame(step); }; step();
 }
 export function updateRunnerTile(x, y, tile) {
@@ -1283,7 +1328,7 @@ export function updateRunnerTile(x, y, tile) {
     top.userData.rail.scale.setScalar(mat.userData.big ? 2 : 1);
     return;
   }
-  const tm = W.tideM?.get(x + ',' + y); if (tm && tile.g === 'water') tm.position.y = W.tY(x, y) + .03;
+  const tm = W.driftM?.get(x + ',' + y); if (tm && tile.g === 'water') tm.position.y = W.tY(x, y) + .03;
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
   top.position.y = W.tY(x, y) - SLAB / 2;
   top.material.needsUpdate = true;
