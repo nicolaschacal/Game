@@ -860,7 +860,7 @@ const park=(type,frames,board,size,lift=0)=>{const id='ride'+rides.length;vehicl
 const diff=hard=>({gap:hard||S>=2?2:3,lead:2,extra:hard||S>=1?2:1});
 // Deriva (marea / viento / desvío): tramos por ETAPAS (1 casilla · 2 casillas · fila entera · 2 filas · 2-3 filas), un tipo por medio: sea = MAREA, sky = VIENTO, rail = DESVÍO.
 // drift['x,y']=±1 marca cada casilla con corriente; driftRows[y]=dirección de la fila (banner / pista / señales).
-// Regla: el tile que cae en una casilla con corriente (primer tile o extensión lateral) se corre 1 carril hacia donde va la corriente. Si ahí hay roca/obstáculo/móvil, Nilo es arrastrado y CHOCA.
+// Regla: el PRIMER tile de la fila que cae en una casilla con corriente (las extensiones laterales no se corren) se corre 1 carril hacia donde va la corriente. Si ahí hay roca/obstáculo/móvil, Nilo es arrastrado y CHOCA.
 // Fuera de la grilla el tile queda en el borde. Apuntar en diagonal contra la corriente deja el tile recto (o, en una extensión, sin tile nuevo).
 const DRIFT_K={sea:'tide',sky:'wind',rail:'rail'};
 const drift={},driftRows={},driftSeen={}; // drift['x,y']=dirección de esa casilla · driftRows[y]=dirección de la fila que tiene alguna casilla
@@ -1269,7 +1269,7 @@ function buildToward(lane){
  if(lane===row.x)return false;
  const nx0=row.x+Math.sign(lane-row.x);
  if(isRockCell(nx0,y))return false;
- let nx=nx0;const dE=driftOn(nx0,y);if(dE){nx=nx0+dE;if(Math.abs(nx-row.x)>1)nx=nx0;if(nx<0||nx>=COLS)nx=nx0;if(nx===row.x)return false;if(isRockCell(nx,y)){runner.blockedByRock=y;runner.driftCrash=DRIFT_K[zone[y]];runner.custCrash=custClosed(nx,y);return false;}} // extensión lateral: la corriente también corre el tile si cae en una casilla con corriente
+ let nx=nx0; // extensión lateral: la corriente NO la corre (solo empuja el primer tile de la fila), así siempre se puede escapar hacia cualquier lado, varios carriles
  if(zone[y]==='rail')railSide(row.x,nx,y);
  if(!(nx in row.lanes)){setTile(nx,y,true);row.lanes[nx]=1;runner.steps++;}
  row.x=nx;runner.lastBuildLane=nx;moved();
