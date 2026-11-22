@@ -218,6 +218,31 @@ export const DOUBLE = (() => {
     + L(P('M66 22 L40 62 L50 62 L66 38Z'), '#FFF1B0', null, { j: .2 })
     + L(P('M63 48 L90 48 L66 80Z'), '#E09A18', null, { j: .3 }), [b]);
 })();
+// ── Contrarrestos (tienda y HUD): mismo lenguaje de papel recortado que los demás ítems ──
+export const ANCHOR = (() => {
+  const shaft = R(55, 30, 10, 62), ring = arc(60, 22, 6, 13, 0, 360, 22), stock = R(40, 40, 40, 9),
+    arms = P('M22 68 Q28 100 60 102 Q92 100 98 68 L84 76 Q76 88 60 90 Q44 88 36 76Z'), fl1 = P('M20 66 L38 60 L40 80Z'), fl2 = P('M100 66 L82 60 L80 80Z');
+  return paper(LS([shaft, stock, arms, fl1, fl2], '#2F7FA8', '#1B4D69', { dx: 1.6, dy: 2, j: .5 }) + L(ring, '#2F7FA8', '#1B4D69', { dx: 1.4, dy: 1.8, j: .4 })
+    + L(R(55, 32, 4, 58), '#6FB6D8', null, { j: .3 }) + L(R(42, 41, 36, 3), '#6FB6D8', null, { j: .2 }) + L(P('M24 70 Q30 96 58 98 L58 94 Q36 90 30 74Z'), '#58A3C8', null, { j: .3 }), [shaft, stock, arms, fl1, fl2]);
+})();
+export const BALLAST = (() => {
+  const b = P('M40 44 Q60 38 80 44 L102 98 Q60 112 18 98Z'), ring = arc(60, 36, 5, 11, 0, 360, 20);
+  return paper(L(b, '#7A6AA8', '#483C70', { dx: 1.6, dy: 2.2, j: .6 }) + L(ring, '#9A8CC4', '#483C70', { dx: 1.2, dy: 1.6, j: .4 })
+    + L(P('M40 44 Q60 38 80 44 L88 70 L34 70Z'), '#8F81BD', null, { j: .4 }) + L(P('M80 44 L102 98 Q84 104 76 104Z'), '#64568F', null, { j: .4 })
+    + L(P('M60 92 L42 70 L54 70 L54 58 L66 58 L66 70 L78 70Z'), '#E4DEF5', '#B7AED6', { dx: .8, dy: 1.2, j: .3 }), [b, ring]);
+})();
+export const NEEDLEKEY = (() => {
+  const head = arc(36, 62, 10, 25, 0, 360, 24), shaft = R(52, 56, 56, 12), t1 = R(88, 67, 9, 15), t2 = R(102, 67, 8, 11);
+  return paper(LS([head, shaft, t1, t2], '#D9961E', '#8A5A0C', { dx: 1.6, dy: 2, j: .5 })
+    + L(R(54, 58, 52, 3), '#F7CE6B', null, { j: .25 }) + L(arc(36, 62, 17, 25, 195, 285, 8), '#F7CE6B', null, { j: .25 }) + L(arc(36, 62, 10, 25, 20, 100, 8), '#B87A12', null, { j: .25 })
+    + L(P('M14 20 L24 30 L14 40Z'), '#F2B937', null, { j: .2 }), [head, shaft, t1, t2]);
+})();
+export const COMPASS = (() => {
+  const ring = arc(60, 62, 31, 44, 0, 360, 30), face = E(60, 62, 31, 31, 28);
+  return paper(L(ring, '#C23B2A', '#7A1F14', { dx: 1.6, dy: 2.2, j: .6 }) + L(face, '#FFF4DC', '#E2CFA2', { dx: -.8, dy: -1, j: .5 })
+    + L(P('M60 30 L71 62 L49 62Z'), '#D8402C', '#8E2618', { dx: .8, dy: 1.2, j: .3 }) + L(P('M60 94 L71 62 L49 62Z'), '#5B4F70', null, { j: .3 })
+    + L(E(60, 62, 4.5, 4.5, 12), '#FFF4DC', '#2B2236', { dx: .6, dy: .8, j: .2 }) + L(arc(60, 62, 31, 44, 200, 280, 8), '#E0604A', null, { j: .25 }), [ring, face]);
+})();
 export const SHIELD = (() => {
   const b = P('M60 16 L96 28 L94 60 Q90 90 60 106 Q30 90 26 60 L24 28Z'), inner = P('M60 34 L78 40 L77 60 Q74 78 60 88 Q46 78 43 60 L42 40Z');
   return paper(L(b, '#3E5BA9', '#1F3068', { dx: 1.6, dy: 2, j: .6 })

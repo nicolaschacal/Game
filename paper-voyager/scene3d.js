@@ -839,8 +839,9 @@ function sanctuary() {
           m.visible = !!top;
           if (!m.visible) return;
           m.position.set(h.x - ox, W.tY(h.x, h.y) + (h.lift || 0) + .075, h.y - oz);
-          m.material.color.set(runner.hintColor || '#F2B937');
-          m.material.opacity = h.main ? .38 + Math.sin(t * 5.5) * .16 : .16 + Math.sin(t * 5.5) * .05;
+          m.material.color.set(h.bad ? '#E8452C' : runner.hintColor || '#F2B937'); // rojo = aviso de choque (la corriente te lleva a una roca)
+          m.material.depthTest = !h.bad; // el aviso rojo se ve por encima de la roca
+          m.material.opacity = h.bad ? .78 + Math.sin(t * 9) * .15 : h.main ? .38 + Math.sin(t * 5.5) * .16 : .16 + Math.sin(t * 5.5) * .05;
         });
       }
     }
@@ -989,12 +990,15 @@ function buildIsland(W, cols, rows, tiles, items) {
   if (W.opts.runner && W.opts.drift) {
     const geo = new THREE.PlaneGeometry(.86, .86), kindOf = y => W.opts.zone?.[y];
     const rowD = {}, rowX = {};
-    for (const key of Object.keys(W.opts.drift)) {
-      const [xs, ys] = key.split(','), x = +xs, y = +ys, d = W.opts.drift[key], kind = kindOf(y); if (!d || y < 0 || y >= rows || x < 0 || x >= cols || !DRIFT_PAINT[kind]) continue;
+    for (const key of Object.keys(W.opts.drift)) { // drift[y] = ±1: la fila entera tiene corriente
+      const y = +key, d = W.opts.drift[key], kind = kindOf(y); if (!d || y < 0 || y >= rows || !DRIFT_PAINT[kind]) continue;
       const tex = driftTex(kind);
-      const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
-      m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(key, m);
-      rowD[y] = d; (rowX[y] ||= []).push(x);
+      for (let x = 0; x < cols; x++) {
+        const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
+        m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(x + ',' + y, m);
+        (rowX[y] ||= []).push(x);
+      }
+      rowD[y] = d;
     }
     const ys = Object.keys(rowD).map(Number).sort((a, b) => a - b);
     for (const ey of ys.filter(v => rowD[v + 1] === undefined)) {
@@ -1295,6 +1299,23 @@ function switchSignMesh(d) {
   const pl = new THREE.Mesh(swC.plate, d > 0 ? swC.r : swC.l); pl.position.y = 1.08;
   g.add(f, p, pl); g.traverse(o => { o.userData.keepGeo = true; o.renderOrder = 4; }); g.userData.keepGeo = true;
   return g;
+}
+// Un ítem anula la deriva de un medio: flechas apagadas y tachadas con una línea roja por fila
+export function driftOff(kinds) {
+  const W = E?.worlds.sanct; if (!W?.driftM) return;
+  const dim = {}, strip = new THREE.Mesh(new THREE.PlaneGeometry(W.cols * .96, .09), new THREE.MeshBasicMaterial({ color: '#D33A2C', transparent: true, opacity: .8, depthWrite: false })), rows = new Set();
+  W.driftM.forEach((m, key) => {
+    const y = +key.split(',')[1], kind = W.opts.zone?.[y]; if (!kinds.includes(kind)) return;
+    const k = (m.material === driftTex(kind).r ? 'r' : 'l') + kind;
+    m.material = dim[k] ||= new THREE.MeshBasicMaterial({ map: (() => { const tx = m.material.map.clone(); tx.needsUpdate = true; return tx; })(), transparent: true, opacity: .2, color: '#8a8a8a', depthWrite: false });
+    if (!rows.has(y)) { rows.add(y); const l = strip.clone(); l.rotation.x = -Math.PI / 2; l.rotation.z = .12; l.renderOrder = 5; l.userData.keepGeo = true; l.position.set(0, (kind === 'sky' ? DRIFT_SKY_Y : W.tY(2, y)) + .08, y - (W.rows - 1) / 2); W.island ? W.island.add(l) : W.fx.add(l); }
+  });
+}
+// Brújula: anillo rojo bajo las monedas señuelo
+export function markDecoys(ids) {
+  const W = E?.worlds.sanct; if (!W) return;
+  const geo = new THREE.RingGeometry(.3, .44, 20), mat = new THREE.MeshBasicMaterial({ color: '#E8452C', transparent: true, opacity: .9, depthWrite: false, side: THREE.DoubleSide });
+  ids.forEach(id => { const o = W.items.get(id); if (!o) return; const r = new THREE.Mesh(geo, mat); r.rotation.x = -Math.PI / 2; r.position.y = .12; r.renderOrder = 9; r.userData.keepGeo = true; o.group.add(r); });
 }
 // Deriva: estela de papel + el tile aparece en el carril donde lo pusiste y se desliza (200 ms) al carril final; el tile real espera oculto
 export function driftSwoosh(x, y, dir) {

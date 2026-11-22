@@ -18,10 +18,14 @@ const rarityOf = k => RARITY[k.id] || (k.price >= 2000 ? [tt('rarity.legendary')
 const IT_SVG = {
   revive: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.7a4.3 4.3 0 0 1 7.5 2.6c0 5.6-7.5 10.2-7.5 10.2z" fill="currentColor"/>',
   shield: '<path d="M12 3.5l7 2.6v5.4c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6.1z" fill="currentColor"/>',
+  anchor: '<circle cx="12" cy="5.5" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 8v12M8 10.5h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M4.5 14c.6 4 3.6 6 7.5 6s6.900-2 7.500-6l-2.300 1.300M4.500 14l2.400 1.500" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+  ballast: '<path d="M8 8.500Q12 7 16 8.500L20 19Q12 21.500 4 19z" fill="currentColor"/><circle cx="12" cy="5.500" r="2" fill="none" stroke="currentColor" stroke-width="1.800"/><path d="M12 17l-3.500-4h2.200V10.500h2.600V13h2.200z" fill="#fff" opacity=".85"/>',
+  needle: '<circle cx="7" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2.400"/><path d="M11 12h10M17.500 12v3.500M20.500 12v2.500" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" fill="none"/>',
+  compass: '<circle cx="12" cy="12" r="8.500" fill="none" stroke="currentColor" stroke-width="2.200"/><path d="M12 6l2.600 6h-5.200z" fill="currentColor"/><path d="M12 18l2.600-6H9.400z" fill="currentColor" opacity=".45"/>',
   freeze: '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="M9.5 4.5L12 6.5l2.5-2M9.5 19.5L12 17.5l2.5 2" fill="none" stroke-width="1.8"/></g>',
 };
 const itemIco = k => IT_SVG[k.id] ? `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">${IT_SVG[k.id]}</svg>` : esc(k.icon);
-const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9' };
+const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9', anchor: '#2F7FA8', ballast: '#7A6AA8', needle: '#D9961E', compass: '#C23B2A' };
 const PHOTO_GROUPS = [['frame', tt('store.photo.frames')], ['cover', tt('store.photo.covers')], ['filter', tt('store.photo.filters')], ['deco', tt('store.photo.decos')]];
 const GLYPH = { // motivo del escudo de cada región
   am: '<path d="M60 40 L63 56 L60 76 L57 56Z M44 58 L58 55 L76 58 L58 61Z" fill="#7a4d0b"/>',

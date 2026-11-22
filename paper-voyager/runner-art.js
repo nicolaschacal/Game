@@ -5,7 +5,7 @@ import { t as tt } from './i18n.js';
 import { NILO2 } from './nilo-v2.js'; // Nilo rediseñado en papel (frames generados una vez al cargar)
 import { paperBoat, paperBalloon, paperTrain } from './runner-papel.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
-export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST } from './runner-papel.js';
+export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './runner-papel.js';
 // Recorte: la silueta se dibuja primero con borde crema y encima las mismas formas sin borde + detalles.
 const cut = (shapes, details = '', under = '') => `<svg viewBox="0 0 120 120">${under}<g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${shapes}</g>${shapes}${details}</svg>`;
 const limb = (x, y, w, h, deg, fill, ox = x + w / 2, oy = y) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${w / 2}" fill="${fill}" transform="rotate(${deg} ${ox} ${oy})"/>`;
