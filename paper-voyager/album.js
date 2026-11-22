@@ -544,7 +544,8 @@ export function openBag(ctx) {
   document.querySelectorAll('.pvbag').forEach(e => e.remove());
   const root = document.createElement('div'); root.className = 'panel pva pvbag'; root.style.display = 'block'; document.body.appendChild(root); lockScroll(root);
   let idx = 0;
-  const close = () => { root.remove(); sfx('tap'); };
+  const eq0 = V.passEq ? V.passEq() : null; // si cambia el pasaporte equipado, el destino se regenera al cerrar para aplicar las aduanas
+  const close = () => { root.remove(); sfx('tap'); if ((V.passEq ? V.passEq() : null) !== eq0) { try { sessionStorage.removeItem('pv.auto'); } catch (e) {} setTimeout(() => location.reload(), 120); } };
   function draw() {
     const P = V.PHOTO, pass = V.T.passports || [], nReg = V.REGION_ORDER.length;
     const sv = V.SOUVENIRS.filter(s => P.owned.includes(s.id));
