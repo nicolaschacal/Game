@@ -450,7 +450,7 @@ export function selfieReveal(ctx, i, res) {
 // MOCHILA: el contenido volcado sobre una mesa de papel. Es el menú de álbum, pasaportes y souvenirs.
 // ═══════════════════════════════════════════════════════════════════════════
 const BAG_CSS = `
-.pvb-t{--th:max(430px,calc(100dvh - var(--st) - var(--navH,66px) - 118px));position:relative;max-width:100%;height:var(--th);overflow:hidden;touch-action:pan-y}
+.pvb-t{--th:max(430px,calc(100dvh - var(--st) - var(--navH,66px) - 118px));position:relative;isolation:isolate;max-width:100%;height:var(--th);overflow:hidden;touch-action:pan-y}
 .pvb-alb{position:absolute;left:4%;top:2%;width:min(54%,calc(var(--th) * .395));transform:rotate(-5deg);transform-origin:50% 50%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
 .pvb-alb .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
 .pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
@@ -471,7 +471,7 @@ const BAG_CSS = `
 .pvb-pas .bk{position:absolute;left:50%;bottom:16%;width:56%;transform-origin:50% 112%;transition:transform .3s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 5px 6px rgba(27,23,48,.3))}
 .pvb-pas .bk svg,.pvb-sc svg,.pvb-dec svg{display:block;width:100%;height:auto;overflow:visible}
 .pvb-pas:active .bk{filter:brightness(.96) drop-shadow(0 1px 1px rgba(40,24,10,.3))}
-.pvb-eqm{position:absolute;right:-3%;top:-4%;z-index:21;padding:2px 8px 3px;border-radius:99px;background:#76B85A;color:#fff;font:400 10.5px 'Lilita One',sans-serif;letter-spacing:.4px;box-shadow:0 2px 0 #356F2E,0 3px 6px rgba(27,23,48,.3);transform:rotate(4deg);white-space:nowrap}
+.pvb-eqm{position:absolute;left:50%;top:1%;z-index:21;padding:2px 9px 3px;border-radius:99px;background:#76B85A;color:#fff;font:400 10.5px 'Lilita One',sans-serif;letter-spacing:.4px;box-shadow:0 2px 0 #356F2E,0 3px 6px rgba(27,23,48,.3);transform:translateX(-50%);white-space:nowrap}
 .pvb-pas .bk.eq{filter:drop-shadow(0 0 0 #76B85A) drop-shadow(0 0 3px #76B85A) drop-shadow(0 2px 2px rgba(40,24,10,.32))}
 .pvb-pas .pvb-tag{z-index:20;position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-2.5deg)}
 .pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}

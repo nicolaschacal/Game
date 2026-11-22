@@ -225,6 +225,10 @@ export function pickStart(i) {
   store.set('skin', 'nilo');
 }
 export const hasPass = r => T.passports.includes(r);
+// ?rico (modo prueba, lo activa index.html; nunca en la app nativa): viajar a cualquier destino del mapa sin costo ni pasaporte
+let rico = false;
+export const setRico = v => { rico = !!v; };
+export const isRico = () => rico;
 export function buyPass(r, wallet) {
   if (hasPass(r)) return { ok: false, why: 'own' };
   const p = passPrice(r); if (wallet < p) return { ok: false, why: 'coins', need: p - wallet };
@@ -234,6 +238,7 @@ export function buyPass(r, wallet) {
 export function destState(i, wallet) {
   const r = regionOf(i), cost = fare(T.at, i);
   if (i === T.at) return { st: 'cur', cost: 0, r };
+  if (rico) return { st: 'ok', cost: 0, r };
   if (!hasPass(r)) return { st: 'nopass', cost, r };
   if (wallet < cost) return { st: 'nocoins', cost, r };
   return { st: 'ok', cost, r };

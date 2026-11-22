@@ -138,7 +138,7 @@ function objetos(c) {
   const V = c.V, I = c.Iap;
   const items = c.ITEMS.map(k => `<button class="it" data-v="item" data-id="${k.id}"><i style="background:${ITEM_COL[k.id] || '#3E5BA9'};color:#fff">${itemIco(k)}</i><div><b>${esc(k.name)}${c.stock[k.id] ? `<u>x${c.stock[k.id]}</u>` : ''}</b><small>${esc(k.tag)}</small></div><span class="price">${coin(k.price)}</span></button>`).join('');
   const sou = V.SOUVENIRS.map(s => {
-    const R = V.REGIONS[s.region], pass = V.hasPass(s.region), has = V.PHOTO.owned.includes(s.id);
+    const R = V.REGIONS[s.region], pass = V.hasPass(s.region) || V.isRico(), has = V.PHOTO.owned.includes(s.id);
     return `<button class="ph${pass || has ? '' : ' lock'}" data-v="sou" data-id="${s.id}"><div class="pv">${photoPreview(s.id)}</div><b>${esc(s.name)}</b>` +
       (has ? `<span class="price tk">${tt('store.have')}</span>` : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">🔒 ${tt('store.needPass', { pass: esc(R.pass) })}</div>`) + '</button>';
   }).join('');
@@ -161,7 +161,7 @@ function shell(panel) {
 function render() {
   const c = lastCtx, panel = document.getElementById('shop');
   if (!c || !panel) return;
-  const w = panel.querySelector('#sWallet'); if (w) w.textContent = c.wallet;
+  const w = panel.querySelector('#sWallet'); if (w) w.textContent = c.walletTxt ?? c.wallet;
   panel.querySelectorAll('#vTabs button').forEach(b => { const on = b.dataset.t === tab; b.classList.toggle('on', on); if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
   const body = panel.querySelector('#vBody'), st = panel.scrollTop;
   body.innerHTML = { viajeros, pasaportes, foto, objetos }[tab](c);
@@ -197,7 +197,7 @@ async function onClick(e) {
     if (kind === 'sou') {
       const s = V.SOUVENIRS.find(x => x.id === id);
       if (P.owned.includes(id)) return c.SFX.tap();
-      if (!V.hasPass(s.region)) { c.SFX.nope(); c.toast(tt('toast.needPass', { pass: V.REGIONS[s.region].pass.toUpperCase() })); return bad(el); }
+      if (!V.hasPass(s.region) && !V.isRico()) { c.SFX.nope(); c.toast(tt('toast.needPass', { pass: V.REGIONS[s.region].pass.toUpperCase() })); return bad(el); }
       if (!c.buy(s.price, s.name)) return bad(el);
       P.owned.push(id); V.savePhoto(); c.SFX.buy(); c.pop(tt('toast.prize', { name: s.name.toUpperCase() }), 'big'); return done(c);
     }

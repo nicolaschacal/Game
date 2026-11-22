@@ -246,7 +246,7 @@ body.pnlopen #wx{visibility:hidden}body.pnlopen .wxp,body.pnlopen #wx *{animatio
 /* Paneles: tienda y récords */
 .panel{position:fixed;inset:0;z-index:31;display:none;background:var(--paper);color:var(--ink);overflow-y:auto;touch-action:pan-y;padding-bottom:calc(var(--sb) + 30px);animation:panelIn .28s cubic-bezier(.2,1,.3,1)}
 @keyframes panelIn{0%{transform:translateY(40px);opacity:0}}
-.head{position:sticky;top:0;z-index:2;height:calc(var(--st) + 84px);background:var(--red);border-bottom:3.5px solid var(--ink)}
+.head{position:sticky;top:0;z-index:40;height:calc(var(--st) + 84px);background:var(--red);border-bottom:3.5px solid var(--ink)}
 .head h2{margin:0;position:absolute;left:18px;bottom:12px;font:400 30px 'Lilita One',sans-serif;color:var(--cream);text-shadow:0 3px 0 var(--ink)}
 .head .chip{right:66px;bottom:14px}
 .tabs{display:flex;gap:8px;padding:14px 14px 4px}.tabs button{flex:1;height:40px;border-radius:14px;border:3px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 15px 'Lilita One',sans-serif}.tabs .on{background:var(--ink);color:var(--cream)}
@@ -273,7 +273,8 @@ body.pnlopen #wx{visibility:hidden}body.pnlopen .wxp,body.pnlopen #wx *{animatio
 #mapPanel{overflow:hidden}
 .head small{position:absolute;left:20px;bottom:48px;font:900 9px Nunito;letter-spacing:1.5px;color:#ffe3b0}
 #mapView{position:absolute;left:0;right:0;top:calc(var(--st) + 84px);bottom:0;overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;overscroll-behavior:contain;scrollbar-width:none;cursor:grab;background:radial-gradient(circle at 50% 40%,#9CCDE0,#6FA9C3)}
-#mapView.zm{overflow-y:auto}#mapView.drag{cursor:grabbing}
+#ricoTag{position:fixed;left:8px;top:calc(var(--st,0px) + 3px);z-index:9999;pointer-events:none;padding:1px 7px 2px;border-radius:99px;background:rgba(27,23,48,.6);color:#FFE6B8;font:900 8px Nunito,sans-serif;letter-spacing:1.2px}
+#mapView.zm{overflow-y:auto}#mapView.pz{overflow:hidden!important}#mapView.drag{cursor:grabbing}
 #mapPanel .head .chip{display:flex}body.pickstart #mapPanel #mapChip{display:none}#mapPanel .head h2,#mapPanel .head small{right:178px;white-space:nowrap;overflow:hidden}body.pickstart #mapPanel .head h2,body.pickstart #mapPanel .head small{right:18px}
 #mapView::-webkit-scrollbar{display:none}
 #mapWorld{position:relative;--pk:1}
@@ -730,8 +731,12 @@ if(Q.get('gui')!=='clasico')document.body.classList.add('gpapel'); // GUI de pap
 // ── Guardado: monedero, personajes, récord (queda en el dispositivo) ──
 // Progreso guardado con el nombre viejo del juego: se copia una vez a las claves nuevas
 try{if(!localStorage.getItem('pv.wallet'))for(const k of Object.keys(localStorage))if(k.startsWith('kanjuu.run.')){const nk='pv.'+k.slice(11);localStorage.setItem(nk,localStorage.getItem(k));localStorage.removeItem(k);}}catch{}
-const store={get(k,d){try{const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){if(PREV)return;try{localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
-V.initViaje(store);if(Q.has('demo')){if(!V.T.traveler)V.pickTraveler('nilo');V.T.passports=[...V.REGION_ORDER];store.set('trip',V.T);if(store.get('wallet',0)<5000)store.set('wallet',5000);} // ?demo: todos los pasaportes y 5000 monedas para probar
+// ?rico: MODO PRUEBA (solo web; apagado en la app nativa). Monedas infinitas y nada se guarda en el progreso real: lo escrito va a sessionStorage 'pvr.*' (sobrevive a recargar, no al cerrar la pestaña)
+const RICO=Q.has('rico')&&window.Capacitor?.isNativePlatform?.()!==true,RICO_N=999999;
+const store={get(k,d){try{if(RICO){if(k==='wallet')return RICO_N;const r=sessionStorage.getItem('pvr.'+k);if(r!=null)return JSON.parse(r);}const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){if(PREV)return;try{if(RICO){if(k==='wallet')wallet=RICO_N;else sessionStorage.setItem('pvr.'+k,JSON.stringify(v));return;}localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
+const fmtW=n=>RICO?'\u221E':fmt(n);
+if(RICO){const b=document.createElement('div');b.id='ricoTag';b.textContent=t('rico.label');document.body.appendChild(b);}
+V.setRico(RICO);V.initViaje(store);if(Q.has('demo')){if(!V.T.traveler)V.pickTraveler('nilo');V.T.passports=[...V.REGION_ORDER];store.set('trip',V.T);if(store.get('wallet',0)<5000)store.set('wallet',5000);} // ?demo: todos los pasaportes y 5000 monedas para probar
 // viaje libre: viajero, pasaportes, destino actual, álbum (migra partidas viejas sin borrar nada)
 let wallet=store.get('wallet',0),owned=store.get('owned',['nilo']),skinId=store.get('skin','nilo'),best=store.get('best',0),muted=store.get('mute',false);
 // Nilo reemplaza a Kami como personaje base: quien tenía a Kami guardado pasa a Nilo sin perder monedas
@@ -1420,7 +1425,7 @@ setHour(horaFija());refrescarSiHaceFalta().then(drawClima);setInterval(()=>refre
 function drawHome(){
  const k=SKINS[browse],has=owned.includes(k.id);
  drawClima();heroSync();
- $('mWallet').textContent=fmt(wallet);$('sWallet').textContent=fmt(wallet);$('mapWallet').textContent=fmt(wallet);
+ $('mWallet').textContent=fmtW(wallet);$('sWallet').textContent=fmtW(wallet);$('mapWallet').textContent=fmtW(wallet);
  $('skinName').innerHTML=k.name.toUpperCase()+'<small>'+(has?k.tag.toUpperCase():RARITY[k.id][0]+' · '+t('skin.locked'))+'</small>';
  const p=$('play');p.className='btn'+(has?'':' locked');p.textContent=has?t('menu.play'):t('menu.unlock',{n:k.price});
  $('shopDot').style.display=SKINS.some(s=>!owned.includes(s.id)&&wallet>=s.price)?'block':'none';
@@ -1596,16 +1601,21 @@ function applyZoom(){const M=mapData,w=$('mapWorld'),i=$('mapIn'),v=$('mapView')
  w.style.width=M.W*3*s+'px';w.style.height=M.H*s+'px';w.style.setProperty('--pk',1/mapZ);i.style.transform=`scale(${s})`;
  v.classList.toggle('zm',mapZ>1.001);}
 // zoom manteniendo fijo el punto (fx,fy) de la vista
-function zoomTo(z,fx,fy){const v=$('mapView');z=Math.max(1,Math.min(ZMAX,z));if(Math.abs(z-mapZ)<1e-4)return;const r=z/mapZ,top=58;
- const sl=(v.scrollLeft+fx)*r-fx,st=(v.scrollTop+fy-top)*r+top-fy;mapZ=z;applyZoom();v.scrollLeft=sl;v.scrollTop=z>1.001?Math.max(0,st):0;}
+function zoomTo(z,fx,fy,A){const v=$('mapView');z=Math.max(1,Math.min(ZMAX,z));if(!A&&Math.abs(z-mapZ)<1e-4)return;const top=58;let sl,st;
+ if(A){const s=mapSc*z,c=mapData.W*s;sl=A.cx*s-fx;sl=(((sl%c)+c)%c)+c;st=A.cy*s+top-fy;}// ancla fija en contenido (no incremental): sin deriva por redondeo del scroll
+ else{const r=z/mapZ;sl=(v.scrollLeft+fx)*r-fx;st=(v.scrollTop+fy-top)*r+top-fy;}
+ mapZ=z;applyZoom();v.scrollLeft=sl;v.scrollTop=z>1.001?Math.max(0,st):0;}
+// frena cualquier scroll suave/inercia en curso para que no pelee con el zoom
+function mapStill(v){v.scrollTo({left:v.scrollLeft,top:v.scrollTop,behavior:'instant'});}
 function mapZoomInit(){const v=$('mapView');if(v._zi)return;v._zi=1;
  const box=()=>v.getBoundingClientRect(),dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
- let p0=0,z0=1;
- v.addEventListener('touchstart',e=>{if(e.touches.length===2){p0=dist(e.touches);z0=mapZ;mapNoTap=1;}},{passive:true});
- v.addEventListener('touchmove',e=>{if(e.touches.length===2&&p0){e.preventDefault();const b=box(),t=e.touches;zoomTo(z0*dist(t)/p0,(t[0].clientX+t[1].clientX)/2-b.left,(t[0].clientY+t[1].clientY)/2-b.top);}},{passive:false});
- const end=e=>{if(e.touches.length<2)p0=0;if(!e.touches.length)setTimeout(()=>{mapNoTap=0;},320);};
+ let p0=0,z0=1,A=null;
+ const ctr=(t,b)=>[(t[0].clientX+t[1].clientX)/2-b.left,(t[0].clientY+t[1].clientY)/2-b.top];
+ v.addEventListener('touchstart',e=>{if(e.touches.length===2){mapStill(v);v.classList.add('pz');p0=dist(e.touches);z0=mapZ;mapNoTap=1;const b=box(),[fx,fy]=ctr(e.touches,b),s=mapSc*mapZ;A={cx:(v.scrollLeft+fx)/s,cy:(v.scrollTop+fy-58)/s};}},{passive:true});
+ v.addEventListener('touchmove',e=>{if(e.touches.length===2&&p0){e.preventDefault();const b=box(),t=e.touches,[fx,fy]=ctr(t,b);zoomTo(z0*dist(t)/p0,fx,fy,A);}},{passive:false});
+ const end=e=>{if(e.touches.length<2){p0=0;A=null;v.classList.remove('pz');}if(!e.touches.length)setTimeout(()=>{mapNoTap=0;},320);};
  v.addEventListener('touchend',end,{passive:true});v.addEventListener('touchcancel',end,{passive:true});
- v.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&!e.ctrlKey)return;e.preventDefault();const b=box();zoomTo(mapZ*Math.exp(-e.deltaY*(e.ctrlKey?.01:.0018)),e.clientX-b.left,e.clientY-b.top);},{passive:false});
+ v.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&!e.ctrlKey)return;e.preventDefault();mapStill(v);const b=box();zoomTo(mapZ*Math.exp(-e.deltaY*(e.ctrlKey?.01:.0018)),e.clientX-b.left,e.clientY-b.top);},{passive:false});
  // ratón: arrastrar para mover (el dedo ya lo hace el scroll nativo); un arrastre no cuenta como toque
  let dr=null;
  v.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button===0)dr={x:e.clientX,y:e.clientY,l:v.scrollLeft,t:v.scrollTop,m:0};});
@@ -1633,7 +1643,7 @@ async function buildMap(){
  applyZoom();
 }
 async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
- await buildMap();mapZoomInit();$('mapWallet').textContent=fmt(wallet);mapZ=1;applyZoom();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;v.scrollTop=0;
+ await buildMap();mapZoomInit();$('mapWallet').textContent=fmtW(wallet);mapZ=1;applyZoom();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;v.scrollTop=0;
  mPick=WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2;
  v.onscroll=()=>{const c=M.W*mapSc*mapZ;if(v.scrollLeft<c*.5)v.scrollLeft+=c;else if(v.scrollLeft>c*1.5)v.scrollLeft-=c;};}
 // prearma el mapa cuando el navegador está libre, así abre al instante
@@ -1702,9 +1712,9 @@ async function firstRunIntro(){introOn=true;const it=$('intro'),sp=$('splash');
   setTimeout(()=>{sp.style.opacity=0;setTimeout(()=>sp.remove(),520);startPick=true;introOn=false;openMap();},1100);};
  it.addEventListener('click',go);}
 // ── Puente para los módulos de pantallas (tienda.js, album.js, seleccion.js) ──
-const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
+const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},get walletTxt(){return fmtW(wallet)},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
  get owned(){return owned},saveOwned(){store.set('owned',owned);},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},
- get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmt(wallet);$('mapWallet').textContent=fmt(wallet);},
+ get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmtW(wallet);$('mapWallet').textContent=fmtW(wallet);},
  tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((e,i)=>`<div><i>${i+1}</i>${fmt(e.s)}<small>${(THEMES[(e.w-1)%NW]?.place||t('scores.world',{n:e.w})).toUpperCase()}<br>${new Date(e.t).toLocaleDateString(lang)}</small></div>`).join(''):'<p class="note">'+t('scores.empty')+'</p>')+'</div>';}};
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
