@@ -779,7 +779,7 @@ const DKINDS=['sea','rail','sky'],QD=DKINDS.includes(Q.get('delay'))?Q.get('dela
 const DELAYED=route?null:QD||(dlSt&&dlSt.at===WI&&DKINDS.includes(dlSt.k)?dlSt.k:null); // medio único de punta a punta, o null // destino actual · la dificultad sale de las rondas completadas, no de la ciudad
 // ── Mecánicas por mundo (mundo que se juega = mundos completados + 1). Una sola tabla para el generador, las tarjetas (MECH_INTRO) y la tienda. ──
 // mov = obstáculos móviles · tide = MAREA (mar) · wind = VIENTO (cielo) · rail = DESVÍO (vía) · customs = ADUANA por color (pasaporte equipado).
-const MECH={mov:6,tide:20,wind:30,rail:40,customs:50};
+const MECH={mov:6,tide:20,wind:30,rail:40,customs:50,routes:5};
 // ?mech=all activa todo desde el mundo 1 (marea en el primer mar, viento en el primer cielo, desvío en la primera vía, aduanas) y vuelve a mostrar las tarjetas; también fuerza el vuelo demorado la primera vez (?delay=sea|rail|sky lo fuerza siempre). Sin parámetro: niveles definitivos.
 const MECH_ALL=Q.get('mech')==='all';
 const mechOn=k=>MECH_ALL||DIF.P>=MECH[k]-1,mechFirst=k=>MECH_ALL?DIF.P===0:DIF.P===MECH[k]-1; // first = primer mundo con la mecánica (tramo de aprendizaje)
@@ -1523,7 +1523,7 @@ const dSlide=i=>{const th=THEMES[i],s=pinState(i),R=V.REGIONS[s.r],vis=V.T.visit
  // aduanas de esta ruta cuyo color no llevas equipado (solo desde el mundo en que aparecen)
  const cu=!startPick&&mechOn('customs')?V.customsColors(i).filter(c=>c!==V.passEq()).map(c=>`<div class="cu"><i style="background:${V.REGIONS[c].color}"></i>${t('customs.hint',{color:t('customs.color.'+c)})}</div>`).join(''):'';
  // ruta especial: se ofrece además de jugar solo esta ciudad (si falta algún pasaporte de la ruta, solo se avisa)
- const rt=!startPick&&V.routeOf(i),rtHave=rt&&rt.cities.every(c=>V.hasPass(V.regionOf(c))),rtName=rt?t(rt.name).toUpperCase():'';
+ const rt=!startPick&&mechOn('routes')&&V.routeOf(i),rtHave=rt&&rt.cities.every(c=>V.hasPass(V.regionOf(c))),rtName=rt?t(rt.name).toUpperCase():'';
  const rtHtml=!rt?'':rtHave?`<button class="btn green rt goRoute" data-route="${rt.id}" data-start="${i}" aria-label="${t('route.offer',{name:rtName,n:rt.cities.length})}">${rtName}<span class="stp">${rt.cities.map((c,k)=>'<i>'+(k+1)+'</i>').join('')}</span></button>`:`<div class="rtn">${t('route.needPass',{name:rtName,pass:V.routeRegions(rt).filter(r=>!V.hasPass(r)).map(r=>V.REGIONS[r].pass.toUpperCase()).join(' + ')})}</div>`;
  return `<div class="dsl" data-i="${i}"><div class="th" style="background:${th.ground}">${th.art||''}</div><div class="k" style="color:${R.dark}">${i+1} · ${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${th.place}</b><div class="c">${th.country} · ${vis?t(vis>1?'map.visits':'map.visit',{n:vis}):t('map.unvisited')} · ${t('map.selfies',{n:sel})}</div>${cu}`+
   `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${startPick?t('map.startHere'):s.st==='cur'?t('map.playHere'):s.st==='ok'?t('map.travel',{n:s.cost}):s.st==='nopass'?passMini(s.r,14)+' '+t('map.seePass',{n:V.passPrice(s.r)}):t('map.moreCoins',{n:s.cost})}</button>${rtHtml}</div>`;};
@@ -1547,6 +1547,13 @@ function showDelay(i,k){const bd=$('delayBd'),ic={sea:art.BOAT,rail:art.TRAIN,sk
  bd.innerHTML=`<div class="card"><div class="ribbon">${t('delay.title').toUpperCase()}</div><div class="dpic">${ic}${pl}</div><p>${t('delay.sub2',{medium:t('delay.'+k)})}</p><div class="dpay">${ico('coin')}${t('delay.pay',{m:V.DELAY_MULT})}</div><button class="btn green" id="delayOk">${t('delay.ok')}</button></div>`;
  bd.classList.add('on');SFX.nope();buzz([30,60,30]);$('mapPanel').style.display='none';
  $('delayOk').onclick=()=>{SFX.whoosh();bd.classList.remove('on');setTimeout(()=>location.reload(),350);};}
+// Anuncio de las rutas: la primera vez que se abre la ficha de una ciudad con ruta (misma tarjeta de papel que el vuelo demorado). ?mech=all lo repite.
+function routesIntro(i){if(startPick||!mechOn('routes')||!V.routeOf(i)||(!MECH_ALL&&store.get('routesIntro',0)))return;
+ const bd=$('delayBd'),st=(x,y)=>`<circle cx="${x}" cy="${y}" r="6" fill="#EDB63B" stroke="#3A2410" stroke-width="1.6"/><path d="M${x-2.6} ${y}l2 2.2 3.4-4.4" fill="none" stroke="#3A2410" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>`;
+ const pic='<svg viewBox="0 0 140 100" aria-hidden="true"><g transform="rotate(-5 84 56)"><rect x="40" y="30" width="92" height="52" rx="6" fill="#F6EBD0" stroke="#1B1730" stroke-width="2.4"/><path d="M52 30v52" stroke="#1B1730" stroke-width="2" stroke-dasharray="3 4"/>'+st(70,56)+st(92,56)+st(114,56)+'</g><path d="M24 10a15 15 0 0 0-15 15c0 11 15 30 15 30s15-19 15-30a15 15 0 0 0-15-15z" fill="#D8462F" stroke="#1B1730" stroke-width="2.4"/><circle cx="24" cy="25" r="5.5" fill="#F6EBD0" stroke="#1B1730" stroke-width="2"/></svg>';
+ bd.innerHTML=`<div class="card"><div class="ribbon">${t('route.intro.title')}</div><div class="dpic">${pic}</div><p>${t('route.intro.sub')}</p><button class="btn green" id="delayOk">${t('route.intro.ok')}</button></div>`;
+ bd.classList.add('on');SFX.tap();store.set('routesIntro',1);
+ $('delayOk').onclick=()=>{SFX.tap();bd.classList.remove('on');};}
 // Ruta especial: se paga el viaje al primer destino y las demás ciudades son gratis (premio al completarla)
 function goRoute(b){const rt=V.ROUTES.find(r=>r.id===b.dataset.route);if(!rt)return;const first=+b.dataset.start,seq=V.routeSeq(rt,first),s=pinState(first);
  if(rt.cities.some(c=>!V.hasPass(V.regionOf(c)))){SFX.tap();$('mapPanel').style.display='none';openStore('pasaportes');return;}
@@ -1614,7 +1621,7 @@ async function buildMap(){
  let gs='',pn='';for(let k=0;k<3;k++){gs+=`<g transform="translate(${k*M.W},0)">${segs}<path class="mapArc" d="" ${arcAttr} stroke-linecap="round" fill="none"/></g>`;
   pn+=M.pts.map((p,i)=>pins1(p,i,k*M.W)).join('');}
  w.innerHTML=`<div id="mapIn" style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;transform-origin:0 0"><div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;background:url('data:image/svg+xml,${encodeURIComponent(landSvg).replace(/'/g,'%27')}') repeat-x 0 0/${M.W}px ${M.H}px"></div><svg width="${W3}" height="${M.H}" style="position:absolute;left:0;top:0">${gs}</svg>${pn}</div>`;
- w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{if(mapNoTap)return;SFX.tap();mPick=+e.dataset.i;drawCard();mapSelect(true);}));
+ w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{if(mapNoTap)return;SFX.tap();mPick=+e.dataset.i;drawCard();mapSelect(true);routesIntro(mPick);}));
  applyZoom();
 }
 async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
