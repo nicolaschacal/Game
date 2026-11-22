@@ -12,6 +12,7 @@
 // Compras (RevenueCat): entitlement "paper_voyager_pro" = PRO: sin banner ni intersticiales (los recompensados
 // quedan porque los elige el jugador) y +25% de monedas. Se vende como mensual, anual o de por vida.
 
+import { t as tt } from './i18n.js';
 export const CONFIG = {
   // IDs de prueba oficiales de Google (sirven en desarrollo sin cuenta). Cambiar por los reales antes de publicar.
   admob: {
@@ -26,9 +27,9 @@ export const CONFIG = {
     entitlement: 'paper_voyager_pro',
     // Identificadores de los paquetes dentro de la offering "default" (se arman en el panel de RevenueCat)
     paquetes: [
-      { id: '$rc_monthly', nombre: 'Mensual', desc: 'PRO por un mes', icono: '☾', precio: 'US$ 1,99/mes' },
-      { id: '$rc_annual', nombre: 'Anual', desc: 'PRO por un año · 2 meses gratis', icono: '☀', precio: 'US$ 9,99/año', destacado: true },
-      { id: '$rc_lifetime', nombre: 'De por vida', desc: 'PRO para siempre, un solo pago', icono: '✈', precio: 'US$ 19,99' },
+      { id: '$rc_monthly', nombre: tt('pack.monthly'), desc: tt('pack.monthly.desc'), icono: '☾', precio: tt('pack.monthly.price') },
+      { id: '$rc_annual', nombre: tt('pack.annual'), desc: tt('pack.annual.desc'), icono: '☀', precio: tt('pack.annual.price'), destacado: true },
+      { id: '$rc_lifetime', nombre: tt('pack.lifetime'), desc: tt('pack.lifetime.desc'), icono: '✈', precio: tt('pack.lifetime.price') },
     ],
   },
   intersticialCada: 3, intersticialMinSeg: 90,
@@ -47,10 +48,10 @@ const avisar = new Set(); // callbacks cuando cambia el estado PRO
 function simulado(tipo, seg) {
   return new Promise(ok => {
     const d = document.createElement('div'); d.className = 'adSim';
-    d.innerHTML = `<div class="adBox"><small>ESPACIO PUBLICITARIO · ${tipo === 'rewarded' ? 'VIDEO CON RECOMPENSA' : 'INTERSTICIAL'}</small><b>Acá va el anuncio</b><p>En la app se muestra AdMob. En la web es una simulación para probar el flujo.</p><button disabled>CERRAR · <span>${seg}</span></button></div>`;
+    d.innerHTML = `<div class="adBox"><small>${tt('ad.space')} · ${tipo === 'rewarded' ? tt('ad.rewarded') : tt('ad.interstitial')}</small><b>${tt('ad.here')}</b><p>${tt('ad.sim')}</p><button disabled>${tt('ad.close')} · <span>${seg}</span></button></div>`;
     document.body.appendChild(d);
     const b = d.querySelector('button'), s = d.querySelector('span'); let t = seg;
-    const iv = setInterval(() => { t--; s.textContent = t; if (t <= 0) { clearInterval(iv); b.disabled = false; b.textContent = tipo === 'rewarded' ? 'RECIBIR RECOMPENSA' : 'CERRAR'; } }, 1000);
+    const iv = setInterval(() => { t--; s.textContent = t; if (t <= 0) { clearInterval(iv); b.disabled = false; b.textContent = tipo === 'rewarded' ? tt('ad.reward') : tt('ad.close'); } }, 1000);
     b.onclick = () => { d.remove(); ok(true); };
   });
 }

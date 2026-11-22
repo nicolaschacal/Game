@@ -1,4 +1,4 @@
-// KANJŪ · scene3d.js — Escenas 3D con criaturas de papel 2D: Santuario y Arena.
+// Paper Voyager · scene3d.js — Escenas 3D con criaturas de papel 2D: Santuario y Arena.
 // Un solo renderer se mueve entre pantallas; cada escena tiene su cámara, luz y actualización.
 // En el santuario la grilla de tiles (world.js) manda: cada ítem va al centro de sus casillas y la
 // grilla sólo se dibuja en modo construcción.
@@ -676,7 +676,7 @@ function sanctuary() {
     const id = hitItem(W, ray); if (id) { poke(id); onTap?.(id); return; }
     if (mode === 'build') { const t = tileHit(ray); if (t) onCell?.(t.x, t.y); else W.opts.onMiss?.(); }
   };
-  // Construir: se agarra un objeto o KANJŪ y se arrastra; la huella se pinta verde (entra) o roja (no entra)
+  // Construir: se agarra un objeto o Paper Voyager y se arrastra; la huella se pinta verde (entra) o roja (no entra)
   const ghost = new THREE.Group(); world.add(ghost);
   const gq = (col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.94, .94), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .55, depthWrite: false, depthTest: false })); m.rotation.x = -Math.PI / 2; m.renderOrder = 5; return m; };
   W.grab = ray => {
@@ -724,7 +724,7 @@ function sanctuary() {
     sun.color.copy(sk.sun); sun.intensity = sk.si * (1 - rk * .5);
     const c0 = W.center || 0; sun.position.set(c0 - 6, 12, c0 + 5); sun.target.position.set(c0, 0, c0);
     waterMat().emissiveIntensity = .22 + Math.sin(t * 1.4) * .06;
-    // Cámara runner: fija detrás del KANJŪ, mirando siempre hacia el horizonte.
+    // Cámara runner: fija detrás del Paper Voyager, mirando siempre hacia el horizonte.
     const runner = W.opts.runner;
     if (runner) {
       const ro = W.items.get(runner.playerId);
@@ -890,7 +890,7 @@ function sanctuary() {
     const fo = W.focus && W.items.get(W.focus);
     if (runner) {
       const pz = runner.playerZ ?? 0;
-      // Encuadre más cercano: Hito queda dentro de cámara, por encima del panel inferior.
+      // Encuadre más cercano: Nilo queda dentro de cámara, por encima del panel inferior.
       // La cámara sigue a Kami de lado solo en parte (42 %): los cinco carriles quedan siempre a la vista.
       halfH = 3.0; el = .34; tx = ((runner.visualLane ?? runner.lane ?? 2) - (W.cols - 1) / 2) * .42;
       ty = .12 + (runner.camY || 0); tz = pz - 4.0;
@@ -1274,7 +1274,7 @@ function drawEditor(W) {
   W.ov.clear();
   const { mode, valid, items } = W.opts; if (mode === 'play') return;
   const ox = (W.cols - 1) / 2, oz = (W.rows - 1) / 2, sq = new THREE.BufferGeometry().setFromPoints([[-.5, -.5], [.5, -.5], [.5, .5], [-.5, .5], [-.5, -.5]].map(([a, b]) => new THREE.Vector3(a, 0, b)));
-  if (W.opts.runner) { // runner: unión sutil entre casillas (como en KANJŪ), un solo objeto por fila
+  if (W.opts.runner) { // runner: unión sutil entre casillas (como en Paper Voyager), un solo objeto por fila
     const lmR = new THREE.LineBasicMaterial({ color: '#3B2F26', transparent: true, opacity: .16 });
     for (let y = 0; y < W.rows; y++) {
       const pts = [];
@@ -1312,7 +1312,7 @@ function drawEditor(W) {
 // =====================================================================
 // ARENAS DE PAPEL · 3 contra 3. Mismo tamaño (5 × 10 casillas) y misma cámara en todas;
 // cambian el piso, el borde, el monumento detrás de los rivales, el cielo y lo que cae del aire.
-// Tus KANJŪ de espaldas abajo a la izquierda, los rivales de frente arriba a la derecha.
+// Tus Paper Voyager de espaldas abajo a la izquierda, los rivales de frente arriba a la derecha.
 // =====================================================================
 const AW = 5, AJ0 = -1, AJ1 = 8, AOFF = 4, AMID = 4, ALOW = .68; // z = j − AOFF; franja central en z = 0
 const SLOT = { m: [[-1.05, 2.5], [0, 2.75], [1.05, 2.5]], e: [[-.95, -2.5], [0, -2.75], [.95, -2.5]] }; // una fila por equipo, sin taparse
@@ -1357,7 +1357,7 @@ function decalTex(kind) {
   if (cols) for (let i = 0; i < (kind === 'nieve' ? 26 : 16); i++) { const px = Math.random() * 128, py = Math.random() * 128; kind === 'nieve' ? dot(px, py, 3, 3, 0, cols[0]) : dot(px, py, kind === 'petalos' ? 5 : 7, kind === 'petalos' ? 3.5 : 5, Math.random() * 3, cols[i % cols.length]); }
   return decals[kind] = tex(c);
 }
-// Espalda de tu KANJŪ: el mismo dibujo sin cara ni etiqueta (lo ves desde atrás)
+// Espalda de tu Paper Voyager: el mismo dibujo sin cara ni etiqueta (lo ves desde atrás)
 const backSVG = svg => svg.includes('kj2') ? artBack(svg) : svg.replace(/<g class="kj-eyes"[\s\S]*?<\/g>/, '').replace(/<path d="[^"]*" stroke="#1A1220" stroke-width="[\d.]+"[^>]*\/>/g, '').replace(/<path d="[^"]*" fill="#7CC4F2"\/>/g, '')
   .replace(/<ellipse[^>]*fill="#F28C8C"[^>]*\/>/g, '').replace(/<ellipse[^>]*fill="#F6EBD0"\/>/, '').replace(/<text[\s\S]*?<\/text>/, '');
 function arena() {

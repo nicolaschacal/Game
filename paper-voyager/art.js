@@ -1,4 +1,4 @@
-// KANJŪ · art.js — Arte de las criaturas (estilo aprobado el 9 de noviembre de 2026, docs/arte/estilo.html).
+// Paper Voyager · art.js — Arte de las criaturas (estilo aprobado el 9 de noviembre de 2026, docs/arte/estilo.html).
 // Cada kanji tiene su propia forma y muestra solo lo que significa; el kit aplica la firma: papel, pliegue,
 // kanji a pincel, ojos de papel con pupila de píldora, broche dorado y marcas de grado.
 import { KANJI, typeOf, kLevel } from './data.js';

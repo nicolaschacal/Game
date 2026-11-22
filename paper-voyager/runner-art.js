@@ -1,6 +1,7 @@
-// Arte del Tile Runner, con las reglas de recorte de KANJŪ: formas planas de papel, borde crema,
+// Arte de Paper Voyager, con las reglas de recorte del juego: formas planas de papel, borde crema,
 // sombra inferior más oscura, ojos grandes con brillo y la paleta del juego. Lienzo 120×120, base en y≈110.
 import { NILO } from './nilo-art.js';
+import { t as tt } from './i18n.js';
 import { NILO2 } from './nilo-v2.js'; // Nilo rediseñado en papel (frames generados una vez al cargar)
 import { paperBoat, paperBalloon, paperTrain } from './runner-papel.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
@@ -121,13 +122,13 @@ const REN = recolorNilo({ '#E8452C': '#FFFFFF', '#B93322': '#CFC8E6', '#3E5BA9':
 // Nilo v2: frames (idle/wave/run) enumerables para la escena 3D; la máquina de estados del inicio (at, clips) y runFps van como propiedades NO enumerables
 const niloHero = () => { const h = { idle: NILO2.idle, wave: NILO2.wave, run: NILO2.run }; Object.defineProperties(h, { runFps: { value: NILO2.runFps }, at: { value: NILO2.at }, clips: { value: NILO2.clips } }); return h; };
 export const SKINS = [
-  { id: 'nilo', name: 'Nilo', tag: 'El viajero', price: 0, head: 'nilo', c: {}, hero: niloHero() },
-  { id: 'mora', name: 'Mora', tag: 'Mapas a mano', price: 1200, head: 'nilo', c: {}, hero: { ...MORA, idle: niloIdle(MORA) } },
-  { id: 'ren', name: 'Ren', tag: 'Cámara y bambú', price: 1200, head: 'nilo', c: {}, hero: { ...REN, idle: niloIdle(REN) } },
-  { id: 'sakura', name: 'Sakura', tag: 'Flor de cerezo', price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },
-  { id: 'kitsu', name: 'Kitsu', tag: 'Zorrita blanca', price: 400, head: 'fox', c: { hat: '#FFF8EE', hatD: '#F29BB8', hair: '#FFF8EE', coat: '#E8452C', coatD: '#B93322', scarf: '#F2B937' } },
-  { id: 'shinobi', name: 'Shinobi', tag: 'Sombra veloz', price: 800, head: 'ninja', c: { hat: '#2B2440', hatD: '#E8452C', hair: '#2B2440', coat: '#3A3558', coatD: '#262240', scarf: '#7B5CC4', leg: '#1A1728' } },
-  { id: 'oro', name: 'Kami de Oro', tag: 'Leyenda', price: 2000, head: 'kasa', c: { hat: '#FFD86B', hatD: '#D9A021', coat: '#F2B937', coatD: '#C98A1E', scarf: '#FFF4DC', leg: '#8A551E' } },
+  { id: 'nilo', name: 'Nilo', tag: tt('skin.nilo.tag'), price: 0, head: 'nilo', c: {}, hero: niloHero() },
+  { id: 'mora', name: 'Mora', tag: tt('skin.mora.tag'), price: 1200, head: 'nilo', c: {}, hero: { ...MORA, idle: niloIdle(MORA) } },
+  { id: 'ren', name: 'Ren', tag: tt('skin.ren.tag'), price: 1200, head: 'nilo', c: {}, hero: { ...REN, idle: niloIdle(REN) } },
+  { id: 'sakura', name: 'Sakura', tag: tt('skin.sakura.tag'), price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },
+  { id: 'kitsu', name: 'Kitsu', tag: tt('skin.kitsu.tag'), price: 400, head: 'fox', c: { hat: '#FFF8EE', hatD: '#F29BB8', hair: '#FFF8EE', coat: '#E8452C', coatD: '#B93322', scarf: '#F2B937' } },
+  { id: 'shinobi', name: 'Shinobi', tag: tt('skin.shinobi.tag'), price: 800, head: 'ninja', c: { hat: '#2B2440', hatD: '#E8452C', hair: '#2B2440', coat: '#3A3558', coatD: '#262240', scarf: '#7B5CC4', leg: '#1A1728' } },
+  { id: 'oro', name: tt('skin.oro.name'), tag: tt('skin.oro.tag'), price: 2000, head: 'kasa', c: { hat: '#FFD86B', hatD: '#D9A021', coat: '#F2B937', coatD: '#C98A1E', scarf: '#FFF4DC', leg: '#8A551E' } },
 ];
 // Arte completo para un personaje: sus poses y los tres vehículos con su cabecita a bordo
 export function artFor(id) {

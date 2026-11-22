@@ -1,9 +1,10 @@
 // Tienda de 5 secciones dentro del panel #shop: Viajeros · Pasaportes · Fotografía · Objetos.
 // Uso: openShop(ctx, 'viajeros'|'pasaportes'|'foto'|'objetos'). Reemplaza el contenido de #shop salvo el .head.
 import { photoPreview } from './album.js';
+import { t as tt } from './i18n.js';
 
 const TABS = [
-  ['viajeros', 'viajero', 'VIAJEROS'], ['pasaportes', 'pasaporte', 'PASAPORTES'], ['foto', 'foto', 'FOTOS'], ['objetos', 'objeto', 'OBJETOS'],
+  ['viajeros', 'viajero', tt('store.tab.travelers')], ['pasaportes', 'pasaporte', tt('store.tab.passports')], ['foto', 'foto', tt('store.tab.photos')], ['objetos', 'objeto', tt('store.tab.objects')],
 ];
 const SV = (d) => `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const TAB_ICO = {
@@ -12,8 +13,8 @@ const TAB_ICO = {
   foto: SV('<rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2.5h5L16 6"/>'),
   objeto: SV('<path d="M3.5 8.5L12 4l8.5 4.5v7L12 20l-8.5-4.5z"/><path d="M3.5 8.5L12 13l8.5-4.5M12 13v7"/>'),
 };
-const RARITY = { nilo: ['COMÚN', '#8a8069', '#DCE9F7'], kami: ['COMÚN', '#8a8069', '#DCE9F7'], sakura: ['RARO', '#3E8FD9', '#FBD9E3'], kitsu: ['ÉPICO', '#8E5CD9', '#FFE1D6'], shinobi: ['ÉPICO', '#8E5CD9', '#DAD5F2'], oro: ['LEGENDARIO', '#D98A1E', '#FFF0B8'] };
-const rarityOf = k => RARITY[k.id] || (k.price >= 2000 ? ['LEGENDARIO', '#D98A1E', '#FFF0B8'] : k.price >= 400 ? ['ÉPICO', '#8E5CD9', '#DAD5F2'] : k.price > 0 ? ['RARO', '#3E8FD9', '#DCE9F7'] : ['COMÚN', '#8a8069', '#DCE9F7']);
+const RARITY = { nilo: [tt('rarity.common'), '#8a8069', '#DCE9F7'], kami: [tt('rarity.common'), '#8a8069', '#DCE9F7'], sakura: [tt('rarity.rare'), '#3E8FD9', '#FBD9E3'], kitsu: [tt('rarity.epic'), '#8E5CD9', '#FFE1D6'], shinobi: [tt('rarity.epic'), '#8E5CD9', '#DAD5F2'], oro: [tt('rarity.legendary'), '#D98A1E', '#FFF0B8'] };
+const rarityOf = k => RARITY[k.id] || (k.price >= 2000 ? [tt('rarity.legendary'), '#D98A1E', '#FFF0B8'] : k.price >= 400 ? [tt('rarity.epic'), '#8E5CD9', '#DAD5F2'] : k.price > 0 ? [tt('rarity.rare'), '#3E8FD9', '#DCE9F7'] : [tt('rarity.common'), '#8a8069', '#DCE9F7']);
 const IT_SVG = {
   revive: '<path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.7a4.3 4.3 0 0 1 7.5 2.6c0 5.6-7.5 10.2-7.5 10.2z" fill="currentColor"/>',
   shield: '<path d="M12 3.5l7 2.6v5.4c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6.1z" fill="currentColor"/>',
@@ -21,7 +22,7 @@ const IT_SVG = {
 };
 const itemIco = k => IT_SVG[k.id] ? `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">${IT_SVG[k.id]}</svg>` : esc(k.icon);
 const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9' };
-const PHOTO_GROUPS = [['frame', 'Marcos'], ['cover', 'Diseños de álbum'], ['filter', 'Filtros'], ['deco', 'Adornos']];
+const PHOTO_GROUPS = [['frame', tt('store.photo.frames')], ['cover', tt('store.photo.covers')], ['filter', tt('store.photo.filters')], ['deco', tt('store.photo.decos')]];
 const GLYPH = { // motivo del escudo de cada región
   am: '<path d="M60 40 L63 56 L60 76 L57 56Z M44 58 L58 55 L76 58 L58 61Z" fill="#7a4d0b"/>',
   eu: '<path d="M60 38 L64.5 52 L79 52 L67.5 61 L72 75 L60 66.5 L48 75 L52.5 61 L41 52 L55.5 52Z" fill="#7a4d0b"/>',
@@ -81,12 +82,12 @@ function viajeros(c) {
   const art = id => { try { return c.artFor(id).HERO.idle[0]; } catch (e) { return ''; } };
   const card = (id, name, tag, price, rar) => {
     const has = c.owned.includes(id), on = id === c.skinId, [r, rc, bg] = rar;
-    return `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="sk" data-id="${id}" style="--rc:${rc};--bg:${bg}">${tid === id ? '<span class="ribbon2">TU VIAJERO</span>' : ''}<div class="art">${art(id)}</div><b>${esc(name)}</b><small>${esc(tag)}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? 'EN USO' : has ? 'USAR' : coin(price)}</span></button>`;
+    return `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="sk" data-id="${id}" style="--rc:${rc};--bg:${bg}">${tid === id ? `<span class="ribbon2">${tt('store.yourTraveler')}</span>` : ''}<div class="art">${art(id)}</div><b>${esc(name)}</b><small>${esc(tag)}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(price)}</span></button>`;
   };
-  const prot = V.TRAVELERS.map(t => { const k = c.SKINS.find(s => s.id === t.id); return card(t.id, t.name, k ? k.tag.toUpperCase() : 'VIAJERO', t.price, ['PROTAGONISTA', '#E8452C', '#FFE1D6']); }).join('');
+  const prot = V.TRAVELERS.map(t => { const k = c.SKINS.find(s => s.id === t.id); return card(t.id, t.name, k ? k.tag.toUpperCase() : tt('rarity.traveler'), t.price, [tt('rarity.protagonist'), '#E8452C', '#FFE1D6']); }).join('');
   const vars = c.SKINS.filter(k => !trIds.includes(k.id)).map(k => card(k.id, k.name, k.tag.toUpperCase(), k.price, rarityOf(k))).join('');
-  return `<div class="vsec">Tus viajeros<small>Tocá uno que tengas para usarlo.</small></div><div class="vg vg3">${prot}</div>
-<div class="vsec">Variantes<small>Otros looks para recorrer el mundo.</small></div><div class="vg">${vars}</div>`;
+  return `<div class="vsec">${tt('store.yourTravelers')}<small>${tt('store.yourTravelers.sub')}</small></div><div class="vg vg3">${prot}</div>
+<div class="vsec">${tt('store.variants')}<small>${tt('store.variants.sub')}</small></div><div class="vg">${vars}</div>`;
 }
 
 function booklet(R, own, isNew) {
@@ -96,9 +97,9 @@ function booklet(R, own, isNew) {
 <rect x="6" y="4" width="10" height="146" rx="5" fill="${R.dark}" opacity=".55"/>
 <rect x="19" y="14" width="82" height="126" rx="6" fill="none" stroke="${R.light}" stroke-width="1.6" stroke-dasharray="4 3" opacity=".9"/>
 <g transform="translate(-6 4) scale(1.0)"><circle cx="66" cy="57" r="30" fill="#F2B937" stroke="#FFF4DC" stroke-width="3.5"/><circle cx="66" cy="57" r="24" fill="#FFD86B" stroke="#C98A1E" stroke-width="1.6"/><g transform="translate(6 0)">${GLYPH[R.id] || ''}</g></g>
-<text x="62" y="112" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="14" letter-spacing="1" fill="#F2B937" stroke="${R.dark}" stroke-width="3" paint-order="stroke" stroke-linejoin="round">PASAPORTE</text>
+<text x="62" y="112" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="14" letter-spacing="1" fill="#F2B937" stroke="${R.dark}" stroke-width="3" paint-order="stroke" stroke-linejoin="round">${tt('passport.word')}</text>
 <text x="62" y="128" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="11" letter-spacing="1.2" fill="#FFF4DC">${esc(R.name.toUpperCase())}</text>
-${own ? `<g class="stp${isNew ? ' new' : ''}"><g opacity=".93"><circle cx="84" cy="88" r="23" fill="#FFF4DC" fill-opacity=".72" stroke="#C8301A" stroke-width="3.5"/><circle cx="84" cy="88" r="18.5" fill="none" stroke="#C8301A" stroke-width="1.4" stroke-dasharray="3 2"/><text x="84" y="92" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="10.5" fill="#C8301A">POSEÍDO</text></g></g>` : ''}</svg>`;
+${own ? `<g class="stp${isNew ? ' new' : ''}"><g opacity=".93"><circle cx="84" cy="88" r="23" fill="#FFF4DC" fill-opacity=".72" stroke="#C8301A" stroke-width="3.5"/><circle cx="84" cy="88" r="18.5" fill="none" stroke="#C8301A" stroke-width="1.4" stroke-dasharray="3 2"/><text x="84" y="92" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="10.5" fill="#C8301A">${tt('passport.owned')}</text></g></g>` : ''}</svg>`;
 }
 
 function pasaportes(c) {
@@ -108,10 +109,10 @@ function pasaportes(c) {
     const names = ds.slice(0, 4).map(d => c.DESTINOS[d]?.place).filter(Boolean).join(', ') + (ds.length > 4 ? '…' : '');
     const solo = i === a.length - 1 && a.length % 2 === 1;
     return `<button class="pp${own ? ' own' : ''}${solo ? ' solo' : ''}${fresh === r ? ' pulse' : ''}" data-v="pass" data-id="${r}" style="--rl:${R.light};--rd:${R.dark}"><span class="bk">${booklet(R, own, fresh === r)}</span>
-<div><b>${esc(R.name)}</b><small>${ds.length} ${ds.length === 1 ? 'DESTINO' : 'DESTINOS'}</small><div class="ds">${esc(names)}</div><div class="pm">Permanente · no se gasta al viajar</div>
-<span class="price ${own ? 'use' : ''}">${own ? '✓ POSEÍDO' : coin(p)}</span></div></button>`;
+<div><b>${esc(R.name)}</b><small>${tt(ds.length === 1 ? 'store.dest.one' : 'store.dest.many', { n: ds.length })}</small><div class="ds">${esc(names)}</div><div class="pm">${tt('store.permanent')}</div>
+<span class="price ${own ? 'use' : ''}">${own ? '✓ ' + tt('passport.owned') : coin(p)}</span></div></button>`;
   }).join('');
-  return `<div class="vnote hd">Un pasaporte te abre todos los destinos de su región, para siempre.</div><div class="vg">${cards}</div>`;
+  return `<div class="vnote hd">${tt('store.passNote')}</div><div class="vg">${cards}</div>`;
 }
 
 function fotoState(c, p) {
@@ -121,12 +122,12 @@ function fotoState(c, p) {
 }
 function fotoCard(c, p) {
   const { has, on } = fotoState(c, p);
-  return `<button class="ph${on ? ' on' : ''}" data-v="photo" data-id="${p.id}"><div class="pv">${photoPreview(p.id)}</div><b>${esc(p.name)}</b><span class="price ${on ? 'use' : has ? 'tk' : ''}">${on ? 'PUESTO' : has ? 'TENÉS' : coin(p.price)}</span></button>`;
+  return `<button class="ph${on ? ' on' : ''}" data-v="photo" data-id="${p.id}"><div class="pv">${photoPreview(p.id)}</div><b>${esc(p.name)}</b><span class="price ${on ? 'use' : has ? 'tk' : ''}">${on ? tt('store.placed') : has ? tt('store.have') : coin(p.price)}</span></button>`;
 }
 function foto(c) {
   const V = c.V;
-  return `<div class="vnote hd">Personalizá tus selfies y tu álbum</div>` + PHOTO_GROUPS.map(([k, t]) =>
-    `<div class="vsec">${t}${k === 'deco' ? '<small>Se pueden poner varios a la vez.</small>' : ''}</div><div class="vg">${V.PHOTO_ITEMS.filter(p => p.kind === k).map(p => fotoCard(c, p)).join('')}</div>`).join('');
+  return `<div class="vnote hd">${tt('store.photoNote')}</div>` + PHOTO_GROUPS.map(([k, t]) =>
+    `<div class="vsec">${t}${k === 'deco' ? `<small>${tt('store.decoMany')}</small>` : ''}</div><div class="vg">${V.PHOTO_ITEMS.filter(p => p.kind === k).map(p => fotoCard(c, p)).join('')}</div>`).join('');
 }
 
 function objetos(c) {
@@ -135,11 +136,11 @@ function objetos(c) {
   const sou = V.SOUVENIRS.map(s => {
     const R = V.REGIONS[s.region], pass = V.hasPass(s.region), has = V.PHOTO.owned.includes(s.id);
     return `<button class="ph${pass || has ? '' : ' lock'}" data-v="sou" data-id="${s.id}"><div class="pv">${photoPreview(s.id)}</div><b>${esc(s.name)}</b>` +
-      (has ? '<span class="price tk">TENÉS</span>' : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">🔒 Necesitás el ${esc(R.pass)}</div>`) + '</button>';
+      (has ? `<span class="price tk">${tt('store.have')}</span>` : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">🔒 ${tt('store.needPass', { pass: esc(R.pass) })}</div>`) + '</button>';
   }).join('');
-  const pro = !I ? '' : `<div class="vsec">★ PRO</div><div class="vnote">${I.pro ? '★ SOS PRO: sin banner ni intersticiales y +25% de monedas en cada partida. ¡Gracias por apoyar el juego!' : '★ PRO: sin banner ni intersticiales y +25% de monedas en cada partida. Los videos con recompensa siguen siendo opcionales.'}</div>
-<div class="vg vpro">${I.pro ? '' : '<button class="btn green" data-v="paywall" style="grid-column:1/3;height:52px;font-size:19px">★ HACETE PRO</button>'}${I.paquetes.map(p => `<button class="it pk${p.destacado ? ' best' : ''}${I.pro ? ' own' : ''}" data-v="pk" data-id="${p.id}"><i>${p.icono}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.pro ? 'ACTIVO' : I.precio(p.id)}</span></button>`).join('')}
-<button class="link" data-v="restore" style="grid-column:1/3">${I.pro ? 'GESTIONAR SUSCRIPCIÓN' : 'RESTAURAR COMPRAS'}</button></div>`;
+  const pro = !I ? '' : `<div class="vsec">★ PRO</div><div class="vnote">${tt(I.pro ? 'shop.proOwn' : 'shop.proInfo')}</div>
+<div class="vg vpro">${I.pro ? '' : '<button class="btn green" data-v="paywall" style="grid-column:1/3;height:52px;font-size:19px">' + tt('shop.getPro') + '</button>'}${I.paquetes.map(p => `<button class="it pk${p.destacado ? ' best' : ''}${I.pro ? ' own' : ''}" data-v="pk" data-id="${p.id}"><i>${p.icono}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.pro ? tt('shop.active') : I.precio(p.id)}</span></button>`).join('')}
+<button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>`;
   return `<div class="vsec">Power-ups<small>Revivir se usa cuando caés. Congelar tiene su botón ❄ en la carrera. El resto se gasta solo al empezar tu próxima partida.</small></div><div class="vg">${items}</div>
 <div class="vsec">Souvenirs<small>Coleccionables para la tapa de tu álbum. Se compran con el pasaporte de su región.</small></div><div class="vg">${sou}</div>${pro}`;
 }
@@ -175,7 +176,7 @@ async function onClick(e) {
     const tr = V.TRAVELERS.find(t => t.id === id), k = c.SKINS.find(s => s.id === id), price = tr ? tr.price : k.price, name = tr ? tr.name : k.name;
     if (!c.owned.includes(id)) {
       if (!c.buy(price, name)) return bad(el);
-      c.owned.push(id); c.saveOwned(); c.setSkin(id); c.SFX.buy(); c.pop('¡' + name.toUpperCase() + '!', 'big');
+      c.owned.push(id); c.saveOwned(); c.setSkin(id); c.SFX.buy(); c.pop(tt('toast.prize', { name: name.toUpperCase() }), 'big');
     } else { c.SFX.tap(); c.setSkin(id); }
     done(c);
   } else if (kind === 'pass') {
@@ -185,16 +186,16 @@ async function onClick(e) {
     if (!c.buy(price, R.pass)) return bad(el);
     const r = V.buyPass(id, w); // se le pasa el saldo previo al cobro: buyPass sólo valida
     if (!r.ok) { c.addCoins(price); return bad(el); }
-    fresh = id; c.SFX.stamp(); c.confetti(); c.pop('¡' + R.pass.toUpperCase() + '!', 'big');
+    fresh = id; c.SFX.stamp(); c.confetti(); c.pop(tt('toast.prize', { name: R.pass.toUpperCase() }), 'big');
     done(c); setTimeout(() => { if (fresh === id) fresh = null; }, 900);
   } else if (kind === 'photo' || kind === 'sou') {
     const P = V.PHOTO;
     if (kind === 'sou') {
       const s = V.SOUVENIRS.find(x => x.id === id);
       if (P.owned.includes(id)) return c.SFX.tap();
-      if (!V.hasPass(s.region)) { c.SFX.nope(); c.toast('NECESITÁS EL ' + V.REGIONS[s.region].pass.toUpperCase()); return bad(el); }
+      if (!V.hasPass(s.region)) { c.SFX.nope(); c.toast(tt('toast.needPass', { pass: V.REGIONS[s.region].pass.toUpperCase() })); return bad(el); }
       if (!c.buy(s.price, s.name)) return bad(el);
-      P.owned.push(id); V.savePhoto(); c.SFX.buy(); c.pop('¡' + s.name.toUpperCase() + '!', 'big'); return done(c);
+      P.owned.push(id); V.savePhoto(); c.SFX.buy(); c.pop(tt('toast.prize', { name: s.name.toUpperCase() }), 'big'); return done(c);
     }
     const p = V.PHOTO_ITEMS.find(x => x.id === id);
     if (!P.owned.includes(id)) {
@@ -212,17 +213,17 @@ async function onClick(e) {
 }
 
 async function proFlow(c, kind, id) {
-  const I = c.Iap, ok = () => { c.pop('¡SOS PRO!', 'big'); c.SFX.buy(); c.confetti(); document.body.classList.remove('ads'); c.refresh(); render(); };
+  const I = c.Iap, ok = () => { c.pop(tt('toast.pro'), 'big'); c.SFX.buy(); c.confetti(); document.body.classList.remove('ads'); c.refresh(); render(); };
   c.SFX.tap();
   if (kind === 'paywall') {
     const r = await I.paywall();
-    if (r === 'PURCHASED' || r === 'RESTORED') ok(); else if (r === 'sin-ui') c.toast('ELEGÍ UN PLAN ABAJO');
+    if (r === 'PURCHASED' || r === 'RESTORED') ok(); else if (r === 'sin-ui') c.toast(tt('toast.pickPlan'));
   } else if (kind === 'pk') {
-    if (I.pro) return c.toast('YA SOS PRO');
+    if (I.pro) return c.toast(tt('toast.alreadyPro'));
     const r = await I.comprar(id);
-    if (r === 'ok') ok(); else if (r === 'solo-app') c.toast('LAS COMPRAS SE HACEN DESDE LA APP DE LA TIENDA'); else if (r === 'error') c.toast('NO SE PUDO COMPLETAR LA COMPRA');
-  } else if (I.pro) { if (!await I.centroCliente()) c.toast('LA SUSCRIPCIÓN SE GESTIONA DESDE LA APP'); }
-  else { c.toast(await I.restaurar() ? '¡COMPRAS RESTAURADAS!' : 'NO HAY COMPRAS PARA RESTAURAR'); c.refresh(); render(); }
+    if (r === 'ok') ok(); else if (r === 'solo-app') c.toast(tt('toast.storeOnly')); else if (r === 'error') c.toast(tt('toast.purchaseError'));
+  } else if (I.pro) { if (!await I.centroCliente()) c.toast(tt('toast.manageInApp')); }
+  else { c.toast(await I.restaurar() ? tt('toast.restored') : tt('toast.noRestore')); c.refresh(); render(); }
 }
 
 export function openShop(ctx, t = 'viajeros') {

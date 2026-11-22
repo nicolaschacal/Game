@@ -1,6 +1,7 @@
 // Los destinos del viaje, en orden de vuelta al mundo hacia el oeste (Kioto → … → Sídney → y de nuevo Kioto). Receta de Kioto en todos: un monumento grande al fondo, una paleta de pocos colores
 // y tres adornos de costado. Cada destino trae su monumento (art), su escenario (look) y el piso de la pista.
 import { LANDMARKS } from './runner-art.js';
+import { t as tt } from './i18n.js';
 import { ADORNOS, LUZ, adornosDe } from './adornos.js';
 const CREAM = '#FFF4DC';
 const cut = (shapes, details = '') => `<svg viewBox="0 0 120 120"><g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${shapes}</g>${shapes}${details}</svg>`;
@@ -265,7 +266,7 @@ const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
 // Desplazamiento horizontal opcional del monumento (unidades de mundo; negativo = hacia la izquierda/centro): evita que se corte contra el borde derecho de la pantalla
 const LM_X = { 'Pekín': -1.3, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0 };
 const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColor, ridge, wx, hour, biomaStr], idx) => { const [biome, ...extras] = biomaStr.split(' '), names = adornosDe(biome, idx, extras.filter(x => x[0] !== '!')); extras.filter(x => x[0] === '!').forEach(x => { names[0] = x.slice(1); }); return ({
-  name, place, country, art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look', biome, lmScale: LM_ESCALA[place] || 1, lmX: LM_X[place] || 0,
+  name, place: tt('dest.' + idx + '.place'), country: tt('dest.' + idx + '.country'), art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look', biome, lmScale: LM_ESCALA[place] || 1, lmX: LM_X[place] || 0, // place/country: texto traducido; el nombre en español de la tabla sólo sirve de clave para LM_ESCALA/LM_X
   look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: names.map(k => ADORNOS[k]), lamps: names.map(k => /^farol/.test(k)), lights: names.map(k => LUZ[k] || null) },
 }); };
 export const DESTINOS = TABLA.map(armar);

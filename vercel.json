@@ -1,5 +1,4 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "www",
-  "rewrites": [{ "source": "/kanjuu-demo.html", "destination": "/index.html" }]
+  "outputDirectory": "www"
 }

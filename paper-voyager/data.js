@@ -412,7 +412,7 @@ export const EXPANSIONS = [40, 90, 160, 260, 400, 600];
 export const SRS_HOURS = [0, 8, 24, 72, 168, 384, 840];
 
 // Piezas 部品: componentes que no son criaturas. Se usan como accesorios para evolucionar y fusionar.
-// Para el nivel KANJŪ cuentan como nivel 1 (componentes fundamentales).
+// Para el nivel Paper Voyager cuentan como nivel 1 (componentes fundamentales).
 export const PIECES = {
   '宀': { name: 'うかんむり', rom: 'ukanmuri', m: 'techo', cost: 40, mn: 'El techo de una casa: lo que está debajo está protegido.', ex: '字 安 室' },
   '儿': { name: 'ひとあし', rom: 'hitoashi', m: 'piernas', cost: 40, mn: 'Dos piernas que caminan: algo que se mueve.', ex: '見 兄 元' },
@@ -473,7 +473,7 @@ export const GRADES = [
 ];
 export const gradeTag = (k, mode = 'full') => { const L = kLevel(k), G = GRADES[L - 1];
   return `<span class="grade g${L} ${mode}" title="Grado ${L} · ${G.d}"><i>${L}</i>${mode === 'gem' ? '' : mode === 'short' ? `Grado ${L}` : `Grado ${L} · ${G.n}`}</span>`; };
-// Espacios que ocupa una criatura: crecen con su nivel KANJŪ
+// Espacios que ocupa una criatura: crecen con su nivel Paper Voyager
 export const size = k => kLevel(k);
 
 export function element(k) {

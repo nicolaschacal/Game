@@ -2,6 +2,7 @@
 // panel ÁLBUM a pantalla completa (por región, con tapa, souvenirs y adornos) y la animación de la cámara en la partida.
 // Contrato: ver PLAN-viajes.md (ctx). Todo el arte es SVG con borde crema grueso; el CSS se inyecta una sola vez.
 import { DESTINOS } from './destinos.js';
+import { t as tt } from './i18n.js';
 import * as VV from './viaje.js';
 import { PLANE } from './runner-art.js';
 
@@ -131,12 +132,12 @@ export function selfieHTML(i, shot = 0, look = {}) {
   const d = DESTINOS[i]; if (!d) return '';
   const u = 'pv' + (++UID), sh = VV.SHOTS[shot]?.name || '';
   const hero = Array.isArray(look.hero) ? look.hero[0] : look.hero;
-  return svgWrap('0 0 120 116', 'pvsf', polaroid(u, { frame: look.frame, filter: look.filter, shot, rot: look.rot ?? SHOT_ROT[shot] ?? 0, title: d.place, sub: `${sh} · ${d.country}`, scene: uu => sceneFor(uu, d, shot, hero) }), `Selfie en ${d.place}: ${sh}`);
+  return svgWrap('0 0 120 116', 'pvsf', polaroid(u, { frame: look.frame, filter: look.filter, shot, rot: look.rot ?? SHOT_ROT[shot] ?? 0, title: d.place, sub: `${sh} · ${d.country}`, scene: uu => sceneFor(uu, d, shot, hero) }), tt('album.selfieAria', { place: d.place, shot: sh }));
 }
 // Casillero vacío: silueta de papel con "?" y el nombre del destino
 function slotHTML(i, shot, look = {}) {
   const d = DESTINOS[i], u = 'pv' + (++UID);
-  return svgWrap('0 0 120 116', 'pvsf ghost', polaroid(u, { ghost: true, shot, rot: SHOT_ROT[shot] ?? 0, title: d.place, sub: VV.SHOTS[shot]?.name || '' }), `Falta: ${d.place}, ${VV.SHOTS[shot]?.name}`);
+  return svgWrap('0 0 120 116', 'pvsf ghost', polaroid(u, { ghost: true, shot, rot: SHOT_ROT[shot] ?? 0, title: d.place, sub: VV.SHOTS[shot]?.name || '' }), tt('album.missingAria', { place: d.place, shot: VV.SHOTS[shot]?.name }));
 }
 
 // ── Escena de muestra para marcos y filtros (colorida, para que el filtro se note) ──
@@ -168,7 +169,7 @@ function coverInner(id, u, o = {}) {
   if (o.deco) s += o.deco.map((d, k) => decoPlace(d, k)).join('');
   if (o.title !== false) {
     s += `<rect x="28" y="16" width="76" height="40" rx="4" fill="${plate}" stroke="${CREAM}" stroke-width="2"/><rect x="31" y="19" width="70" height="34" rx="2" fill="none" stroke="${ptxt}" stroke-width=".9" opacity=".6"/>`
-      + `<text x="66" y="42" text-anchor="middle" font-family="${LIL}" font-size="16.5" fill="${ptxt}" letter-spacing="1">ÁLBUM</text><text x="66" y="50.5" text-anchor="middle" font-family="${LIL}" font-size="6.2" fill="${sub}" letter-spacing="2">DE VIAJE</text>`
+      + `<text x="66" y="42" text-anchor="middle" font-family="${LIL}" font-size="16.5" fill="${ptxt}" letter-spacing="1">${tt('album.word')}</text><text x="66" y="50.5" text-anchor="middle" font-family="${LIL}" font-size="6.2" fill="${sub}" letter-spacing="2">${tt('album.cover.sub')}</text>`
       + `<path d="${plane(66, 24.5, .36)}" fill="${ptxt}"/>`;
   }
   if (o.count != null) {
@@ -192,7 +193,7 @@ function decoPlace(id, k) {
 }
 function coverSVG(id, o = {}) {
   const u = 'pv' + (++UID);
-  return svgWrap('-4 0 128 162', 'pvcv', coverInner(id, u, o), 'Tapa del álbum');
+  return svgWrap('-4 0 128 162', 'pvcv', coverInner(id, u, o), tt('album.coverAria'));
 }
 
 // ── Adornos (lienzo 120×120) ──
@@ -340,7 +341,7 @@ html.pvlock,html.pvlock body{overflow:hidden!important;overscroll-behavior:none}
 
 // ── Panel ÁLBUM ──
 const LOCK = `<svg viewBox="0 0 40 40" class="lk"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 18 V13 a8 8 0 0 1 16 0 V18" fill="none"/><rect x="7" y="17" width="26" height="19" rx="4" fill="#3A3558"/></g><path d="M12 18 V13 a8 8 0 0 1 16 0 V18" fill="none" stroke="#B8B3D6" stroke-width="3.4" stroke-linecap="round"/><rect x="7" y="17" width="26" height="19" rx="4" fill="#3A3558"/><circle cx="20" cy="25.5" r="3" fill="#F2B937"/><rect x="18.8" y="26" width="2.4" height="5.5" rx="1" fill="#F2B937"/></svg>`;
-const KINDS = [['frame', 'MARCOS', 'frame'], ['cover', 'TAPAS', 'cover'], ['filter', 'FILTROS', 'filter'], ['deco', 'ADORNOS', 'deco']];
+const KINDS = [['frame', tt('album.kind.frame'), 'frame'], ['cover', tt('album.kind.cover'), 'cover'], ['filter', tt('album.kind.filter'), 'filter'], ['deco', tt('album.kind.deco'), 'deco']];
 
 export function openAlbum(ctx, onClose, opts = {}) {
   css();
@@ -367,8 +368,8 @@ export function openAlbum(ctx, onClose, opts = {}) {
 
   function draw() {
     const R = V.REGIONS, P = V.PHOTO, keep = root.scrollTop;
-    root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${V.selfieCount()} DE ${V.selfieTotal()} FOTOS</small><h2>ÁLBUM</h2></div>
-<div class="pva-top"><button class="btn sm" data-cfg>PERSONALIZAR ÁLBUM</button></div>
+    root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('album.count', { n: V.selfieCount(), total: V.selfieTotal() })}</small><h2>${tt('album.word')}</h2></div>
+<div class="pva-top"><button class="btn sm" data-cfg>${tt('album.customize')}</button></div>
 <div class="tabs">${V.REGION_ORDER.map(r => { const c = regCount(r); return `<button data-r="${r}" class="${r === region ? 'on' : ''}${done().includes(r) ? ' done' : ''}" style="--rc:${R[r].color};--rd:${R[r].dark}">${R[r].name.toUpperCase()}<small>${c.n}/${c.t}</small></button>`; }).join('')}</div>
 <div id="pvaList"></div>`;
     $('[data-x]').onclick = close;
@@ -380,20 +381,20 @@ export function openAlbum(ctx, onClose, opts = {}) {
   function list() {
     const r = region, R = V.REGIONS[r], c = regCount(r), el = $('#pvaList');
     el.style.cssText = `--rc:${R.color};--rd:${R.dark}`;
-    el.innerHTML = `<div class="pva-rh"><b>${R.name.toUpperCase()}</b>${done().includes(r) ? '<u>★ COMPLETO</u>' : ''}<span>${c.n} / ${c.t} SELFIES</span></div>`
+    el.innerHTML = `<div class="pva-rh"><b>${R.name.toUpperCase()}</b>${done().includes(r) ? `<u>★ ${tt('album.complete')}</u>` : ''}<span>${tt('album.selfies', { n: c.n, total: c.t })}</span></div>`
       + V.destsOf(r).map(i => {
         const d = DESTINOS[i], got = V.ALBUM[i] || [];
         return `<div class="pva-dest"><div class="pva-dn"><b>${esc(d.place)}</b><small>${esc(d.country)}</small><i class="${got.length === 3 ? 'ok' : ''}">${got.length}/3</i></div><div class="pva-row">`
           + V.SHOTS.map(s => got.includes(s.id)
-            ? `<button class="pva-slot" data-i="${i}" data-s="${s.id}" aria-label="${esc(d.place)}: ${s.name}">${selfieHTML(i, s.id, look(s.id))}</button>`
-            : `<button class="pva-slot" disabled aria-label="Falta: ${esc(d.place)}, ${s.name}">${slotHTML(i, s.id)}</button>`).join('') + `</div></div>`;
+            ? `<button class="pva-slot" data-i="${i}" data-s="${s.id}" aria-label="${esc(d.place)}: ${esc(s.name)}">${selfieHTML(i, s.id, look(s.id))}</button>`
+            : `<button class="pva-slot" disabled aria-label="${esc(tt('album.missingAria', { place: d.place, shot: s.name }))}">${slotHTML(i, s.id)}</button>`).join('') + `</div></div>`;
       }).join('');
     el.querySelectorAll('.pva-slot:not(:disabled)').forEach(b => b.onclick = () => detail(+b.dataset.i, +b.dataset.s));
   }
   function detail(i, s) {
     sfx('tap');
     const d = DESTINOS[i], ov = document.createElement('div'); ov.className = 'pva-det';
-    ov.innerHTML = `<button class="round close" aria-label="Cerrar">✕</button><div class="big">${selfieHTML(i, s, { ...look(s), rot: 0 })}</div><div class="info"><b>${esc(d.place)}</b><small>${esc(d.country)} · ${V.SHOTS[s].name}</small></div>`;
+    ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><div class="big">${selfieHTML(i, s, { ...look(s), rot: 0 })}</div><div class="info"><b>${esc(d.place)}</b><small>${esc(d.country)} · ${V.SHOTS[s].name}</small></div>`;
     const off = () => { ov.remove(); sfx('tap'); };
     ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) off(); };
     root.appendChild(ov);
@@ -405,18 +406,18 @@ export function openAlbum(ctx, onClose, opts = {}) {
       const keep = cfg.scrollTop;
       const secs = KINDS.map(([kind, title]) => {
         const items = V.PHOTO_ITEMS.filter(p => p.kind === kind);
-        const note = kind === 'deco' ? '<small>podés activar varios</small>' : '';
+        const note = kind === 'deco' ? `<small>${tt('album.decoMany')}</small>` : '';
         return `<div class="pva-sec">${title}${note}</div><div class="pva-grid">` + items.map(p => {
           const own = P.owned.includes(p.id), on = kind === 'deco' ? P.deco.includes(p.id) : P[kind] === p.id;
-          return `<button class="pva-it ${on ? 'on' : ''} ${own ? '' : 'lock'}" data-id="${p.id}" data-k="${kind}" aria-label="${esc(p.name)}${own ? '' : ' (en la tienda)'}"><div class="th">${photoPreview(p.id)}</div>${own ? '' : LOCK}<b>${esc(p.name)}</b><em>${own ? (on ? (kind === 'deco' ? 'ACTIVO ✓' : 'PUESTO ✓') : (kind === 'deco' ? 'ACTIVAR' : 'PONER')) : 'EN LA TIENDA'}</em></button>`;
+          return `<button class="pva-it ${on ? 'on' : ''} ${own ? '' : 'lock'}" data-id="${p.id}" data-k="${kind}" aria-label="${esc(p.name)}${own ? '' : ' (' + tt('album.inShop') + ')'}"><div class="th">${photoPreview(p.id)}</div>${own ? '' : LOCK}<b>${esc(p.name)}</b><em>${own ? (on ? (kind === 'deco' ? tt('album.active') : tt('album.placed')) : (kind === 'deco' ? tt('album.activate') : tt('album.place'))) : tt('album.inShop.up')}</em></button>`;
         }).join('') + `</div>`;
       }).join('');
-      cfg.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>ELEGÍ CÓMO SE VE</small><h2>PERSONALIZAR</h2></div>
-<div class="pva-pv"><div class="a">${coverSVG(P.cover, { title: true, deco: P.deco.filter(d => P.owned.includes(d)) })}</div><div class="b">${selfieHTML(demo[0], demo[1], { ...look(demo[1]), rot: 2 })}</div></div>${secs}<div class="pva-note">Lo que no tenés se compra en la tienda, sección Fotografía.</div>`;
+      cfg.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('album.cfg.sub')}</small><h2>${tt('album.cfg.title')}</h2></div>
+<div class="pva-pv"><div class="a">${coverSVG(P.cover, { title: true, deco: P.deco.filter(d => P.owned.includes(d)) })}</div><div class="b">${selfieHTML(demo[0], demo[1], { ...look(demo[1]), rot: 2 })}</div></div>${secs}<div class="pva-note">${tt('album.cfg.note')}</div>`;
       cfg.querySelector('[data-x]').onclick = () => { cfg.remove(); sfx('tap'); draw(); };
       cfg.querySelectorAll('.pva-it').forEach(b => b.onclick = () => {
         const id = b.dataset.id, k = b.dataset.k;
-        if (!P.owned.includes(id)) { sfx('nope'); try { ctx.toast?.('Está en la tienda: Fotografía'); } catch (e) {} return; }
+        if (!P.owned.includes(id)) { sfx('nope'); try { ctx.toast?.(tt('album.cfg.toast')); } catch (e) {} return; }
         if (k === 'deco') { const n = P.deco.indexOf(id); if (n >= 0) P.deco.splice(n, 1); else P.deco.push(id); } else P[k] = id;
         V.savePhoto(); sfx('tap'); paint();
       });
@@ -438,8 +439,8 @@ export function selfieReveal(ctx, i, res) {
   const el = document.createElement('div'); el.className = 'pvrv' + (res.nuevo ? '' : ' dup') + (long ? ' long' : '');
   if (R) el.style.cssText = `--rc:${R.color};--rd:${R.dark}`;
   const sparks = [[-6, 4], [112, 0], [10, 86], [104, 80]].map(([x, y], k) => `<span class="sp" style="left:calc(50% - 150px + ${x * 1.3}px);top:${y}px;animation-delay:${.3 + k * .1}s">${svgWrap('0 0 20 20', '', star4(10, 10, 9.5, k % 2 ? '#fff' : '#FFD45E'), '')}</span>`).join('');
-  el.innerHTML = `<div class="row"><div class="pol">${selfieHTML(i, res.shot, { frame: V.PHOTO?.frame, filter: V.PHOTO?.filter, hero, rot: 0 })}</div><div class="tx"><div class="tt">${res.nuevo ? '¡NUEVA SELFIE!' : `REPETIDA +◉${res.coins}`}</div>${res.nuevo ? `<div class="cc">+◉${res.coins}</div>` : ''}</div></div>`
-    + (R ? `<div class="rg">¡ÁLBUM DE ${esc(R.name.toUpperCase())} COMPLETO!<br>+◉300 +♥</div>` : '') + sparks;
+  el.innerHTML = `<div class="row"><div class="pol">${selfieHTML(i, res.shot, { frame: V.PHOTO?.frame, filter: V.PHOTO?.filter, hero, rot: 0 })}</div><div class="tx"><div class="tt">${res.nuevo ? tt('toast.selfieNew') : tt('album.dup', { n: res.coins })}</div>${res.nuevo ? `<div class="cc">+◉${res.coins}</div>` : ''}</div></div>`
+    + (R ? `<div class="rg">${tt('album.regionDone', { region: esc(R.name.toUpperCase()) })}<br>+◉300 +♥</div>` : '') + sparks;
   document.body.append(fl, el);
   try { ctx.SFX?.[res.nuevo ? 'prize' : 'tap']?.(); ctx.buzz?.([20, 30, 20]); if (R) { setTimeout(() => { ctx.confetti?.(); ctx.SFX?.win?.(); }, 700); } } catch (e) {}
   setTimeout(() => { fl.remove(); el.remove(); }, long ? 2800 : 1900);
@@ -520,7 +521,7 @@ function passportSVG(V, r) {
   return `<svg viewBox="0 0 100 134" aria-hidden="true"><rect x="5" y="5" width="90" height="124" rx="6" fill="${CREAM}" stroke="${CREAM}" stroke-width="7" stroke-linejoin="round"/>${body}<rect x="5" y="5" width="11" height="124" rx="5" fill="${R.dark}"/><path d="M5 117 Q5 129 17 129 H83 Q95 129 95 117 V111 Q50 120 5 111Z" fill="#000" opacity=".15"/>`
     + `<rect x="22" y="12" width="66" height="110" rx="3" fill="none" stroke="${R.light}" stroke-width="1.2" stroke-dasharray="3 2.4" opacity=".85"/>`
     + `<circle cx="55" cy="46" r="18" fill="none" stroke="${R.light}" stroke-width="2.6"/><ellipse cx="55" cy="46" rx="7.5" ry="18" fill="none" stroke="${R.light}" stroke-width="1.5"/><path d="M37 46 H73 M41 35 H69 M41 57 H69" stroke="${R.light}" stroke-width="1.4"/><path d="${plane(55, 46, 1.15)}" fill="${CREAM}" stroke="${R.dark}" stroke-width=".8"/>`
-    + `<text x="55" y="86" text-anchor="middle" font-family="${LIL}" font-size="11" fill="${CREAM}" letter-spacing="1.2">PASAPORTE</text><text x="55" y="99" text-anchor="middle" font-family="${LIL}" font-size="8" fill="${R.light}" letter-spacing="2">${esc(R.name.toUpperCase())}</text><rect x="38" y="108" width="34" height="5" rx="2.5" fill="#F2B937"/></svg>`;
+    + `<text x="55" y="86" text-anchor="middle" font-family="${LIL}" font-size="11" fill="${CREAM}" letter-spacing="1.2">${tt('passport.word')}</text><text x="55" y="99" text-anchor="middle" font-family="${LIL}" font-size="8" fill="${R.light}" letter-spacing="2">${esc(R.name.toUpperCase())}</text><rect x="38" y="108" width="34" height="5" rx="2.5" fill="#F2B937"/></svg>`;
 }
 function pencilSVG() {
   return `<svg viewBox="0 0 160 22"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round"><path d="M10 3 H128 L152 11 L128 19 H10Z" fill="#F2BC3E"/></g><path d="M10 3 H128 L152 11 L128 19 H10Z" fill="#F2BC3E"/><path d="M10 11 H128" stroke="#D99A1F" stroke-width="2"/><path d="M128 3 L152 11 L128 19Z" fill="#F0D2A0"/><path d="M144 8 L152 11 L144 14Z" fill="#3A3558"/><rect x="2" y="3" width="14" height="16" rx="3" fill="#E9798C"/><rect x="16" y="3" width="6" height="16" fill="#B8BEC8"/></svg>`;
@@ -545,14 +546,14 @@ export function openBag(ctx) {
     const m = pass.length, span = m < 2 ? 0 : Math.min(48, 16 * (m - 1));
     const fan = pass.map((r, k) => { const a = m < 2 ? 4 : -span / 2 + span * k / (m - 1); return `<div class="bk" style="transform:translateX(-50%) rotate(${a.toFixed(1)}deg);z-index:${k + 1}">${passportSVG(V, r)}</div>`; }).join('');
     const stage = sv.length
-      ? `<div class="pvb-stage" data-st>${sv.map((s, k) => `<div class="pvb-sc" data-k="${k}">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div>`).join('')}</div><div class="pvb-sn"><span class="nm" data-nm></span><small data-ct></small><button class="pvb-all" data-all>VER TODOS</button></div>`
-      : `<button class="pvb-empty" data-shop style="font-family:inherit">${LOCK.replace('class="lk"', '')}<b>Todavía no tenés souvenirs</b>Comprá souvenirs en la tienda<u>IR A LA TIENDA</u></button>`;
-    root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>LO QUE LLEVÁS EN VIAJE</small><h2>MOCHILA</h2></div>
+      ? `<div class="pvb-stage" data-st>${sv.map((s, k) => `<div class="pvb-sc" data-k="${k}">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div>`).join('')}</div><div class="pvb-sn"><span class="nm" data-nm></span><small data-ct></small><button class="pvb-all" data-all>${tt('bag.all')}</button></div>`
+      : `<button class="pvb-empty" data-shop style="font-family:inherit">${LOCK.replace('class="lk"', '')}<b>${tt('bag.empty')}</b>${tt('bag.emptySub')}<u>${tt('bag.toShop')}</u></button>`;
+    root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('bag.sub')}</small><h2>${tt('nav.bag')}</h2></div>
 <div class="pvb-t">
- <button class="pvb-alb" data-alb aria-label="Abrir el álbum"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">ÁLBUM · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
+ <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
  <div class="pvb-dec" style="right:5%;top:53%;width:34%;transform:rotate(-8deg)">${pencilSVG()}</div>
  <div class="pvb-dec" style="right:4%;top:37%;width:24%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
- <button class="pvb-pas" data-pas aria-label="Abrir pasaportes">${fan}<span class="pvb-tag">PASAPORTES · <b>${m}</b>/${nReg}</span></button>
+ <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
 </div>`;
     const q = s => root.querySelector(s);
@@ -637,12 +638,12 @@ export function openBag(ctx) {
   // Vista ordenada de todos los souvenirs; al tocar uno se ve grande
   function souvenirGrid(sv) {
     const g = document.createElement('div'); g.className = 'panel pva pvsouv'; g.style.display = 'block'; lockScroll(g);
-    g.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${sv.length} EN TU MOCHILA</small><h2>SOUVENIRS</h2></div><div class="pvs-g">${sv.map((s, k) => `<button class="pvs-i" data-k="${k}" style="--r:${(((k * 7) % 9) - 4) * .9}deg"><div class="th">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><small>${esc(s.country || '')}</small><b>${esc(s.name)}</b></button>`).join('')}</div>`;
+    g.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('bag.inBag', { n: sv.length })}</small><h2>${tt('bag.souvenirs')}</h2></div><div class="pvs-g">${sv.map((s, k) => `<button class="pvs-i" data-k="${k}" style="--r:${(((k * 7) % 9) - 4) * .9}deg"><div class="th">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><small>${esc(s.country || '')}</small><b>${esc(s.name)}</b></button>`).join('')}</div>`;
     document.body.appendChild(g);
     g.querySelector('[data-x]').onclick = () => { g.remove(); sfx('tap'); };
     g.querySelectorAll('.pvs-i').forEach(b => b.onclick = () => {
       sfx('tap'); const s = sv[+b.dataset.k], R = V.REGIONS[s.region], ov = document.createElement('div'); ov.className = 'pva-det';
-      ov.innerHTML = `<button class="round close" aria-label="Cerrar">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${esc(s.country || (R ? R.name : ''))}</small></div>`;
+      ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${esc(s.country || (R ? R.name : ''))}</small></div>`;
       ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) { ov.remove(); sfx('tap'); } };
       g.appendChild(ov);
     });
@@ -664,13 +665,13 @@ export function openPassport(ctx, onClose) {
     if (!n) return `<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="25" fill="none" stroke="#B3A37F" stroke-width="2" stroke-dasharray="3.4 3"/><text x="30" y="38" text-anchor="middle" font-family="${LIL}" font-size="22" fill="#B3A37F" opacity=".7">?</text></svg>`;
     return `<svg viewBox="0 0 60 60" aria-label="${esc(d.place)}"><g transform="rotate(${rot} 30 30)"><circle cx="30" cy="30" r="27" fill="#FFF8E6"/><circle cx="30" cy="30" r="27" fill="none" stroke="${R.dark}" stroke-width="2.6"/><circle cx="30" cy="30" r="23" fill="none" stroke="${R.color}" stroke-width="1.2"/>${nest(d.art, 12, 9, 36)}<path d="M8 49 q5-3 10 0 t10 0 t10 0 t10 0" stroke="${R.dark}" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/>${n > 1 ? `<circle cx="48" cy="12" r="8" fill="${R.dark}"/><text x="48" y="15.6" text-anchor="middle" font-family="${LIL}" font-size="10" fill="#fff">×${n}</text>` : ''}</g></svg>`;
   };
-  root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>TUS VIAJES Y SELLOS</small><h2>PASAPORTES</h2></div>
-<div class="pvp-st"><div><b>${T.trips || 0}</b><small>VIAJES</small></div><div><b>${visited}</b><small>DESTINOS / ${DESTINOS.length}</small></div><div><b>${(T.passports || []).length}/${V.REGION_ORDER.length}</b><small>PASAPORTES</small></div></div>`
+  root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('pass.sub')}</small><h2>${tt('pass.plural')}</h2></div>
+<div class="pvp-st"><div><b>${T.trips || 0}</b><small>${tt('pass.trips')}</small></div><div><b>${visited}</b><small>${tt('pass.dests', { n: DESTINOS.length })}</small></div><div><b>${(T.passports || []).length}/${V.REGION_ORDER.length}</b><small>${tt('pass.plural')}</small></div></div>`
     + order.map(r => {
       const R = V.REGIONS[r], ds = V.destsOf(r), ok = have(r), v = ds.filter(i => vis[i] > 0).length;
-      return `<div class="pvp-r" style="--rc:${R.color}"><div class="pvp-rh"><div class="bk">${passportSVG(V, r)}</div><div><b>${esc(R.pass)}</b><small>${esc(R.name.toUpperCase())} · ${ds.length} DESTINOS</small></div>${ok ? `<u>${v}/${ds.length}</u>` : `<u class="pr">◉ ${V.passPrice(r)}</u>`}</div>`
+      return `<div class="pvp-r" style="--rc:${R.color}"><div class="pvp-rh"><div class="bk">${passportSVG(V, r)}</div><div><b>${esc(R.pass)}</b><small>${esc(R.name.toUpperCase())} · ${tt('pass.destCount', { n: ds.length })}</small></div>${ok ? `<u>${v}/${ds.length}</u>` : `<u class="pr">◉ ${V.passPrice(r)}</u>`}</div>`
         + (ok ? `<div class="pvp-sg">${ds.map(i => `<div class="${vis[i] ? '' : 'nv'}">${stamp(DESTINOS[i], i, R)}<span>${esc(DESTINOS[i].place)}</span></div>`).join('')}</div>`
-          : `<div class="pvp-go"><span>Te falta este pasaporte. Abre ${ds.length} destinos de ${esc(R.name)}.</span><button class="btn sm" data-buy>TIENDA</button></div>`) + `</div>`;
+          : `<div class="pvp-go"><span>${tt('pass.missing', { n: ds.length, region: esc(R.name) })}</span><button class="btn sm" data-buy>${tt('nav.shop')}</button></div>`) + `</div>`;
     }).join('');
   root.querySelector('[data-x]').onclick = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
   root.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { sfx('tap'); document.querySelectorAll('.pvbag').forEach(e => e.remove()); root.remove(); openShopTab(ctx, 'pasaportes'); });

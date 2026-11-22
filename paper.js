@@ -1,4 +1,4 @@
-// KANJŪ · paper.js — Arte de papel del santuario: recortes dibujados por código (borde blanco de
+// Paper Voyager · paper.js — Arte de papel del santuario: recortes dibujados por código (borde blanco de
 // cartulina, sombra corrida y grano), texturas para la escena 3D y miniaturas para la Tienda.
 import * as THREE from 'three';
 
