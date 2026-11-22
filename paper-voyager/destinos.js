@@ -343,20 +343,16 @@ M.chaouen = cut(
   `<path d="M62 26 L88 50 L104 38 L120 60 L120 70 L96 56 L88 60 L66 34Z" fill="#8A8270" opacity=".5"/>`
   + azules.map(([x, y, w, h, c]) => `<rect x="${x}" y="${y}" width="${w}" height="2.4" fill="#F6F2EA"/><path d="M${x + w * .3} ${y + h} L${x + w * .3} ${y + Math.min(h, 16) * .4 + h - Math.min(h, 16)} Q${x + w / 2} ${y + h - Math.min(h, 16) + 1} ${x + w * .7} ${y + Math.min(h, 16) * .4 + h - Math.min(h, 16)} L${x + w * .7} ${y + h}Z" fill="${shade(c, .35)}"/><rect x="${x + w * .2}" y="${y + 6}" width="3.4" height="4" fill="#2F5A9A"/>`).join('')
   + `<path d="M52 110 L56 102 L60 102 L62 96 L66 96 L68 90" stroke="#F6F2EA" stroke-width="3" fill="none"/>` + [[22, 64], [42, 54], [82, 74], [64, 88]].map(([x, y]) => `<rect x="${x - 2}" y="${y - 3}" width="4" height="3.4" fill="#D9733A"/><circle cx="${x}" cy="${y - 4.6}" r="2.4" fill="#E8452C"/>`).join(''));
-// 17 San Francisco: Golden Gate completo (dos torres, cables a anclajes, tablero entre colinas, niebla baja)
+// 17 San Francisco: Golden Gate completo (dos torres, cables a anclajes, tablero). SIN suelo propio: las torres bajan hasta el borde del recorte
+// y la bahía, las colinas de Marin/SF y la niebla baja (Karl the Fog) las pone el paisaje del destino delante (ver FORE más abajo)
 M.sf = cut(
-  `<path d="M8 96 Q60 90 112 96 Q118 104 100 108 Q60 112 20 108 Q2 104 8 96Z" fill="#6FA8C8"/>`
-  + `<path d="M4 96 Q0 76 12 68 Q24 64 30 82 Q34 92 36 96Z M116 96 Q120 76 108 68 Q96 64 90 82 Q86 92 84 96Z" fill="#8FAE6A"/>`
-  + `<rect x="30" y="20" width="6" height="78" fill="#D2502E"/><rect x="84" y="20" width="6" height="78" fill="#D2502E"/><rect x="29" y="34" width="8" height="4" fill="#D2502E"/><rect x="83" y="34" width="8" height="4" fill="#D2502E"/><rect x="29" y="52" width="8" height="4" fill="#D2502E"/><rect x="83" y="52" width="8" height="4" fill="#D2502E"/>`
-  + `<rect x="8" y="74" width="104" height="5" fill="#D2502E"/>`
-  + `<path d="M30 92 Q36 84 46 89 Q54 82 64 88 Q74 82 82 88 Q90 84 92 93 Q88 100 76 98 Q60 102 44 98 Q32 100 30 92Z" fill="#FFFFFF"/>`,
+  `<rect x="30" y="20" width="6" height="98" fill="#D2502E"/><rect x="84" y="20" width="6" height="98" fill="#D2502E"/><rect x="29" y="34" width="8" height="4" fill="#D2502E"/><rect x="83" y="34" width="8" height="4" fill="#D2502E"/><rect x="29" y="52" width="8" height="4" fill="#D2502E"/><rect x="83" y="52" width="8" height="4" fill="#D2502E"/>`
+  + `<rect x="2" y="74" width="116" height="5" fill="#D2502E"/><rect x="1" y="66" width="8" height="40" fill="#B8402A"/><rect x="111" y="66" width="8" height="40" fill="#B8402A"/>`,
   `<path d="M6 70 Q20 66 33 22 M114 70 Q100 66 87 22 M33 22 Q60 78 87 22" stroke="#B8402A" stroke-width="2" fill="none" stroke-linecap="round"/>`
-  + `<rect x="3" y="66" width="6" height="8" fill="#B8402A"/><rect x="111" y="66" width="6" height="8" fill="#B8402A"/>`
-  + Array.from({ length: 12 }, (_, i) => { const x = 40 + i * 4, t = (x - 33) / 54, y = 22 + 4 * 28.5 * t * (1 - t) * 1.0 * 1; return `<path d="M${x} ${y.toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`; }).join('')
-  + [14, 22, 28].map(x => { const y = 70 - (x - 6) / 27 * 46 + 0; return `<path d="M${x} ${(66 - (x - 6) * 1.5).toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`; }).join('')
+  + Array.from({ length: 12 }, (_, i) => { const x = 40 + i * 4, t = (x - 33) / 54, y = 22 + 4 * 28.5 * t * (1 - t); return `<path d="M${x} ${y.toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`; }).join('')
+  + [14, 22, 28].map(x => `<path d="M${x} ${(66 - (x - 6) * 1.5).toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`).join('')
   + [92, 98, 106].map(x => `<path d="M${x} ${(66 - (114 - x) * 1.5).toFixed(1)} L${x} 74" stroke="#C94A30" stroke-width=".9"/>`).join('')
-  + `<rect x="8" y="77" width="104" height="2" fill="#A8402A"/><rect x="33" y="20" width="3" height="78" fill="#A8402A" opacity=".5"/><rect x="87" y="20" width="3" height="78" fill="#A8402A" opacity=".5"/>`
-  + `<path d="M44 96 h14 M70 98 h18 M6 100 h14" stroke="#CFE6F2" stroke-width="1.6" stroke-linecap="round"/>`);
+  + `<rect x="2" y="77" width="116" height="2" fill="#A8402A"/><rect x="33" y="20" width="3" height="98" fill="#A8402A" opacity=".5"/><rect x="87" y="20" width="3" height="98" fill="#A8402A" opacity=".5"/>`);
 // 18 Ciudad de México: Palacio de Bellas Artes (cúpula naranja) y trajinera de Xochimilco
 M.cdmx = cut(
   `<path d="M38 62 Q38 30 60 24 Q82 30 82 62Z" fill="#E8A040"/><rect x="57" y="12" width="6" height="12" fill="#E8A040"/><path d="M14 64 Q14 52 24 50 Q34 52 34 64Z M86 64 Q86 52 96 50 Q106 52 106 64Z" fill="#E8A040"/>`
@@ -454,9 +450,28 @@ const TABLA = [
 const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
 // Desplazamiento horizontal opcional del monumento (unidades de mundo; negativo = hacia la izquierda/centro): evita que se corte contra el borde derecho de la pantalla
 const LM_X = { 'Pekín': -1.3, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0, 'San Francisco': -.8 };
+// Capas DELANTERAS del paisaje por destino (opcional): se dibujan entre el monumento y la cámara para "meterlo" en la escena
+// (como Kioto o Buenos Aires, donde el suelo y las colinas tapan la base). Usar cuando el recorte del monumento NO trae suelo propio.
+// Coordenadas relativas al monumento: x = fracción de su ancho (0 = borde izquierdo, 1 = derecho; puede salirse), dz = cuánto más
+// cerca de la cámara que el monumento (unidades de mundo; ~.2–1), y = altura sobre el suelo. Colores: c = 0–3 (paleta de montañas
+// del destino, de la más clara a la más oscura), 'fog' (cielo/bruma), '#hex', o [a, b, t] = mezcla de dos de esos (t de 0 a 1).
+//   { t: 'hill', x, w, h, c, dz, kind }  loma recortada con la misma textura del horizonte (kind: 'dune'|'peak'|'city'; por defecto la del destino)
+//   { t: 'band', z0, z1, c, x, w }       franja plana sobre el suelo, de dz z0 a z1 (agua de bahía, arena, río); se ve en perspectiva. w = ancho en anchos del monumento (sin w: de borde a borde), x = centro
+//   { t: 'cut', svg, x, s, y, dz, o, ro } recorte de papel libre de lado s (bruma, olas, barcos); o = opacidad; ro = orden de dibujo (35 por defecto: debajo de las colinas, que van en 40; 45 = encima)
+// Ej.: para otro destino con lago, agregar 'Nombre': [{ t: 'band', z0: -2, z1: 3, c: [2, '#6F9BB8', .4] }, { t: 'hill', x: .1, w: 4, h: 2, c: 2, dz: .5 }]
+const NIEBLA = `<svg viewBox="0 0 120 120"><path d="M0 120 L0 108 Q6 102 14 105 Q20 97 30 102 Q36 94 46 100 Q54 96 60 101 Q68 95 76 101 Q84 96 92 102 Q100 98 106 104 Q114 101 120 106 L120 120Z" fill="#F4F6F8"/><path d="M8 110 Q28 106 48 109 M64 106 Q84 103 104 108" stroke="#DCE2EA" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>`;
+const JIRON = `<svg viewBox="0 0 120 120"><path d="M6 108 Q14 100 26 103 Q34 95 48 100 Q58 94 70 100 Q82 97 92 102 Q104 101 114 106 Q104 111 86 109 Q60 112 34 110 Q14 112 6 108Z" fill="#F4F6F8"/></svg>`; // jirón de niebla suelto
+const FORE = {
+  'San Francisco': [
+    { t: 'band', z0: -3, z1: 9, c: [2, '#7E9DB8', .5] }, // la bahía: franja de agua gris azulada a la altura del horizonte
+    { t: 'hill', x: .04, w: 9, h: 3.6, c: [2, 3, .55], dz: .5, kind: 'dune' }, // Marin Headlands: tapan el anclaje norte y el arranque del tablero
+    { t: 'hill', x: .98, w: 8, h: 3.3, c: [2, 3, .55], dz: .5, kind: 'dune' }, // lomas de San Francisco (Presidio): tapan el anclaje sur
+    { t: 'hill', x: -.1, w: 7, h: 1.9, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.1, w: 6, h: 1.7, c: 3, dz: .8, kind: 'dune' }, // lomas más cercanas, un tono más oscuras
+  ],
+};
 const BIOMA_DE = { arbolUrbano: 'moderna', castano: 'europa', palmeraTropical: 'tropical', sombrilla: 'tropical', bambu: 'oriente', pino: 'oriente', cipres: 'mediterraneo', acacia: 'sabana', palmera: 'desierto', olivo: 'mediterraneo', jacaranda: 'europa', liana: 'selva' };
 const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColor, ridge, wx, hour, biomaStr], idx) => { const arr = Array.isArray(biomaStr), [biome, ...extras] = arr ? [BIOMA_DE[biomaStr[0]] || 'europa'] : biomaStr.split(' '), names = arr ? [...biomaStr] : adornosDe(biome, idx, extras.filter(x => x[0] !== '!')); extras.filter(x => x[0] === '!').forEach(x => { names[0] = x.slice(1); }); return ({
-  name, place: tt('dest.' + idx + '.place'), country: tt('dest.' + idx + '.country'), art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look', biome, lmScale: LM_ESCALA[place] || 1, lmX: LM_X[place] || 0, // place/country: texto traducido; el nombre en español de la tabla sólo sirve de clave para LM_ESCALA/LM_X
+  name, place: tt('dest.' + idx + '.place'), country: tt('dest.' + idx + '.country'), art, ground, hill: 'plaza', hillColor, wx, hour, id: 'look', biome, lmScale: LM_ESCALA[place] || 1, lmX: LM_X[place] || 0, fore: FORE[place] || null, // place/country: texto traducido; el nombre en español de la tabla sólo sirve de clave para LM_ESCALA/LM_X
   look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: names.map(k => ADORNOS[k]), lamps: names.map(k => /^farol/.test(k)), lights: names.map(k => LUZ[k] || null) },
 }); };
 export const DESTINOS = TABLA.map(armar);
