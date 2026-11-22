@@ -990,15 +990,12 @@ function buildIsland(W, cols, rows, tiles, items) {
   if (W.opts.runner && W.opts.drift) {
     const geo = new THREE.PlaneGeometry(.86, .86), kindOf = y => W.opts.zone?.[y];
     const rowD = {}, rowX = {};
-    for (const key of Object.keys(W.opts.drift)) { // drift[y] = ±1: la fila entera tiene corriente
-      const y = +key, d = W.opts.drift[key], kind = kindOf(y); if (!d || y < 0 || y >= rows || !DRIFT_PAINT[kind]) continue;
+    for (const key of Object.keys(W.opts.drift)) { // drift['x,y'] = ±1: solo las casillas marcadas tienen corriente
+      const [x, y] = key.split(',').map(Number), d = W.opts.drift[key], kind = kindOf(y); if (!d || y < 0 || y >= rows || x < 0 || x >= cols || !DRIFT_PAINT[kind]) continue;
       const tex = driftTex(kind);
-      for (let x = 0; x < cols; x++) {
-        const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
-        m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(x + ',' + y, m);
-        (rowX[y] ||= []).push(x);
-      }
-      rowD[y] = d;
+      const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
+      m.position.set(x - ox, (kind === 'sky' ? DRIFT_SKY_Y : tY(x, y)) + .05, y - oz); island.add(m); W.driftM.set(x + ',' + y, m);
+      (rowX[y] ||= []).push(x); rowD[y] = d;
     }
     const ys = Object.keys(rowD).map(Number).sort((a, b) => a - b);
     for (const ey of ys.filter(v => rowD[v + 1] === undefined)) {
