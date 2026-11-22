@@ -307,6 +307,7 @@ function engine() {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate = false; // el mapa de sombras (2048², ~1700 casters) se redibuja cada 2.º cuadro: mitad de coste de GPU, imperceptible
   renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.domElement.className = 'stage-canvas';
   E = { renderer, ray: new THREE.Raycaster(), raf: 0, worlds: {}, active: null, t0: performance.now() };
@@ -377,15 +378,21 @@ function loop() {
   E.raf = requestAnimationFrame(loop);
   if (!E.renderer.domElement.isConnected) { cancelAnimationFrame(E.raf); E.raf = 0; return; }
   if (document.hidden) return;
+  const cap = renderPol ? renderPol() : 60; // 0 = el lienzo está tapado por un panel opaco: no se actualiza ni se dibuja; 30 = inicio/pausa/fin
+  if (!cap) return;
+  const now = performance.now(); if (cap < 60 && now - (E.lastDraw || 0) < 1000 / cap - 4) return; E.lastDraw = now;
   const t = (performance.now() - E.t0) / 1000, dt = Math.min(.05, t - (E.last || t)); E.last = t;
   E.W.update(t, dt);
   E.ovEl?.querySelectorAll('[data-anchor]').forEach(el => {
     const foot = 'foot' in el.dataset, p = screenOf(el.dataset.anchor, E.W, foot); if (!p) return el.style.display = 'none';
     el.style.display = ''; el.style.transform = `translate(${p.x}px, ${p.y}px) translate(-50%, ${foot ? '4px' : '-100%'})`;
   });
+  E.renderer.shadowMap.needsUpdate = (E.sh = (E.sh || 0) + 1) % 2 === 1;
   if (E.W.bg) { const r = E.renderer; r.autoClear = false; r.clear(); r.render(E.W.bg.scene, E.W.bg.cam); r.clearDepth(); r.render(E.W.scene, E.W.camera); r.autoClear = true; }
   else E.renderer.render(E.W.scene, E.W.camera);
 }
+let renderPol = null;
+export function renderPolicy(fn) { renderPol = fn; }
 export function poke(id) { const o = E?.W?.items.get(id); if (o) o.squash = 1; }
 export function hopAll(p = .3) { E?.W?.items.forEach(o => o.sprite && Math.random() < p && (o.hop = 1)); }
 

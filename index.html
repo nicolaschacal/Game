@@ -231,6 +231,7 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #wx{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
 #wx.sand{background:linear-gradient(#e8d29a40,#e8d29a14 45%,#e8d29a30)}
 .gust{position:absolute;left:-60%;width:60%;height:3px;border-radius:3px;background:linear-gradient(90deg,#fff0,#f6e7bdd0 40%,#fff0);animation:gust linear infinite}
+body.pnlopen #wx{visibility:hidden}body.pnlopen .wxp,body.pnlopen #wx *{animation-play-state:paused}
 @keyframes gust{to{transform:translateX(280vw) translateY(-30px)}}
 .wxp{position:absolute;top:-24px;animation:wxfall linear infinite}
 @keyframes wxfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--sway),55vh) rotate(180deg)}100%{transform:translate(calc(var(--sway)*-.4),112vh) rotate(360deg)}}
@@ -713,7 +714,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <button class="link" id="howTo" style="margin-top:8px">? <span data-i18n="pause.how">CÓMO SE JUEGA</span></button>
  <div class="row2"><button class="btn sm plain" id="mute2">♪ SONIDO</button><button class="btn sm plain" id="quit" style="flex:1">⌂ <span data-i18n="pause.quit">SALIR</span></button></div><div class="pnote" data-i18n="pause.note">Si salís, perdés las monedas de esta ronda</div></div></div>
 <script type="module">
-import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, driftSwoosh, driftOff, markDecoys, setGroundColor, setHour, freezeMovers } from './paper-voyager/scene3d.js';
+import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, driftSwoosh, driftOff, markDecoys, setGroundColor, setHour, freezeMovers, renderPolicy } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
@@ -1098,6 +1099,8 @@ function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize||c?.side)re
 
 // ── Fin de partida y paso de mundo ──
 let ended=false;
+// el 3D no se dibuja tras un panel opaco y va a 30 fps en inicio y pausa (menos GPU = menos calor)
+renderPolicy(()=>document.body.classList.contains('pnlopen')?0:(menuOpen||paused)?30:60);
 function endGame(title,reason){if(ended)return;ended=true;
  if(route){route=null;RT=null;store.set('route',null);drawRouteBar();reason+=' · '+t('route.lostToast');} // perder una partida cancela la ruta (sin premio de ruta)
  runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked;chests=0; // sin llegar no se cobra nada (ni cofres)
