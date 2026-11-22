@@ -1282,7 +1282,7 @@ function refreshHints(){
  const row=runner.path[y],want=clampLane(runner.buildLane??runner.lastBuildLane),o=[];
  if(!row){const from=prevExit(y);for(const x of [from-1,from,from+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const L=driftLand(x,from,driftOn,y,isRockCell),hx=L.x,main=x===(Math.abs(want-from)>1?from+Math.sign(want-from):want),h0=o.find(h=>h.x===hx);
    if(h0){h0.main=h0.main||main;h0.bad=h0.bad||L.crash;}else o.push({x:hx,src:x,y,lift:liftOf(hx),main,bad:L.crash});}} // bad: el preview se pinta rojo (aviso de choque)
- else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){let hx=x;const dE=driftOn(x,y);if(dE){hx=x+dE;if(Math.abs(hx-row.x)>1||hx<0||hx>=COLS)hx=x;if(hx===row.x)continue;}o.push({x:hx,src:x,y,lift:liftOf(hx),bad:!!dE&&isRockCell(hx,y),main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});}
+ else for(const x of [row.x-1,row.x+1])if(x>=0&&x<COLS&&!isRockCell(x,y)){const hx=x;o.push({x:hx,src:x,y,lift:liftOf(hx),bad:false,main:buildHeld&&want!==row.x&&Math.sign(want-row.x)===Math.sign(x-row.x)});}
  runner.hints=o;
 }
 function laneFromPointer(e){const lane=runnerLaneAtScreen(e.clientX,e.clientY);if(lane!==null)runner.buildLane=lane;}
