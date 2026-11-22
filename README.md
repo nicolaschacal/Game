@@ -6,7 +6,6 @@ Runner de construcción en papel recortado: **Nilo** avanza solo y vos construí
 
 - **Juego:** `index.html` (en Vercel es la raíz del sitio). Three.js se carga desde CDN en la web; en la app va empaquetado.
 - **Tiendas (iOS/Android):** ver [PUBLICAR.md](PUBLICAR.md). Capacitor, AdMob y RevenueCat ya están conectados.
-- **Prototipos viejos:** `tile-runner.html` y `build-run.html`.
 - Pruebas: `?debug` expone `window.__dbg`; `?debug&quick` genera un mundo corto; `?world=N` abre el destino N; `?lluvia` fuerza lluvia; `?hora=23` fija la hora.
 
 ## Dirección visual
@@ -15,10 +14,10 @@ Noche violeta, papel crema, coral, dorado, verdes suaves y geometría low-poly, 
 
 ## Construcción libre
 
-Hito corre solo; vos construís el camino **una fila por delante**. Esa fila objetivo queda abierta hasta que Hito llega a su centro:
+Nilo corre solo; vos construís el camino **una fila por delante**. Esa fila objetivo queda abierta hasta que Nilo llega a su centro:
 
-- **↑ Adelante:** el primer tile de la fila sigue el carril por donde sale Hito.
-- **← → Laterales:** mientras la fila esté abierta, podés extenderla hacia los costados (uno o varios carriles). Hito se desliza sobre esos tiles, como un cambio de carril en Subway Surfers.
+- **↑ Adelante:** el primer tile de la fila sigue el carril por donde sale Nilo.
+- **← → Laterales:** mientras la fila esté abierta, podés extenderla hacia los costados (uno o varios carriles). Nilo se desliza sobre esos tiles, como un cambio de carril en Subway Surfers.
 - **↖ ↗ Diagonal:** el primer tile de la fila también puede entrar un carril al costado.
 - Se pueden encadenar: izquierda y después adelante, adelante y después derecha, diagonal y después lateral.
 - **No se permite:** construir hacia atrás, sobre una piedra o fuera de la grilla. El preview dorado marca las casillas válidas.
@@ -76,9 +75,9 @@ Cada mundo tiene suelo alrededor de la pista, horizonte de papel en capas (colin
 
 Los mundos rotan entre ocho biomas: Pradera, Desierto, Costa, Nieve, Bosque, Volcán, Bambú y Pueblo. Cada uno tiene su suelo, horizonte, recortes a los costados, clima (pétalos, arena, burbujas, nieve, hojas, brasas, hojas de bambú, farolitos) y luz. Desde el mundo 2 la velocidad base es más alta y la aceleración dentro del mundo crece con cada mundo (tope 3,8 filas/s).
 
-## TILE RUN
+## Nombre anterior y guardado
 
-El runner pasa a llamarse **TILE RUN** (logo, título y pantalla de carga); es un juego aparte de KANJŪ. Las claves de guardado conservan su prefijo para no perder el progreso.
+Antes el juego se llamaba Tile Run. Al abrirlo, el progreso de las claves viejas se copia a las claves `pv.*` y la clave vieja se borra (migración en `index.html`, al cargar el guardado).
 
 Nuevo ítem **Congelar** (◉90): durante la carrera aparece un botón ❄ que detiene 8 segundos a los obstáculos que se mueven.
 

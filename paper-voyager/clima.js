@@ -1,12 +1,14 @@
 // Clima real (opcional): sólo se pide ubicación si el jugador lo activa desde el inicio.
 // Datos de Open-Meteo (sin clave). Si está lloviendo donde estás, llueve en el juego.
+import { t } from './i18n.js';
 const KEY = 'pv.clima', CACHE = 'pv.clima.dato', TTL = 20 * 60e3;
 const Q = new URLSearchParams(location.search);
-// Nombres en español de los códigos WMO que devuelve Open-Meteo
-const WMO = { 0: 'Despejado', 1: 'Mayormente despejado', 2: 'Parcialmente nublado', 3: 'Nublado', 45: 'Niebla', 48: 'Niebla',
-  51: 'Llovizna', 53: 'Llovizna', 55: 'Llovizna', 56: 'Llovizna helada', 57: 'Llovizna helada', 61: 'Lluvia', 63: 'Lluvia', 65: 'Lluvia fuerte',
-  66: 'Lluvia helada', 67: 'Lluvia helada', 71: 'Nieve', 73: 'Nieve', 75: 'Nieve fuerte', 77: 'Granizo fino', 80: 'Chaparrones', 81: 'Chaparrones',
-  82: 'Chaparrones fuertes', 85: 'Nevadas', 86: 'Nevadas fuertes', 95: 'Tormenta', 96: 'Tormenta con granizo', 99: 'Tormenta con granizo' };
+// Códigos WMO que devuelve Open-Meteo → clave de i18n (el texto se traduce al mostrarlo, no al guardarlo)
+const WMO = { 0: 'clear', 1: 'mostlyClear', 2: 'partly', 3: 'cloudy', 45: 'fog', 48: 'fog',
+  51: 'drizzle', 53: 'drizzle', 55: 'drizzle', 56: 'freezingDrizzle', 57: 'freezingDrizzle', 61: 'rain', 63: 'rain', 65: 'heavyRain',
+  66: 'freezingRain', 67: 'freezingRain', 71: 'snow', 73: 'snow', 75: 'heavySnow', 77: 'hail', 80: 'showers', 81: 'showers',
+  82: 'heavyShowers', 85: 'snowShowers', 86: 'heavySnowShowers', 95: 'storm', 96: 'stormHail', 99: 'stormHail' };
+const textoDe = code => t('wx.' + (WMO[code] || 'variable'));
 const llueve = c => (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95;
 
 const leer = () => { try { return JSON.parse(localStorage.getItem(CACHE)) || null; } catch { return null; } };
@@ -19,7 +21,7 @@ export const climaActivo = () => localStorage.getItem(KEY) === '1';
 export function climaEstado() {
   if (!climaActivo()) return { estado: 'off' };
   if (!dato) return { estado: 'load' };
-  return { estado: 'ok', ...dato };
+  return { estado: 'ok', ...dato, texto: textoDe(dato.codigo) };
 }
 
 // Lluvia para el motor 3D (se evalúa cada 2 s). ?lluvia fuerza lluvia para probar.
@@ -42,7 +44,7 @@ export async function actualizarClima() {
     const u = `https://api.open-meteo.com/v1/forecast?latitude=${c.latitude.toFixed(3)}&longitude=${c.longitude.toFixed(3)}&current=temperature_2m,weather_code,is_day&timezone=auto`;
     const r = await fetch(u); if (!r.ok) throw new Error(r.status);
     const j = (await r.json()).current, code = j.weather_code;
-    dato = { temp: Math.round(j.temperature_2m), codigo: code, texto: WMO[code] || 'Variable', lluvia: llueve(code), dia: !!j.is_day, t: Date.now() };
+    dato = { temp: Math.round(j.temperature_2m), codigo: code, lluvia: llueve(code), dia: !!j.is_day, t: Date.now() };
     localStorage.setItem(CACHE, JSON.stringify(dato));
     return 'ok';
   } catch { return 'error'; }

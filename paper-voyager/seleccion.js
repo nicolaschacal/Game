@@ -1,3 +1,4 @@
+import { t as tt } from './i18n.js';
 // Pantalla de primera vez: elegir viajero (Mora · Nilo · Ren). Contrato: showTravelerPick(ctx, onDone).
 // Protagonista grande con saludo (frame wave) y pestañeo (frames idle), cinta con el nombre, bio en burbuja de papel,
 // flechas/swipe/puntos, "Empezás en <ciudad>" con mini pasaporte y botón ELEGIR Y VIAJAR.
@@ -51,14 +52,14 @@ export function showTravelerPick(ctx, onDone) {
   let i = Math.max(0, list.findIndex(t => t.id === 'nilo')), timers = [], busy = false, tick = 0, wavingUntil = 0;
   const el = document.createElement('div'); el.id = 'tpick';
   el.innerHTML = `<div class="tp-cl" style="top:12%;width:90px;height:26px;animation-delay:-4s"></div><div class="tp-cl" style="top:46%;width:70px;height:22px;animation-delay:-15s;animation-duration:34s"></div>
-  <div class="tp-top"><small>PRIMER VIAJE</small><b>ELEGÍ A TU VIAJERO</b></div>
+  <div class="tp-top"><small>${tt('pick.first')}</small><b>${tt('pick.title')}</b></div>
   <div class="tp-stage"><div class="tp-hill"></div><div class="tp-hero"></div>
-   <button class="tp-arrow" style="left:10px" aria-label="Anterior">‹</button><button class="tp-arrow" style="right:10px" aria-label="Siguiente">›</button></div>
+   <button class="tp-arrow" style="left:10px" aria-label="${tt('menu.prev')}">‹</button><button class="tp-arrow" style="right:10px" aria-label="${tt('menu.next')}">›</button></div>
   <div class="tp-ribbon"></div>
   <div class="tp-bubble"><span></span></div>
   <div class="tp-dots">${list.map(() => '<i></i>').join('')}</div>
-  <div class="tp-from"><span class="tp-pass"></span><span>Empezás en <b class="tp-city"></b></span></div>
-  <button class="btn green tp-go">ELEGIR Y VIAJAR</button><div class="tp-mark">¡A<br>VIAJAR!</div>`;
+  <div class="tp-from"><span class="tp-pass"></span><span>${tt('pick.from', { city: '<b class="tp-city"></b>' })}</span></div>
+  <button class="btn green tp-go">${tt('pick.go')}</button><div class="tp-mark">${tt('pick.mark')}</div>`;
   const $ = s => el.querySelector(s);
   const hero = $('.tp-hero'), dots = [...el.querySelectorAll('.tp-dots i')];
   const frames = () => ctx.artFor(list[i].id).HERO;

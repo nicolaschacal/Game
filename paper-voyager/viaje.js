@@ -2,16 +2,17 @@
 // Es la única fuente de verdad del progreso de viaje. Guarda con el mismo `store` del juego (claves pv.*),
 // así no hay un segundo sistema de guardado. Todo lo que cambia se guarda en el acto (sobrevive a recargas).
 import { DESTINOS } from './destinos.js';
+import { t as tt } from './i18n.js';
 
 export const NW = DESTINOS.length;
 
 // ── Regiones y pasaportes ──
 export const REGIONS = {
-  am: { id: 'am', name: 'América', pass: 'Pasaporte Verde', color: '#4E9A4A', dark: '#2F6B30', light: '#BFE3A8' },
-  eu: { id: 'eu', name: 'Europa', pass: 'Pasaporte Azul', color: '#3E5BA9', dark: '#283E7A', light: '#B9C8EE' },
-  af: { id: 'af', name: 'África', pass: 'Pasaporte Naranja', color: '#E07A2B', dark: '#A4521A', light: '#F8CFA4' },
-  as: { id: 'as', name: 'Asia', pass: 'Pasaporte Violeta', color: '#7B5CC4', dark: '#523B8E', light: '#D5C6F2' },
-  oc: { id: 'oc', name: 'Oceanía', pass: 'Pasaporte Amarillo', color: '#E8B425', dark: '#A87D12', light: '#FBE7A2' },
+  am: { id: 'am', name: tt('region.am'), pass: tt('region.am.pass'), color: '#4E9A4A', dark: '#2F6B30', light: '#BFE3A8' },
+  eu: { id: 'eu', name: tt('region.eu'), pass: tt('region.eu.pass'), color: '#3E5BA9', dark: '#283E7A', light: '#B9C8EE' },
+  af: { id: 'af', name: tt('region.af'), pass: tt('region.af.pass'), color: '#E07A2B', dark: '#A4521A', light: '#F8CFA4' },
+  as: { id: 'as', name: tt('region.as'), pass: tt('region.as.pass'), color: '#7B5CC4', dark: '#523B8E', light: '#D5C6F2' },
+  oc: { id: 'oc', name: tt('region.oc'), pass: tt('region.oc.pass'), color: '#E8B425', dark: '#A87D12', light: '#FBE7A2' },
 };
 export const REGION_ORDER = ['am', 'eu', 'af', 'as', 'oc'];
 
@@ -62,18 +63,18 @@ export function fare(from, to) {
 // Los tres protagonistas. El que elegís es gratis y define tu ciudad de origen y tu primer pasaporte.
 // Los otros dos se compran en la tienda (sección Viajeros). `skin` es el id del arte en runner-art.js (SKINS).
 export const TRAVELERS = [
-  { id: 'mora', name: 'Mora', home: 41, region: 'am', price: 1200, bio: '¡Hola! Soy Mora, de Buenos Aires. Tengo una libreta llena de mapas dibujados a mano y no hay colectivo que no sepa tomar. ¿Me acompañás a dar la vuelta al mundo?' },
-  { id: 'nilo', name: 'Nilo', home: 18, region: 'eu', price: 1200, bio: '¡Hola! Soy Nilo. Salí de Berlín con mi gorra de aviador, mis antiparras y la bufanda roja de la abuela. Me encanta volar en globo y juntar sellos en el pasaporte.' },
-  { id: 'ren', name: 'Ren', home: 0, region: 'as', price: 1200, bio: '¡Hola! Soy Ren, de Kioto. Camino entre bambúes desde chico y siempre llevo mi cámara. Quiero sacarme una selfie en cada rincón del planeta.' },
+  { id: 'mora', name: 'Mora', home: 41, region: 'am', price: 1200, bio: tt('traveler.mora.bio') },
+  { id: 'nilo', name: 'Nilo', home: 18, region: 'eu', price: 1200, bio: tt('traveler.nilo.bio') },
+  { id: 'ren', name: 'Ren', home: 0, region: 'as', price: 1200, bio: tt('traveler.ren.bio') },
 ];
 export const traveler = id => TRAVELERS.find(t => t.id === id);
 
 // ── Selfies ──
 // Tres tomas por destino; se consiguen atrapando la cámara polaroid en la pista (una por partida).
 export const SHOTS = [
-  { id: 0, name: 'Llegada' },
-  { id: 1, name: 'Paseo' },
-  { id: 2, name: 'Recuerdo' },
+  { id: 0, name: tt('shot.0') },
+  { id: 1, name: tt('shot.1') },
+  { id: 2, name: tt('shot.2') },
 ];
 export const SELFIE_REWARD = { first: 25, dup: 10, regionCoins: 300 }; // completar la primera toma de todos los destinos de una región: +300 y un revivir (reemplaza el premio de la palabra del día)
 
@@ -81,32 +82,32 @@ export const SELFIE_REWARD = { first: 25, dup: 10, regionCoins: 300 }; // comple
 // kind: frame (marco de la polaroid) · cover (diseño del álbum) · filter (filtro de la foto) · deco (adorno, se pueden tener varios)
 // Los tres primeros (precio 0) vienen de regalo y están puestos de entrada. El arte de cada uno vive en album.js (photoPreview).
 export const PHOTO_ITEMS = [
-  { id: 'f-clasico', kind: 'frame', name: 'Polaroid clásica', price: 0 },
-  { id: 'f-kraft', kind: 'frame', name: 'Papel kraft', price: 150 },
-  { id: 'f-washi', kind: 'frame', name: 'Cinta washi', price: 250 },
-  { id: 'f-sello', kind: 'frame', name: 'Estampilla', price: 350 },
-  { id: 'f-oro', kind: 'frame', name: 'Marco dorado', price: 600 },
-  { id: 'a-carton', kind: 'cover', name: 'Cartón de viaje', price: 0 },
-  { id: 'a-cuero', kind: 'cover', name: 'Cuero de aviador', price: 400 },
-  { id: 'a-mapa', kind: 'cover', name: 'Mapa antiguo', price: 450 },
-  { id: 'a-noche', kind: 'cover', name: 'Noche violeta', price: 500 },
-  { id: 'x-natural', kind: 'filter', name: 'Natural', price: 0 },
-  { id: 'x-sepia', kind: 'filter', name: 'Sepia', price: 200 },
-  { id: 'x-atardecer', kind: 'filter', name: 'Atardecer', price: 250 },
-  { id: 'x-byn', kind: 'filter', name: 'Blanco y negro', price: 250 },
-  { id: 'd-sellos', kind: 'deco', name: 'Sellos de goma', price: 120 },
-  { id: 'd-pasajes', kind: 'deco', name: 'Pasajes de avión', price: 150 },
-  { id: 'd-stickers', kind: 'deco', name: 'Stickers de papel', price: 180 },
+  { id: 'f-clasico', kind: 'frame', name: tt('photo.f-clasico'), price: 0 },
+  { id: 'f-kraft', kind: 'frame', name: tt('photo.f-kraft'), price: 150 },
+  { id: 'f-washi', kind: 'frame', name: tt('photo.f-washi'), price: 250 },
+  { id: 'f-sello', kind: 'frame', name: tt('photo.f-sello'), price: 350 },
+  { id: 'f-oro', kind: 'frame', name: tt('photo.f-oro'), price: 600 },
+  { id: 'a-carton', kind: 'cover', name: tt('photo.a-carton'), price: 0 },
+  { id: 'a-cuero', kind: 'cover', name: tt('photo.a-cuero'), price: 400 },
+  { id: 'a-mapa', kind: 'cover', name: tt('photo.a-mapa'), price: 450 },
+  { id: 'a-noche', kind: 'cover', name: tt('photo.a-noche'), price: 500 },
+  { id: 'x-natural', kind: 'filter', name: tt('photo.x-natural'), price: 0 },
+  { id: 'x-sepia', kind: 'filter', name: tt('photo.x-sepia'), price: 200 },
+  { id: 'x-atardecer', kind: 'filter', name: tt('photo.x-atardecer'), price: 250 },
+  { id: 'x-byn', kind: 'filter', name: tt('photo.x-byn'), price: 250 },
+  { id: 'd-sellos', kind: 'deco', name: tt('photo.d-sellos'), price: 120 },
+  { id: 'd-pasajes', kind: 'deco', name: tt('photo.d-pasajes'), price: 150 },
+  { id: 'd-stickers', kind: 'deco', name: tt('photo.d-stickers'), price: 180 },
 ];
 export const photoItem = id => PHOTO_ITEMS.find(p => p.id === id);
 // Souvenirs (sección Objetos): uno por región, coleccionables; sólo se venden si tenés el pasaporte de esa región.
 // Se exhiben en la tapa del álbum.
 export const SOUVENIRS = [
-  { id: 's-am', country: 'Uruguay', region: 'am', name: 'Mate de calabaza', price: 200 },
-  { id: 's-eu', country: 'Francia', region: 'eu', name: 'Torre en miniatura', price: 200 },
-  { id: 's-af', country: 'Kenia', region: 'af', name: 'Máscara tallada', price: 200 },
-  { id: 's-as', country: 'Japón', region: 'as', name: 'Farolito de papel', price: 200 },
-  { id: 's-oc', country: 'Australia', region: 'oc', name: 'Boomerang', price: 200 },
+  { id: 's-am', country: tt('country.s-am'), region: 'am', name: tt('souvenir.s-am'), price: 200 },
+  { id: 's-eu', country: tt('country.s-eu'), region: 'eu', name: tt('souvenir.s-eu'), price: 200 },
+  { id: 's-af', country: tt('country.s-af'), region: 'af', name: tt('souvenir.s-af'), price: 200 },
+  { id: 's-as', country: tt('country.s-as'), region: 'as', name: tt('souvenir.s-as'), price: 200 },
+  { id: 's-oc', country: tt('country.s-oc'), region: 'oc', name: tt('souvenir.s-oc'), price: 200 },
 ];
 
 // ── Estado guardado ──
