@@ -877,6 +877,7 @@ function sanctuary() {
     W.wind = .35 + .25 * Math.sin(t * .5) + rk * .5;
     if (W.pvMesh) W.pvMesh.rotation.y = camAz;
     W.tufts.forEach(m => { m.rotation.y = camAz; m.rotation.z = Math.sin(t * 2.3 + m.userData.p) * .14 * (.5 + W.wind) - W.wind * .1; });
+    if (W.tideM?.size && tideT) { tideT.r.map.offset.x = -(t * .22 % 1); tideT.l.map.offset.x = t * .22 % 1; }
     W.foams.forEach(f => { const s = 1 + Math.round(Math.sin(t * 5 + f.userData.p) * 2) * .06; f.scale.set(1, s, 1); });
     seaClouds.forEach(m => { const u = m.userData; u.a += u.v * dt * .1; const R = W.N * .9 + 3; m.position.set(c0 + Math.cos(u.a) * R, -bd * .75 - 1 - u.y * 1.4, c0 + Math.sin(u.a) * R); m.rotation.y = camAz; m.material.color.copy(cc); });
     const lit = [];
@@ -980,6 +981,18 @@ function buildIsland(W, cols, rows, tiles, items) {
         const offx = (hash(x, y, 30 + i) - .5) * .8, offz = (hash(x, y, 60 + i) - .5) * .8;
         if (c && offx * c[0] > .1 && offz * c[1] > .1) continue;
         const m = paperProp(id, id === 'florcita' ? .13 : .2 + hash(x, y, 50 + i) * .08, false); m.position.set(wx + offx, tY(x, y), wz + offz); m.userData.p = hash(x, y, 70 + i) * 6; island.add(m); W.tufts.push(m);
+      }
+    }
+  }
+  // Marea: flechas de papel en las filas con corriente (se deslizan lento en su dirección)
+  W.tideM = new Map();
+  if (W.opts.runner && W.opts.tide) {
+    const tex = tideTex(); const geo = new THREE.PlaneGeometry(.86, .86);
+    for (const ys of Object.keys(W.opts.tide)) {
+      const y = +ys, d = W.opts.tide[ys]; if (y < 0 || y >= rows) continue;
+      for (let x = 0; x < cols; x++) {
+        const m = new THREE.Mesh(geo, d > 0 ? tex.r : tex.l); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; m.userData.keepGeo = true;
+        m.position.set(x - ox, tY(x, y) + .05, y - oz); island.add(m); W.tideM.set(x + ',' + y, m);
       }
     }
   }
@@ -1194,6 +1207,26 @@ function railMaterial(a, b, br = []) {
   const mat = new THREE.MeshStandardMaterial({ map: tx, roughness: .9, transparent: true, alphaTest: .5 }); mat.userData.big = big;
   return cache[key] = mat;
 }
+// Marea: textura de chevrones (derecha/izquierda) que se desliza por offset
+let tideT = null;
+function tideTex() {
+  if (tideT) return tideT;
+  const c = document.createElement('canvas'); c.width = c.height = 256; const k = c.getContext('2d');
+  k.lineCap = k.lineJoin = 'round';
+  [64, 192].forEach(cx => { const pts = [[cx - 20, 84], [cx + 20, 128], [cx - 20, 172]]; [[34, 'rgba(31,94,134,.5)'], [20, 'rgba(255,255,255,.92)']].forEach(([w, col]) => { k.strokeStyle = col; k.lineWidth = w; k.beginPath(); pts.forEach(([px, py], i) => i ? k.lineTo(px, py) : k.moveTo(px, py)); k.stroke(); }); });
+  const mk = flip => { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const g = cv.getContext('2d'); if (flip) { g.translate(256, 0); g.scale(-1, 1); } g.drawImage(c, 0, 0);
+    const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = tx.wrapT = THREE.RepeatWrapping;
+    return new THREE.MeshBasicMaterial({ map: tx, transparent: true, depthWrite: false, opacity: .8 }); };
+  return tideT = { r: mk(false), l: mk(true) };
+}
+// Marea: estela de papel que se desliza de un carril al otro cuando la corriente corre el tile
+export function tideSwoosh(x, y, dir) {
+  const W = E?.worlds.sanct; if (!W?.tY) return;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(.9, .9), new THREE.MeshBasicMaterial({ map: tideTex()[dir > 0 ? 'r' : 'l'].map, transparent: true, opacity: 1, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.renderOrder = 7; W.fx.add(m);
+  const ox = (W.cols - 1) / 2, z = y - (W.rows - 1) / 2, yy = W.tY(x + dir, y) + .09, t0 = performance.now();
+  const step = () => { const k = (performance.now() - t0) / 520; if (k >= 1) { W.fx.remove(m); m.geometry.dispose(); m.material.dispose(); return; } m.position.set(x + dir * (1 - Math.pow(1 - k, 2)) - ox, yy + k * .1, z); m.material.opacity = 1 - k * k; requestAnimationFrame(step); }; step();
+}
 export function updateRunnerTile(x, y, tile) {
   const W = E?.worlds.sanct; if (!W?.opts?.runner) return;
   W.opts.tiles ||= {}; W.opts.tiles[x + ',' + y] = tile;
@@ -1211,6 +1244,7 @@ export function updateRunnerTile(x, y, tile) {
     top.userData.rail.scale.setScalar(mat.userData.big ? 2 : 1);
     return;
   }
+  const tm = W.tideM?.get(x + ',' + y); if (tm && tile.g === 'water') tm.position.y = W.tY(x, y) + .03;
   top.material = tile.g === 'water' ? waterMat() : gMat(GROUND_C[tile.g] || GROUND_C.grass);
   top.position.y = W.tY(x, y) - SLAB / 2;
   top.material.needsUpdate = true;
