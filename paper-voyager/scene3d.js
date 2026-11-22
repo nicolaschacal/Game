@@ -1,9 +1,8 @@
-// Paper Voyager · scene3d.js — Escenas 3D con criaturas de papel 2D: Santuario y Arena.
+// Paper Voyager · scene3d.js — Escena 3D de papel del runner.
 // Un solo renderer se mueve entre pantallas; cada escena tiene su cámara, luz y actualización.
 // En el santuario la grilla de tiles (world.js) manda: cada ítem va al centro de sus casillas y la
 // grilla sólo se dibuja en modo construcción.
 import * as THREE from 'three';
-import { artBack } from './art.js';
 import * as paper from './paper.js';
 
 const CREAM = '#FFF4DC';
@@ -43,9 +42,8 @@ function skyAt(h) {
 const canvas = (w, h = w) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
 function tex(c) { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; }
 function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-const fontReady = document.fonts?.load('64px "Yuji Syuku"').catch(() => {}) || Promise.resolve();
 
-// SVG procedural → recorte de papel (borde crema) con el kanji pintado con pincel
+// SVG procedural → recorte de papel (borde crema)
 const texCache = new Map();
 // Máscara de emisión: deja encendidos sólo los píxeles amarillos del dibujo (el puntito del farol)
 function dotMask(t) {
@@ -59,22 +57,11 @@ function paperTexture(svg) {
   if (texCache.has(svg)) return texCache.get(svg);
   const S = 256, M = 12, c = canvas(S), t = tex(c);
   texCache.set(svg, t);
-  const texts = [], vb = +(svg.match(/viewBox="[-\d.]+ [-\d.]+ ([\d.]+)/) || [])[1] || 120;
-  const kt = svg.match(/data-kt="([\d.]+),([\d.]+),([\d.]+)"/); // arte nuevo: el kanji se pinta en su posición final
-  if (kt) texts.push({ x: +kt[1], y: +kt[2], fs: +kt[3], txt: svg.match(/aria-label="([^"]+)"/)?.[1] || '' });
-  const s = svg.replace(/<text([^>]*)>([^<]*)<\/text>/g, (_, a, txt) => {
-    if (kt) return '';
-    const g = n => +(a.match(new RegExp(`\\b${n}="([\\d.]+)"`)) || [])[1];
-    texts.push({ x: g('x'), y: g('y'), fs: g('font-size'), txt }); return '';
-  }).replace(/<ellipse[^>]*kj-shadow[^>]*\/>/g, '')
-    .replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" `);
+  const s = svg.replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" `);
   const img = new Image();
-  img.onload = async () => {
-    await fontReady;
-    const base = canvas(S), b = base.getContext('2d'), k = (S - 2 * M) / vb;
+  img.onload = () => {
+    const base = canvas(S), b = base.getContext('2d');
     b.drawImage(img, M, M, S - 2 * M, S - 2 * M);
-    b.fillStyle = kt ? '#1E1A24' : '#2B1D16'; b.textAlign = 'center'; b.textBaseline = 'middle';
-    texts.forEach(x => { b.font = `${x.fs * k}px "Yuji Syuku", serif`; b.fillText(x.txt, M + x.x * k, M + x.y * k + 1); });
     const o = c.getContext('2d'), r = 3;
     for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; o.drawImage(base, Math.cos(a) * r, Math.sin(a) * r); }
     o.globalCompositeOperation = 'source-in'; o.fillStyle = CREAM; o.fillRect(0, 0, S, S);
@@ -254,9 +241,6 @@ function prop(t, w, h) {
     g.add(hokora()); u.smoke = [];
     for (let i = 0; i < 5; i++) { const sm = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: dotTex(), transparent: true, depthWrite: false, color: '#E8E4F0' })); sm.userData = { x: .18, y: .3, z: .3, k: i / 5, p: i }; g.add(sm); u.smoke.push(sm); }
     u.light = { y: .45, z: .3, color: '#FFC27A', power: .8 };
-  } else if (t === 'banner') {
-    g.add(mesh(new THREE.CylinderGeometry(.03, .03, 1.9, 6), L('#3A2418'), 0, .95));
-    const ban = new THREE.Mesh(new THREE.PlaneGeometry(.36, 1.08), new THREE.MeshLambertMaterial({ map: bannerTex('漢獣'.charAt(w % 2)), side: THREE.DoubleSide })); ban.geometry.translate(.2, 0, 0); ban.position.y = 1.25; g.add(ban); u.banner = ban;
   } else if (t === 'house') { g.add(house(3)); g.scale.setScalar(1.35); u.light = { y: .5, z: .6, color: '#FFC27A', power: 1 };
   } else if (t === 'pagoda') { g.add(pagoda()); g.scale.setScalar(1.05); u.light = { y: .4, z: .6, color: '#FFB35A', power: 1 };
   } else {
@@ -265,13 +249,6 @@ function prop(t, w, h) {
     g.add(mesh(new THREE.BoxGeometry(.08, .08, .3), L('#16132A'), .22, .16, 0));
   }
   return { g, u };
-}
-function sign(text) {
-  const g = new THREE.Group(), wood = L('#8B5A3A'), c = canvas(128, 80), x = c.getContext('2d'), t = tex(c);
-  x.fillStyle = '#C9A27A'; x.fillRect(0, 0, 128, 80); x.strokeStyle = '#7A4E32'; x.lineWidth = 6; x.strokeRect(3, 3, 122, 74);
-  fontReady.then(() => { x.fillStyle = '#2B1D16'; x.font = '52px "Yuji Syuku", serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, 64, 42); t.needsUpdate = true; });
-  g.add(mesh(new THREE.BoxGeometry(.07, .6, .07), wood, 0, .3), mesh(new THREE.BoxGeometry(.5, .32, .05), [wood, wood, wood, wood, new THREE.MeshLambertMaterial({ map: t }), wood], 0, .55));
-  return g;
 }
 // Mata de pasto de papel (billboard) para decorar los bordes
 let _tuft;
@@ -283,7 +260,7 @@ function tuftTex() {
   return _tuft = tex(c);
 }
 
-// Lámina de papel (criatura) con sombra real + sombra de contacto
+// Lámina de papel con sombra real + sombra de contacto
 function makeSprite(svg, size, id) {
   const map = paperTexture(svg), geo = new THREE.PlaneGeometry(1, 1); geo.translate(0, .5, 0);
   const mat = new THREE.MeshLambertMaterial({ map, alphaTest: .5, side: THREE.DoubleSide, emissive: '#FFFFFF', emissiveMap: map, emissiveIntensity: .42 });
@@ -411,10 +388,6 @@ function loop() {
 }
 export function poke(id) { const o = E?.W?.items.get(id); if (o) o.squash = 1; }
 export function hopAll(p = .3) { E?.W?.items.forEach(o => o.sprite && Math.random() < p && (o.hop = 1)); }
-export function emoteAt(id, text, cls = 'emote3d', ms = 1600) {
-  if (!E?.ovEl) return; const b = document.createElement('div'); b.className = cls; b.textContent = text; b.dataset.anchor = id;
-  E.ovEl.append(b); setTimeout(() => b.remove(), ms);
-}
 
 // =====================================================================
 // SANTUARIO · una isla habitable que crece por etapas
@@ -452,12 +425,6 @@ function flowerTex() {
   spots.forEach(([px, py]) => { x.fillStyle = CREAM; x.beginPath(); x.arc(px, py, 9, 0, 7); x.fill(); });
   spots.forEach(([px, py, col]) => { for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; x.fillStyle = col; x.beginPath(); x.arc(px + Math.cos(a) * 3.5, py + Math.sin(a) * 3.5, 3.4, 0, 7); x.fill(); } x.fillStyle = '#E8A23A'; x.beginPath(); x.arc(px, py, 2, 0, 7); x.fill(); });
   return _flower = tex(c);
-}
-function bannerTex(k) {
-  const c = canvas(64, 192), x = c.getContext('2d'), t = tex(c);
-  x.fillStyle = '#2A2F5A'; x.fillRect(0, 0, 64, 192); x.fillStyle = CREAM; x.fillRect(0, 0, 64, 8); x.fillRect(0, 184, 64, 8);
-  fontReady.then(() => { x.fillStyle = CREAM; x.font = '44px "Yuji Syuku", serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; [...k].forEach((ch, i) => x.fillText(ch, 32, 56 + i * 64)); t.needsUpdate = true; });
-  return t;
 }
 function islandShape(rx, rz, zc, k = 1, seed = 1) {
   const s = new THREE.Shape(), N = 56, r = mulberry(seed), ph = [r() * 7, r() * 7, r() * 7];
@@ -681,7 +648,7 @@ function sanctuary() {
   const gq = (col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.94, .94), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: .55, depthWrite: false, depthTest: false })); m.rotation.x = -Math.PI / 2; m.renderOrder = 5; return m; };
   W.grab = ray => {
     const { mode, tool } = W.opts; if (mode !== 'build' || (tool && tool !== 'move')) return false;
-    const id = hitItem(W, ray), o = id && W.items.get(id); if (!o || o.d.kind === 'away') return false;
+    const id = hitItem(W, ray), o = id && W.items.get(id); if (!o) return false;
     const t = tileHit(ray), d = o.d;
     W.grabbing = { id, o, ox: t ? Math.min(d.w - 1, Math.max(0, t.x - d.x)) : 0, oy: t ? Math.min(d.h - 1, Math.max(0, t.y - d.y)) : 0, x: d.x, y: d.y, ok: true, moved: false };
     return true;
@@ -1061,8 +1028,7 @@ function updateItem(W, o, d, OBJ) {
       // Recortes animados: d.frames = { idle:[svg…], run:[svg…] } (personaje que corre, barco que navega)
       o.frames = d.frames ? Object.fromEntries(Object.entries(d.frames).map(([k, v]) => [k, v.map(paperTexture)])) : null; o.frameKey = ''; o.turn = 0;
     } else if (d.kind === 'obstacle') { const m = runnerObstacleMesh(d.obstacle); m.traverse(n => n.userData.id = d.id); o.group.add(m); o.sprite = m; o.size = 1.2;
-    } else if (d.kind === 'away') { const s = sign('旅'); s.scale.setScalar(.8); s.traverse(m => m.userData.id = d.id); o.group.add(s); o.size = .7; }
-    else {
+    } else {
       const def = OBJ?.[d.t] || {}, id = def.art || 'roca', lvK = 1 + ((d.lv || 1) - 1) * .05;
       if (def.flat) {
         const m = new THREE.Mesh(new THREE.PlaneGeometry(d.w * .96, d.h * .96 * (d.h > d.w ? 1 : .96)), propMat(id).front); m.rotation.x = -Math.PI / 2; m.position.y = .015; m.receiveShadow = true;
@@ -1309,204 +1275,3 @@ function drawEditor(W) {
     }
   } else W.pvMesh = null;
 }
-// =====================================================================
-// ARENAS DE PAPEL · 3 contra 3. Mismo tamaño (5 × 10 casillas) y misma cámara en todas;
-// cambian el piso, el borde, el monumento detrás de los rivales, el cielo y lo que cae del aire.
-// Tus Paper Voyager de espaldas abajo a la izquierda, los rivales de frente arriba a la derecha.
-// =====================================================================
-const AW = 5, AJ0 = -1, AJ1 = 8, AOFF = 4, AMID = 4, ALOW = .68; // z = j − AOFF; franja central en z = 0
-const SLOT = { m: [[-1.05, 2.5], [0, 2.75], [1.05, 2.5]], e: [[-.95, -2.5], [0, -2.75], [.95, -2.5]] }; // una fila por equipo, sin taparse
-const ARENA_SCENES = [
-  // 芽 Arena del Brote → Hanami en Kioto
-  { sky: ['#FFF6F3', '#FBE1E3', '#EDBCC8'], sun: ['sol', .3, .7, .08], hemi: ['#FFF2F2', '#7A5E66', 2.1], light: ['#FFE6E0', 2.7, [-6, 12, 5]], base: ['#8E7564', '#7F6A5C', '#715F53'],
-    tile: (i, j, z) => z === 'mon' ? { c: '#9A9388', y: .06 } : z === 'edge' ? { c: (i + j) % 2 ? '#93C46A' : '#8ABD60', y: .08, decal: 'petalos', tufts: true } : { c: j === AMID ? '#B88A63' : (i + j) % 2 ? '#C9A27A' : '#C19A70', y: 0, decal: (i + j) % 2 ? 'petalos' : null },
-    mon: [['pagoda', 1.9, -.75, -4.8], ['cerezo', 1.7, -1.85, -4.1], ['cerezo', 1.4, 1.1, -3.95]],
-    props: [[-2, 2.6, 'cerezo', 1.15], [2, 1.0, 'cerezo', 1.05], [-2, 4, 'chochin', .45], [2, 3.9, 'cerezo', 1.1], [-2, -3, 'chochin', .42]], fx: 'petalos', fxN: 70 },
-  // 林 Bosque de los Ecos → Bosque de bambú de Arashiyama
-  { sky: ['#F6F8EC', '#DFEAD2', '#B3C99F'], sun: ['sol', .28, .06, .12], hemi: ['#F4FAEC', '#4E6644', 2.1], light: ['#FFF6DC', 2.5, [-6, 12, 5]], base: ['#6E7A5C', '#626E52', '#566248'],
-    tile: (i, j, z) => z === 'mon' ? { c: (i + j) % 2 ? '#6A9E4F' : '#5F9447', y: .06, tufts: true } : z === 'edge' ? { c: (i + j) % 2 ? '#5F9447' : '#6A9E4F', y: .14, tufts: true } : { c: j === AMID ? '#9C978C' : (i + j) % 2 ? '#BDB7A9' : '#B2AC9E', y: 0, decal: (i * 5 + j) % 4 === 0 ? 'hojasVerdes' : null },
-    mon: [['toriiNegro', 2.3, -.55, -4.6], ['bambuAlto', .9, -1.9, -4.8], ['bambuAlto', .9, 1.75, -4.8], ['farol', .5, -1.5, -3.8], ['farol', .5, .55, -3.8]],
-    props: [...[1, 2.4, 3.8, 5.2, 6.6].flatMap(j => [[-2.1, j - AOFF, 'bambuAlto', .85], [2.1, j - AOFF, 'bambuAlto', .85]]), [-2, 4, 'farol', .5], [2, 4, 'farol', .5]], fx: 'hojasVerdes', fxN: 24 },
-  // 寺 Patio del Templo → Fushimi Inari (filas de torii que suben escalonadas)
-  { sky: ['#FFF1DE', '#F6D7B0', '#E2AE82'], sun: ['sol', .3, .05, .16], hemi: ['#FFF0DE', '#6E5446', 2.0], light: ['#FFD9AE', 2.8, [-9, 9, 4]], base: ['#8A6A50', '#7C5E47', '#6E533F'],
-    tile: (i, j, z) => z === 'mon' ? { c: (i + j) % 2 ? '#C8412E' : '#BF3B29', y: .98 } : z === 'edge' ? { c: (i + j) % 2 ? '#8A7F68' : '#958A72', y: (i === 0 || i === AW - 1) && j < AJ1 ? .1 + (AJ1 - j) * .11 : .1, decal: 'hojas' } : { c: j === AMID ? '#A88660' : (i + j) % 2 ? '#D8BC93' : '#CFB287', y: 0, decal: (i * 3 + j) % 3 === 0 ? 'hojas' : null },
-    mon: [['torii', 2.6, -.55, -4.6], ['kitsune', .8, -1.8, -3.9], ['kitsune', .8, 1.0, -3.9]],
-    props: [...Array.from({ length: 14 }, (_, k) => 1 + k * .5).flatMap(j => [[-2.1, j - AOFF - .2, 'torii', .92 + (AJ1 - j) * .035], [2.12, j - AOFF - .2, 'torii', .92 + (AJ1 - j) * .035]]), [-2, 4, 'farol', .55], [2, 4, 'farol', .55]], fx: 'hojas', fxN: 40 },
-  // 雲 Monte de las Nubes → Sapporo nevado
-  { sky: ['#F4F6F8', '#DCE3EA', '#B9C6D3'], sun: ['solPalido', .26, .08, .12], hemi: ['#F2F6FF', '#6A7484', 2.2], light: ['#EEF3FF', 2.1, [-6, 12, 5]], base: ['#A9B4C0', '#97A3B0', '#86929F'],
-    tile: (i, j, z) => z === 'mon' ? { c: (i + j) % 2 ? '#F7F9FB' : '#EEF2F6', y: .08 } : z === 'edge' ? { c: (i + j) % 2 ? '#FFFFFF' : '#F4F7FA', y: .3 } : { c: j === AMID ? '#C9D4DF' : (i + j) % 2 ? '#EEF2F6' : '#E3E9EF', y: 0, decal: (i * 7 + j) % 4 === 0 ? 'nieve' : null },
-    mon: [['reloj', 3.6, -.5, -4.8]], props: [[-1.85, -3.9, 'pinoNieve', .85], [1.9, -4, 'pinoNieve', .75], [-2, 4, 'muneco', .55], [2, 3.9, 'pinoNieve', .8], [2, .9, 'muneco', .45]], fx: 'nieve', fxN: 120 },
-  // 城 Castillo de Tinta → Castillo de Osaka
-  { sky: ['#FFF0DC', '#F8D3B6', '#E5A994'], sun: ['sol', .36, .04, .2], hemi: ['#FFF0E2', '#7A6060', 2.0], light: ['#FFD2AE', 2.8, [-10, 8, 3]], base: ['#9A9388', '#8E897F', '#7E776C'],
-    tile: (i, j, z) => z === 'mon' ? { c: (i + j) % 2 ? '#8DBF5E' : '#86B957', y: .06 } : z === 'edge' ? { water: '#5AA5D2', y: -.32 } : { c: j === AMID ? '#A39C90' : (i + j) % 2 ? '#D6D1C7' : '#C8C2B5', y: 0 },
-    mon: [['castillo', 3.9, -.8, -4.7]], props: [[-1.8, -3.7, 'cerezo', 1.05], [1.85, -3.6, 'pino', .8], [-2, 4, 'farol', .5, 'pillar'], [2, 4, 'pino', .85, 'pillar']], fx: 'petalos', fxN: 34 },
-  // 龍 Cumbre del Dragón → Monte Fuji
-  { sky: ['#FBF7EA', '#E6EEE6', '#B9D0D6'], sun: ['sol', .28, .06, .1], hemi: ['#FFF8EC', '#5E6E5A', 2.1], light: ['#FFF4DE', 2.6, [-6, 12, 5]], base: ['#8E7A5C', '#7E8A6E', '#6F7A62'],
-    tile: (i, j, z) => z === 'mon' ? { c: (i + j) % 2 ? '#7FB257' : '#77AA50', y: .06, tufts: true } : z === 'edge' ? { c: (i + j) % 2 ? '#5F9447' : '#6A9E4F', y: .16, tufts: true } : { c: j === AMID ? '#D8CDB5' : '#EDE6D6', y: 0, decal: j === AMID ? null : (i + j) % 3 ? 'rastrillo' : 'circulos' },
-    mon: [['fuji', 4.3, -.55, -4.75], ['momiji', .8, 1.75, -4.2]], props: [[-2, -3.1, 'pagoda', .95], [-2, 4, 'farol', .5], [2, 3.9, 'roca', .7], [2, 1.2, 'pino', .75]], fx: null },
-];
-const azone = (i, j) => j <= 0 ? 'mon' : (i === 0 || i === AW - 1 || j === AJ1) ? 'edge' : 'fight';
-const decals = {};
-function decalTex(kind) {
-  if (decals[kind]) return decals[kind];
-  const c = canvas(128), x = c.getContext('2d'), dot = (px, py, rx, ry, rot, col) => { x.fillStyle = col; x.beginPath(); x.ellipse(px, py, rx, ry, rot, 0, 7); x.fill(); };
-  x.strokeStyle = 'rgba(150,135,110,.55)'; x.lineWidth = 3;
-  if (kind === 'rastrillo') for (let r = 14; r < 128; r += 14) { x.beginPath(); x.moveTo(0, r); for (let k = 0; k <= 128; k += 8) x.lineTo(k, r + Math.sin(k / 20) * 3); x.stroke(); }
-  if (kind === 'circulos') for (let r = 12; r < 70; r += 12) { x.beginPath(); x.arc(64, 64, r, 0, 7); x.stroke(); }
-  const cols = { petalos: ['#F7C4D4', '#EFA0BC', '#FFFFFF'], hojas: ['#D9533B', '#E8743A', '#F2B544', '#C8412E'], hojasVerdes: ['#7FB04E', '#5C9A3E', '#A8CC6A'], nieve: ['rgba(255,255,255,.9)'] }[kind];
-  if (cols) for (let i = 0; i < (kind === 'nieve' ? 26 : 16); i++) { const px = Math.random() * 128, py = Math.random() * 128; kind === 'nieve' ? dot(px, py, 3, 3, 0, cols[0]) : dot(px, py, kind === 'petalos' ? 5 : 7, kind === 'petalos' ? 3.5 : 5, Math.random() * 3, cols[i % cols.length]); }
-  return decals[kind] = tex(c);
-}
-// Espalda de tu Paper Voyager: el mismo dibujo sin cara ni etiqueta (lo ves desde atrás)
-const backSVG = svg => svg.includes('kj2') ? artBack(svg) : svg.replace(/<g class="kj-eyes"[\s\S]*?<\/g>/, '').replace(/<path d="[^"]*" stroke="#1A1220" stroke-width="[\d.]+"[^>]*\/>/g, '').replace(/<path d="[^"]*" fill="#7CC4F2"\/>/g, '')
-  .replace(/<ellipse[^>]*fill="#F28C8C"[^>]*\/>/g, '').replace(/<ellipse[^>]*fill="#F6EBD0"\/>/, '').replace(/<text[\s\S]*?<\/text>/, '');
-function arena() {
-  if (E.worlds.arena) return E.worlds.arena;
-  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(24, 1, .5, 200);
-  // Fondo de papel en el plano de la pantalla: degradado, sol y nubes
-  const bgScene = new THREE.Scene(), bgCam = new THREE.OrthographicCamera(-1, 1, 1, -1, -10, 10);
-  const grad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
-    depthTest: false, depthWrite: false, uniforms: { cin: { value: new THREE.Color() }, cmid: { value: new THREE.Color() }, cout: { value: new THREE.Color() } },
-    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }',
-    fragmentShader: 'uniform vec3 cin; uniform vec3 cmid; uniform vec3 cout; varying vec2 vUv; void main(){ float d = length((vUv - vec2(.5, .6)) * vec2(1.2, .7)); vec3 c = d < .32 ? mix(cin, cmid, d / .32) : mix(cmid, cout, smoothstep(.32, .7, d)); gl_FragColor = vec4(c, 1.);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}',
-  }));
-  grad.frustumCulled = false; bgScene.add(grad);
-  const hemi = new THREE.HemisphereLight('#FFF3E0', '#7D6A58', 2), sun = new THREE.DirectionalLight('#FFF0D2', 2.6);
-  sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0008; sun.shadow.normalBias = .03;
-  Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12, near: .5, far: 50 });
-  scene.add(hemi, sun);
-  // Anillo del objetivo y efectos del golpe
-  const ring = new THREE.Mesh(new THREE.RingGeometry(.55, .7, 40), new THREE.MeshBasicMaterial({ color: '#E8452C', transparent: true, opacity: .85, depthWrite: false }));
-  ring.rotation.x = -Math.PI / 2; ring.position.y = .03; scene.add(ring);
-  const shot = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: dotTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); shot.visible = false; scene.add(shot);
-  const wave = new THREE.Mesh(new THREE.RingGeometry(.4, .55, 40), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide })); wave.visible = false; scene.add(wave);
-  const W = { name: 'arena', scene, camera, items: new Map(), opts: {}, fx: [], sceneIdx: -1, stage: null, bb: [], fall: [], sky: [], camAz: 0,
-    bg: { scene: bgScene, cam: bgCam }, onResize(w, h) { const a = w / h; bgCam.left = -a; bgCam.right = a; bgCam.updateProjectionMatrix(); W.layoutSky(); } };
-  W.layoutSky = () => {
-    const a = bgCam.right, H = innerHeight || 844;
-    W.sky.forEach(m => { const u = m.userData, w = u.px / H * 2, h = w * u.asp; m.scale.set(w, h, 1); m.position.set(-a + u.fx * 2 * a + w / 2, 1 - u.fy * 2 - h / 2, 0); });
-  };
-  W.build = idx => {
-    const C = ARENA_SCENES[idx] || ARENA_SCENES[0]; W.sceneIdx = idx; W.C = C;
-    if (W.stage) { scene.remove(W.stage); W.stage.traverse(o => o.geometry?.dispose()); }
-    W.sky.forEach(m => bgScene.remove(m)); W.sky = [];
-    const st = new THREE.Group(); W.stage = st; scene.add(st); W.bb = []; W.fall = []; W.waters = [];
-    grad.material.uniforms.cin.value.set(C.sky[0]); grad.material.uniforms.cmid.value.set(C.sky[1]); grad.material.uniforms.cout.value.set(C.sky[2]);
-    const skyBit = (id, px, fx, fy, drift) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: paper.artTex(id), transparent: true, depthTest: false, depthWrite: false })); m.userData = { px, fx, fy, drift, asp: paper.artAspect(id) }; m.renderOrder = 2; bgScene.add(m); W.sky.push(m); };
-    skyBit(C.sun[0], C.sun[1] * 400, C.sun[2], C.sun[3], 0);
-    [[.55, .05, 150, .006], [-.1, .3, 130, .009], [.32, .14, 90, .008]].forEach(([fx, fy, px, d]) => skyBit('nube', px, fx, fy, d));
-    W.layoutSky();
-    hemi.color.set(C.hemi[0]); hemi.groundColor.set(C.hemi[1]); hemi.intensity = C.hemi[2];
-    sun.color.set(C.light[0]); sun.intensity = C.light[1]; sun.position.set(...C.light[2]);
-    const box = (h) => new THREE.BoxGeometry(1, h, 1);
-    for (let i = 0; i < AW; i++) for (let j = AJ0; j <= AJ1; j++) {
-      const x = i - (AW - 1) / 2, z = j - AOFF, t = C.tile(i, j, azone(i, j)), h = t.y + ALOW;
-      const corner = (i === 0 || i === AW - 1) && (j === AJ0 || j === AJ1);
-      let geo;
-      if (corner) { const sx = i === 0 ? -1 : 1, sz = j === AJ0 ? -1 : 1; geo = extrudeY(roundSquare(1, 1, [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([px, pz]) => px === sx && pz === sz ? .32 : 0)), h); }
-      else geo = box(h);
-      const m = new THREE.Mesh(geo, t.water ? waterMat() : gMat(t.c));
-      if (t.water) { m.scale.set(.985, 1, .985); W.waters.push([x, t.y, z]); }
-      m.position.set(x, t.y - h / 2 + (t.water ? 0 : (hash(i, j, 3) - .5) * .04), z); m.castShadow = m.receiveShadow = true; st.add(m); edges(m, st);
-      if (t.decal) { const d = new THREE.Mesh(new THREE.PlaneGeometry(.94, .94), new THREE.MeshLambertMaterial({ map: decalTex(t.decal), transparent: true, depthWrite: false })); d.rotation.x = -Math.PI / 2; d.rotation.z = hash(i, j, 9) * Math.PI * 2; d.position.set(x, m.position.y + h / 2 + .006, z); st.add(d); }
-      if (t.tufts) for (let k = 0; k < 2; k++) { const s = paperProp('mata', .2, false); s.position.set(x + (hash(i, j, 30 + k) - .5) * .7, t.y, z + (hash(i, j, 60 + k) - .5) * .7); s.userData.p = hash(i, j, 70 + k) * 6; st.add(s); W.bb.push(s); }
-    }
-    // base: meseta invertida, igual en todas las arenas
-    let yy = -ALOW + .04; const L = AJ1 - AJ0 + 1, zc = (AJ0 + AJ1) / 2 - AOFF;
-    [[AW - .06, L - .06, .34], [AW - .12, L - .12, .32], [AW - 2, L - 2, 1.25]].forEach(([w, d, h], k) => { const r = Math.min(.32, Math.min(w, d) * .3), m = new THREE.Mesh(extrudeY(roundSquare(w, d, [r, r, r, r]), h), gMat(C.base[k])); m.position.set(0, yy - h / 2, zc); m.castShadow = m.receiveShadow = true; st.add(m); edges(m, st); yy -= h; });
-    const yAt = (x, z) => { const i = Math.max(0, Math.min(AW - 1, Math.round(x + (AW - 1) / 2))), j = Math.max(AJ0, Math.min(AJ1, Math.round(z + AOFF))); return C.tile(i, j, azone(i, j)).y; };
-    const put = (id, w, x, z, y) => { const m = paperProp(id, w); m.position.set(x, y, z); st.add(m); W.bb.push(m); };
-    C.mon.forEach(([id, w, x, z]) => put(id, w, x, z, Math.max(yAt(x, z), .02)));
-    C.props.forEach(([x, z, id, w, pillar]) => {
-      let y = yAt(x, z);
-      if (pillar) { const p = new THREE.Mesh(new THREE.BoxGeometry(.86, ALOW + .04, .86), gMat('#B2AB9E')); p.position.set(x, .02 - (ALOW + .04) / 2, z); p.castShadow = p.receiveShadow = true; st.add(p); edges(p, st); y = .02; }
-      put(id, w, x, z, y);
-    });
-    // lo que cae del aire
-    if (C.fx) for (let i = 0; i < C.fxN; i++) {
-      let m;
-      if (C.fx === 'nieve') m = new THREE.Mesh(new THREE.CircleGeometry(.03 + Math.random() * .03, 6), new THREE.MeshBasicMaterial({ color: '#FFFFFF', transparent: true, opacity: .95 }));
-      else { const cols = { petalos: ['#F7C4D4', '#EFA0BC'], hojas: ['#D9533B', '#E8743A', '#F2B544'], hojasVerdes: ['#7FB04E', '#A8CC6A'] }[C.fx]; m = new THREE.Mesh(new THREE.PlaneGeometry(C.fx === 'petalos' ? .08 : .11, C.fx === 'petalos' ? .06 : .08), new THREE.MeshLambertMaterial({ color: cols[i % cols.length], side: THREE.DoubleSide, emissive: '#FFFFFF', emissiveIntensity: .3 })); }
-      m.userData = { x: (Math.random() - .5) * 9, y: Math.random() * 6, z: (Math.random() - .5) * 13, s: Math.random() * 6 }; st.add(m); W.fall.push(m);
-    }
-  };
-  W.tap = ray => { const id = hitItem(W, ray); if (id) W.opts.onTap?.(id); };
-  W.update = (t, dt) => {
-    // cámara estándar de arena: igual en todas
-    const hf = Math.tan(camera.fov * Math.PI / 360), halfH = Math.max(5.4, 2.85 / camera.aspect), D = halfH / hf, a = .34 + Math.sin(t * .25) * .02, EL = .74;
-    camera.position.set(Math.sin(a) * Math.cos(EL) * D - .35, Math.sin(EL) * D - .2, Math.cos(a) * Math.cos(EL) * D - .5); camera.lookAt(-.35, -.2, -.5);
-    const camAz = W.camAz = Math.atan2(camera.position.x + .35, camera.position.z + .5);
-    W.bb.forEach(m => { m.rotation.y = camAz; if (m.userData.p != null) m.rotation.z = Math.sin(t * 2.3 + m.userData.p) * .1; });
-    const A = bgCam.right; W.sky.forEach(m => { const u = m.userData; if (!u.drift) return; u.fx += u.drift * dt; if (u.fx > 1.05) u.fx = -.35; m.position.x = -A + u.fx * 2 * A + m.scale.x / 2; });
-    const snow = W.C?.fx === 'nieve';
-    W.fall.forEach(p => { const u = p.userData; u.y -= dt * (snow || W.C.fx === 'hojas' ? .45 : .35); u.x += dt * (snow ? .12 : .5);
-      if (u.y < -.2 || u.x > 5) { u.y = 5 + Math.random() * 2; u.x = -5 + Math.random() * (snow ? 10 : 3); u.z = (Math.random() - .5) * 13; }
-      p.position.set(u.x + Math.sin(t * (snow ? .8 : 1) + u.s) * (snow ? .15 : .3), u.y, u.z); if (snow) p.rotation.y = camAz; else p.rotation.set(t * 2 + u.s, t * 1.3, t * 1.7); });
-    let tgt = null;
-    W.items.forEach(o => {
-      animSprite(o, t, dt);
-      const d = o.d, [bx, bz] = SLOT[d.side][d.slot];
-      const lg = o.lunge || 0; o.lunge = Math.max(0, lg - dt * 2.2);
-      const k = Math.sin(lg * Math.PI);
-      o.group.position.set(bx + (o.lx || 0) * k, 0, bz + (o.lz || 0) * k);
-      o.sprite.rotation.y = camAz;
-      o.sprite.position.x = o.flash ? Math.sin(t * 60) * .06 * o.flash : 0;
-      o.sprite.material.emissive.set(o.flash > 0 ? '#FF3A2A' : '#FFFFFF');
-      o.sprite.material.emissiveIntensity = o.flash > 0 ? .5 + o.flash * .6 : .4;
-      const down = d.down; o.dn = Math.min(1, Math.max(0, (o.dn || 0) + (down ? dt * 2 : -dt * 4)));
-      // caído: se acuesta de costado sobre el piso (se levanta lo que giró para no hundirse)
-      o.sprite.rotation.z = -o.dn * 1.35; o.sprite.position.y += Math.sin(o.dn * 1.35) * o.size * .42; o.sprite.material.color.setScalar(1 - o.dn * .55); o.blob.material.opacity = 1 - o.dn * .6;
-      if (d.target && !down) tgt = o;
-    });
-    ring.visible = !!tgt; if (tgt) { ring.position.x = tgt.group.position.x; ring.position.z = tgt.group.position.z; ring.scale.setScalar(tgt.size * .62 * (1 + Math.sin(t * 5) * .06)); }
-    W.fx = W.fx.filter(f => f(t, dt));
-  };
-  W.shot = shot; W.wave = wave;
-  return E.worlds.arena = W;
-}
-export function mountArena(host, { items, onTap, scene: idx = 0 }) {
-  if (!webgl()) return false;
-  engine(); const W = arena(); W.opts = { onTap };
-  if (W.sceneIdx !== idx) W.build(idx);
-  host.classList.add('paper'); host.classList.toggle('grain', paper.grainOn()); host.style.setProperty('--grain', `url(${paper.grainCSS})`);
-  const seen = new Set();
-  items.forEach(d => {
-    seen.add(d.id); let o = W.items.get(d.id);
-    const size = d.side === 'm' ? 1.5 : 1.38, svg = d.side === 'm' ? backSVG(d.svg) : d.svg;
-    if (!o || o.svg !== svg) {
-      if (o) W.scene.remove(o.group);
-      const s = makeSprite(svg, size, d.id); o = { ...s, svg, lunge: o?.lunge, dn: o?.dn, lx: o?.lx, lz: o?.lz };
-      const [bx, bz] = SLOT[d.side][d.slot]; o.group.position.set(bx, 0, bz); // nace en su casilla, no en el centro
-      W.scene.add(o.group); W.items.set(d.id, o);
-    }
-    o.d = d; o.flip = 1;
-  });
-  [...W.items.keys()].forEach(id => { if (!seen.has(id)) { W.scene.remove(W.items.get(id).group); W.items.delete(id); } });
-  attach(host, W);
-  return true;
-}
-// Ataque: el atacante embiste, un proyectil del color de su tipo cruza y el objetivo tiembla
-export function arenaHit(fromId, toId, color = '#FFD27A') {
-  const W = E?.worlds.arena; if (!W) return Promise.resolve();
-  const a = W.items.get(fromId), b = W.items.get(toId); if (!a || !b) return Promise.resolve();
-  // Desde y hacia la casilla base de cada uno (la posición viva puede estar a mitad de embestida o recién creada)
-  const base = o => { const [x, z] = SLOT[o.d.side][o.d.slot]; return new THREE.Vector3(x, 0, z); };
-  const pa = base(a), pb = base(b);
-  W.wave.visible = false;
-  a.lx = (pb.x - pa.x) * .2; a.lz = (pb.z - pa.z) * .2; a.lunge = 1; a.hop = 1;
-  return new Promise(res => {
-    const t0 = performance.now(); W.shot.material.color.set(color); W.shot.visible = true;
-    W.fx.push(() => {
-      const k = Math.min(1, (performance.now() - t0) / 420);
-      const p = pa.clone().lerp(pb, k); p.y = a.size * .55 + Math.sin(k * Math.PI) * 1.1;
-      W.shot.position.copy(p); W.shot.quaternion.copy(W.camera.quaternion); W.shot.scale.setScalar(.9 + Math.sin(k * 20) * .1);
-      if (k < 1) return true;
-      W.shot.visible = false; b.flash = 1; b.squash = 1;
-      const w0 = performance.now(); W.wave.visible = true; W.wave.material.color.set(color); W.wave.position.set(pb.x, .05, pb.z); W.wave.rotation.x = -Math.PI / 2;
-      W.fx.push(() => { const q = Math.min(1, (performance.now() - w0) / 450); W.wave.scale.setScalar(1 + q * 3); W.wave.material.opacity = 1 - q; if (q >= 1) { W.wave.visible = false; return false; } return true; });
-      res(); return false;
-    });
-  });
-}
-// Festejo al terminar: el equipo ganador salta
-export function arenaCheer(side) { const W = E?.worlds.arena; if (!W) return; W.items.forEach(o => { if (o.d.side === side && !o.d.down) { o.hop = 1; setTimeout(() => { o.hop = 1; }, 600); } }); }

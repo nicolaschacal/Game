@@ -54,26 +54,6 @@ function paperize(art, R){
 function circ(x, cx, cy, r, col){ x.fillStyle = col; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI*2); x.fill(); }
 function ell(x, cx, cy, rx, ry, rot, col){ x.fillStyle = col; x.beginPath(); x.ellipse(cx, cy, rx, ry, rot, 0, Math.PI*2); x.fill(); }
 function poly(x, pts, col){ x.fillStyle = col; x.beginPath(); x.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) x.lineTo(pts[i], pts[i+1]); x.closePath(); x.fill(); }
-let CLOSED = false;
-function face(x, cx, cy, sp){
-  for (const s of [-1, 1]){
-    if (CLOSED){ x.strokeStyle = '#2A221D'; x.lineWidth = 5; x.lineCap = 'round'; x.beginPath(); x.arc(cx + s*sp, cy - 2, 10, .25*Math.PI, .75*Math.PI); x.stroke(); }
-    else { circ(x, cx + s*sp, cy, 14, '#fff'); circ(x, cx + s*sp + 2, cy + 2, 8, '#2A221D'); circ(x, cx + s*sp + 4, cy - 1, 3, '#fff'); }
-    ell(x, cx + s*(sp + 14), cy + 20, 10, 6, 0, 'rgba(240,120,130,.55)');
-  }
-}
-function tag(x, cx, cy, r, k){
-  circ(x, cx, cy, r, '#F7F0DC');
-  x.fillStyle = '#2A221D'; x.font = Math.round(r*1.35) + 'px "Yuji Syuku", serif';
-  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(k, cx, cy + r*0.06);
-}
-function bubble(sym, col){
-  return x => {
-    x.fillStyle = '#FFFDF6'; x.beginPath(); x.roundRect ? x.roundRect(6, 6, 108, 78, 26) : x.rect(6, 6, 108, 78); x.fill();
-    poly(x, [44,80, 60,104, 70,80], '#FFFDF6');
-    x.fillStyle = col; x.font = '900 52px "Zen Maru Gothic", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(sym, 60, 48);
-  };
-}
 /* Castillo estilo Osaka: muralla de piedra (ishigaki), torre blanca de 5 niveles, techos de cobre verde, adornos dorados */
 function drawCastle(x){
   const W = 540, GREEN = '#4E8C82', GREEN_D = '#3B6E66', WHITE = '#F4EFE4', GOLD = '#D9A53A', DARK = '#2B2320';
@@ -115,28 +95,6 @@ function drawCastle(x){
   for (const [sx, d] of [[222, -1], [318, 1]]){ ell(x, sx, 70, 9, 16, d*.5, GOLD); poly(x, [sx + d*4,56, sx + d*18,44, sx + d*8,62], GOLD); }
 }
 const DRAW = {
-  ki: x => {
-    ell(x, 82, 228, 20, 12, 0, '#4E8E37'); ell(x, 138, 228, 20, 12, 0, '#4E8E37');
-    ell(x, 82, 52, 22, 46, -0.6, '#4E8E37'); ell(x, 138, 48, 22, 46, 0.6, '#8CCB62');
-    ell(x, 110, 145, 88, 84, 0, '#6FAE4F'); ell(x, 92, 118, 50, 40, -0.4, '#7DBB5B');
-    face(x, 110, 108, 30); tag(x, 110, 172, 40, '木');
-  },
-  hi: x => {
-    const flame = (s, col) => { x.save(); x.translate(110, 240); x.scale(s, s); x.translate(-110, -240);
-      x.fillStyle = col; x.beginPath(); x.moveTo(112, 8);
-      x.bezierCurveTo(150, 70, 205, 110, 196, 165); x.bezierCurveTo(190, 218, 146, 240, 110, 240);
-      x.bezierCurveTo(68, 240, 24, 214, 26, 162); x.bezierCurveTo(28, 122, 58, 106, 68, 66);
-      x.bezierCurveTo(84, 92, 98, 84, 112, 8); x.fill(); x.restore(); };
-    flame(1, '#E2652F'); flame(.78, '#F28C3E'); flame(.5, '#F9B95A');
-    face(x, 110, 128, 30); tag(x, 110, 188, 36, '火');
-  },
-  mizu: x => {
-    x.fillStyle = '#3F8FCB'; x.beginPath(); x.moveTo(110, 8);
-    x.bezierCurveTo(140, 70, 198, 110, 198, 162); x.bezierCurveTo(198, 212, 158, 240, 110, 240);
-    x.bezierCurveTo(62, 240, 22, 212, 22, 162); x.bezierCurveTo(22, 110, 80, 70, 110, 8); x.fill();
-    ell(x, 74, 120, 16, 30, 0.35, 'rgba(255,255,255,.45)');
-    face(x, 110, 132, 30); tag(x, 110, 190, 36, '水');
-  },
   torii: x => {
     x.fillStyle = '#C8412E'; x.fillRect(48, 70, 26, 222); x.fillRect(186, 70, 26, 222);
     x.fillStyle = '#2B2320'; x.fillRect(44, 276, 34, 18); x.fillRect(182, 276, 34, 18);
@@ -291,10 +249,9 @@ const DRAW = {
   matam: x => { poly(x, [6,80, 18,14, 30,80], '#4E8238'); poly(x, [24,80, 42,4, 56,80], '#5F9447'); poly(x, [48,80, 70,22, 80,80], '#477A33'); },
   florcita: x => { x.fillStyle = '#5E9A40'; x.fillRect(22, 26, 6, 40); for (let p = 0; p < 5; p++){ const t = p/5*Math.PI*2; circ(x, 25 + Math.cos(t)*10, 22 + Math.sin(t)*10, 8, '#FFFFFF'); } circ(x, 25, 22, 7, '#F2B33D'); },
   mariposa: x => { ell(x, 34, 34, 30, 26, -0.4, '#F29A3E'); ell(x, 86, 34, 30, 26, 0.4, '#F29A3E'); ell(x, 40, 70, 20, 16, 0.3, '#F7C76A'); ell(x, 80, 70, 20, 16, -0.3, '#F7C76A'); ell(x, 60, 52, 6, 30, 0, '#2B2320'); },
-  e_nota: bubble('♪', '#3E8E5A'), e_cora: bubble('♥', '#D9533B'), e_pts: bubble('…', '#2E2620'), e_zz: bubble('z', '#4E6E9A'), e_gota: bubble('☂', '#3F8FCB'), e_ex: bubble('!', '#E9A93A')
 };
-const SIZE = { ki:[220,250], hi:[220,250], mizu:[220,250], torii:[260,300], farol:[140,226], refugio:[240,232], cerezo:[260,300], pino:[200,292], arbusto:[208,144], flores:[166,120], bambu:[150,300], roca:[180,110], castillo:[540,656], espuma:[170,110], pagoda:[300,520], templo:[420,376], minka:[420,340], casate:[260,226], puente:[300,140], komainu:[200,200], campana:[200,262], incienso:[180,204], ema:[220,200], nobori:[100,300], sagrada:[204,176], chochin:[110,262], sol:[220,220], luna:[200,200], estrella:[70,72], nube:[300,160], mata:[86,82], matam:[86,82], florcita:[50,70], mariposa:[120,92], e_nota:[120,108], e_cora:[120,108], e_pts:[120,108], e_zz:[120,108], e_gota:[120,108], e_ex:[120,108] };
-const RAD = { mata:5, matam:5, florcita:4, mariposa:6, e_nota:4, e_cora:4, e_pts:4, e_zz:4, e_gota:4, e_ex:4, castillo:12, estrella:5, sol:8 };
+const SIZE = { torii:[260,300], farol:[140,226], refugio:[240,232], cerezo:[260,300], pino:[200,292], arbusto:[208,144], flores:[166,120], bambu:[150,300], roca:[180,110], castillo:[540,656], espuma:[170,110], pagoda:[300,520], templo:[420,376], minka:[420,340], casate:[260,226], puente:[300,140], komainu:[200,200], campana:[200,262], incienso:[180,204], ema:[220,200], nobori:[100,300], sagrada:[204,176], chochin:[110,262], sol:[220,220], luna:[200,200], estrella:[70,72], nube:[300,160], mata:[86,82], matam:[86,82], florcita:[50,70], mariposa:[120,92], e_nota:[120,108], e_cora:[120,108], e_pts:[120,108], e_zz:[120,108], e_gota:[120,108], e_ex:[120,108] };
+const RAD = { mata:5, matam:5, florcita:4, mariposa:6, castillo:12, estrella:5, sol:8 };
 
 /* --- piezas nuevas para objetos que ya existían en el juego --- */
 Object.assign(DRAW, {

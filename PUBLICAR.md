@@ -11,7 +11,7 @@ El repo ya trae el proyecto nativo de Capacitor (`android/` e `ios/`), los ícon
 ## 0.1 Estado del empaquetado (verificado)
 
 - `npm run build` y `npx cap sync` corren sin errores (iOS: el paso `pod install` y `xcodebuild` se saltan en Linux; hacelos en la Mac).
-- Fuentes Lilita One, Nunito y Yuji Syuku (recortada a los kanji usados) viven en `assets/fonts/` y el build las copia a `www/fonts/` y reemplaza el `<link>` de Google Fonts: la app funciona sin internet. **Si agregás kanji nuevos al juego, regenerá `YujiSyuku-subset.ttf`** (fonttools `pyftsubset` con los caracteres nuevos) o se verán con la fuente de respaldo.
+- Fuentes Lilita One, Nunito y Yuji Syuku (recortada a los 2 caracteres del nobori de Kioto) viven en `assets/fonts/` y el build las copia a `www/fonts/` y reemplaza el `<link>` de Google Fonts: la app funciona sin internet. **Si agregás kanji nuevos al juego, regenerá `YujiSyuku-subset.ttf`** (fonttools `pyftsubset` con los caracteres nuevos) o se verán con la fuente de respaldo.
 - Íconos/splash: `npm run assets` lee `assets/icon.png`, `assets/splash.png`, `assets/splash-dark.png`. Para elegir entre las variantes icon-A / icon-B, copiá la elegida a `assets/icon.png` (1024x1024) y corré `npm run assets`.
 - `capacitor.config.json`: cambiá `appId` (hoy `com.nicolaschacal.papervoyager`) ANTES de publicar y, si lo cambiás, también `applicationId`/`namespace` en `android/app/build.gradle` y el Bundle Identifier en Xcode.
 

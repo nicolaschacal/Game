@@ -6,7 +6,6 @@ Runner de construcción en papel recortado: **Nilo** avanza solo y vos construí
 
 - **Juego:** `index.html` (en Vercel es la raíz del sitio). Three.js se carga desde CDN en la web; en la app va empaquetado.
 - **Tiendas (iOS/Android):** ver [PUBLICAR.md](PUBLICAR.md). Capacitor, AdMob y RevenueCat ya están conectados.
-- **Prototipos viejos:** `tile-runner.html`, `build-run.html` y `paper.js` (raíz) quedan en el repo como referencia; el build ya no los copia a `www/`, así que no entran en la app.
 - Pruebas: `?debug` expone `window.__dbg`; `?debug&quick` genera un mundo corto; `?world=N` abre el destino N; `?lluvia` fuerza lluvia; `?hora=23` fija la hora.
 
 ## Dirección visual

@@ -7,7 +7,7 @@ cpSync('paper-voyager', out + '/paper-voyager', { recursive: true, filter: s => 
 cpSync('node_modules/three/build/three.module.js', out + '/vendor/three.module.js');
 // Vercel sirve www/ tal cual: va la política de privacidad (los prototipos viejos ya no entran en la app)
 for (const f of ['privacidad.html']) if (existsSync(f)) cpSync(f, out + '/' + f);
-// Fuentes (Lilita One, Nunito, Yuji Syuku recortada a los kanji del juego) locales: la app funciona sin internet
+// Fuentes (Lilita One, Nunito, Yuji Syuku recortada a los 2 caracteres del nobori de Kioto) locales: la app funciona sin internet
 cpSync('assets/fonts', out + '/fonts', { recursive: true });
 let html = readFileSync('index.html', 'utf8');
 html = html.replace(/<link rel="preconnect" href="https:\/\/fonts\.g[^>]*>\s*/g, '')
