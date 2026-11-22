@@ -151,6 +151,44 @@ export const ADORNOS = Object.fromEntries(names.map((k, i) => { seed(2000 + i * 
 // Alias de nombres antiguos de destinos (por si un destino nuevo los usa)
 Object.assign(ADORNOS, { farolRojo: ADORNOS.farolRojo, farolPiedra: ADORNOS.farolPiedra });
 
+// ── Adornos de la tanda de ciudades nuevas (bici, farol de seda, jirafa, tranvía SF, macetas azules): semillas propias para no mover el recorte de los demás ──
+(() => {
+const P = parse;
+const NA = {};
+NA.bici = () => {
+  const fr = '#C9503E', frD = '#8E2A18';
+  return L(arc(30, 88, 12, 17, 0, 358, 18), '#3E3A44', '#1E1D24', { dx: .6, dy: 1, j: .2 }) + L(arc(90, 88, 12, 17, 0, 358, 18), '#3E3A44', '#1E1D24', { dx: .6, dy: 1, j: .2 })
+    + LS([strip(30, 88, 56, 90, 4.5), strip(56, 90, 50, 60, 4.5), strip(50, 62, 30, 88, 4), strip(56, 90, 84, 62, 4.5), strip(50, 64, 84, 62, 4), strip(84, 60, 90, 88, 4.5)], fr, frD, { dx: .6, dy: 1, j: .2 })
+    + L(RR(41, 54, 17, 6, 2.5), '#4A3F45', null, { j: .2 }) + L(strip(84, 62, 78, 48, 4), '#4A3F45', null, { j: .2 }) + L(strip(72, 48, 88, 46, 4), '#4A3F45', null, { j: .2 })
+    + L(RR(86, 46, 24, 14, 3), '#C99A5A', '#8A5F38', { dx: .8, dy: 1.2, j: .3 }) + disc(92, 44, 4.4, '#F29BB8', null, { n: 9, j: .1 }) + disc(100, 42, 4.4, '#E8452C', null, { n: 9, j: .1 }) + disc(106, 45, 3.6, '#F2B937', null, { n: 9, j: .1 })
+    + disc(30, 88, 3, '#8A8590', null, { n: 8, j: .1 }) + disc(90, 88, 3, '#8A8590', null, { n: 8, j: .1 });
+};
+NA.farolSeda = () => {
+  const lam = (x, y, c, cu) => L(R(x - 3, y - 15, 6, 4), '#8A5F38', null, { j: .1 }) + disc(x, y, 10, c, cu, { ry: 12, dx: .8, dy: 1.2, n: 18 }) + L(R(x - 4, y + 10, 8, 4), '#8A5F38', null, { j: .1 }) + L(strip(x, y + 14, x, y + 22, 1.6), c, null, { j: .1 });
+  return L(R(16, 104, 22, 6), '#5E3E22', '#3E2A18', { j: .3 }) + L(strip(27, 106, 27, 22, 7), '#8A5F38', '#5E3E22', { dx: 1, dy: 0, j: .3 }) + L(strip(20, 26, 108, 26, 6), '#8A5F38', '#5E3E22', { dx: .6, dy: 1.2, j: .3 })
+    + L(strip(48, 28, 48, 36, 1.4), '#5E3E22', null, { j: .1 }) + L(strip(74, 28, 74, 46, 1.4), '#5E3E22', null, { j: .1 }) + L(strip(98, 28, 98, 38, 1.4), '#5E3E22', null, { j: .1 })
+    + lam(48, 50, '#E8452C', '#A8301E') + lam(74, 60, HEAD, HEADU) + lam(98, 52, '#D94A8C', '#9A2E62');
+};
+NA.jirafa = () => {
+  const c = '#E6A84A', cu = '#A8702A', sp = '#9A5A2A';
+  return LS([R(36, 74, 5, 34), R(46, 76, 5, 32), R(62, 76, 5, 32), R(72, 74, 5, 34)], '#D9963A', cu, { dx: .6, dy: 1, j: .2 })
+    + L(P('M30 72 Q30 60 44 60 L68 58 Q80 60 80 70 Q80 80 68 80 L42 80 Q30 80 30 72Z'), c, cu, { dx: 1.2, dy: 1.6, j: .4 })
+    + L(P('M66 64 L80 20 L90 22 L78 68Z'), c, cu, { dx: 1, dy: 1.2, j: .3 }) + L(P('M78 14 L98 20 L96 28 L80 26Z'), c, cu, { dx: .8, dy: 1, j: .3 })
+    + LS([R(80, 8, 2.4, 7), R(85, 9, 2.4, 7)], '#7A4A22', null, { j: .1 }) + L(P('M28 70 L22 88 L25 88 L31 72Z'), '#7A4A22', null, { j: .1 })
+    + [[40, 66, 4], [52, 70, 4.4], [62, 64, 3.6], [72, 72, 3.4], [44, 75, 3], [80, 34, 2.6], [76, 48, 2.8], [84, 26, 2.2]].map(([x, y, r]) => disc(x, y, r, sp, null, { n: 7, j: .3 })).join('')
+    + disc(92, 22, 1.6, '#2B2236', null, { n: 6, j: 0 });
+};
+NA.tranviaSF = () => disc(34, 100, 7, '#34333B', '#1E1D24', { n: 12 }) + disc(86, 100, 7, '#34333B', '#1E1D24', { n: 12 })
+  + L(RR(12, 54, 96, 44, 4), '#C9503E', '#8E2A18', { dx: 1.2, dy: 1.6, j: .4 }) + L(R(12, 54, 96, 18), '#F2E3C2', null, { j: .3 }) + L(P('M6 56 L14 42 L106 42 L114 56Z'), '#6B4A2E', '#3E2A18', { dx: .8, dy: 1.2, j: .3 })
+  + LS([R(18, 58, 12, 11), R(34, 58, 12, 11), R(50, 58, 12, 11), R(66, 58, 12, 11), R(82, 58, 12, 11)], '#8EC7D8', null, { j: .2 }) + L(R(12, 78, 96, 4), '#F2B937', null, { j: .2 })
+  + L(R(54, 84, 12, 14), '#8E2A18', null, { j: .2 }) + L(strip(60, 42, 60, 22, 2), '#3E3A44', null, { j: .1 });
+NA.macetaAzul = () => L(R(8, 86, 104, 24), '#5B8FD0', '#3A66A8', { dx: 1.2, dy: 1.6, j: .4 }) + L(R(8, 86, 104, 5), '#A9CCF2', null, { j: .3 })
+  + [[30, 1], [60, 1.15], [90, .95]].map(([x, k]) => L(P(`M${x - 11 * k} ${86 - 22 * k} L${x + 11 * k} ${86 - 22 * k} L${x + 8 * k} 86 L${x - 8 * k} 86Z`), '#D9733A', '#9A4A22', { dx: .8, dy: 1.2, j: .3 })
+    + disc(x, 86 - 30 * k, 12 * k, '#5E9A4C', '#35682E', { n: 14, dx: .8, dy: 1.2 }) + disc(x - 5 * k, 86 - 34 * k, 4.4 * k, x === 60 ? '#E8452C' : '#F29BB8', null, { n: 9, j: .1 }) + disc(x + 5 * k, 86 - 28 * k, 4 * k, '#F29BB8', null, { n: 9, j: .1 })).join('');
+Object.keys(NA).forEach((k, i) => { seed(9000 + i * 37); ADORNOS[k] = paperAll(NA[k]()); });
+})();
+LUZ.farolSeda = { x: 74, y: 60, r: 1 };
+
 // ── Biomas: paleta reutilizable. [slot0 grandes, slot1 chicos, slot2 faroles] ──
 export const BIOMAS = {
   europa: { nombre: 'Ciudad europea', slots: [['castano', 'arbolOtono'], ['arbusto', 'rocaGris'], ['farolEuropeo']] },

@@ -5,6 +5,7 @@ import { DESTINOS, IDX } from './destinos.js';
 import { t as tt } from './i18n.js';
 
 export const NW = DESTINOS.length;
+export const NW0 = 46; // destinos de la vuelta al mundo original: el mapa los une con la ruta punteada y la dificultad sube a lo largo de ellos (las ciudades nuevas se suman al final)
 
 // ── Regiones y pasaportes ──
 export const REGIONS = {
@@ -28,6 +29,11 @@ const GEO = [
   [64.15, -21.94, 'eu', 1], [40.71, -74.01, 'am'], [36.99, -110.10, 'am'], [20.68, -88.57, 'am'], [23.11, -82.37, 'am'],
   [10.39, -75.51, 'am'], [5.97, -62.54, 'am', 1], [0, -78.46, 'am'], [-13.16, -72.55, 'am'], [-22.91, -43.17, 'am'],
   [-34.90, -56.16, 'am'], [-34.60, -58.38, 'am'], [-54.80, -68.30, 'am', 1], [-27.11, -109.35, 'oc', 1], [-33.87, 151.21, 'oc'], [34.69, 135.50, 'as'],
+  // ciudades nuevas (índices 46 en adelante)
+  [21.03, 105.85, 'as'], [20.95, 107.08, 'as'], [15.88, 108.33, 'as'], [13.36, 103.86, 'as'], [18.79, 98.99, 'as'],
+  [8.09, 98.91, 'as'], [7.74, 98.77, 'as', 1], [1.35, 103.82, 'as'], [38.64, 34.83, 'eu'], [59.93, 30.34, 'eu'],
+  [-37.81, 144.96, 'oc'], [-25.34, 131.04, 'oc', 1], [-1.29, 36.82, 'af'], [-6.16, 39.2, 'af', 1], [-33.92, 18.42, 'af'],
+  [35.17, -5.27, 'af'], [37.77, -122.42, 'am'], [19.43, -99.13, 'am'], [52.37, 4.9, 'eu'],
 ];
 if (GEO.length !== NW) console.warn('viaje.js: GEO no coincide con DESTINOS', GEO.length, NW);
 export const regionOf = i => GEO[i]?.[2] || 'eu';
@@ -43,20 +49,13 @@ export function km(a, b) {
   const h = Math.sin((la2 - la1) * d / 2) ** 2 + Math.cos(la1 * d) * Math.cos(la2 * d) * Math.sin((lo2 - lo1) * d / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
-// Una sola regla para todos los viajes:
-//   40 de tasa base + 1 moneda cada 35 km
-//   + 60 si cruza de región (vuelo internacional) + 30 si el destino es remoto (pocas conexiones)
-//   redondeado a 5, mínimo 40. Repetir el destino donde estás es gratis.
-// Una ronda completada deja ≈150–200 monedas (y sólo se cobran al llegar): un vecino cuesta media ronda,
-// cruzar la región ≈1 ronda y cruzar el océano 2–4 rondas.
-// Montevideo → Buenos Aires 45 · Río 95 · Cartagena 185 · Madrid 385 · Kioto → Buenos Aires ≈ 625.
-export const FARE = { base: 40, kmPerCoin: 35, intl: 60, remote: 30, min: 40 };
+// Una sola regla para todos los viajes: precio proporcional a la distancia real (gran círculo) entre donde estás y el destino.
+//   monedas = km × 0.0915, redondeado a 10, mínimo 60. Repetir el destino donde estás es gratis.
+// Calibrado para que Montevideo → Tokio (18 575 km) cueste 1700. Vecinos ≈ 60–150 · mismo continente ≈ 150–600 · cruzar el océano ≈ 800–1800.
+export const FARE = { perKm: 0.0915, round: 10, min: 60 };
 export function fare(from, to) {
   if (from === to) return 0;
-  let c = FARE.base + km(from, to) / FARE.kmPerCoin;
-  if (regionOf(from) !== regionOf(to)) c += FARE.intl;
-  if (GEO[to][3]) c += FARE.remote;
-  return Math.max(FARE.min, Math.round(c / 5) * 5);
+  return Math.max(FARE.min, Math.round(km(from, to) * FARE.perKm / FARE.round) * FARE.round);
 }
 
 // ── Viajeros ──
@@ -126,12 +125,32 @@ export const ROUTES = [
   { id: 'golden', name: 'route.golden', cities: ['Tokio', 'Kioto', 'Osaka'] },
   { id: 'classic', name: 'route.classic', cities: ['Londres', 'París', 'Roma'] },
   { id: 'andes', name: 'route.andes', cities: ['Cartagena', 'Machu Picchu', 'Río de Janeiro'] },
-  // inactiva: se activa sola cuando existan las 3 ciudades
   { id: 'thai', name: 'route.thai', cities: ['Bangkok', 'Krabi', 'Phi Phi'] },
+  // Una ciudad puede estar en varias rutas. Las que tienen alguna ciudad que todavía no existe en DESTINOS quedan inactivas solas.
+  { id: 'indochina', name: 'route.indochina', cities: ['Bangkok', 'Chiang Mai', 'Siem Reap', 'Hanói'] },
+  { id: 'vietnam', name: 'route.vietnam', cities: ['Hanói', 'Ha Long', 'Hoi An', 'Ho Chi Minh'] },
+  { id: 'malaca', name: 'route.malaca', cities: ['Singapur', 'Kuala Lumpur', 'Bali'] },
+  { id: 'china', name: 'route.china', cities: ['Pekín', "Xi'an", 'Guilin', 'Shanghái', 'Hong Kong'] },
+  { id: 'corea', name: 'route.corea', cities: ['Seúl', 'Busan', 'Tokio'] },
+  { id: 'india', name: 'route.india', cities: ['Delhi', 'Agra', 'Jaipur'] },
+  { id: 'seda', name: 'route.seda', cities: ['Estambul', 'Capadocia', 'Samarcanda'] },
+  { id: 'transiberiano', name: 'route.transiberiano', cities: ['Moscú', 'San Petersburgo', 'Lago Baikal', 'Vladivostok'] },
+  { id: 'australia', name: 'route.australia', cities: ['Sídney', 'Melbourne', 'Uluru'] },
+  { id: 'nz', name: 'route.nz', cities: ['Sídney', 'Auckland', 'Queenstown'] },
+  { id: 'safari', name: 'route.safari', cities: ['Nairobi', 'Kilimanjaro', 'Zanzíbar'] },
+  { id: 'surafrica', name: 'route.surafrica', cities: ['Ciudad del Cabo', 'Cataratas Victoria', 'Sossusvlei'] },
+  { id: 'egipto', name: 'route.egipto', cities: ['El Cairo', 'Luxor', 'Petra'] },
+  { id: 'marruecos', name: 'route.marruecos', cities: ['Marrakech', 'Fez', 'Chefchaouen', 'Merzouga'] },
+  { id: 'oeste', name: 'route.oeste', cities: ['San Francisco', 'Los Ángeles', 'Las Vegas', 'Gran Cañón', 'Monument Valley'] },
+  { id: 'este', name: 'route.este', cities: ['Nueva York', 'Washington', 'Niágara'] },
+  { id: 'mexico', name: 'route.mexico', cities: ['Ciudad de México', 'Chichén Itzá', 'La Habana'] },
+  { id: 'benelux', name: 'route.benelux', cities: ['París', 'Bruselas', 'Ámsterdam'] },
 ].map(r => ({ ...r, cities: r.cities.map(n => IDX[n]) })).filter(r => r.cities.every(c => c != null));
-// PROVISORIO: el premio de cada ruta son monedas. El dueño definirá trajes/souvenirs exclusivos después (agregar acá, p. ej. { coins, suit, souvenir }).
-export const ROUTE_REWARDS = { golden: { coins: 500 }, classic: { coins: 500 }, andes: { coins: 500 }, thai: { coins: 500 } };
-export const routeOf = i => ROUTES.find(r => r.cities.includes(i)) || null;
+// PROVISORIO: el premio de cada ruta son monedas: 150 por ciudad. El dueño definirá trajes/souvenirs exclusivos después (agregar acá, p. ej. { coins, suit, souvenir }).
+export const ROUTE_REWARDS = Object.fromEntries(ROUTES.map(r => [r.id, { coins: 150 * r.cities.length }]));
+// Todas las rutas activas que pasan por la ciudad i (en el orden de ROUTES). routeOf: sólo la primera (compatibilidad).
+export const routesOf = i => ROUTES.filter(r => r.cities.includes(i));
+export const routeOf = i => routesOf(i)[0] || null;
 // Orden del recorrido que arranca en la ciudad `start` (la elegida en el mapa): las demás siguen en su orden, rotando.
 export const routeSeq = (r, start) => { const k = Math.max(0, r.cities.indexOf(start)); return [...r.cities.slice(k), ...r.cities.slice(0, k)]; };
 export const routeRegions = r => [...new Set(r.cities.map(regionOf))];
@@ -232,8 +251,8 @@ export function roundDone() { T.trips++; T.visits[T.at] = (T.visits[T.at] || 0) 
 // Misma curva que antes: sube a lo largo de los NW destinos; con todos completados queda en el máximo de la primera vuelta.
 export const countriesDone = () => Math.max(Object.keys(T.visits || {}).length, T.base || 0);
 export function difficulty() {
-  const P = countriesDone(), lap = Math.floor(P / NW), wi = P % NW;
-  return { S: Math.min(8, Math.round(wi * 6 / (NW - 1)) + lap * 2), SP: Math.min(16, wi * 10 / (NW - 1) + lap * 3), lap, wi, P };
+  const P = countriesDone(), lap = Math.floor(P / NW0), wi = P % NW0;
+  return { S: Math.min(8, Math.round(wi * 6 / (NW0 - 1)) + lap * 2), SP: Math.min(16, wi * 10 / (NW0 - 1) + lap * 3), lap, wi, P };
 }
 
 // Selfie atrapada en el destino actual. Devuelve { shot, nuevo, coins, region } (region si se completó una región).
