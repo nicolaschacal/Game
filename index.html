@@ -103,7 +103,7 @@ body.home #hud{opacity:0}
 @keyframes tapL{0%,46%{transform:translate(-50%,0) scale(1.2);opacity:0}50%{transform:translate(-50%,0) scale(1);opacity:1}58%{transform:translate(-50%,0) scale(.8);opacity:1}66%,100%{transform:translate(-50%,0) scale(1);opacity:0}}
 @keyframes tgR{0%,8%{opacity:0}12%,26%{opacity:.9}34%,100%{opacity:0}}@keyframes tgL{0%,48%{opacity:0}52%,64%{opacity:.9}72%,100%{opacity:0}}
 #tuto h3{margin:0 0 6px;font:400 24px 'Lilita One',sans-serif;color:var(--red)}#tuto p{margin:0 0 14px;font:700 14px/1.4 Nunito;color:var(--ink)}#tuto .no{display:inline-block;background:var(--ink);color:var(--cream);border-radius:8px;padding:1px 7px;font:900 10px Nunito;letter-spacing:1px;margin-bottom:8px}
-#tuto .pic .t.w{background:#5AA5D2;color:#fff;font:700 22px/40px sans-serif;text-align:center;overflow:hidden;opacity:.9}#tuto .pic .t.w b{display:block;animation:tdArr 1.6s linear infinite}@keyframes tdArr{0%{transform:translateX(-26px)}100%{transform:translateX(26px)}}#tuto .pic .t.tdn{animation:tdSlide 2.6s ease-in-out infinite}@keyframes tdSlide{0%{transform:translateX(-20px) scale(.4);opacity:0}22%{transform:translateX(-20px) scale(1.08);opacity:1}38%{transform:translateX(-20px) scale(1)}70%,100%{transform:translateX(24px);opacity:1}}
+#tuto .pic .t.w{background:#5AA5D2;color:#fff;font:700 22px/40px sans-serif;text-align:center;overflow:hidden;opacity:.9}#tuto .pic .t.w b{display:block;animation:tdArr 1.6s linear infinite}@keyframes tdArr{0%{transform:translateX(-26px)}100%{transform:translateX(26px)}}#tuto .pic .t.tdn{animation:tdSlide 3s ease-in-out infinite}@keyframes tdSlide{0%{left:50%;transform:scale(.4);opacity:0}15%{left:50%;transform:scale(1.08);opacity:1}30%{left:50%;transform:scale(1);opacity:1}62%,90%{left:70%;transform:scale(1);opacity:1}100%{left:70%;opacity:0}}#tuto .pic .tdf{position:absolute;width:44px;height:44px;border-radius:7px;border:2.5px dashed var(--ink);opacity:.35}#tuto .pic .tdh{position:absolute;left:50%;bottom:104px;margin-left:-8px;font-size:30px;animation:tdFinger 3s ease-in-out infinite}@keyframes tdFinger{0%{transform:translateY(-14px);opacity:0}12%{transform:translateY(0);opacity:1}32%{transform:translateY(0);opacity:1}45%,100%{transform:translateY(-14px);opacity:0}}
 #tuto .pic svg.mvo{left:10%;margin-left:-30px;bottom:114px;animation:mvLn 2.4s ease-in-out infinite alternate}
 @keyframes mvLn{0%,10%{left:10%}90%,100%{left:30%}}
 @keyframes arrSlide{0%,100%{transform:translateX(-22px);opacity:.3}50%{transform:translateX(22px);opacity:1}}
@@ -795,7 +795,10 @@ const park=(type,frames,board,size,lift=0)=>{const id='ride'+rides.length;vehicl
 const diff=hard=>({gap:hard||S>=2?2:3,lead:2,extra:hard||S>=1?2:1});
 // Marea: un tramo de ~6 filas de mar con corriente fija (izq./der.). 3.er mundo: solo en la ruta difícil; luego, en las dos.
 const markTide=(top,len,hard)=>{if(DIF.P<TIDE_FROM-1||len<11||!(hard||DIF.P>=TIDE_FROM))return;
- const d=pick([-1,1]),i0=4+Math.floor(rnd()*(len-11));for(let k=0;k<6;k++)tide[top-i0-k]=d;};
+ const first=DIF.P===TIDE_FROM-1,L=first?4:6,d=pick([-1,1]),i0=4+Math.floor(rnd()*(len-11));
+ for(let k=0;k<L;k++)tide[top-i0-k]=d;
+ if(first){const lo=top-i0-L+1,hi=top-i0+1; // primer tramo de aprendizaje: sin rocas ni obstáculos en la corriente ni en la fila previa
+  for(let i=blockers.length-1;i>=0;i--)if(blockers[i].cy>=lo&&blockers[i].cy<=hi)blockers.splice(i,1);}};
 const RIDE={
  // Mar: muelle → barco → ruta de agua → playa
  sea(len,hard){free(2,'wood');const board=cur;free(2,'water');const id=park('boat',art.BOAT,board,1.6);const top=cur;fill(len,'sea',diff(hard));markTide(top,len,hard);const land=cur;free(3,'sand');rides.push({board,land,id,type:'boat'});},
@@ -1139,9 +1142,13 @@ function enterRow(r){
  if(r<=RUNWAY&&!runner.gameOver){runner.buildLane=2;buildToward(2);} // en la pista Nilo se acomoda solo al centro para entrar por la puerta
  if(r<=GOAL)nextWorld();
 }
+let inTide=false;
 function refreshUI(){
  const y=targetRow(),ride=rides[rideIndex],toBoard=ride&&!runner.onBoat?y-ride.board:99;
  const name=t('ride.name.'+ride?.type);
+ const td=runner.started&&!runner.gameOver&&zone[y]==='sea'?tide[y]:0,arr=d=>d>0?'\u2192':'\u2190';
+ if(td&&!inTide)banner(t('toast.tide',{a:arr(td)}));inTide=!!td;
+ if(td&&!paused){hint.textContent=t('hint.tide',{a:arr(td),b:arr(-td)});return;}
  hint.textContent=paused?'':!runner.started?t('hint.start'):runner.onBoat?t('hint.dodge'):toBoard<12?t('hint.ahead',{name}):t('hint.any');
 }
 
@@ -1163,7 +1170,7 @@ const MECH_INTRO=[
  {id:'mov',fromWorld:MOV_FROM,key:'tutoMov',card:{no:t('tuto.mov.no'),h:t('tuto.mov.h'),p:t('tuto.mov.p'),
   pic:()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('')+[0,1,2,3,4].map(n=>'<div class="t'+(n%2?' g':'')+'" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"></div>').join('')+'<div class="t new" style="left:70%;bottom:114px;margin-left:-22px"></div>'+FIN.replace('<svg','<svg class="mvo"')+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}},
  {id:'tide',fromWorld:TIDE_FROM,key:'tutoTide',card:{no:t('tuto.tide.no'),h:t('tuto.tide.h'),p:t('tuto.tide.p'),
-  pic:()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('')+[0,1,2,3,4].map(n=>'<div class="t w" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"><b>'+(n%2?'':'')+'&#10140;</b></div>').join('')+'<div class="t new tdn" style="left:50%;bottom:70px;margin-left:-22px"></div>'+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}}];
+  pic:()=>[0,1,2,3,4].map(n=>'<i class="ln" style="left:'+n*20+'%"></i>').join('')+[0,1,2,3,4].map(n=>'<div class="t w" style="left:'+(n*20+10)+'%;bottom:70px;margin-left:-22px"><b>&#10140;</b></div>').join('')+'<div class="t new tdn" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdf" style="left:50%;bottom:70px;margin-left:-22px"></div><div class="tdh">&#9758;</div>'+art.HERO.idle[0].replace('<svg','<svg style="bottom:6px;left:70%;margin-left:-30px"')}}];
 const mechOn=m=>DIF.P>=m.fromWorld-1;
 const mechDue=()=>MECH_INTRO.find(m=>mechOn(m)&&!store.get(m.key,0));
 let tutoStep=0,tutoAfter=null,tutoN=3,tutoSet=TUTO,tutoKey=null;
