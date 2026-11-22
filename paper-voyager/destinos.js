@@ -259,6 +259,7 @@ const TABLA = [
   ['NIEVE', 'Ushuaia', 'Argentina', L.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'nieve'],
   ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'tropical moaiChico'],
   ['COSTA', 'Sídney', 'Australia', L.opera, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 11, 'tropical velero'],
+  ['CASTILLO', 'Osaka', 'Japón', LANDMARKS.pagoda, '#FBE6D6', '#F2CBB4', '#E0A894', '#BDB9A8', PAV, VEREDA, 'city', 'petals', 17, 'moderna !cerezo'], // Osaka: pagoda de Kioto con paleta de atardecer y ciudad de Tokio (variación mínima; va al final para no mover los índices guardados)
 ];
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base
@@ -270,3 +271,5 @@ const armar = ([name, place, country, art, fog, c1, c2, around, ground, hillColo
   look: { fog, ground: around, far: [mix(fog, c1, .55), c1, mix(c1, c2, .5), c2], ridge, props: names.map(k => ADORNOS[k]), lamps: names.map(k => /^farol/.test(k)), lights: names.map(k => LUZ[k] || null) },
 }); };
 export const DESTINOS = TABLA.map(armar);
+// Índice de cada destino por su nombre en español (clave estable, no cambia con el idioma). Lo usan las rutas especiales.
+export const IDX = Object.fromEntries(TABLA.map((r, i) => [r[1], i]));

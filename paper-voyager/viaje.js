@@ -1,7 +1,7 @@
 // Viaje libre: viajeros, regiones, pasaportes, tarifas y álbum de selfies.
 // Es la única fuente de verdad del progreso de viaje. Guarda con el mismo `store` del juego (claves pv.*),
 // así no hay un segundo sistema de guardado. Todo lo que cambia se guarda en el acto (sobrevive a recargas).
-import { DESTINOS } from './destinos.js';
+import { DESTINOS, IDX } from './destinos.js';
 import { t as tt } from './i18n.js';
 
 export const NW = DESTINOS.length;
@@ -27,7 +27,7 @@ const GEO = [
   [40.42, -3.70, 'eu'], [48.86, 2.35, 'eu'], [50.85, 4.35, 'eu'], [51.51, -0.13, 'eu'], [55.95, -3.19, 'eu'],
   [64.15, -21.94, 'eu', 1], [40.71, -74.01, 'am'], [36.99, -110.10, 'am'], [20.68, -88.57, 'am'], [23.11, -82.37, 'am'],
   [10.39, -75.51, 'am'], [5.97, -62.54, 'am', 1], [0, -78.46, 'am'], [-13.16, -72.55, 'am'], [-22.91, -43.17, 'am'],
-  [-34.90, -56.16, 'am'], [-34.60, -58.38, 'am'], [-54.80, -68.30, 'am', 1], [-27.11, -109.35, 'oc', 1], [-33.87, 151.21, 'oc'],
+  [-34.90, -56.16, 'am'], [-34.60, -58.38, 'am'], [-54.80, -68.30, 'am', 1], [-27.11, -109.35, 'oc', 1], [-33.87, 151.21, 'oc'], [34.69, 135.50, 'as'],
 ];
 if (GEO.length !== NW) console.warn('viaje.js: GEO no coincide con DESTINOS', GEO.length, NW);
 export const regionOf = i => GEO[i]?.[2] || 'eu';
@@ -109,6 +109,36 @@ export const SOUVENIRS = [
   { id: 's-as', country: tt('country.s-as'), region: 'as', name: tt('souvenir.s-as'), price: 200 },
   { id: 's-oc', country: tt('country.s-oc'), region: 'oc', name: tt('souvenir.s-oc'), price: 200 },
 ];
+
+// ── Rutas especiales ──
+// Tres ciudades que se juegan seguidas, en orden. Se ofrecen en la tarjeta del destino (mapa) y se guardan en store 'route' = { id, i } (i = ciudad actual).
+// Perder una partida (game over sin revivir) o viajar a otro lado la cancela. Completarla sin perder da el premio y se anota en store 'routesDone'.
+// Las ciudades se buscan por su nombre en español (IDX); name = clave i18n.
+export const ROUTES = [
+  { id: 'golden', name: 'route.golden', cities: ['Tokio', 'Kioto', 'Osaka'].map(n => IDX[n]) },
+  { id: 'classic', name: 'route.classic', cities: ['Londres', 'París', 'Roma'].map(n => IDX[n]) },
+  { id: 'andes', name: 'route.andes', cities: ['Cartagena', 'Machu Picchu', 'Río de Janeiro'].map(n => IDX[n]) },
+].filter(r => r.cities.every(c => c != null));
+// PROVISORIO: el premio de cada ruta son monedas. El dueño definirá trajes/souvenirs exclusivos después (agregar acá, p. ej. { coins, suit, souvenir }).
+export const ROUTE_REWARDS = { golden: { coins: 500 }, classic: { coins: 500 }, andes: { coins: 500 } };
+export const routeOf = i => ROUTES.find(r => r.cities.includes(i)) || null;
+export const routeRegions = r => [...new Set(r.cities.map(regionOf))];
+export const routesDone = () => store.get('routesDone', []);
+export function routeComplete(id) { const d = routesDone(); if (!d.includes(id)) { d.push(id); store.set('routesDone', d); } return d.length; }
+// Avanza al jugador a la siguiente ciudad de la ruta sin cobrar tarifa (la ruta ya está paga con el primer tramo).
+export function hop(i) { T.at = i; save(); store.set('world', i); }
+
+// ── Vuelo demorado ──
+// A veces (DELAY_P) al elegir destino sale por otra ruta: un solo medio de punta a punta que paga más.
+export const DELAY_P = 0.12, DELAY_MIN_WORLD = 6; // nunca en los mundos 1-5
+export const DELAY_MULT = 1.5; // PROVISORIO: multiplicador de monedas al cobrar el viaje
+
+// ── Aduana por color ──
+// El pasaporte equipado (store 'passEq') abre las casillas de aduana de su color. Cada destino tiene dos colores de aduana: el de su región y otro fijo.
+export const passEq = () => { const e = store.get('passEq', null); return e && hasPass(e) ? e : null; };
+export function setPassEq(r) { store.set('passEq', hasPass(r) ? r : null); }
+export const customsColors = i => { const r = regionOf(i), o = REGION_ORDER.filter(x => x !== r); return [r, o[(i * 7 + 3) % o.length]]; };
+export const CUSTOMS_BONUS = 3; // monedas por pasar una casilla de aduana con el pasaporte correcto
 
 // ── Estado guardado ──
 // pv.trip = { v, traveler, at, passports:[], trips, visits:{i:n}, fresh }
