@@ -537,11 +537,11 @@ const BAG_CSS = `
 .pvb-pas .bk.eq{filter:drop-shadow(0 0 0 #76B85A) drop-shadow(0 0 3px #76B85A) drop-shadow(0 2px 2px rgba(40,24,10,.32))}
 .pvb-pas .pvb-tag{z-index:20;position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-2.5deg)}
 .pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}
-.pvb-dia{position:absolute;left:3%;top:57%;width:31%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;transform:rotate(-6deg);z-index:3}
+.pvb-dia{position:absolute;left:2%;top:57%;width:38%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;transform:rotate(-6deg);z-index:3}
 .pvb-dia .dv{filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}.pvb-dia .dv svg{display:block;width:100%;height:auto;overflow:visible}
 .pvb-dia:active:not(.opening) .dv{transform:translateY(2px) scale(.98)}
 .pvb-dia .pvb-tag{position:absolute;left:50%;bottom:-6px;margin:0;transform:translateX(-50%) rotate(4deg)}
-.pvb-sv{position:absolute;left:37%;right:2%;top:56%;bottom:1%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.pvb-sv{position:absolute;left:40%;right:1%;top:47%;bottom:1%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
 .pvb-sc svg *{pointer-events:visiblePainted}
 .pvb-sc{position:absolute;left:0;top:0;transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
@@ -658,7 +658,7 @@ export function openBag(ctx) {
     root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('bag.sub')}</small><h2>${tt('nav.bag')}</h2></div>
 <div class="pvb-t">
  <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
- <div class="pvb-dec" style="left:9%;top:53%;width:34%;transform:rotate(-4deg)">${pencilSVG()}</div>
+ <div class="pvb-dec" style="left:6%;top:50.5%;width:32%;transform:rotate(-4deg)">${pencilSVG()}</div>
  <button class="pvb-dia" data-dia aria-label="Abrir el diario">${diaryNow()}</button>
  <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${clothPile(ctx)}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
  <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}${eq ? `<span class="pvb-eqm">✓ ${tt('pass.equipped')} · ${esc(V.REGIONS[eq].name)}</span>` : ''}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
@@ -823,12 +823,12 @@ export function openBag(ctx) {
     const hash = k => { let h = (k + 1) * 2654435761 % 4294967296; h ^= h >>> 13; h = h * 1597334677 % 4294967296; return h; };
     // Filas de souvenirs derechos (±4°): separados si son pocos, cada vez más superpuestos si son muchos; el destacado va adelante y más grande
     const place = () => {
-      const W = st.clientWidth || 300, H = st.clientHeight || 160, rows = n <= 3 ? 1 : 2, c = Math.ceil(n / rows); // como mucho dos filas: se apilan más en vez de sumar una tercera
-      const sz = Math.min(W * .3, (H / rows) * .92, 92), edge = sz * .62;
+      const W = st.clientWidth || 300, H = st.clientHeight || 160, rows = n <= 3 ? 1 : n <= 8 ? 2 : 3, c = Math.ceil(n / rows); // filas que llenan el alto de la mesa; de costado se enciman
+      const sz = Math.min(W * .34, (H / rows) * 1.1, 116), edge = sz * .55;
       els.forEach((el, k) => {
         const r = Math.floor(k / c), i = k % c, cnt = Math.min(c, n - r * c);
         const step = cnt < 2 ? 0 : Math.min(sz * 1.12, (W - 2 * edge) / (cnt - 1)), x0r = W / 2 - step * (cnt - 1) / 2;
-        const y = H * .6 + (r - (rows - 1) / 2) * sz * .74; // filas juntas, una sobre otra: se ven apiladas
+        const y = rows === 1 ? H * .5 : H * .92 * (.5 / rows + r / rows) + (r - (rows - 1) / 2) * -sz * .08; // filas repartidas en todo el alto, apenas encimadas
         const f = k === idx, rot = ((((hash(k) >> 5) % 1000) / 1000) - .5) * 8;
         el.style.width = sz + 'px';
         el.style.cssText += `;width:${sz}px;transform:translate(${(x0r + step * i - sz / 2).toFixed(1)}px,${(y - sz / 2 - (f ? 8 : 0)).toFixed(1)}px) rotate(${rot.toFixed(1)}deg) scale(${f ? 1.22 : 1});z-index:${f ? n + 5 : r * c + i + 1};opacity:1`;
