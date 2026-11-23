@@ -5,6 +5,7 @@ import { DESTINOS } from './destinos.js';
 import { t as tt } from './i18n.js';
 import * as VV from './viaje.js';
 import { PLANE } from './runner-art.js';
+import * as H from './historia.js';
 
 const CREAM = '#FFF4DC', INK = '#1B1730';
 let UID = 0;
@@ -536,7 +537,11 @@ const BAG_CSS = `
 .pvb-pas .bk.eq{filter:drop-shadow(0 0 0 #76B85A) drop-shadow(0 0 3px #76B85A) drop-shadow(0 2px 2px rgba(40,24,10,.32))}
 .pvb-pas .pvb-tag{z-index:20;position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-2.5deg)}
 .pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}
-.pvb-sv{position:absolute;left:6%;right:6%;top:57%;bottom:1%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+.pvb-dia{position:absolute;left:39%;top:42%;width:21%;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;transform:rotate(7deg);z-index:3}
+.pvb-dia .dv{filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}.pvb-dia .dv svg{display:block;width:100%;height:auto;overflow:visible}
+.pvb-dia:active:not(.opening) .dv{transform:translateY(2px) scale(.98)}
+.pvb-dia .pvb-tag{position:absolute;left:50%;bottom:-10px;margin:0;transform:translateX(-50%) rotate(-5deg)}
+.pvb-sv{position:absolute;left:6%;right:6%;top:61%;bottom:1%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
 .pvb-sc svg *{pointer-events:visiblePainted}
 .pvb-sc{position:absolute;left:0;top:0;transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
@@ -654,7 +659,7 @@ export function openBag(ctx) {
 <div class="pvb-t">
  <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
  <div class="pvb-dec" style="left:9%;top:53%;width:34%;transform:rotate(-4deg)">${pencilSVG()}</div>
- <div class="pvb-dec" style="right:42%;top:45%;width:18%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
+ <button class="pvb-dia" data-dia aria-label="Abrir el diario">${diaryNow()}</button>
  <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${clothPile(ctx)}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
  <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}${eq ? `<span class="pvb-eqm">✓ ${tt('pass.equipped')} · ${esc(V.REGIONS[eq].name)}</span>` : ''}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
@@ -664,6 +669,7 @@ export function openBag(ctx) {
     q('[data-alb]').onclick = e => flyOpen(e.currentTarget);
     q('[data-rop]').onclick = e => flyCloth(e.currentTarget);
     q('[data-pas]').onclick = e => flyPass(e.currentTarget);
+    q('[data-dia]').onclick = e => flyDiary(e.currentTarget);
     q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
     if (sv.length) souvenirs(sv);
     warmCloth();
@@ -723,6 +729,39 @@ export function openBag(ctx) {
     inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
     setTimeout(() => { finish(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = 'hidden'; fly.style.opacity = '1'; }, F);
     setTimeout(() => { fly.remove(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = ''; }, F + D + 30);
+  }
+  // ── Diario del viajero: ficha + postales de su historia. La libreta viaja al centro y se abre como el álbum ──
+  function diaryNow() {
+    const hero = V.heroId?.() || 'nilo', P = H.progress(hero), n = P ? P.got.length : 0;
+    return `<div class="dv">${H.diarySVG(hero, n, P ? P.unseen : 0)}</div><span class="pvb-tag">DIARIO${P ? ` · <b>${Math.min(n, P.total)}</b>/${P.total}` : ''}</span>`;
+  }
+  const DIA = { hx: .073, top: .114, bot: .043, ang: 7, page: '#EFE3C6', back: '#6A4226', line: '#8A5A3B' };
+  async function flyDiary(b) {
+    if (b.classList.contains('opening')) return; sfx('tap');
+    const hero = V.heroId?.() || 'nilo', cv = b.querySelector('.dv');
+    if (!cv || !b.animate || reduced()) { H.openDiary(ctx, hero, () => draw()); return; }
+    b.classList.add('opening');
+    const page = H.openDiary(ctx, hero, () => draw(), { preload: true, closeAnim: diaryClose });
+    const done = () => { b.classList.remove('opening'); cv.style.visibility = ''; };
+    try { await document.fonts?.ready; } catch (e) {}
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const { fly, move, turn, inner } = bookFly(cv, page.getBoundingClientRect(), DIA); cv.style.visibility = 'hidden';
+    const D = 820, o = { duration: D, fill: 'both' };
+    inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
+    const up = page.animate([{ opacity: 0 }, { opacity: 0, offset: .72 }, { opacity: 1 }], { duration: D, fill: 'both' });
+    const out = fly.animate([{ opacity: 1 }, { opacity: 1, offset: .86 }, { opacity: 0 }], { duration: D, fill: 'both' });
+    const cleanup = () => { page.style.opacity = ''; page.style.pointerEvents = ''; page.style.animation = 'none'; fly.remove(); done(); };
+    Promise.all([up.finished, out.finished]).then(() => { up.cancel(); cleanup(); }, cleanup);
+  }
+  function diaryClose(page, finish) {
+    const cv = root.querySelector('[data-dia] .dv');
+    if (!cv || !cv.animate || reduced()) { finish(); return; }
+    const { fly, move, turn, inner } = bookFly(cv, page.getBoundingClientRect(), DIA), F = 110, D = 500, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
+    fly.style.opacity = '0';
+    fly.animate([{ opacity: 0 }, { opacity: 1 }], { duration: F, fill: 'forwards' });
+    inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
+    setTimeout(() => { finish(); const nb = root.querySelector('[data-dia] .dv'); if (nb) nb.style.visibility = 'hidden'; fly.style.opacity = '1'; }, F);
+    setTimeout(() => { fly.remove(); const nb = root.querySelector('[data-dia] .dv'); if (nb) nb.style.visibility = ''; }, F + D + 30);
   }
   // ── Pasaporte: la libreta de adelante del abanico viaja al centro y se abre igual que el álbum ──
   const topPass = () => [...root.querySelectorAll('.pvb-pas .bk')].pop() || null;

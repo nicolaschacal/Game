@@ -722,6 +722,7 @@ import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { DESTINOS, IDX } from './paper-voyager/destinos.js';
 import * as V from './paper-voyager/viaje.js';
 import * as K from './paper-voyager/cofres.js';
+import * as H from './paper-voyager/historia.js';
 import { t, applyI18n, LANGS, lang, setLang } from './paper-voyager/i18n.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
@@ -737,7 +738,7 @@ try{if(!localStorage.getItem('pv.wallet'))for(const k of Object.keys(localStorag
 // ?rico: MODO PRUEBA (solo web; apagado en la app nativa). Monedas infinitas y nada se guarda en el progreso real: lo escrito va a sessionStorage 'pvr.*' (sobrevive a recargar, no al cerrar la pestaña)
 const RICO=Q.has('rico')&&window.Capacitor?.isNativePlatform?.()!==true,RICO_N=999999;
 const store={get(k,d){try{if(RICO){if(k==='wallet')return RICO_N;const r=sessionStorage.getItem('pvr.'+k);if(r!=null)return JSON.parse(r);}const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){if(PREV)return;try{if(RICO){if(k==='wallet')wallet=RICO_N;else sessionStorage.setItem('pvr.'+k,JSON.stringify(v));return;}localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
-K.initCofres({store,Iap}); // el botón de cofres de inicio se dibuja antes de armar ctx
+K.initCofres({store,Iap});H.initHistoria(store); // el botón de cofres de inicio se dibuja antes de armar ctx
 const fmtW=n=>RICO?'\u221E':fmt(n);
 if(RICO){const b=document.createElement('div');b.id='ricoTag';b.textContent=t('rico.label');document.body.appendChild(b);}
 V.setRico(RICO);V.initViaje(store);if(Q.has('demo')){if(!V.T.traveler)V.pickTraveler('nilo');V.T.passports=[...V.REGION_ORDER];store.set('trip',V.T);if(store.get('wallet',0)<5000)store.set('wallet',5000);} // ?demo: todos los pasaportes y 5000 monedas para probar
@@ -1152,6 +1153,7 @@ $('goDouble').addEventListener('click',async()=>{if(adDouble)return;audio();adDo
 function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Nilo entra a la terminal */Music.mode='menu';Music.sync();V.roundDone();store.set('maxWorld',Math.max(store.get('maxWorld',0),V.T.trips));
  let rtNext=null,rtDone=null;if(DELAYED)store.set('delay',null); // el vuelo demorado se consume al llegar
  if(route){const R=RT;if(route.i+1<route.seq.length){route={...route,i:route.i+1};store.set('route',route);rtNext=route.seq[route.i];V.hop(rtNext);}else{rtDone=R;store.set('route',null);V.routeComplete(R.id);}} // en ruta: siguiente ciudad sin tarifa; al final, premio
+ {const hc=H.onArrive(V,WI);if(hc){const r=hc.reward||{};if(r.coins){wallet+=r.coins;store.set('wallet',wallet);}if(r.chest)K.addChest(r.chest);}} // capítulo de la historia del viajero: la escena se muestra al volver al inicio
  confetti();runner.hitPause=999;const bonus=500*(DIF.P+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
  chests=0; // los cofres de la ronda ya están guardados: se abren desde Inicio
@@ -1733,6 +1735,8 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
  get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmtW(wallet);$('mapWallet').textContent=fmtW(wallet);},
  tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((e,i)=>`<div><i>${i+1}</i>${fmt(e.s)}<small>${(THEMES[(e.w-1)%NW]?.place||t('scores.world',{n:e.w})).toUpperCase()}<br>${new Date(e.t).toLocaleDateString(lang)}</small></div>`).join(''):'<p class="note">'+t('scores.empty')+'</p>')+'</div>';}};
 ctx.Ads=Ads;K.initCofres(ctx);
+// Historia del viajero: si se abrió un capítulo en el último viaje, su escena se cuenta al volver al inicio. ?historia=N la muestra para probar.
+{const hp=H.pending(),qh=+Q.get('historia');if(hp||qh){if(hp)H.clearPending();setTimeout(()=>H.playScene(ctx,hp?.hero||'nilo',hp?.ch||qh,{replay:!hp}).then(()=>drawHome()),1300);}}
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);{const m=mechDue();if(m.length&&!carry)showMech(m,null);}}
