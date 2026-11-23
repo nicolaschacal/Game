@@ -223,3 +223,159 @@ FICHAS['Phi Phi'] = {
     adornos: ['pino', 'pagodita', 'farolPiedra'],
   };
 }
+
+// ═════════════════════════ Tanda 3: África austral ═════════════════════════
+// Cinco rehechas en su lugar de siempre (Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Ciudad del Cabo) y tres nuevas sobre la
+// ruta overland Ciudad del Cabo → Namibia → Cataratas Victoria (Sossusvlei, Swakopmund, Cataratas Victoria). Iconos distintos entre
+// vecinas: meseta con mantel de nube, volcán nevado, jirafas con la ciudad detrás, edificio de galerías con dhow, avenida de baobabs,
+// duna roja con árboles muertos, faro de costa atlántica y cortinas de agua.
+
+// ── Ciudad del Cabo: Table Mountain vista desde la bahía de la Mesa. La meseta larga y a nivel con su "mantel" de nube, Devil's Peak
+// a la izquierda (más pálido, detrás) y Lion's Head a la derecha, con las casas de colores de Bo-Kaap pintadas en su falda (sin borde
+// propio, como Gamcheon en Busan). Delante, la bahía ──
+{ const BK = ['#D8A8B0', '#DCC58E', '#9FC2B4', '#AAB6D6', '#D9A58E', '#B8CC98', '#C6B0D2'];
+  const diablo = { f: P('M0 118 Q4 96 10 78 Q14 64 19 54 Q21 51 23 54 Q27 64 32 70 Q38 74 44 76 L48 118Z', '#BCC4CE'),
+    d: P('M19 54 Q21 51 23 54 Q27 64 32 70 Q38 74 44 76 L48 118 L34 118 Q28 82 19 54Z', '#9CA6B4', ' opacity=".45"') + Ln('M8 82 Q12 66 18 56', '#D6DCE2', 1.1, ' opacity=".8"'), box: [0, 51, 48, 118] };
+  const leon = (() => { // Lion's Head (cono de cumbre redondeada) y el lomo de Signal Hill que baja hacia el mar
+    const c = '#9EAAAC', T = K.tonos(c), s = 'M70 118 Q80 106 88 96 Q93 88 96 76 Q99 66 104 66 Q109 66 111 74 Q113 84 117 90 Q119 93 120 94 L120 118Z';
+    let d = P('M104 66 Q109 66 111 74 Q113 84 117 90 Q119 93 120 94 L120 118 L112 118 Q110 98 107 82 Q106 72 104 66Z', T.som, ' opacity=".42"')
+      + Ln('M93 86 Q96 74 102 68', T.luz, 1.2, ' opacity=".8"') + Ln('M97 77 L110 76 M93 86 L113 85', T.lin, .7, ' opacity=".35"');
+    // Bo-Kaap: casitas de techo plano con pretil, en escalones sobre la falda; colores apagados hacia el papel
+    [[76, 100, 3], [82, 95, 3], [88, 90, 2]].forEach(([x0, y, n], fi) => { for (let i = 0; i < n; i++) { const x = x0 + i * 4.6, yy = y + i * 1.1 + (i % 2) * .6, cc = K.mix(BK[(i * 3 + fi * 2) % BK.length], '#F2EBDF', .3), Tc = K.tonos(cc);
+      d += R(x, yy, 4.3, 118 - yy, cc) + R(x - .2, yy - 1, 4.7, 1.2, Tc.osc, ' opacity=".7"') + R(x + .8, yy + 1.8, 1.1, 1.6, '#6E6A78', ' opacity=".7"') + R(x + 2.5, yy + 1.8, 1.1, 1.6, '#6E6A78', ' opacity=".7"') + R(x + 3.3, yy, 1, 118 - yy, Tc.som, ' opacity=".4"'); } });
+    return { f: P(s, c), d, box: [70, 66, 120, 118] }; })();
+  FICHAS['Ciudad del Cabo'] = {
+    mundo: 'MESETA', nombre: 'Ciudad del Cabo', pais: 'Sudáfrica', color: '#A8B8C6', paisaje: 'costa', suelo: 'ciudad', hora: 11, clima: 'leaves', horizonte: 'peak',
+    monumento: [
+      [diablo],
+      [K.mesa({ x0: 2, x1: 116, xa: 36, xb: 88, top: 50, c: '#A4AEBA', seed: 3, pared: .26 })],
+      [K.nube({ x0: 37, x1: 87, y: 53, h: 4, c: '#F2F0EC', seed: 2, jorobas: 8 })],
+      [leon],
+    ],
+    cAgua: '#A6C2CC',
+    composicion: { tapar: .18, laterales: .9 },
+    adornos: ['palmera', 'arbusto', 'farolMediterraneo'],
+  };
+}
+
+// ── Madagascar: la Avenida de los Baobabs al atardecer. Baobabs de Grandidier (columnas lisas con la copa corta y plana) en tres
+// capas que se alejan hacia el fondo, los de atrás más pálidos; tierra roja ──
+FICHAS['Madagascar'] = {
+  mundo: 'BAOBABS', nombre: 'Madagascar', pais: 'Avenida de los Baobabs', color: '#D8A48C', paisaje: 'desierto', hora: 17.2, clima: 'leaves', horizonte: 'dune',
+  monumento: [
+    [K.baobab({ x: 50, h: 52, w: 4, c: '#DCC2AE', hoja: '#B8BC9C', seed: 1, ramas: 5 }), K.baobab({ x: 70, h: 48, w: 3.8, c: '#DCC2AE', hoja: '#B8BC9C', seed: 2, ramas: 5 }),
+      K.baobab({ x: 10, h: 54, w: 4.2, c: '#D8BEA8', hoja: '#B4B898', seed: 3, ramas: 5 }), K.baobab({ x: 112, h: 50, w: 4, c: '#D8BEA8', hoja: '#B4B898', seed: 4, ramas: 5 }),
+      K.baobab({ x: 40, h: 44, w: 3.6, c: '#DEC6B2', hoja: '#BCC0A0', seed: 9, ramas: 4 }), K.baobab({ x: 94, h: 46, w: 3.6, c: '#DEC6B2', hoja: '#BCC0A0', seed: 10, ramas: 4 }),
+      K.baobab({ x: 20, h: 40, w: 3.4, c: '#DEC6B2', hoja: '#BCC0A0', seed: 11, ramas: 4 }), K.baobab({ x: 78, h: 42, w: 3.4, c: '#DEC6B2', hoja: '#BCC0A0', seed: 12, ramas: 4 })],
+    [K.baobab({ x: 60, h: 74, w: 5.4, c: '#CDAA90', hoja: '#9EAA82', seed: 5 }), K.baobab({ x: 102, h: 70, w: 5.2, c: '#CDAA90', hoja: '#9EAA82', seed: 6 })],
+    [K.baobab({ x: 28, h: 104, w: 7.6, c: '#BE9478', hoja: '#8C9C70', seed: 7 }), K.baobab({ x: 84, h: 96, w: 7.2, c: '#C29A7E', hoja: '#8C9C70', seed: 8 })],
+  ],
+  composicion: { tapar: .24, tamano: .86, laterales: 1.3 },
+  adornos: ['acacia', 'rocaArena', 'farolDesierto'], // sin el adorno 'baobab' (dos bolitas verdes: arbolito de bolita)
+};
+
+// ── Kilimanjaro: el Kibo visto desde la sabana de Amboseli. Cumbre ancha y casi plana con el casquete de glaciares, el Mawenzi
+// dentado a la izquierda, la franja de nubes que ciñe la montaña y dos acacias paraguas al pie. Sabana llana delante (lomas, no picos) ──
+{ const mawenzi = { f: P('M0 118 L0 86 Q5 78 9 70 L12 62 L15 66 L18 56 L21 61 L24 54 L27 63 Q31 74 40 90 L46 118Z', '#B8B0C2'),
+    d: P('M24 54 L27 63 Q31 74 40 90 L46 118 L34 118 Q30 88 24 54Z', '#9890A6', ' opacity=".45"') + P('M12 62 L15 66 L18 56 L21 61 L24 54 L23.4 60 L20.6 64 L18.4 61 L15.4 69 L12.6 66Z', '#EEF0F2', ' opacity=".85"'), box: [0, 54, 46, 118] };
+  FICHAS['Kilimanjaro'] = {
+    mundo: 'SABANA', nombre: 'Kilimanjaro', pais: 'Tanzania', color: '#CBB78E', paisaje: 'desierto', hora: 9.5, clima: 'leaves', horizonte: 'dune',
+    monumento: [
+      [mawenzi],
+      [K.volcan({ x0: 0, x1: 120, xa: 42, xb: 92, top: 46, c: '#A49CB0', nieve: '#F0F1F2', bajaNieve: 11, seed: 2 })],
+      [K.nube({ x0: 30, x1: 76, y: 84, h: 5, c: '#F2EEE6', seed: 4, jorobas: 5 }), K.nube({ x0: 84, x1: 116, y: 80, h: 4.5, c: '#F2EEE6', seed: 5, jorobas: 4 })],
+      [K.acacia({ x: 24, h: 30, w: 15, c: '#7E6A58', copa: '#93A06E', seed: 1 }), K.acacia({ x: 98, h: 24, w: 11, c: '#7E6A58', copa: '#98A472', seed: 2 })],
+    ],
+    composicion: { tapar: .16 },
+    adornos: ['acacia', 'mata', 'farolDesierto'],
+  };
+}
+
+// ── Nairobi: el Parque Nacional de Nairobi, la única sabana con rascacielos detrás. Jirafas (una comiendo de la acacia) y,
+// pálida al fondo, la ciudad con el Kenyatta International Convention Centre (torre cilíndrica con su sombrero) ──
+{ const cd = '#C4C2CE', T = K.tonos(cd);
+  const kicc = (() => { const x = 50, w = 6; // torre cilíndrica con aletas verticales, platillo y sombrero cónico arriba
+    const f = R(x - w, 40, w * 2, 78, cd) + P(`M${x - w - 4} 40 L${x + w + 4} 40 L${x + w + 2} 36.6 L${x - w - 2} 36.6Z`, cd) + P(`M${x - w + 1} 36.8 L${x} 29 L${x + w - 1} 36.8Z`, K.shade(cd, .12));
+    let d = ''; for (let i = 1; i < 6; i++) d += R(x - w + i * w * 2 / 6 - .35, 42, .7, 76, T.lin, ' opacity=".45"');
+    for (let y = 46; y < 116; y += 4.5) d += R(x - w, y, w * 2, .7, T.luz, ' opacity=".6"');
+    d += R(x + w * .3, 40, w * .7, 78, T.som, K.SOMBRA) + R(x - w - 4, 39.4, w * 2 + 8, .9, T.osc, ' opacity=".5"');
+    return { f, d, box: [x - w - 4, 29, x + w + 4, 118] }; })();
+  const torres = [[6, 24, 72, '#C8C6D0'], [26, 40, 58, '#C0C0CC'], [62, 76, 52, '#CACAD2'], [78, 92, 66, '#C2C2CC'], [96, 114, 76, '#CACAD2']]
+    .map(([x0, x1, y0, c]) => K.fachada({ x0, x1, y0, c, pisos: Array.from({ length: Math.round((118 - y0) / 9) }, () => ({ tipo: 'ventanas', n: Math.round((x1 - x0) / 4) })), cornisa: true, sombra: .22 }));
+  FICHAS['Nairobi'] = {
+    mundo: 'SABANA', nombre: 'Nairobi', pais: 'Kenia', color: '#CDBB8C', paisaje: 'desierto', hora: 15, clima: 'leaves', horizonte: 'city',
+    monumento: [
+      [...torres, kicc],
+      [K.acacia({ x: 94, h: 52, w: 24, c: '#7A6452', copa: '#8E9C68', seed: 3 })],
+      [K.jirafa({ x: 76, s: .86, dir: 1, cuello: 1, c: '#D6AE7C', mancha: '#A47250' }), K.jirafa({ x: 34, s: .74, dir: -1, c: '#D9B482', mancha: '#A87652' })],
+    ],
+    composicion: { tapar: .14 },
+    adornos: ['acacia', 'jirafa', 'farolDesierto'],
+  };
+}
+
+// ── Zanzíbar: Stone Town desde el mar. La Casa de las Maravillas (Beit al-Ajaib): bloque blanco de cuatro pisos de galerías con
+// columnas de hierro y su torre del reloj, palmeras a los lados y un dhow de vela latina navegando delante, con su reflejo ──
+FICHAS['Zanzíbar'] = {
+  mundo: 'ISLA', nombre: 'Zanzíbar', pais: 'Tanzania', color: '#9CC6C4', paisaje: 'costa', suelo: 'costa', hora: 16, clima: 'bubbles', horizonte: 'dune',
+  monumento: [
+    [K.palmera({ x: 12, h: 66, lean: 5, ct: '#9A8068', cf: '#7E9E76' }), K.palmera({ x: 110, h: 58, lean: -5, ct: '#9A8068', cf: '#7E9E76' })],
+    [K.casas({ x0: 2, defs: [{ w: 13, h: 30, c: '#E2D6C2' }, { w: 11, h: 24, c: '#D8CCB8' }], techo: 'plano', balcon: false, farolitos: false, cPersiana: '#8A9C98' }),
+      K.casas({ x0: 98, defs: [{ w: 11, h: 26, c: '#D8CCB8' }, { w: 11, h: 32, c: '#E2D6C2' }], techo: 'plano', balcon: false, farolitos: false, cPersiana: '#8A9C98' })],
+    [K.veranda({ x0: 20, x1: 100, y0: 56, pisos: 3, c: '#ECE4D4', cSombra: '#8E9690', oSombra: .5, col: 16, wCol: 1.3 })],
+    [K.torreReloj({ x: 60, w: 14, top: 26, c: '#E8E0D0', techo: 'plano', ventanas: true, yReloj: 40 })], // la torre del reloj sale de la fachada, al centro
+  ],
+  cAgua: '#A2CCCA',
+  composicion: { tapar: .2, laterales: 1.25, aguaAlto: .95, enAgua: ({ y0 }) => {
+    const wl = y0 + 9, b = K.dhow({ x: 86, y: wl, s: .5, c: '#8E6A50', vela: '#E8DECA' });
+    return { bajo: `<g opacity=".22" transform="translate(0 ${f1(2 * wl)}) scale(1 -1)">${b.f}</g>`, f: b.f, d: b.d + Ln(`M66 ${f1(wl + 2)} h12 M90 ${f1(wl + 3.6)} h12 M30 ${f1(wl + 1)} h10`, '#E8F4F0', 1, ' opacity=".9"') }; } },
+  adornos: ['palmeraTropical', 'estrella', 'farolTiki'],
+};
+
+// ═════════════ Nuevas: ruta overland Ciudad del Cabo → Namibia → Cataratas Victoria ═════════════
+
+// ── Sossusvlei: Deadvlei al amanecer. La gran duna roja (Big Daddy) con la cresta filosa en S, una cara al sol y la otra en sombra;
+// detrás dunas más pálidas y delante los árboles muertos de acacia sobre la salina blanca. Solo: la salina es el suelo mismo
+// (paleta: suelo claro de arcilla), sin lomas delante: en Deadvlei la duna sube directo desde la salina ──
+FICHAS['Sossusvlei'] = {
+  mundo: 'DUNAS', nombre: 'Sossusvlei', pais: 'Namibia', color: '#D8BCA4', paisaje: 'desierto', hora: 9, clima: 'sand', horizonte: 'dune',
+  paleta: { around: '#E6DCCB', ground: '#EDE4D4', hill: '#D2C4AE' },
+  monumento: [
+    [K.duna({ x0: 0, x1: 84, xc: 56, top: 60, c: '#DEA684', seed: 1 }), K.duna({ x0: 64, x1: 120, xc: 98, top: 58, c: '#DEA684', seed: 2 })],
+    [K.duna({ x0: 4, x1: 118, xc: 82, top: 32, c: '#D6885A', sombra: '#A86450', seed: 3 })],
+    [K.arbolSeco({ x: 28, h: 46, c: '#6E5852', seed: 1 }), K.arbolSeco({ x: 76, h: 34, c: '#725C56', seed: 2, abre: .85 }), K.arbolSeco({ x: 104, h: 24, c: '#76605A', seed: 3 })],
+  ],
+  composicion: { solo: true, tamano: 1.08 },
+  adornos: ['duna', 'rocaArena', 'farolDesierto'],
+};
+
+// ── Swakopmund: la costa del Atlántico donde el Namib llega al mar. El faro blanco de punta roja (1902), la torre del Woermannhaus
+// y las casas coloniales alemanas de hastial, palmeras; delante el Atlántico frío y gris-verde ──
+{ const casa = (x, w, h, c, tc = '#B48A78') => K.casas({ x0: x, defs: [{ w, h, c }], techo: 'gablete', cTecho: tc, balcon: false, farolitos: false, cPersiana: '#8A9AA4' });
+  FICHAS['Swakopmund'] = {
+    mundo: 'COSTA', nombre: 'Swakopmund', pais: 'Namibia', color: '#B4C2C4', paisaje: 'costa', suelo: 'costa', hora: 11, clima: 'bubbles', horizonte: 'dune',
+    monumento: [
+      [K.torreReloj({ x: 26, w: 11, top: 32, c: '#E2D2B4', techo: 'pira', cTecho: '#A88474', reloj: false })],
+      [casa(4, 16, 40, '#E6D8BC'), casa(32, 20, 34, '#DCCCB4', '#A07C6C'), K.faro({ x: 72, w: 14, top: 12, c: '#EEE8DE', banda: '#C08070', bandas: [[0, .1]] }),
+        K.palmera({ x: 98, h: 50, lean: -4, ct: '#9A8068', cf: '#869E7A' }), casa(104, 14, 26, '#E2D4BC')],
+    ],
+    cAgua: '#A8C0C0',
+    composicion: { tapar: .18, laterales: 1.1, aguaAlto: .6 },
+    adornos: ['palmera', 'velero', 'farolMediterraneo'],
+  };
+}
+
+// ── Cataratas Victoria (Mosi-oa-Tunya, "el humo que truena"): la pared de basalto con las cortinas de agua separadas por
+// promontorios, selva en el borde y la columna de bruma que sube del cañón con un arco iris tenue ──
+{ const bruma = K.nube({ x0: 14, x1: 106, y: 108, h: 13, c: '#ECEEEA', seed: 7, jorobas: 7 });
+  bruma.d += Ln('M22 104 Q60 56 98 104', '#D8B8A8', 1.4, ' opacity=".45"') + Ln('M25 104 Q60 60 95 104', '#D8D4A8', 1.4, ' opacity=".45"') + Ln('M28 104 Q60 64 92 104', '#A8C4C8', 1.4, ' opacity=".4"');
+  FICHAS['Cataratas Victoria'] = {
+    mundo: 'CATARATAS', nombre: 'Cataratas Victoria', pais: 'Zimbabue', color: '#9DB89A', paisaje: 'selva', hora: 13, clima: 'leaves', horizonte: 'dune',
+    monumento: [
+      [K.cascada({ x0: 0, x1: 120, top: 48, c: '#A89A8C', agua: '#E6ECEC', veg: '#86A276', cortinas: [[24, 52], [58, 82], [88, 98]], seed: 1, laderas: .19 })],
+      [bruma],
+    ],
+    composicion: { tapar: .2, tamano: .84 },
+    adornos: ['liana', 'helecho', 'farolSelva'],
+  };
+}

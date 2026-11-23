@@ -137,9 +137,6 @@ L.kutubia = cut(
 L.petra = cut(
   `<path d="M6 110 L6 22 Q30 6 60 14 Q92 4 114 22 L114 110Z" fill="#D98C6A"/>`,
   `<path d="M14 30 Q22 60 14 96 M104 28 Q96 60 106 98 M26 18 Q30 40 24 58" stroke="#C0714F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M26 62 L60 48 L94 62Z" fill="#F0B592"/><rect x="28" y="62" width="64" height="5" fill="#F0B592"/><rect x="28" y="67" width="64" height="37" fill="#B8684A"/><g fill="#F0B592">${[30, 41, 52, 63, 74, 85].map(x => `<rect x="${x}" y="67" width="5" height="37"/>`).join('')}<rect x="32" y="28" width="16" height="20" /><rect x="72" y="28" width="16" height="20"/><path d="M30 28 L48 28 L48 22Z M90 28 L72 28 L72 22Z"/><rect x="53" y="28" width="14" height="20"/><path d="M50 28 L60 14 L70 28Z"/></g><path d="M55 104 L55 82 L65 82 L65 104Z" fill="#5E2F22"/><rect x="24" y="104" width="72" height="6" fill="#F0B592"/><g fill="#B8684A"><rect x="38" y="33" width="4" height="12"/><rect x="78" y="33" width="4" height="12"/><rect x="58" y="33" width="4" height="12"/></g>`);
-L.kili = cut(
-  `<path d="M0 110 Q28 62 44 44 L76 44 Q92 62 120 110Z" fill="#8E7BA8"/><path d="M0 110 Q60 94 120 110Z" fill="#D9BC6A"/><rect x="24" y="80" width="4" height="26" fill="#6B4A2E"/><path d="M6 82 Q14 68 26 70 Q40 66 48 82 Q28 76 6 82Z" fill="#5E8A3C"/>`,
-  `<path d="M39 50 L44 44 L76 44 L81 50 L74 58 L67 51 L59 60 L51 51 L45 58Z" fill="#FFFFFF"/><path d="M76 44 Q92 62 120 110 L96 110 Q84 70 70 52Z" fill="#74628E" opacity=".5"/><path d="M26 86 L18 78 M26 88 L34 78" stroke="#6B4A2E" stroke-width="2.5" stroke-linecap="round"/>`);
 const prang = (x, top, w) => `<path d="M${x - w} 104 L${x - w * .7} ${top + (104 - top) * .55} L${x - w * .45} ${top + (104 - top) * .25} Q${x} ${top - 8} ${x + w * .45} ${top + (104 - top) * .25} L${x + w * .7} ${top + (104 - top) * .55} L${x + w} 104Z" fill="#F1EADC"/>`;
 L.watarun = cut(
   prang(22, 62, 9) + prang(98, 62, 9) + prang(39, 48, 10) + prang(81, 48, 10) + prang(60, 14, 15) + `<path d="M6 110 L10 102 L110 102 L114 110Z" fill="#E3D8C4"/>`,
@@ -161,26 +158,12 @@ L.bali = cut(
   `<path d="M0 110 Q60 98 120 110Z" fill="#64A050"/><path d="${candi}" fill="#8E857C"/><g transform="translate(120 0) scale(-1 1)"><path d="${candi}" fill="#8E857C"/></g><path d="M50 110 L54 100 L66 100 L70 110Z" fill="#B8AEA2"/>`,
   `<g fill="#C96A3C"><rect x="25" y="82" width="29" height="4"/><rect x="31" y="64" width="23" height="4"/><rect x="37" y="46" width="17" height="4"/><rect x="43" y="28" width="11" height="4"/><rect x="66" y="82" width="29" height="4"/><rect x="66" y="64" width="23" height="4"/><rect x="66" y="46" width="17" height="4"/><rect x="66" y="28" width="11" height="4"/></g><path d="M20 97 h34 M66 97 h34" stroke="#6E665E" stroke-width="2.5"/><path d="M50 110 L52 105 L68 105 L70 110Z" fill="#9A9084"/><path d="M12 96 L12 70" stroke="#6B4A2E" stroke-width="2.5"/><path d="M4 72 Q12 60 20 72Z M6 80 Q12 72 18 80Z" fill="#F2B937"/><path d="M108 96 L108 70" stroke="#6B4A2E" stroke-width="2.5"/><path d="M100 72 Q108 60 116 72Z M102 80 Q108 72 114 80Z" fill="#F2B937"/>`);
 
-const baobab = `<path d="M50 110 Q45 62 52 30 L68 30 Q75 62 70 110Z" fill="#B98A62"/><path d="M52 32 L40 20 M56 30 L52 14 M64 30 L68 14 M68 32 L80 20 M60 30 L60 12" stroke="#B98A62" stroke-width="5" stroke-linecap="round"/><path d="M32 22 Q36 8 50 12 Q60 4 70 12 Q84 8 88 22 Q74 16 60 20 Q46 16 32 22Z" fill="#5E8A3C"/>`;
-L.baobabs = `<svg viewBox="0 0 120 120"><g stroke="${CREAM}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M0 110 Q60 98 120 110Z" fill="#C96A3C"/><g transform="translate(-22 44) scale(.6)">${baobab}</g><g transform="translate(70 50) scale(.55)">${baobab}</g>${baobab}</g><path d="M0 110 Q60 98 120 110Z" fill="#C96A3C"/><g transform="translate(-22 44) scale(.6)">${baobab}</g><g transform="translate(70 50) scale(.55)">${baobab}</g>${baobab}<path d="M62 30 L68 30 Q75 62 70 110 L62 110 Q66 62 62 30Z" fill="#9A6E4A" opacity=".55"/><path d="M54 50 Q56 70 53 96 M60 44 Q61 70 60 100" stroke="#9A6E4A" stroke-width="2" fill="none"/></svg>`;
 L.monument = cut(
   `<path d="M0 110 Q60 98 120 110Z" fill="#E0A070"/><path d="M6 108 L10 88 L20 80 L22 46 L40 46 L42 80 L52 88 L56 108Z" fill="#C0603C"/><rect x="44" y="60" width="7" height="22" fill="#C0603C"/><path d="M64 108 L68 90 L78 82 L80 54 L88 54 L88 34 L102 34 L104 82 L112 90 L116 108Z" fill="#C0603C"/>`,
   `<path d="M32 46 L40 46 L42 80 L52 88 L56 108 L40 108 L36 84 L34 80Z M96 34 L102 34 L104 82 L112 90 L116 108 L100 108 L98 84Z" fill="#9E4A2E" opacity=".6"/><path d="M22 58 h18 M22 70 h19 M12 94 h40 M80 66 h23 M88 46 h14 M70 96 h42" stroke="#D98C6A" stroke-width="2.5" stroke-linecap="round"/><path d="M0 110 Q60 102 120 110Z" fill="#E8B488"/>`);
 
 // ── Monumentos rehechos (tanda 3): mismo oficio que Kioto, Moscú o París: formas planas, sombra de papel a media opacidad y pocos recortes ──
 const bar = (x1, y1, x2, y2, w) => { const dx = x2 - x1, dy = y2 - y1, l = Math.hypot(dx, dy) || 1, nx = -dy / l * w / 2, ny = dx / l * w / 2; return `M${(x1 + nx).toFixed(1)} ${(y1 + ny).toFixed(1)} L${(x2 + nx).toFixed(1)} ${(y2 + ny).toFixed(1)} L${(x2 - nx).toFixed(1)} ${(y2 - ny).toFixed(1)} L${(x1 - nx).toFixed(1)} ${(y1 - ny).toFixed(1)}Z`; };
-// Kilimanjaro: macizo con el Kibo de cumbre plana y nevada, el Mawenzi irregular, sabana, jirafa y acacia
-const jirafa = (x, y, k = 1) => `<g transform="translate(${x} ${y}) scale(${k})"><path d="M0 0 L0 -22 L3 -22 L3 0Z M14 0 L14 -22 L17 -22 L17 0Z M-2 -24 Q8 -30 20 -24 L18 -14 L0 -14Z M17 -22 L21 -48 L26 -46 L22 -20Z" fill="#E0B05A"/><ellipse cx="25" cy="-50" rx="5.5" ry="3.4" fill="#E0B05A"/></g>`;
-const jirafaD = (x, y, k = 1) => `<g transform="translate(${x} ${y}) scale(${k})"><g fill="#A8702E"><circle cx="6" cy="-21" r="2.2"/><circle cx="13" cy="-19" r="2"/><circle cx="21" cy="-34" r="1.6"/><circle cx="23" cy="-42" r="1.5"/></g><path d="M23 -53 l-1 -5 M26 -53 l1 -5" stroke="#8A5A24" stroke-width="1.4" stroke-linecap="round"/><path d="M14 -22 L14 0 L17 0 L17 -22Z" fill="#B88A3E" opacity=".6"/></g>`;
-L.kili = cut(
-  `<path d="M10 110 Q20 84 26 52 L32 60 L36 48 L42 66 Q40 90 52 110Z" fill="#8E81A6"/><path d="M10 110 Q30 100 42 70 L52 62 L58 46 L90 46 L98 58 Q110 90 112 110Z" fill="#9A8DB0"/>`
-  + `<path d="M94 110 L96 78 L90 66 L94 64 L99 72 L104 62 L108 65 L103 78 L105 110Z" fill="#6B4A2E"/><path d="M80 66 Q92 54 110 58 Q114 64 108 68 Q94 62 80 66Z" fill="#5E8A3C"/>` + jirafa(10, 109, .85),
-  `<path d="M58 46 L90 46 L86 52 L82 49 L76 58 L70 51 L64 60 L60 52 L54 62 L52 62Z" fill="#FFFFFF"/><path d="M58 46 L52 62 L44 60 L47 53Z" fill="#F0F2F8"/><path d="M90 46 L98 58 Q110 90 112 110 L100 110 Q96 80 84 58Z" fill="#74628E" opacity=".45"/><path d="M42 70 L52 62 L58 46 L50 64 L44 80Z" fill="#B7ABCB" opacity=".5"/><path d="M10 110 Q20 84 26 52 L30 60 L24 80Z" fill="#6E6286" opacity=".4"/><path d="M26 52 L28 58 L24 56Z M36 48 L38 54 L34 53Z" fill="#FFFFFF"/>` + jirafaD(10, 109, .85));
-// Avenida de los Baobabs: troncos en botella con copa plana de hojas, a distinta escala
-const bao = (x, k) => `<g transform="translate(${x} 110) scale(${k})"><path d="M-15 0 Q-20 -10 -15 -30 Q-11 -50 -10 -64 L10 -64 Q11 -50 15 -30 Q20 -10 15 0Z" fill="#B98A62"/><path d="M-9 -62 L-20 -80 L-15 -82 L-6 -66Z M-2 -64 L-4 -88 L2 -88 L3 -64Z M7 -64 L18 -84 L23 -81 L11 -62Z" fill="#B98A62"/><path d="M-10 -64 L-8 -60 L8 -60 L10 -64Z" fill="#B98A62"/></g>`;
-const baoD = (x, k) => `<g transform="translate(${x} 110) scale(${k})"><path d="M2 -64 L10 -64 Q11 -50 15 -30 Q20 -10 15 0 L4 0 Q9 -30 2 -64Z" fill="#8A6040" opacity=".55"/><path d="M-5 -58 Q-7 -36 -9 -8 M-1 -60 Q-1 -34 -2 -6" stroke="#8A6040" stroke-width="1.6" fill="none"/><g fill="#6FA85A"><ellipse cx="-19" cy="-83" rx="9" ry="4.4"/><ellipse cx="0" cy="-90" rx="9" ry="4.4"/><ellipse cx="21" cy="-85" rx="9" ry="4.4"/></g><g fill="#4F8040" opacity=".6"><ellipse cx="-17" cy="-80" rx="6" ry="2.4"/><ellipse cx="23" cy="-82" rx="6" ry="2.4"/></g></g>`;
-L.baobabs = cut(`<path d="M0 110 Q60 100 120 110Z" fill="#C96A3C"/>` + bao(12, .5) + bao(106, .45) + bao(82, .78) + bao(40, 1) + `<g transform="translate(-19 -83) translate(40 110)"><ellipse cx="0" cy="0" rx="9" ry="4.4" fill="#6FA85A"/></g>`,
-  baoD(12, .5) + baoD(106, .45) + baoD(82, .78) + baoD(40, 1) + `<path d="M0 110 Q60 100 120 110 L120 108 Q60 98 0 108Z" fill="#E0A070" opacity=".7"/><path d="M26 110 Q52 104 76 110Z" fill="#E8B386" opacity=".6"/>`);
 // Wat Arun: prang central de cuatro cuerpos con terrazas, corona con aguja, y cuatro prangs menores
 const prang2 = (x, base, h, hw) => {
   const st = [[0, .3, 1, .82], [.3, .56, .72, .56], [.56, .76, .5, .36]]; let s = '', d = '', dots = '';
@@ -257,28 +240,6 @@ M.uluru = cut(
   + `<path d="M10 104 Q14 96 20 104Z M30 104 Q34 98 40 104Z M86 104 Q92 96 98 104Z" fill="#B8B45A"/>`,
   `<path d="M14 74 Q30 64 60 64 Q92 64 106 72 Q84 68 60 69 Q34 69 14 74Z" fill="#E07A52"/><path d="M106 72 Q116 82 118 106 L100 106 Q102 84 94 70Z" fill="#9A3A28" opacity=".5"/>`
   + `<path d="M24 72 Q22 88 24 104 M40 67 Q38 86 42 104 M58 66 Q56 86 60 104 M76 66 Q78 86 74 104 M92 68 Q94 86 90 104" stroke="#A8442E" stroke-width="2" fill="none" opacity=".6"/>`);
-// 13 Nairobi: dos jirafas y una acacia de copa plana; perfil de la ciudad (torre KICC) al fondo
-const gir = (tx, s, flip) => `<g transform="translate(${tx} 0) scale(${flip ? -s : s} ${s})"><path d="M-14 -40 L-14 0 L-7 0 L-6 -40Z M12 -40 L14 0 L21 0 L20 -42Z" fill="#D9963A"/><path d="M-6 -40 L-4 0 L1 0 L0 -40Z M6 -40 L6 0 L11 0 L12 -40Z" fill="#C4842E"/><path d="M-18 -46 Q-18 -56 -6 -56 L16 -58 Q26 -56 26 -48 Q26 -38 16 -38 L-8 -38 Q-18 -38 -18 -46Z" fill="#E6A84A"/><path d="M14 -52 L26 -92 L34 -90 L24 -48Z" fill="#E6A84A"/><path d="M24 -96 L40 -92 L38 -86 L26 -88Z" fill="#E6A84A"/></g>`;
-M.nairobi = cut(
-  `<rect x="54" y="62" width="10" height="44" fill="#B4A6C8"/><path d="M48 64 Q59 56 70 64Z" fill="#B4A6C8"/><rect x="70" y="76" width="12" height="30" fill="#C4B8D6"/><rect x="40" y="80" width="12" height="26" fill="#C4B8D6"/>`
-  + `<path d="M20 110 L22 64 L12 54 L15 52 L24 60 L32 50 L35 52 L26 64 L28 110Z" fill="#6B4A2E"/><path d="M-2 50 Q4 40 24 38 Q44 40 52 48 Q40 54 24 54 Q6 54 -2 50Z" fill="#5E8A3C"/>`
-  + `<g transform="translate(0 110)">${gir(62, .62, false)}${gir(98, .82, true)}</g>`,
-  win(56, 68, 2, 5, '#9A8CB0', 4, 7, 2, 3) + win(73, 80, 2, 3, '#A89CBE', 5, 7, 2, 3) + `<path d="M4 48 Q24 42 46 47" stroke="#86B456" stroke-width="3" fill="none" stroke-linecap="round"/>`
-  + `<g transform="translate(0 110)">` + [[62, .62, 1], [98, .82, -1]].map(([tx, s, f]) => `<g transform="translate(${tx} 0) scale(${f * s} ${s})" fill="#9A5A2A"><circle cx="-10" cy="-48" r="3.4"/><circle cx="2" cy="-50" r="3.8"/><circle cx="14" cy="-46" r="3.2"/><circle cx="-2" cy="-42" r="2.6"/><circle cx="24" cy="-66" r="2.6"/><circle cx="28" cy="-80" r="2.2"/><circle cx="21" cy="-54" r="2.4"/><circle cx="36" cy="-91" r="1.4" fill="#2B2236"/></g>`).join('') + `</g>`);
-// 14 Zanzíbar: casa de Stone Town con su puerta tallada. SIN mar ni suelo propios:
-// el pie de la casa lo tapan las lomas del destino (FORE)
-M.zanzibar = cut(
-  `<path d="M50 120 L50 34 L56 34 L56 30 L62 30 L62 34 L70 34 L70 30 L76 30 L76 34 L90 34 L90 30 L96 30 L96 34 L104 34 L104 30 L110 30 L110 34 L116 34 L116 120Z" fill="#EDE4D2"/><path d="M62 120 L62 56 Q83 36 104 56 L104 120Z" fill="#8A5A34"/><rect x="68" y="62" width="30" height="58" fill="#6B4228"/>`,
-  `<path d="M62 56 Q83 36 104 56 L100 58 Q83 42 66 58Z" fill="#A8743E"/><path d="M83 62 L83 120" stroke="#4A2C18" stroke-width="1.6"/>` + win(71, 66, 5, 6, '#F2C14E', 5.4, 7.4, 2, 2)
-  + `<path d="M68 62 L98 62" stroke="#A8743E" stroke-width="2"/><path d="M50 38 L116 38 L116 41 L50 41Z" fill="#D9CDB4"/><path d="M108 34 L116 34 L116 120 L108 120Z" fill="#D2C6AE" opacity=".6"/>`);
-// 15 Ciudad del Cabo: Table Mountain con su "mantel" de nube y casas de Bo-Kaap al pie. SIN fondo ni suelo propios: la montaña baja en
-// laderas hasta el borde y las lomas del destino (FORE) tapan su pie y el de las casas
-const boc = ['#F29BB8', '#F2C14E', '#6FB5A0', '#8FA8E0', '#E8735A', '#B5D96A', '#C9A8E0'];
-M.cabo = cut(
-  `<path d="M-2 104 Q4 90 10 74 Q14 62 18 60 L22 48 L92 46 Q98 46 102 56 Q106 62 110 60 Q116 62 118 72 Q120 86 122 104 L122 120 L-2 120Z" fill="#8E9FB2"/><path d="M21 48 L93 46 L94 50 Q60 56 22 58Z" fill="#B2C0CE"/>`
-  + boc.slice(0, 6).map((c, i) => `<rect x="${24 + i * 12}" y="${86 - (i * 7 % 3) * 3}" width="12" height="${34 + (i * 7 % 3) * 3}" fill="${c}"/>`).join(''),
-  `<path d="M92 46 Q98 46 102 56 L104 74 L96 70 Q96 56 90 50Z M110 60 Q116 62 118 72 Q120 86 122 104 L112 96 Q114 76 108 64Z" fill="#6E7C8A" opacity=".45"/><path d="M30 54 L32 74 M46 52 L44 70 M62 52 L64 72 M78 52 L76 70 M12 76 L14 90" stroke="#7E8C9A" stroke-width="2" stroke-linecap="round"/>`
-  + boc.slice(0, 6).map((c, i) => { const y = 86 - (i * 7 % 3) * 3, x = 24 + i * 12; return `<rect x="${x}" y="${y}" width="12" height="2.2" fill="${shade(c, .25)}"/><rect x="${x + 2.4}" y="${y + 5}" width="3" height="5" fill="#FFF8EE"/><rect x="${x + 6.6}" y="${y + 5}" width="3" height="5" fill="#FFF8EE"/>`; }).join(''));
 // 16 Chefchaouen: casas azules escalonadas en la ladera del Rif, escalera y macetas. SIN suelo propio: ladera y casas bajan hasta el borde y las lomas del destino (FORE) tapan su pie
 const azules = [[4, 78, 22, 42, '#7FAEE6'], [24, 66, 22, 54, '#5B8FD0'], [44, 56, 24, 64, '#A9CCF2'], [66, 66, 20, 54, '#4A78C0'], [84, 76, 32, 44, '#7FAEE6'], [30, 92, 26, 28, '#A9CCF2'], [60, 90, 30, 30, '#5B8FD0']];
 M.chaouen = cut(
@@ -319,8 +280,8 @@ const TABLA = [
   ['ISLA', 'Bali', 'Indonesia', L.bali, '#E0F2E0', '#BCE0BC', '#94C894', '#7FB86A', '#98C87C', '#64A050', 'peak', 'petals', 11, 'tropical loto'],
   ['MÁRMOL', 'Agra', 'India', L.taj, '#FBE8DC', '#F4CFC0', '#E8B4A8', '#E6D7C4', '#F0E6DA', '#D6C6B4', 'dune', 'petals', 10, 'desierto chhatri'],
   ['CIUDAD', 'Dubái', 'Emiratos Árabes', L.burj, '#FBEBD0', '#F2D6A8', '#E4BE88', '#D8C8A8', '#A39C92', '#827B72', 'city', 'sand', 13.5, 'moderna !palmera'],
-  ['BAOBABS', 'Madagascar', 'Avenida de los Baobabs', L.baobabs, '#FBE2D0', '#F4C0A8', '#E49C88', '#D98A5C', '#E0A070', '#B8744C', 'dune', 'leaves', 15.5, 'sabana !baobab'],
-  ['SABANA', 'Kilimanjaro', 'Tanzania', L.kili, '#FBEFC8', '#F4DC9A', '#E8C470', '#D9BC6A', '#E3CC84', '#B89C54', 'dune', 'sand', 14, 'sabana'],
+  fila(FICHAS['Madagascar']), // 10 · ficha + kit (fichas-ciudades.js): Avenida de los Baobabs
+  fila(FICHAS['Kilimanjaro']), // 11 · ficha + kit: el Kibo desde la sabana
   ['CAÑÓN', 'Petra', 'Jordania', L.petra, '#FBE0D0', '#F2C0A4', '#E09C80', '#E0A888', '#E8B89A', '#C8906E', 'peak', 'sand', 13, 'desierto'],
   ['DESIERTO', 'El Cairo', 'Egipto', L.piramides, '#F6E2B4', '#EDD09A', '#DDB877', '#E3C98C', '#EBD49C', '#D9BC7C', 'dune', 'sand', 13, 'desierto'],
   ['CÚPULAS', 'Estambul', 'Turquía', L.sofia, '#FBE6D8', '#F2CDBA', '#E0AE9C', '#D6C2A8', '#C2B49C', '#A0927A', 'city', 'leaves', 15.5, 'mediterraneo !cipres'],
@@ -368,21 +329,24 @@ const TABLA = [
   ['CANALES', 'San Petersburgo', 'Rusia', NM.peter, '#E8F0F6', '#CCDCEA', '#AFC4DA', '#C9C2B4', '#A8A098', '#88807A', 'city', 'leaves', 13, ['castano', 'arbusto', 'farolEuropeo']],
   fila(FICHAS['Melbourne']), // ficha + kit (fichas-ciudades.js)
   ['DESIERTO', 'Uluru', 'Australia', NM.uluru, '#FBDCC8', '#F2B898', '#E0927A', '#D98A5C', '#E0A070', '#B8744C', 'dune', 'sand', 18.3, ['acacia', 'mata', 'farolDesierto']],
-  ['SABANA', 'Nairobi', 'Kenia', NM.nairobi, '#FBEFC8', '#F4DC9A', '#E8C470', '#D9BC6A', '#E3CC84', '#B89C54', 'dune', 'sand', 14, ['acacia', 'jirafa', 'farolDesierto']],
-  ['ISLA', 'Zanzíbar', 'Tanzania', NM.zanzibar, '#DDF3F5', '#B4E0E4', '#8CCBD4', '#F2E3B5', '#F4E6BC', '#E2CE97', 'dune', 'bubbles', 16, ['palmeraTropical', 'estrella', 'farolTiki']],
-  ['MESETA', 'Ciudad del Cabo', 'Sudáfrica', NM.cabo, '#E2EEF6', '#C2D6E6', '#A2BCD4', '#C9C2B4', '#C2B49C', '#A0927A', 'peak', 'leaves', 11, ['palmera', 'arbusto', 'farolMediterraneo']],
+  fila(FICHAS['Nairobi']), // 58 · ficha + kit: jirafas con la ciudad detrás
+  fila(FICHAS['Zanzíbar']), // 59 · ficha + kit: Casa de las Maravillas y dhow
+  fila(FICHAS['Ciudad del Cabo']), // 60 · ficha + kit: Table Mountain
   ['PUEBLO AZUL', 'Chefchaouen', 'Marruecos', NM.chaouen, '#E6F0FA', '#C6DAF0', '#A6C2E4', '#D6C8B0', '#C6D4E6', '#8FA8C8', 'peak', 'petals', 14, ['olivo', 'macetaAzul', 'farolDesierto']],
   fila(FICHAS['San Francisco']), // ficha + kit (fichas-ciudades.js)
   ['CIUDAD', 'Ciudad de México', 'México', NM.cdmx, '#F6E4EC', '#E8C8D8', '#D4A8C2', '#C9C2B4', '#C2B49C', '#A0927A', 'city', 'petals', 15, ['jacaranda', 'cactus', 'farolEuropeo']],
   ['CANALES', 'Ámsterdam', 'Países Bajos', NM.amsterdam, '#E6ECF2', '#C8D2DE', '#A8B8CA', '#B4B8BE', '#A8A098', '#88807A', 'city', 'leaves', 14, ['castano', 'bici', 'farolEuropeo']],
   fila(FICHAS['Busan']), // 65 · ficha + kit (fichas-ciudades.js): aldea de Gamcheon
   fila(FICHAS['Gyeongju']), // 66 · ficha + kit (fichas-ciudades.js): templo Bulguksa
+  fila(FICHAS['Sossusvlei']), // 67 · ficha + kit: Deadvlei (ruta overland Cabo → Namibia → Cataratas)
+  fila(FICHAS['Swakopmund']), // 68 · ficha + kit: faro y costa atlántica de Namibia
+  fila(FICHAS['Cataratas Victoria']), // 69 · ficha + kit: Mosi-oa-Tunya
 ];
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base
-const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
+const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35 };
 // Desplazamiento horizontal opcional del monumento (unidades de mundo; negativo = hacia la izquierda/centro): evita que se corte contra el borde derecho de la pantalla
-const LM_X = { 'Zanzíbar': -.8, 'Ciudad del Cabo': -.8, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0 };
+const LM_X = { 'Salto Ángel': -1.0 };
 // Capas DELANTERAS del paisaje por destino (opcional): se dibujan entre el monumento y la cámara para "meterlo" en la escena
 // (como Kioto o Buenos Aires, donde el suelo y las colinas tapan la base). Usar cuando el recorte del monumento NO trae suelo propio.
 // Coordenadas relativas al monumento: x = fracción de su ancho (0 = borde izquierdo, 1 = derecho; puede salirse), dz = cuánto más
@@ -401,15 +365,6 @@ const FORE = {
     { t: 'hill', x: .55, w: 7, h: 1.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie del chedi
     { t: 'hill', x: .02, w: 6, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 1.9, c: [2, 3, .5], dz: .5, kind: 'dune' }, // templo y chedi chico
     { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.4, c: 3, dz: .8, kind: 'dune' },
-  ],
-  'Zanzíbar': [
-    { t: 'hill', x: .7, w: 7, h: 1.1, c: [2, 3, .7], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 2.0, c: [2, 3, .5], dz: .5, kind: 'dune' }, // pie de la casa
-    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.4, c: 3, dz: .8, kind: 'dune' },
-  ],
-  'Ciudad del Cabo': [
-    { t: 'hill', x: .5, w: 7, h: 1.1, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de las casas de Bo-Kaap
-    { t: 'hill', x: -.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, // laderas
-    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
   ],
   'Chefchaouen': [
     { t: 'hill', x: .5, w: 7, h: 1.1, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de las casas azules

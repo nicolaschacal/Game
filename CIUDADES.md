@@ -37,6 +37,8 @@ FICHAS['Capadocia'] = {
 Después, en `TABLA` de `destinos.js`:
 
 - **ciudad nueva** → agregar `fila(FICHAS['Nombre']),` **al final** (los índices guardados no cambian) y sus textos `dest.<índice>.place/country` en `paper-voyager/i18n/*.json`;
+  además su fila en `GEO` de `viaje.js` (lat, lon, región; `1` si es remota), su pin al final de `pts` en `world-map.json` (mismo orden que `TABLA`;
+  ≥ 55 unidades de los pines vecinos: a la escala del mapa en el teléfono un pin mide ~54) y, si corresponde, su lugar en una ruta de `ROUTES`;
 - **ciudad vieja que se migra** → reemplazar su fila por `fila(FICHAS['Nombre']),` **en el mismo lugar** (y borrar sus entradas de `LM_ESCALA`, `LM_X` y `FORE`).
 
 No hay que poner escala, posición ni lomas: salen solas. Para verla: `index.html?preview=Nombre` (sin tildes ni mayúsculas, no guarda nada).
@@ -103,6 +105,19 @@ Todas bajan hasta la base (y = 110–118, queda bajo el piso) **sin suelo propio
 | `puenteCurvo` | puente de madera en arco con baranda y patas al agua (Thê Húc) |
 | `acantilado` | pared de caliza de laderas a plomo con selva en la cima; `cara` = lado de la pared que mira al centro; `vetas` |
 | `colaLarga` | barca de cola larga tailandesa (proa levantada con cintas, toldo, caña del motor); `dir` = -1 la da vuelta |
+| `baobab` | baobab de Grandidier: columna lisa y alta con copa corta de ramas gruesas y matas de hojas planas |
+| `acacia` | acacia paraguas de la sabana: tronco en horqueta y copa ancha y chata en dos pisos |
+| `jirafa` | jirafa de perfil con manchas poligonales; `cuello` > 0 la estira hacia adelante (comiendo de una acacia), `dir` = -1 la da vuelta |
+| `volcan` | montaña de cumbre ancha casi plana con casquete de glaciares dentado (el Kibo) |
+| `mesa` | montaña de cumbre plana: meseta a nivel, pared a plomo con canaletas (`pared` = fracción de la altura) y laderas de escombros |
+| `nube` | nube larga y chata (mantel de Table Mountain, franja de nubes, bruma de una catarata): va en su propia capa, cruzada delante |
+| `duna` | duna del Namib: lomo con hombro, cresta filosa en S, cara al sol y cara en sombra, ondas de viento |
+| `arbolSeco` | árbol muerto de Deadvlei (sólo el tronco lleva borde grueso; las ramas, uno fino) |
+| `cascada` | catarata ancha como CERRO: selva en el borde que baja por los costados (`laderas`), pared de basalto y cortinas de agua pintadas encima |
+| `faro` | faro de torre ahusada con anillos de color (`bandas`), balcón y linterna con cúpula |
+| `veranda` | edificio de galerías: pisos con corredor en sombra, columnas finas y barandas (Casa de las Maravillas) |
+| `dhow` | velero del Índico de vela latina (va en el agua con `enAgua`, como el junco) |
+| `rama(x1, y1, x2, y2, w1, w2)` | ayuda: cuadrilátero ahusado para troncos y ramas |
 
 Ayudas de color: `tono(c)` (filtro de papel: saturación ≤ .55, luz .34–.84), `tonos(c)` (luz / sombra / oscuro de una pieza), `mix`, `luz`, `shade`.
 Primitivas: `P`, `R`, `C`, `Ln`, `arco`, `cut`, `cutFore`.
@@ -151,10 +166,17 @@ Lo que el usuario rechazó. Cada rechazo nuevo se anota acá.
 - **Un rojo grande y liso sube el contraste contra el cielo**: el muro de la Ciudad Prohibida pasó el QA recién con el rojo aclarado hacia el papel (`#CA9482`) y pilastras + zócalo en sombra. Mejor rojo empolvado que bermellón.
 - **Lo que define al monumento no puede quedar debajo de las lomas**: si la base ES el monumento (la terraza y las escalinatas de Bulguksa, la muralla del castillo de Osaka), subir la pieza para que las lomas tapen sólo el pie, o bajar `tapar`. Mirar la captura: el QA puede pasar con lo importante tapado.
 - **La regla de base del QA tiene ruido** (±4 %: adornos y monedas que pasan): dejar margen (tapada ≥ 85 %), no quedarse en el borde.
+- **Ninguna pieza puede terminar en un corte vertical en el borde del recuadro**: la primera catarata (pared de basalto rectangular de 0 a 120) se veía como una represa recortada; ahora es un cerro de selva que baja por los dos costados y la pared con el agua va pintada adentro. Igual con las dunas de los costados: si el pie cae en x = 120, que llegue en pendiente suave, no a plomo.
+- **Una montaña con laderas a plomo se lee como una lápida**: Table Mountain recién se reconoció con la meseta angosta respecto del ancho total (laderas largas hasta el suelo), la pared baja (`pared: .26`) y los picos vecinos (Devil's Peak, Lion's Head) asomando con su propia forma. Mirar el orden real: desde la bahía, Devil's Peak a la izquierda y Lion's Head a la derecha.
+- **Una duna con lados rectos es una pirámide** (y El Cairo ya tiene pirámides): lo que la hace duna es el lomo con hombro, la cresta en S y el corte de luz (mitad al sol, mitad en sombra, las dos visibles). Si la cresta queda pegada al borde, la cara al sol desaparece contra la bruma de la mañana.
+- **El suelo del destino puede ser parte del monumento**: en Deadvlei la duna sube directo de la salina blanca; en vez de lomas delante, `solo: true` y `paleta: { around, ground, hill }` claros de arcilla. La salina es el piso de la escena, no un rectángulo dentro del dibujo.
+- **Fauna y árboles chicos, metidos en la escena**: las jirafas de Nairobi van en la capa de adelante con las patas tapadas por las lomas y una comiendo de la acacia (`cuello: 1`); las acacias del Kilimanjaro, al pie de la montaña. Nunca sueltas flotando.
+- **Sabana no es montaña**: Kilimanjaro, Nairobi y Madagascar van con lomas suaves (`paisaje: 'desierto'` con semilla de pasto dorado o tierra roja), aunque el monumento sea un volcán.
+- **Ramas finas con borde crema grueso se funden en una mancha**: en árboles de ramas finas (baobab, árbol seco) el borde grueso va sólo en tronco y ramas principales; lo fino, en los detalles o con un borde de 1.6.
 - No le gustan los arbolitos de bolita ni una luna extra en el cielo.
 - Quiere ver los destinos como se ven dentro del juego, no en maqueta aparte (por eso la galería usa el motor real).
 
 ## Pendiente
 
-Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan y Gyeongju. El resto sigue con su fila escrita a mano en `TABLA`
+Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund y Cataratas Victoria. El resto sigue con su fila escrita a mano en `TABLA`
 (con `LM_ESCALA`, `LM_X` y `FORE`) y se puede migrar de a una con el mismo procedimiento.

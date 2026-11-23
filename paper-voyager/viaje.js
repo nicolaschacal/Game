@@ -35,6 +35,7 @@ const GEO = [
   [-37.81, 144.96, 'oc'], [-25.34, 131.04, 'oc', 1], [-1.29, 36.82, 'af'], [-6.16, 39.2, 'af', 1], [-33.92, 18.42, 'af'],
   [35.17, -5.27, 'af'], [37.77, -122.42, 'am'], [19.43, -99.13, 'am'], [52.37, 4.9, 'eu'],
   [35.10, 129.04, 'as'], [35.79, 129.33, 'as'], // 65 Busan (Gamcheon), 66 Gyeongju (Bulguksa)
+  [-24.73, 15.29, 'af', 1], [-22.68, 14.53, 'af'], [-17.92, 25.86, 'af'], // 67 Sossusvlei (Deadvlei), 68 Swakopmund, 69 Cataratas Victoria
 ];
 if (GEO.length !== NW) console.warn('viaje.js: GEO no coincide con DESTINOS', GEO.length, NW);
 export const regionOf = i => GEO[i]?.[2] || 'eu';
@@ -139,7 +140,9 @@ export const ROUTES = [
   { id: 'australia', name: 'route.australia', cities: ['Sídney', 'Melbourne', 'Uluru'] },
   { id: 'nz', name: 'route.nz', cities: ['Sídney', 'Auckland', 'Queenstown'] },
   { id: 'safari', name: 'route.safari', cities: ['Nairobi', 'Kilimanjaro', 'Zanzíbar'] },
-  { id: 'surafrica', name: 'route.surafrica', cities: ['Ciudad del Cabo', 'Cataratas Victoria', 'Sossusvlei'] },
+  // Overland clásico del sur de África (camiones de Intrepid, Exodus, African Trails…): Ciudad del Cabo → costa oeste y Fish River →
+  // Sossusvlei / Deadvlei → Swakopmund en la costa atlántica → Etosha → Okavango y Chobe → Cataratas Victoria
+  { id: 'surafrica', name: 'route.surafrica', cities: ['Ciudad del Cabo', 'Sossusvlei', 'Swakopmund', 'Cataratas Victoria'] },
   { id: 'egipto', name: 'route.egipto', cities: ['El Cairo', 'Luxor', 'Petra'] },
   { id: 'marruecos', name: 'route.marruecos', cities: ['Marrakech', 'Fez', 'Chefchaouen', 'Merzouga'] },
   { id: 'oeste', name: 'route.oeste', cities: ['San Francisco', 'Los Ángeles', 'Las Vegas', 'Gran Cañón', 'Monument Valley'] },
