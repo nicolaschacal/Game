@@ -160,7 +160,7 @@ FICHAS['Phi Phi'] = {
       [g(0, -15, .6), g(0, 15, .6), g(1, 0, .85), g(2, 0, .75, true), g(3, 0, .6)],
       [K.muro({ x0: 20, x1: 100, y: 82, piedra: true, talud: 12, c: '#B8B0A0', seed: 6 })],
     ],
-    composicion: { tapar: .16 },
+    composicion: { tapar: .16, solo: true }, // sin edificios bajos al pie: chocaban con los edificios grandes del fondo; la muralla apoya directo
     adornos: ['cerezo', 'expendedora', 'farolPiedra'],
   };
 }
@@ -215,7 +215,7 @@ FICHAS['Phi Phi'] = {
       [K.muro({ x0: 4, x1: 116, y: 72, piedra: true, c: piedra, seed: 8, pilastras: 9 })],
       [K.escalinata({ x: 33, w: 13, y: 70, c: '#D8CEB8', ojo: .32 }), K.escalinata({ x: 87, w: 11, y: 74, c: '#D8CEB8', ojo: .34 })],
     ],
-    composicion: { tapar: .26, tamano: .85, laterales: 1.2 },
+    composicion: { tapar: .26, tamano: .85, laterales: 1.2, solo: true }, // solo el templo, sin lomas delante
     adornos: ['pino', 'pagodita', 'farolPiedra'],
   };
 }
