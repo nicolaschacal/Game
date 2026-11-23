@@ -57,7 +57,8 @@ function paperTexture(svg) {
   if (texCache.has(svg)) return texCache.get(svg);
   const S = 256, M = 12, c = canvas(S), t = tex(c);
   texCache.set(svg, t);
-  const s = svg.replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" `);
+  // los SVG del elenco ya traen xmlns (y algunos width/height): se quitan antes de agregarlos, porque un atributo repetido invalida el SVG y Safari/Chrome no lo dibujan (el héroe quedaba invisible en la carrera)
+  const s = svg.replace(/<svg\b([^>]*)>/, (m, at) => '<svg xmlns="http://www.w3.org/2000/svg" width="' + S + '" height="' + S + '"' + at.replace(/\s(xmlns|width|height)=("[^"]*"|'[^']*')/g, '') + '>');
   const img = new Image();
   img.onload = () => {
     const base = canvas(S), b = base.getContext('2d');
