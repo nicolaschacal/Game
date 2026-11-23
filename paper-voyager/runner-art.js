@@ -1,8 +1,7 @@
 // Arte de Paper Voyager, con las reglas de recorte del juego: formas planas de papel, borde crema,
 // sombra inferior más oscura, ojos grandes con brillo y la paleta del juego. Lienzo 120×120, base en y≈110.
-import { NILO } from './nilo-art.js';
 import { t as tt } from './i18n.js';
-import { NILO2 } from './nilo-v2.js'; // Nilo rediseñado en papel (frames generados una vez al cargar)
+import { heroFor, thumbFor } from './elenco.js'; // elenco H13 (cuerpo del Nilo + cabeza chibi); los cuadros se hornean al pedirlos
 import { paperBoat, paperBalloon, paperTrain } from './runner-papel.js';
 const CREAM = '#FFF4DC', INK = '#1A1220';
 export { ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './runner-papel.js';
@@ -29,7 +28,23 @@ const niloRider = (cx, cy, k = 1) => `<circle cx="${cx}" cy="${cy + 2 * k}" r="$
   + `<path d="M${cx - 10 * k} ${cy - 1 * k} Q${cx} ${cy - 13 * k} ${cx + 10 * k} ${cy - 1 * k}Z" fill="#A9794D" stroke="${CREAM}" stroke-width="2" stroke-linejoin="round"/>`
   + `<rect x="${cx - 10 * k}" y="${cy - 2.5 * k}" width="${20 * k}" height="${3 * k}" fill="#8E5C35"/>`
   + `<circle cx="${cx - 4 * k}" cy="${cy + 3 * k}" r="${3.2 * k}" fill="#BFE3F5" stroke="#EFC76A" stroke-width="1.6"/><circle cx="${cx + 4 * k}" cy="${cy + 3 * k}" r="${3.2 * k}" fill="#BFE3F5" stroke="#EFC76A" stroke-width="1.6"/>`;
-const rider = (cx, cy, k = 1) => HEAD === 'nilo' ? niloRider(cx, cy, k) : HEAD === 'kasa'
+// Cabecita a bordo de los demás personajes: cara, pelo y su prenda de cabeza (piel, pelo, prenda, estilo)
+const RIDERS = { mora: ['#F6D2B0', '#3A2A22', '#D2382B', 'beret'], sipho: ['#8A5636', '#EDE7DA', '#4B4F66', 'cap'], minji: ['#F2CFAE', '#1E1A2A', '#52C7C2', 'phones'], tuk: ['#FFFFFF', '#2B2236', '#2E8E94', 'puffin'],
+  layla: ['#D9A27A', '#4A2E20', '#4A2E20', 'bun'], cal: ['#7A4A2E', '#1E1612', '#1E1612', 'curly'], anaya: ['#B9784E', '#1E1612', '#F2B937', 'braids'] };
+const castRider = (id, cx, cy, k) => {
+  const [sk, hair, top, st] = RIDERS[id] || RIDERS.mora, eye = `<circle cx="${cx - 3.6 * k}" cy="${cy + 3 * k}" r="${1.3 * k}" fill="#2B2236"/><circle cx="${cx + 3.6 * k}" cy="${cy + 3 * k}" r="${1.3 * k}" fill="#2B2236"/>`;
+  const cap = f => `<path d="M${cx - 10 * k} ${cy - 1 * k} Q${cx} ${cy - 13 * k} ${cx + 10 * k} ${cy - 1 * k}Z" fill="${f}" stroke="${CREAM}" stroke-width="2" stroke-linejoin="round"/>`;
+  const face = `<circle cx="${cx}" cy="${cy + 2 * k}" r="${10 * k}" fill="${sk}" stroke="${CREAM}" stroke-width="3"/>`;
+  const beak = `<path d="M${cx - 3 * k} ${cy + 5 * k} L${cx + 3 * k} ${cy + 5 * k} L${cx} ${cy + 9 * k}Z" fill="#F29A2E"/>`;
+  if (st === 'beret') return face + cap(hair) + `<ellipse cx="${cx - 2 * k}" cy="${cy - 8 * k}" rx="${9 * k}" ry="${3.6 * k}" fill="${top}" stroke="${CREAM}" stroke-width="2"/>` + eye;
+  if (st === 'cap') return face + cap(top) + `<path d="M${cx - 6 * k} ${cy + 8 * k} Q${cx} ${cy + 14 * k} ${cx + 6 * k} ${cy + 8 * k} Q${cx} ${cy + 10 * k} ${cx - 6 * k} ${cy + 8 * k}Z" fill="${hair}"/>` + eye;
+  if (st === 'phones') return face + cap(hair) + `<path d="M${cx - 10 * k} ${cy + 2 * k} A${10 * k} ${11 * k} 0 0 1 ${cx + 10 * k} ${cy + 2 * k}" fill="none" stroke="${top}" stroke-width="${2.2 * k}" stroke-linecap="round"/><circle cx="${cx - 10 * k}" cy="${cy + 3 * k}" r="${2.8 * k}" fill="${top}"/><circle cx="${cx + 10 * k}" cy="${cy + 3 * k}" r="${2.8 * k}" fill="${top}"/>` + eye;
+  if (st === 'puffin') return `<circle cx="${cx}" cy="${cy + 2 * k}" r="${10 * k}" fill="#2B2236" stroke="${CREAM}" stroke-width="3"/><ellipse cx="${cx}" cy="${cy + 3 * k}" rx="${8 * k}" ry="${7 * k}" fill="#FFFFFF"/>` + cap(top) + eye + beak;
+  if (st === 'bun') return `<circle cx="${cx + 2 * k}" cy="${cy - 11 * k}" r="${4.2 * k}" fill="${hair}" stroke="${CREAM}" stroke-width="2"/>` + face + cap(hair) + eye;
+  if (st === 'curly') return `<circle cx="${cx - 7 * k}" cy="${cy - 5 * k}" r="${4.4 * k}" fill="${hair}"/><circle cx="${cx + 7 * k}" cy="${cy - 5 * k}" r="${4.4 * k}" fill="${hair}"/><circle cx="${cx}" cy="${cy - 8 * k}" r="${5 * k}" fill="${hair}"/>` + face + cap(hair) + eye;
+  return face + `<path d="M${cx - 11 * k} ${cy + 4 * k} L${cx - 11 * k} ${cy + 14 * k} M${cx + 11 * k} ${cy + 4 * k} L${cx + 11 * k} ${cy + 14 * k}" stroke="${hair}" stroke-width="${3.2 * k}" stroke-linecap="round"/>` + cap(hair) + `<circle cx="${cx - 8 * k}" cy="${cy - 5 * k}" r="${2 * k}" fill="${top}"/>` + eye;
+};
+const rider = (cx, cy, k = 1) => HEAD === 'h:nilo' || HEAD === 'nilo' ? niloRider(cx, cy, k) : HEAD.startsWith('h:') ? castRider(HEAD.slice(2), cx, cy, k) : HEAD === 'kasa'
   ? `<path d="M${cx} ${cy - 8 * k} L${cx + 15 * k} ${cy + 6 * k} Q${cx} ${cy + 12 * k} ${cx - 15 * k} ${cy + 6 * k}Z" fill="${C.hat}" stroke="${CREAM}" stroke-width="3" stroke-linejoin="round"/><path d="M${cx - 15 * k} ${cy + 6 * k} Q${cx} ${cy + 12 * k} ${cx + 15 * k} ${cy + 6 * k} Q${cx} ${cy + 15 * k} ${cx - 15 * k} ${cy + 6 * k}Z" fill="${C.hatD}"/>`
   : (HEAD === 'fox' ? `<path d="M${cx - 9 * k} ${cy - 2 * k} L${cx - 12 * k} ${cy - 16 * k} L${cx - 1 * k} ${cy - 7 * k}Z M${cx + 9 * k} ${cy - 2 * k} L${cx + 12 * k} ${cy - 16 * k} L${cx + 1 * k} ${cy - 7 * k}Z" fill="${C.hat}" stroke="${CREAM}" stroke-width="3" stroke-linejoin="round"/>` : '')
     + `<circle cx="${cx}" cy="${cy + 2 * k}" r="${10 * k}" fill="${C.hat}" stroke="${CREAM}" stroke-width="3"/>` + (HEAD === 'ninja' ? `<rect x="${cx - 10 * k}" y="${cy - 3 * k}" width="${20 * k}" height="${5 * k}" fill="${C.hatD}"/>` : '');
@@ -103,40 +118,27 @@ const trainSet = () => ({ idle: [trainPose(0, false)], run: [trainPose(0, true),
 export const TRAIN = trainSet();
 // caja de madera: una sola, en tres cuartos, con tablas, marco y travesaño
 
-// ── Personajes (skins) ──────────────────────────────────────────────────────
-// ── Mora y Ren: arte PROVISORIO ──
-// Son los frames de Nilo (idle/run/wave) recoloreados reemplazando los hex de su paleta.
-// Se descarta cuando llegue el arte definitivo de Mora y Ren (reemplazar `hero` de cada entrada).
-const recolorNilo = map => {
-  const re = new RegExp(Object.keys(map).join('|'), 'gi');
-  const f = s => s.replace(re, m => map[m.toUpperCase()]);
-  const o = {}; for (const k in NILO) o[k] = Array.isArray(NILO[k]) ? NILO[k].map(f) : f(NILO[k]);
-  return o;
-};
-const niloIdle = N => [...Array(25).fill(N.idle[0]), ...Array(25).fill(N.idle[1]), ...Array(3).fill(N.idle[2]), ...Array(6).fill(N.idle[0])]; // ~110 ms por cuadro
-// Mora (América, Buenos Aires): verde y mostaza
-const MORA = recolorNilo({ '#E8452C': '#E8B425', '#B93322': '#A87D12', '#3E5BA9': '#4E9A4A', '#2D4585': '#2F6B30', '#A9794D': '#C9A227', '#7A5334': '#8F7218', '#6B3F22': '#5A3A1C', '#C98F55': '#B8873F' });
-// Ren (Asia, Kioto): violeta/índigo con bufanda blanca
-const REN = recolorNilo({ '#E8452C': '#FFFFFF', '#B93322': '#CFC8E6', '#3E5BA9': '#6A4FC0', '#2D4585': '#43308C', '#A9794D': '#2F2A66', '#7A5334': '#1F1B48', '#6B3F22': '#1F1B48', '#C98F55': '#8E78D0', '#9E6B3C': '#5F4A9E', '#B57C45': '#A28BDD' });
-
-// Nilo v2: frames (idle/wave/run) enumerables para la escena 3D; la máquina de estados del inicio (at, clips) y runFps van como propiedades NO enumerables
-const niloHero = () => { const h = { idle: NILO2.idle, wave: NILO2.wave, run: NILO2.run }; Object.defineProperties(h, { runFps: { value: NILO2.runFps }, at: { value: NILO2.at }, clips: { value: NILO2.clips } }); return h; };
-export const SKINS = [
-  { id: 'nilo', name: 'Nilo', tag: tt('skin.nilo.tag'), price: 0, head: 'nilo', c: {}, hero: niloHero() },
-  { id: 'mora', name: 'Mora', tag: tt('skin.mora.tag'), price: 1200, head: 'nilo', c: {}, hero: { ...MORA, idle: niloIdle(MORA) } },
-  { id: 'ren', name: 'Ren', tag: tt('skin.ren.tag'), price: 1200, head: 'nilo', c: {}, hero: { ...REN, idle: niloIdle(REN) } },
-  { id: 'sakura', name: 'Sakura', tag: tt('skin.sakura.tag'), price: 150, head: 'kasa', c: { hat: '#F7B7C8', hatD: '#E58BA5', coat: '#D9567E', coatD: '#B23F63', scarf: '#FFF4DC' } },
-  { id: 'kitsu', name: 'Kitsu', tag: tt('skin.kitsu.tag'), price: 400, head: 'fox', c: { hat: '#FFF8EE', hatD: '#F29BB8', hair: '#FFF8EE', coat: '#E8452C', coatD: '#B93322', scarf: '#F2B937' } },
-  { id: 'shinobi', name: 'Shinobi', tag: tt('skin.shinobi.tag'), price: 800, head: 'ninja', c: { hat: '#2B2440', hatD: '#E8452C', hair: '#2B2440', coat: '#3A3558', coatD: '#262240', scarf: '#7B5CC4', leg: '#1A1728' } },
-  { id: 'oro', name: tt('skin.oro.name'), tag: tt('skin.oro.tag'), price: 2000, head: 'kasa', c: { hat: '#FFD86B', hatD: '#D9A021', coat: '#F2B937', coatD: '#C98A1E', scarf: '#FFF4DC', leg: '#8A551E' } },
+// ── Elenco H13: Nilo, Mora, Sipho, Minji, Tuk, Layla, Cal y Anaya ──
+// El arte (heroFor/thumbFor) sale de elenco.js y se cachea por personaje+atuendo. Cada personaje tiene atuendos (skins) en venta aparte: id 'nieve', 'lluvia'…
+// SKINS = los personajes (id, name, tag, price, skins[{id,name,price}]). El atuendo que lleva puesto cada uno lo guarda index.html (pv.wear).
+const CAST = [
+  ['nilo', 'Nilo', 0, [['nieve', 600], ['marinero', 800]]], ['mora', 'Mora', 1500, [['lluvia', 700], ['montana', 800]]], ['sipho', 'Sipho', 1800, [['tormenta', 800]]],
+  ['minji', 'Minji', 2000, [['escenario', 900]]], ['tuk', 'Tuk', 2000, [['invierno', 700]]], ['layla', 'Layla', 2200, [['wadirum', 800]]],
+  ['cal', 'Cal', 2200, [['nevada', 700]]], ['anaya', 'Anaya', 2500, []],
 ];
-// Arte completo para un personaje: sus poses y los tres vehículos con su cabecita a bordo
-export function artFor(id) {
-  const skin = SKINS.find(k => k.id === id) || SKINS[0];
-  C = { ...BASE, ...skin.c }; HEAD = skin.head;
-  const out = { HERO: skin.hero || heroSet(), BOAT: boatSet(), BALLOON: balloonSet(), TRAIN: trainSet() };
-  C = { ...BASE }; HEAD = 'kasa';
-  return out;
+export const SKINS = CAST.map(([id, name, price, sk]) => ({ id, name, tag: tt('cast.' + id + '.tag'), price, head: 'h:' + id, c: {}, skins: sk.map(([s, p]) => ({ id: s, name: tt('cast.skin.' + s), price: p })) }));
+// Precios que pagó el jugador por los viajeros y variantes anteriores (para el reembolso único de la migración)
+export const LEGACY_PRICES = { ren: 1200, sakura: 150, kitsu: 400, shinobi: 800, oro: 2000 };
+export const thumbOf = (id, skin = 'base') => { try { return thumbFor(SKINS.some(k => k.id === id) ? id : 'nilo', skin); } catch (e) { return ''; } };
+// Arte completo para un personaje con su atuendo: sus poses y los tres vehículos con su cabecita a bordo (cacheado)
+const ART = new Map(), VEH = new Map();
+export function artFor(id, skin = 'base') {
+  const ch = SKINS.find(k => k.id === id) || SKINS[0];
+  if (skin !== 'base' && !ch.skins.some(s => s.id === skin)) skin = 'base';
+  const key = ch.id + '|' + skin; if (ART.has(key)) return ART.get(key);
+  if (!VEH.has(ch.id)) { C = { ...BASE, ...ch.c }; HEAD = ch.head; VEH.set(ch.id, { BOAT: boatSet(), BALLOON: balloonSet(), TRAIN: trainSet() }); C = { ...BASE }; HEAD = 'kasa'; }
+  const out = { HERO: heroFor(ch.id, skin), ...VEH.get(ch.id) };
+  ART.set(key, out); return out;
 }
 
 // Vagoneta suelta: un carrito de mina con vida propia que cruza de una vía a otra (obstáculo vivo del tramo de tren)

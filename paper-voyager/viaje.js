@@ -66,9 +66,11 @@ export function fare(from, to) {
 export const TRAVELERS = [
   { id: 'mora', name: 'Mora', home: 41, region: 'am', price: 1200, bio: tt('traveler.mora.bio') },
   { id: 'nilo', name: 'Nilo', home: 18, region: 'eu', price: 1200, bio: tt('traveler.nilo.bio') },
-  { id: 'ren', name: 'Ren', home: 0, region: 'as', price: 1200, bio: tt('traveler.ren.bio') },
 ];
 export const traveler = id => TRAVELERS.find(t => t.id === id);
+// Personaje y atuendo elegidos ahora mismo: pv.skin = id del personaje (nilo, mora, sipho, minji, tuk, layla, cal, anaya), pv.wear = { [personaje]: atuendo }.
+// Lo usan el álbum y las selfies: currentHero() → { id, skin }  (skin = 'base' si no lleva atuendo). El arte: ctx.artFor(id, skin).HERO o heroFor/thumbFor de elenco.js.
+export const currentHero = () => { const id = (store && store.get('skin', 'nilo')) || 'nilo', w = (store && store.get('wear', {})) || {}; return { id, skin: w[id] || 'base' }; };
 
 // ── Selfies ──
 // Tres tomas por destino; se consiguen atrapando la cámara polaroid en la pista (una por partida).
@@ -182,19 +184,43 @@ let store = null;
 export let T = null;
 export let ALBUM = {};
 export let PHOTO = null;
+export let ALBUMSKIN = {}; // { 'destino.toma': skin con la que se tomó la selfie } del personaje actual
+let HERO_ID = null, NILO_DECO = [];
 
 export function initViaje(st) {
   store = st;
   T = store.get('trip', null);
   if (!T || !T.v) T = migrate();
+  if (T.traveler === 'ren') { T.traveler = 'nilo'; store.set('trip', T); } // Ren salió del elenco
   if (T.migrated && T.base == null) { T.base = Math.min(T.trips || 0, NW); store.set('trip', T); } // migradas antes de que la dificultad contara destinos distintos
-  ALBUM = store.get('album', {});
   PHOTO = { owned: ['f-clasico', 'a-carton', 'x-natural'], frame: 'f-clasico', cover: 'a-carton', filter: 'x-natural', deco: [], ...store.get('photo', {}) };
+  NILO_DECO = PHOTO.deco; HERO_ID = null; syncAlbum();
   return T;
 }
+// Álbum POR PERSONAJE (lo demás —monedas, pasaportes, compras, mapa— es compartido). 'album' = el de Nilo (migración: lo que ya había);
+// el resto en 'album.<id>'. Igual 'albumDone', 'albumSkin' (skin de cada selfie) y las calcomanías puestas en la tapa ('photo.deco.<id>').
+// TODO(elenco): currentHero() {id, skin} lo exporta el integrador; hasta entonces se deduce del viajero guardado ('skin').
+function heroNow() {
+  try { if (typeof currentHero === 'function') { const h = currentHero(); if (h && h.id) return h; } } catch (e) {}
+  const s = store.get('skin', 'nilo'), id = ['mora', 'ren'].includes(s) ? s : 'nilo';
+  return { id, skin: id === 'nilo' && s !== 'nilo' ? s : 'base' };
+}
+export const heroId = () => HERO_ID || 'nilo';
+export const akey = (k, id = heroId()) => id === 'nilo' ? k : k + '.' + id;
+export function syncAlbum() {
+  const id = heroNow().id || 'nilo';
+  if (id === HERO_ID) return HERO_ID;
+  HERO_ID = id;
+  ALBUM = store.get(akey('album'), {}); ALBUMSKIN = store.get(akey('albumSkin'), {});
+  if (PHOTO) PHOTO.deco = id === 'nilo' ? NILO_DECO : store.get('photo.deco.' + id, []);
+  return id;
+}
 const save = () => store.set('trip', T);
-export const saveAlbum = () => store.set('album', ALBUM);
-export const savePhoto = () => store.set('photo', PHOTO);
+export const saveAlbum = () => { store.set(akey('album'), ALBUM); store.set(akey('albumSkin'), ALBUMSKIN); };
+export const savePhoto = () => {
+  if (heroId() === 'nilo') { NILO_DECO = PHOTO.deco; store.set('photo', PHOTO); }
+  else { store.set('photo', { ...PHOTO, deco: NILO_DECO }); store.set('photo.deco.' + heroId(), PHOTO.deco); }
+};
 
 // Partidas anteriores a esta versión: el jugador ya venía jugando como Nilo.
 // Conserva monedas, personajes e ítems (no se tocan) y le abre todas las regiones de los destinos que ya alcanzó,
@@ -266,14 +292,16 @@ export function difficulty() {
 
 // Selfie atrapada en el destino actual. Devuelve { shot, nuevo, coins, region } (region si se completó una región).
 export function addSelfie(i) {
+  syncAlbum(); const hs = heroNow();
   const got = ALBUM[i] || (ALBUM[i] = []);
   const missing = SHOTS.map(s => s.id).filter(s => !got.includes(s));
   let res;
-  if (missing.length) { got.push(missing[0]); res = { shot: missing[0], nuevo: true, coins: SELFIE_REWARD.first }; }
+  if (missing.length) { got.push(missing[0]); ALBUMSKIN[i + '.' + missing[0]] = hs.skin || 'base'; res = { shot: missing[0], nuevo: true, coins: SELFIE_REWARD.first }; }
   else res = { shot: Math.floor(Math.random() * SHOTS.length), nuevo: false, coins: SELFIE_REWARD.dup };
+  res.hero = hs.id; res.skin = hs.skin || 'base';
   saveAlbum();
-  const r = regionOf(i), done = store.get('albumDone', []);
-  if (res.nuevo && !done.includes(r) && destsOf(r).every(d => (ALBUM[d] || []).length)) { done.push(r); store.set('albumDone', done); res.region = r; }
+  const r = regionOf(i), done = store.get(akey('albumDone'), []);
+  if (res.nuevo && !done.includes(r) && destsOf(r).every(d => (ALBUM[d] || []).length)) { done.push(r); store.set(akey('albumDone'), done); res.region = r; }
   return res;
 }
 export const selfieCount = () => Object.values(ALBUM).reduce((a, s) => a + s.length, 0);

@@ -81,17 +81,22 @@ function injectCSS() {
 }
 
 // ── Secciones ──
+// Viajeros: los 8 personajes del elenco, cada uno con sus atuendos (skins) en venta aparte en su misma fila. Un atuendo solo se compra si tienes al personaje.
+const CH_COL = { nilo: '#3E5BA9', mora: '#4E9A4A', sipho: '#C98A1E', minji: '#7B5CC4', tuk: '#2E8E94', layla: '#C27A4A', cal: '#D9692A', anaya: '#D9567E' };
+const FEM = ['mora', 'minji', 'layla', 'anaya'], TH = new Map();
+const thumb = (c, id, sk) => { const k = id + '|' + sk; if (!TH.has(k)) TH.set(k, c.thumbOf(id, sk)); return TH.get(k); };
 function viajeros(c) {
-  const V = c.V, tid = V.T && V.T.traveler, trIds = V.TRAVELERS.map(t => t.id);
-  const art = id => { try { return c.artFor(id).HERO.idle[0]; } catch (e) { return ''; } };
-  const card = (id, name, tag, price, rar) => {
-    const has = c.owned.includes(id), on = id === c.skinId, [r, rc, bg] = rar;
-    return `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="sk" data-id="${id}" style="--rc:${rc};--bg:${bg}">${tid === id ? `<span class="ribbon2">${tt('store.yourTraveler')}</span>` : ''}<div class="art">${art(id)}</div><b>${esc(name)}</b><small>${esc(tag)}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(price)}</span></button>`;
-  };
-  const prot = V.TRAVELERS.map(t => { const k = c.SKINS.find(s => s.id === t.id); return card(t.id, t.name, k ? k.tag.toUpperCase() : tt('rarity.traveler'), t.price, [tt('rarity.protagonist'), '#E8452C', '#FFE1D6']); }).join('');
-  const vars = c.SKINS.filter(k => !trIds.includes(k.id)).map(k => card(k.id, k.name, k.tag.toUpperCase(), k.price, rarityOf(k))).join('');
-  return `<div class="vsec">${tt('store.yourTravelers')}<small>${tt('store.yourTravelers.sub')}</small></div><div class="vg vg3">${prot}</div>
-<div class="vsec">${tt('store.variants')}<small>${tt('store.variants.sub')}</small></div><div class="vg">${vars}</div>`;
+  const tid = c.V.T && c.V.T.traveler;
+  const rows = c.SKINS.map(k => {
+    const has = c.owned.includes(k.id), on = k.id === c.skinId, rc = CH_COL[k.id] || '#3E5BA9', worn = c.wornOf(k.id);
+    const ch = `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="sk" data-id="${k.id}" style="--rc:${rc};--bg:#DCE9F7">${tid === k.id ? `<span class="ribbon2">${tt('store.yourTraveler')}</span>` : ''}<div class="art">${thumb(c, k.id, 'base')}</div><b>${esc(k.name)}</b><small>${esc(k.tag.toUpperCase())}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(k.price)}</span></button>`;
+    const sks = k.skins.map(w => {
+      const hv = c.ownedV.includes(k.id + ':' + w.id), wearing = has && hv && worn === w.id;
+      return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${k.id}" data-s="${w.id}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, k.id, w.id)}</div><b>${esc(w.name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : coin(w.price)}</span></button>`;
+    }).join('');
+    return `<div class="vg vg3">${ch}${sks}</div>`;
+  }).join('');
+  return `<div class="vsec">${tt('store.yourTravelers')}<small>${tt('store.yourTravelers.sub')}</small></div>${rows}`;
 }
 
 function booklet(R, own, isNew) {
@@ -177,11 +182,20 @@ async function onClick(e) {
   const el = e.target.closest('[data-v]'); if (!el) return;
   const kind = el.dataset.v, id = el.dataset.id, V = c.V;
   if (kind === 'sk') {
-    const tr = V.TRAVELERS.find(t => t.id === id), k = c.SKINS.find(s => s.id === id), price = tr ? tr.price : k.price, name = tr ? tr.name : k.name;
+    const k = c.SKINS.find(s => s.id === id), price = k.price, name = k.name;
     if (!c.owned.includes(id)) {
       if (!c.buy(price, name)) return bad(el);
       c.owned.push(id); c.saveOwned(); c.setSkin(id); c.SFX.buy(); c.pop(tt('toast.prize', { name: name.toUpperCase() }), 'big');
     } else { c.SFX.tap(); c.setSkin(id); }
+    done(c);
+  } else if (kind === 'wear') {
+    const k = c.SKINS.find(s => s.id === id), w = k.skins.find(x => x.id === el.dataset.s), key = id + ':' + w.id;
+    if (!c.owned.includes(id)) { c.SFX.nope(); c.toast(tt('store.skinNeed', { name: k.name.toUpperCase() })); return bad(el); }
+    if (!c.ownedV.includes(key)) {
+      if (!c.buy(w.price, w.name)) return bad(el);
+      c.ownedV.push(key); c.saveOwnedV(); c.SFX.buy(); c.pop(tt('toast.prize', { name: w.name.toUpperCase() }), 'big');
+      c.setWear(id, w.id); if (id !== c.skinId) c.setSkin(id);
+    } else { c.SFX.tap(); c.setWear(id, c.wornOf(id) === w.id ? 'base' : w.id); if (id !== c.skinId) c.setSkin(id); }
     done(c);
   } else if (kind === 'pass') {
     if (V.hasPass(id)) { c.SFX.tap(); return; }

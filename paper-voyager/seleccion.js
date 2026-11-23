@@ -43,7 +43,7 @@ const CSS = `
 @keyframes tpMark{0%{opacity:0;transform:scale(2.4) rotate(-20deg)}35%{opacity:1;transform:scale(1) rotate(-12deg)}100%{opacity:1;transform:scale(1) rotate(-12deg)}}
 @media(max-height:700px){#tpick .tp-stage{height:36vh}#tpick .tp-bubble{min-height:70px;font-size:13.5px}}
 `;
-const ORDER = ['mora', 'nilo', 'ren'];
+const ORDER = ['mora', 'nilo'];
 
 export function showTravelerPick(ctx, onDone) {
   if (!document.getElementById('tpick-css')) { const st = document.createElement('style'); st.id = 'tpick-css'; st.textContent = CSS; document.head.appendChild(st); }

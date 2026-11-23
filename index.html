@@ -717,7 +717,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
 <script type="module">
 import { mountScene, runnerLaneAtScreen, updateRunnerTile, runnerPulse, runnerStats, runnerHideItems, moverLane, driftSwoosh, driftOff, markDecoys, setGroundColor, setHour, freezeMovers, renderPolicy, setWeather, qualityInfo } from './paper-voyager/scene3d.js';
 import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija } from './paper-voyager/clima.js';
-import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './paper-voyager/runner-art.js';
+import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, thumbOf, LEGACY_PRICES, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { DESTINOS, IDX } from './paper-voyager/destinos.js';
 import * as V from './paper-voyager/viaje.js';
@@ -745,6 +745,15 @@ let wallet=store.get('wallet',0),owned=store.get('owned',['nilo']),skinId=store.
 if(V.T.traveler==='nilo'&&!owned.includes('nilo'))owned.unshift('nilo');
 if(V.T.traveler&&!owned.includes(V.T.traveler))owned.push(V.T.traveler);
 if(skinId==='kami')skinId='nilo';
+// Elenco H13 (Nilo, Mora, Sipho, Minji, Tuk, Layla, Cal, Anaya): Ren y las variantes viejas salieron. Se reembolsan UNA vez (no en ?rico) y el que lo usaba pasa a Nilo; Mora conserva su compra.
+// pv.owned = personajes · pv.ownedv = atuendos comprados ('mora:lluvia') · pv.wear = {personaje: atuendo puesto} · pv.skin = personaje elegido
+let wear=store.get('wear',{}),ownedV=store.get('ownedv',[]),REFUND=0;
+{const ids=SKINS.map(k=>k.id),gone=owned.filter(i=>!ids.includes(i)&&LEGACY_PRICES[i]);
+ if(owned.some(i=>!ids.includes(i))){if(!RICO&&!PREV)gone.forEach(i=>{REFUND+=LEGACY_PRICES[i];});owned=owned.filter(i=>ids.includes(i));if(!owned.includes('nilo'))owned.unshift('nilo');store.set('owned',owned);if(REFUND){wallet+=REFUND;store.set('wallet',wallet);}}
+ if(!ids.includes(skinId)){skinId=V.T.traveler&&ids.includes(V.T.traveler)?V.T.traveler:'nilo';store.set('skin',skinId);}
+ const okV=x=>{const [c,k]=String(x).split(':');return SKINS.some(h=>h.id===c&&h.skins.some(w=>w.id===k));};
+ ownedV=ownedV.filter(okV);}
+const wornOf=id=>{const w=wear[id];return w&&ownedV.includes(id+':'+w)?w:'base';};
 if(!owned.includes(skinId))skinId=V.T.traveler||owned[0]||'nilo';
 // Ítems consumibles: se compran con monedas. Revivir se usa al perder; los demás se gastan al empezar la próxima partida.
 const ITEMS=[
@@ -829,7 +838,7 @@ const COLS=5,ROWS=QUICK?130:264,START=ROWS-12;
 const LEVELS=2,LV=.42,SKY=LEVELS*LV; // altura de la cima y del cielo (LV = alto de un nivel del motor)
 const rnd=(()=>{let a=(Date.now()^0x9E3779B9)>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
 const pick=a=>a[Math.floor(rnd()*a.length)];
-let art=artFor(skinId);
+let art=artFor(skinId,wornOf(skinId));
 const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
 const paintRow=(y,t)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]=typeof t==='string'?{g:t,h:0}:{...t};};
 setGroundColor('empty',theme.ground);if(theme.hillColor)setGroundColor(theme.hill,theme.hillColor);
@@ -1123,7 +1132,7 @@ function endGame(title,reason){if(ended)return;ended=true;
  $('goTitle').textContent=title;$('gameReason').textContent=reason;$('goRec').style.display=record?'inline-block':'none';
  $('goScore').textContent=fmt(score);$('goCoins').innerHTML=lost>0?'<s style="opacity:.55">'+lost+'</s>':'0';if(lost>0)reason+=' · '+t('go.coinsNote');$('gameReason').textContent=reason;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
  const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0],nd=$('goNudge');
- if(next){nd.style.display='block';nd.innerHTML=artFor(next.id).HERO.idle[0]+(wallet>=next.price?t('go.nudgeCan',{name:next.name.toUpperCase()}):t('go.nudgeNeed',{n:next.price-wallet,name:next.name.toUpperCase()}))+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
+ if(next){nd.style.display='block';nd.innerHTML=thumbOf(next.id)+(wallet>=next.price?t('go.nudgeCan',{name:next.name.toUpperCase()}):t('go.nudgeNeed',{n:next.price-wallet,name:next.name.toUpperCase()}))+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
  SFX.lose();buzz(120);if(record)confetti();setTimeout(()=>gameover.style.display='flex',350);
  drawChests();adDouble=false;$('goDouble').style.display='none';
  setTimeout(()=>Ads.intersticialQuizas(),1400);}
@@ -1393,7 +1402,7 @@ requestAnimationFrame(frame);
 const ICO={coin:COIN,pearl:PEARL,boat:BOAT.idle[0],balloon:BALLOON.idle[0],train:TRAIN.idle[0],rock:ROCK,gate:AIRPORT,double:DOUBLE,chest:CHEST,tile:STUMP};
 const ico=(k,style='')=>ICO[k].replace('<svg','<svg class="ico" style="'+style+'"');
 document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ico(e.dataset.ico));
-function drawMission(){const m=$('mission');
+function drawMission(){V.syncAlbum?.();const m=$('mission');
  m.innerHTML='<b><em>x'+baseMult()+'</em>'+t('mission.header',{level:prog.level+1})+'<span class="word'+((V.ALBUM[WI]||[]).length>=V.SHOTS.length?' done':'')+'" title="'+t('mission.selfies')+'">'+V.SHOTS.map(s=>'<i class="'+((V.ALBUM[WI]||[]).includes(s.id)?'ok':'')+'">'+((V.ALBUM[WI]||[]).includes(s.id)?'▣':'')+'</i>').join('')+'</span></b>'
  +prog.set.map(x=>{const M=MPOOL[x.id];return '<div class="mrow'+(x.done?' ok':'')+'">'+ico(M.ico)+'<span>'+M.t(x.goal)+'</span><em>'+(x.done?'✓':x.n+'/'+x.goal)+'</em></div>';}).join('');}
 const tops=store.get('tops',[]);
@@ -1403,8 +1412,8 @@ const tops=store.get('tops',[]);
 // ── Inicio, tienda y pausa ──
 let menuOpen=!autostart&&!carry;runner.hidden=menuOpen; // en el inicio se ve sólo el personaje grande; al saltar se convierte en el corredor
 let browse=Math.max(0,SKINS.findIndex(k=>k.id===skinId));
-const RARITY={nilo:[t('rarity.traveler'),'#3E5BA9','#DCE9F7'],mora:[t('rarity.traveler.f'),'#4E9A4A','#DDEFCF'],ren:[t('rarity.traveler'),'#7B5CC4','#E4DAF5'],kami:[t('rarity.common'),'#8a8069','#DCE9F7'],sakura:[t('rarity.rare'),'#3E8FD9','#FBD9E3'],kitsu:[t('rarity.epic'),'#8E5CD9','#FFE1D6'],shinobi:[t('rarity.epic'),'#8E5CD9','#DAD5F2'],oro:[t('rarity.legendary'),'#D98A1E','#FFF0B8']};
-function applySkin(id){art=artFor(id);player.svg=art.HERO.idle[0];player.frames=art.HERO;player.fps=art.HERO.runFps||(art.HERO.run.length===6?12:9);const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
+const RARITY=Object.fromEntries(SKINS.map(k=>[k.id,[t(['mora','minji','layla','anaya'].includes(k.id)?'rarity.traveler.f':'rarity.traveler'),{nilo:'#3E5BA9',mora:'#4E9A4A',sipho:'#C98A1E',minji:'#7B5CC4',tuk:'#2E8E94',layla:'#C27A4A',cal:'#D9692A',anaya:'#D9567E'}[k.id],'#DCE9F7']]));
+function applySkin(id){art=artFor(id,wornOf(id));player.svg=art.HERO.idle[0];player.frames=art.HERO;player.fps=art.HERO.runFps||(art.HERO.run.length===6?12:9);const F={boat:art.BOAT,balloon:art.BALLOON,train:art.TRAIN};vehicles.forEach(v=>{v.frames=F[v.type];v.svg=v.frames.idle[0];});mountScene(host,opts);}
 function drawBoosts(){drawFreeze();const now=performance.now(),L=[];if(boost.shield)L.push(['shield',SHIELD,false]);for(const [k,svg] of [['anchor',ANCHOR],['ballast',BALLAST],['needle',NEEDLEKEY],['compass',COMPASS]])if(boost[k])L.push([k,svg,false]);if(boostUntil.double>now||boost.double)L.push(['double',DOUBLE,boostUntil.double>now]);
  $('boosts').innerHTML=L.map(([k,svg,timed])=>'<div class="pw"'+(timed?' data-k="'+k+'"':'')+'>'+svg+(timed?'<b><i style="width:100%"></i></b>':'')+'</div>').join('');}
 // Contrarrestos: se gastan solo si el nivel trae lo que anulan (tramos de ese tipo / señuelos)
@@ -1469,10 +1478,10 @@ function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt||document.
   else if(now>=hs.actAt)hs.actAt=now+700;
  }
  if(h._f!==f){h.innerHTML=f;h._f=f;}}
-function heroSync(){const id=SKINS[browse].id,h=$('mHero');heroLayout();h.classList.toggle('locked',!owned.includes(id));
- if(id===hKey)return;const first=!hKey,n=SKINS.length,dd=hKey?(SKINS.findIndex(k=>k.id===id)-SKINS.findIndex(k=>k.id===hKey)+n)%n:0,dir=dd&&dd<=n/2?1:-1;
- hKey=id;hArt=artFor(id).HERO;hTick=0;hsReset();hWave=Date.now()+(first?1800:2300);
- h.className=owned.includes(id)?'':'locked';if(!first){h.classList.add(dir>0?'in-r':'in-l');}h.querySelector('.hf')._f=null;void h.offsetWidth;heroFrame();}
+function heroSync(){const id=SKINS[browse].id,h=$('mHero'),wk=id+'|'+wornOf(id);heroLayout();h.classList.toggle('locked',!owned.includes(id));
+ if(wk===hKey)return;const first=!hKey,n=SKINS.length,hk0=hKey.split('|')[0],dd=hKey?(SKINS.findIndex(k=>k.id===id)-SKINS.findIndex(k=>k.id===hk0)+n)%n:0,dir=dd&&dd<=n/2?1:-1;
+ hKey=wk;hArt=artFor(id,wornOf(id)).HERO;hTick=0;hsReset();hWave=Date.now()+(first?1800:2300);
+ h.className=owned.includes(id)?'':'locked';if(!first&&dd){h.classList.add(dir>0?'in-r':'in-l');}h.querySelector('.hf')._f=null;void h.offsetWidth;heroFrame();}
 setInterval(()=>{if(menuOpen&&!hBusy)heroFrame();},110); // ~9 fps (idle de 36 cuadros ≈ 4 s)addEventListener('resize',()=>{if(menuOpen)heroLayout();});
 if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(menuOpen)heroLayout();});
 if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(menuOpen)heroLayout();});['mission','worldChip','menu'].forEach(i=>ro.observe($(i)));}
@@ -1535,7 +1544,7 @@ let startPick=false; // primer arranque: el mapa elige la ciudad de partida (gra
 const pinState=i=>startPick?{st:'ok',r:V.regionOf(i),cost:0}:V.destState(i,wallet);
 const pinCls={cur:'cur',ok:'done',nocoins:'lock nc',nopass:'lock np'};
 // Carrusel de destinos: se recorren en el orden de siempre desde el actual; sólo se arman la tarjeta visible y sus dos vecinas
-const dSlide=i=>{const th=THEMES[i],s=pinState(i),R=V.REGIONS[s.r],vis=V.T.visits[i]||0,sel=(V.ALBUM[i]||[]).length;
+const dSlide=i=>{V.syncAlbum?.();const th=THEMES[i],s=pinState(i),R=V.REGIONS[s.r],vis=V.T.visits[i]||0,sel=(V.ALBUM[i]||[]).length;
  const tag=startPick?t('map.free'):s.st==='cur'?t('map.here'):s.st==='nopass'?t('map.needPass',{pass:R.pass.toUpperCase()}):s.st==='nocoins'?t('map.need',{n:s.cost-wallet}):t('map.fare',{n:s.cost});
  // aduanas de esta ruta cuyo color no llevas equipado (solo desde el mundo en que aparecen)
  const cu=!startPick&&mechOn('customs')?V.customsColors(i).filter(c=>c!==V.passEq()).map(c=>`<div class="cu"><i style="background:${V.REGIONS[c].color}"></i>${t('customs.hint',{color:t('customs.color.'+c)})}</div>`).join(''):'';
@@ -1717,13 +1726,14 @@ async function firstRunIntro(){introOn=true;const it=$('intro'),sp=$('splash');
  it.addEventListener('click',go);}
 // ── Puente para los módulos de pantallas (tienda.js, album.js, seleccion.js) ──
 const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},get walletTxt(){return fmtW(wallet)},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
- get owned(){return owned},saveOwned(){store.set('owned',owned);},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},
+ get owned(){return owned},saveOwned(){store.set('owned',owned);},get ownedV(){return ownedV},saveOwnedV(){store.set('ownedv',ownedV);},get wear(){return wear},wornOf,thumbOf,currentHero:V.currentHero,setWear(id,sk){if(sk&&sk!=='base')wear[id]=sk;else delete wear[id];store.set('wear',wear);if(id===skinId){applySkin(id);}drawHome();},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},
  get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmtW(wallet);$('mapWallet').textContent=fmtW(wallet);},
  tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((e,i)=>`<div><i>${i+1}</i>${fmt(e.s)}<small>${(THEMES[(e.w-1)%NW]?.place||t('scores.world',{n:e.w})).toUpperCase()}<br>${new Date(e.t).toLocaleDateString(lang)}</small></div>`).join(''):'<p class="note">'+t('scores.empty')+'</p>')+'</div>';}};
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);{const m=mechDue();if(m.length&&!carry)showMech(m,null);}}
 if(V.needsPick()&&menuOpen)firstRunIntro();
+if(REFUND)setTimeout(()=>showToast(t('toast.refund',{n:REFUND})),1800); // reembolso único por los viajeros que salieron del elenco
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{if(introOn)return;const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
 if(DEBUG)window.__dbg={setWeather,qualityInfo,pop,cust,custClosed,custItems,spans,EQ,DELAYED,route,rollDelay,goRoute,blockSet,movers,prevExit,refreshHints,driftTramos,decoyIds,boost,stock,useItems,driftLand,Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,driftRows,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};

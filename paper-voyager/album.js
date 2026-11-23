@@ -12,6 +12,30 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const HAND = "'Segoe Print','Bradley Hand','Chalkboard SE','Marker Felt','Comic Sans MS',cursive";
 const LIL = "'Lilita One',sans-serif";
 
+// ── Arte del personaje en selfies/ropa: elenco.js (heroFor) si está en el repo; si no, el arte del juego (TODO(elenco): quitar el respaldo) ──
+let EL = null; import('./elenco.js').then(m => { EL = m; }).catch(() => {});
+const HCACHE = {};
+function heroSet(ctx, hero, skin, plain) {
+  const k = hero + '/' + (skin || 'base') + (plain ? 'p' : '');
+  if (HCACHE[k]) return HCACHE[k];
+  let H;
+  if (plain) { try { H = ctx.artFor(hero, skin || 'base').HERO; } catch (e) { H = null; } }
+  try { if (!H && EL) H = EL.heroFor(hero, skin || 'base', plain ? {} : { style: 'h13' }); } catch (e) { H = null; }
+  if (!H) { try { H = ctx.artFor(hero, skin || 'base').HERO; } catch (e) { H = {}; } }
+  return EL ? (HCACHE[k] = H) : H;
+}
+function heroArt(ctx, hero, skin, shot, plain) {
+  const H = heroSet(ctx, hero, skin, plain) || {};
+  const svg = shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0];
+  return svg && uniqIds(svg);
+}
+// Cada uso lleva ids propios: dos atuendos del mismo personaje en una página no pisan sus defs/clipPath
+function uniqIds(svg) {
+  const u = 'h' + (++UID) + '_';
+  return String(svg).replace(/\bid="([^"]+)"/g, (m, i) => `id="${u}${i}"`).replace(/url\(#([^)]+)\)/g, (m, i) => `url(#${u}${i})`).replace(/href="#([^"]+)"/g, (m, i) => `href="#${u}${i}"`);
+}
+const heroName = (ctx, id) => { try { return (ctx.V || VV).TRAVELERS.find(t => t.id === id)?.name || EL?.ELENCO?.[id]?.name || id[0].toUpperCase() + id.slice(1); } catch (e) { return id; } };
+
 // ── Filtros: matrices de color en SVG (andan igual en todos los navegadores); si llega un CSS filter crudo se usa tal cual ──
 const FILTERS = {
   'x-natural': null,
@@ -347,13 +371,9 @@ export function openAlbum(ctx, onClose, opts = {}) {
   css();
   const V = ctx.V || VV, $ = (s, el = root) => el.querySelector(s);
   const sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
-  const heroCache = {};
-  const heroFor = shot => {
-    let H = heroCache[ctx.skinId];
-    if (!H) { try { H = heroCache[ctx.skinId] = ctx.artFor(ctx.skinId).HERO; } catch (e) { H = heroCache[ctx.skinId] = {}; } }
-    return shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0];
-  };
-  const look = shot => ({ frame: V.PHOTO.frame, filter: V.PHOTO.filter, hero: heroFor(shot) });
+  V.syncAlbum?.();
+  // cada selfie muestra al personaje de ese álbum con la skin que llevaba al tomarla
+  const look = (shot, i) => ({ frame: V.PHOTO.frame, filter: V.PHOTO.filter, hero: heroArt(ctx, V.heroId(), V.ALBUMSKIN?.[i + '.' + shot] || 'base', shot) });
   document.querySelectorAll('.pvalb').forEach(e => e.remove());
   const root = document.createElement('div'); root.className = 'panel pva pvalb'; root.style.display = 'block';
   if (opts.preload) { root.style.animation = 'none'; root.style.opacity = '0'; root.style.pointerEvents = 'none'; }
@@ -364,7 +384,7 @@ export function openAlbum(ctx, onClose, opts = {}) {
   const close = () => { if (closing) return; closing = true; if (opts.closeAnim) opts.closeAnim(root, finish); else finish(); };
 
   const regCount = r => { const ds = V.destsOf(r); return { n: ds.reduce((a, d) => a + (V.ALBUM[d] || []).length, 0), t: ds.length * V.SHOTS.length }; };
-  const done = () => ctx.store?.get?.('albumDone', []) || [];
+  const done = () => ctx.store?.get?.(V.akey('albumDone'), []) || [];
 
   function draw() {
     const R = V.REGIONS, P = V.PHOTO, keep = root.scrollTop;
@@ -386,7 +406,7 @@ export function openAlbum(ctx, onClose, opts = {}) {
         const d = DESTINOS[i], got = V.ALBUM[i] || [];
         return `<div class="pva-dest"><div class="pva-dn"><b>${esc(d.place)}</b><small>${esc(d.country)}</small><i class="${got.length === 3 ? 'ok' : ''}">${got.length}/3</i></div><div class="pva-row">`
           + V.SHOTS.map(s => got.includes(s.id)
-            ? `<button class="pva-slot" data-i="${i}" data-s="${s.id}" aria-label="${esc(d.place)}: ${esc(s.name)}">${selfieHTML(i, s.id, look(s.id))}</button>`
+            ? `<button class="pva-slot" data-i="${i}" data-s="${s.id}" aria-label="${esc(d.place)}: ${esc(s.name)}">${selfieHTML(i, s.id, look(s.id, i))}</button>`
             : `<button class="pva-slot" disabled aria-label="${esc(tt('album.missingAria', { place: d.place, shot: s.name }))}">${slotHTML(i, s.id)}</button>`).join('') + `</div></div>`;
       }).join('');
     el.querySelectorAll('.pva-slot:not(:disabled)').forEach(b => b.onclick = () => detail(+b.dataset.i, +b.dataset.s));
@@ -394,7 +414,7 @@ export function openAlbum(ctx, onClose, opts = {}) {
   function detail(i, s) {
     sfx('tap');
     const d = DESTINOS[i], ov = document.createElement('div'); ov.className = 'pva-det';
-    ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><div class="big">${selfieHTML(i, s, { ...look(s), rot: 0 })}</div><div class="info"><b>${esc(d.place)}</b><small>${esc(d.country)} · ${V.SHOTS[s].name}</small></div>`;
+    ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><div class="big">${selfieHTML(i, s, { ...look(s, i), rot: 0 })}</div><div class="info"><b>${esc(d.place)}</b><small>${esc(d.country)} · ${V.SHOTS[s].name}</small></div>`;
     const off = () => { ov.remove(); sfx('tap'); };
     ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) off(); };
     root.appendChild(ov);
@@ -413,7 +433,7 @@ export function openAlbum(ctx, onClose, opts = {}) {
         }).join('') + `</div>`;
       }).join('');
       cfg.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('album.cfg.sub')}</small><h2>${tt('album.cfg.title')}</h2></div>
-<div class="pva-pv"><div class="a">${coverSVG(P.cover, { title: true, deco: P.deco.filter(d => P.owned.includes(d)) })}</div><div class="b">${selfieHTML(demo[0], demo[1], { ...look(demo[1]), rot: 2 })}</div></div>${secs}<div class="pva-note">${tt('album.cfg.note')}</div>`;
+<div class="pva-pv"><div class="a">${coverSVG(P.cover, { title: true, deco: P.deco.filter(d => P.owned.includes(d)) })}</div><div class="b">${selfieHTML(demo[0], demo[1], { ...look(demo[1], demo[0]), rot: 2 })}</div></div>${secs}<div class="pva-note">${tt('album.cfg.note')}</div>`;
       cfg.querySelector('[data-x]').onclick = () => { cfg.remove(); sfx('tap'); draw(); };
       cfg.querySelectorAll('.pva-it').forEach(b => b.onclick = () => {
         const id = b.dataset.id, k = b.dataset.k;
@@ -433,7 +453,7 @@ export function openAlbum(ctx, onClose, opts = {}) {
 export function selfieReveal(ctx, i, res) {
   css();
   const V = ctx.V || VV;
-  let hero; try { const H = ctx.artFor(ctx.skinId).HERO; hero = res.shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0]; } catch (e) {}
+  let hero; try { hero = heroArt(ctx, res.hero || V.heroId?.() || 'nilo', res.skin || 'base', res.shot); } catch (e) {}
   const long = !!res.region, R = res.region && V.REGIONS[res.region];
   const fl = document.createElement('div'); fl.className = 'pvrv-flash';
   const el = document.createElement('div'); el.className = 'pvrv' + (res.nuevo ? '' : ' dup') + (long ? ' long' : '');
@@ -511,6 +531,27 @@ const BAG_CSS = `
 .pvp-r.eq{box-shadow:0 0 0 3px #76B85A,0 6px 10px rgba(27,23,48,.22)}
 .pvp-rt{display:flex;gap:8px;margin:12px 12px 0;padding:10px;border-radius:16px;background:#F7ECD3;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 10px rgba(27,23,48,.22);color:#3A2A12;align-items:center}.pvp-rt>div:first-child{flex:1;min-width:0}.pvp-rt b{display:block;font:400 15px/1.1 'Lilita One',sans-serif}.pvp-rt small{font:900 9px Nunito;letter-spacing:.8px;color:#6B4E26}
 .pvp-rs{width:46px;text-align:center}.pvp-rs svg{display:block;width:100%;height:auto}.pvp-rs span{display:block;font:900 7px Nunito;color:#6B4E26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pvp-rs.nv{opacity:.5}
+.pvb-rop{position:absolute;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;transform:rotate(5deg)}
+.pvb-rop svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
+.pvb-rop:active:not(.opening) svg{transform:translateY(2px) scale(.985)}
+.pvb-rop .pvb-tag{position:absolute;left:50%;bottom:-8px;margin:0;transform:translateX(-50%) rotate(-3deg)}
+.pvc-flyw{position:fixed;z-index:70;pointer-events:none;perspective:1700px}
+.pvc-mv,.pvc-sh{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.pvc-col,.pvc-c{position:absolute;transform-style:preserve-3d}
+.pvc-c i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.pvc-c .f{background:var(--paper,#F3E9D0);box-shadow:inset 0 0 0 1px #C9B88F77}
+.pvc-c .k{background:#3E5BA9;transform:rotateY(180deg);box-shadow:inset 0 0 0 1px #2C3F80,inset 0 0 26px rgba(20,25,70,.3)}
+.pvc-ic{position:absolute;translate:0 0 8px;filter:drop-shadow(0 3px 5px rgba(27,23,48,.35))}.pvc-ic svg{display:block;width:100%;height:100%}
+.pvcloth{background-image:linear-gradient(90deg,#0000 calc(33.33% - .5px),#C9B88F66 0 calc(33.33% + .5px),#0000 0),linear-gradient(90deg,#0000 calc(66.66% - .5px),#C9B88F66 0 calc(66.66% + .5px),#0000 0),linear-gradient(180deg,#0000 calc(33.33% - .5px),#C9B88F66 0 calc(33.33% + .5px),#0000 0),linear-gradient(180deg,#0000 calc(66.66% - .5px),#C9B88F66 0 calc(66.66% + .5px),#0000 0)}
+.pvc-hero{display:flex;flex-direction:column;align-items:center;margin:6px 0 0;color:#3A2A12}.pvc-hero .art{width:150px;filter:drop-shadow(0 3px 3px rgba(40,24,10,.3))}.pvc-hero svg,.pvc-sk svg{display:block;width:100%;height:auto}
+.pvc-hero b{font:400 24px/1 'Lilita One',sans-serif;margin-top:4px}.pvc-hero small{font:900 10px Nunito;letter-spacing:.9px;color:#6B4E26;text-transform:uppercase}
+.pvc-hint{margin:8px 22px 0;text-align:center;font:700 11.5px Nunito;color:#6B4E26}
+.pvc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px 14px 6px}
+.pvc-sk{position:relative;padding:8px 8px 10px;border-radius:16px;background:#F7ECD3;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 10px rgba(27,23,48,.22);color:#3A2A12;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pvc-sk .art{width:78%}.pvc-sk b{font:400 16px/1.05 'Lilita One',sans-serif}.pvc-sk.on{box-shadow:0 0 0 3px #76B85A,0 6px 10px rgba(27,23,48,.22)}
+.pvc-sk.lock .art{filter:grayscale(1) opacity(.55)}.pvc-sk.lock b{opacity:.7}
+.pvc-pr{font:400 14px 'Lilita One',sans-serif;color:#A9701B}
+.pvc-b{border:0;cursor:pointer;font:400 13px 'Lilita One',sans-serif;padding:3px 16px 4px;border-radius:99px;background:#F2BC3E;color:#3A2410;box-shadow:0 2px 0 #A9701B}.pvc-b.on{background:#76B85A;color:#fff;box-shadow:0 2px 0 #356F2E}.pvc-b.shop{background:#EADBB8;color:#6B4E26;box-shadow:0 2px 0 #B3A37F}
 .pvp-go{margin-top:10px;display:flex;align-items:center;gap:10px;padding-left:6px;font:700 11.5px Nunito;color:#6B4E26}.pvp-go .btn{width:auto;flex:none;padding:0 16px;height:44px;font-size:16px}
 `;
 let LOCKS = 0;
@@ -542,6 +583,7 @@ export function openBag(ctx) {
   bagCss();
   const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
   document.querySelectorAll('.pvbag').forEach(e => e.remove());
+  V.syncAlbum?.(); // el álbum de la mochila es el del personaje actual
   const root = document.createElement('div'); root.className = 'panel pva pvbag'; root.style.display = 'block'; document.body.appendChild(root); lockScroll(root);
   let idx = 0;
   const eq0 = V.passEq ? V.passEq() : null; // si cambia el pasaporte equipado, el destino se regenera al cerrar para aplicar las aduanas
@@ -560,14 +602,16 @@ export function openBag(ctx) {
     root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('bag.sub')}</small><h2>${tt('nav.bag')}</h2></div>
 <div class="pvb-t">
  <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
- <div class="pvb-dec" style="right:5%;top:53%;width:34%;transform:rotate(-8deg)">${pencilSVG()}</div>
- <div class="pvb-dec" style="right:4%;top:37%;width:24%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
+ <div class="pvb-dec" style="left:9%;top:53%;width:34%;transform:rotate(-4deg)">${pencilSVG()}</div>
+ <div class="pvb-dec" style="right:42%;top:45%;width:18%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
+ <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${garmentSVG()}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
  <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}${eq ? `<span class="pvb-eqm">✓ ${tt('pass.equipped')} · ${esc(V.REGIONS[eq].name)}</span>` : ''}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
 </div>`;
     const q = s => root.querySelector(s);
     q('[data-x]').onclick = close;
     q('[data-alb]').onclick = e => flyOpen(e.currentTarget);
+    q('[data-rop]').onclick = e => flyCloth(e.currentTarget);
     q('[data-pas]').onclick = () => { sfx('tap'); openPassport(ctx, () => draw()); };
     q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
     if (sv.length) souvenirs(sv);
@@ -617,6 +661,31 @@ export function openBag(ctx) {
     setTimeout(() => { finish(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = 'hidden'; fly.style.opacity = '1'; }, F);
     setTimeout(() => { fly.remove(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = ''; }, F + D + 30);
   }
+  // ── Ropa: la prenda viaja al centro y se desdobla en pasos hasta la página; al cerrar, la animación inversa ──
+  const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
+  async function flyCloth(b) {
+    if (b.classList.contains('opening')) return; b.classList.add('opening'); sfx('tap');
+    const page = openCloth(ctx, () => draw(), { preload: true, closeAnim: clothClose });
+    const done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
+    if (!b.animate || reduced()) { page.style.animation = 'none'; page.style.opacity = ''; page.style.pointerEvents = ''; done(); return; }
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const cs = clothSheet(page.getBoundingClientRect(), b); document.body.appendChild(cs.wrap); b.style.visibility = 'hidden';
+    const D = 1500, o = { duration: D, fill: 'both' }; cs.play(o);
+    const up = page.animate([{ opacity: 0 }, { opacity: 0, offset: .8 }, { opacity: 1 }], { duration: D, fill: 'both' });
+    const out = cs.wrap.animate([{ opacity: 1 }, { opacity: 1, offset: .88 }, { opacity: 0 }], { duration: D, fill: 'both' });
+    const cleanup = () => { page.style.opacity = ''; page.style.pointerEvents = ''; page.style.animation = 'none'; cs.wrap.remove(); done(); };
+    Promise.all([up.finished, out.finished]).then(() => { up.cancel(); cleanup(); }, cleanup);
+  }
+  function clothClose(page, finish) {
+    const b = root.querySelector('[data-rop]');
+    if (!b || !b.animate || reduced()) { finish(); return; }
+    const cs = clothSheet(page.getBoundingClientRect(), b), F = 110, D = 1000, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
+    cs.wrap.style.opacity = '0'; document.body.appendChild(cs.wrap);
+    cs.wrap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: F, fill: 'forwards' });
+    cs.play(o);
+    setTimeout(() => { finish(); const nb = root.querySelector('[data-rop]'); if (nb) nb.style.visibility = 'hidden'; cs.wrap.style.opacity = '1'; }, F);
+    setTimeout(() => { cs.wrap.remove(); const nb = root.querySelector('[data-rop]'); if (nb) nb.style.visibility = ''; }, F + D + 30);
+  }
   // Carrusel de souvenirs: uno al frente sobre una pila en abanico; toque o deslizar para rotar
   function souvenirs(sv) {
     const n = sv.length, st = root.querySelector('[data-st]'), els = [...st.querySelectorAll('.pvb-sc')];
@@ -659,6 +728,85 @@ export function openBag(ctx) {
   }
   draw();
   return root;
+}
+
+// ── Ropa: prenda de papel doblada en la mochila → se desdobla por pasos hasta la página "Ropa" (skins del personaje actual) ──
+function garmentSVG() {
+  const B = '#3E5BA9', D = '#34468A', L = '#5970AF';
+  return `<svg viewBox="0 0 120 112" aria-hidden="true"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round"><rect x="12" y="14" width="96" height="86" rx="6" fill="${B}"/></g><rect x="12" y="14" width="96" height="86" rx="6" fill="${B}"/>`
+    + `<path d="M12 20Q12 14 18 14H44V100H18Q12 100 12 94Z" fill="${L}"/><path d="M76 14H102Q108 14 108 20V94Q108 100 102 100H76Z" fill="${D}"/>`
+    + `<path d="M44 14H76L60 42Z" fill="${CREAM}"/><path d="M52 14L60 30L68 14" fill="#E8452C"/><path d="M44 14L60 42L76 14" fill="none" stroke="#D9C9A2" stroke-width="1.4" stroke-linejoin="round"/>`
+    + `<path d="M44 14V100M76 14V100" stroke="#1B1730" stroke-opacity=".28" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M12 76H108" stroke="#1B1730" stroke-opacity=".3" stroke-width="1.6"/><path d="M12 77.5H108" stroke="#fff" stroke-opacity=".18" stroke-width="1.2"/>`
+    + `<circle cx="60" cy="58" r="3.6" fill="#F2B937" stroke="#C48E2E" stroke-width="1"/><circle cx="60" cy="70" r="3.6" fill="#F2B937" stroke="#C48E2E" stroke-width="1"/><path d="M20 90H34M86 90H100" stroke="#fff" stroke-opacity=".4" stroke-width="1.4" stroke-dasharray="3 2.4"/></svg>`;
+}
+// Atuendos del personaje: base + los suyos (SKINS[i].skins); comprados = ctx.ownedV 'personaje:atuendo'; puesto = ctx.wornOf / ctx.setWear (pv.wear, del integrador)
+function wardrobe(ctx, hero) {
+  const out = [{ id: 'base', name: tt('cloth.base'), price: 0, owned: true }], k = (ctx.SKINS || []).find(x => x.id === hero);
+  (k?.skins || []).forEach(w => out.push({ id: w.id, name: w.name, price: w.price, owned: (ctx.ownedV || []).includes(hero + ':' + w.id) }));
+  return out;
+}
+const equippedSkin = (ctx, hero) => { try { return ctx.wornOf?.(hero) || 'base'; } catch (e) { return 'base'; } };
+function equipSkin(ctx, hero, id) {
+  if (ctx.setWear) { ctx.setWear(hero, id); return; }
+  const w = ctx.store?.get?.('wear', {}) || {}; if (id === 'base') delete w[hero]; else w[hero] = id; ctx.store?.set?.('wear', w); // respaldo: misma clave pv.wear
+}
+
+export function openCloth(ctx, onClose, opts = {}) {
+  bagCss();
+  const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
+  V.syncAlbum?.();
+  const hero = V.heroId?.() || 'nilo', nm = heroName(ctx, hero);
+  document.querySelectorAll('.pvcloth').forEach(e => e.remove());
+  const root = document.createElement('div'); root.className = 'panel pva pvcloth'; root.style.display = 'block';
+  if (opts.preload) { root.style.animation = 'none'; root.style.opacity = '0'; root.style.pointerEvents = 'none'; }
+  document.body.appendChild(root); lockScroll(root);
+  let closing = false;
+  const finish = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
+  const close = () => { if (closing) return; closing = true; if (opts.closeAnim) opts.closeAnim(root, finish); else finish(); };
+  function draw() {
+    const list = wardrobe(ctx, hero), cur = equippedSkin(ctx, hero), keep = root.scrollTop;
+    const art = id => { try { return heroArt(ctx, hero, id, 1, true) || ''; } catch (e) { return ''; } };
+    root.innerHTML = `<div class="head"><button class="round close" data-x aria-label="${tt('common.close')}">✕</button><small>${esc(tt('cloth.sub', { name: nm }))}</small><h2>${tt('cloth.title')}</h2></div>`
+      + `<div class="pvc-hero"><div class="art">${art(cur)}</div><b>${esc(nm)}</b><small>${esc((list.find(k => k.id === cur) || list[0]).name)}</small></div><div class="pvc-hint">${esc(tt('cloth.hint', { name: nm }))}</div>`
+      + `<div class="pvc-grid">${list.map(k => {
+        const on = k.id === cur;
+        return `<div class="pvc-sk${on ? ' on' : ''}${k.owned ? '' : ' lock'}" data-id="${esc(k.id)}"><div class="art">${art(k.id)}</div><b>${esc(k.name)}</b>`
+          + (k.owned ? `<button class="pvc-b${on ? ' on' : ''}" data-eq="${esc(k.id)}"${on ? ' disabled' : ''}>${on ? tt('cloth.equipped') : tt('cloth.equip')}</button>` : `<span class="pvc-pr">◉ ${k.price}</span><button class="pvc-b shop" data-shop>${tt('nav.shop')}</button>`) + `</div>`;
+      }).join('')}</div>`;
+    root.querySelector('[data-x]').onclick = close;
+    root.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => { sfx('tap'); equipSkin(ctx, hero, b.dataset.eq); draw(); });
+    root.querySelectorAll('[data-shop]').forEach(b => b.onclick = () => { sfx('tap'); document.querySelectorAll('.pvbag').forEach(e => e.remove()); root.remove(); openShopTab(ctx, 'viajeros'); });
+    root.scrollTop = keep;
+  }
+  draw();
+  return root;
+}
+// Hoja de 3×3 pliegues: el paquete (centro) se abre en pasos: derecha, izquierda, abajo, arriba. Devuelve la capa y play(opts) que anima todo.
+function clothSheet(R, b) {
+  const W = R.width, H = R.height, cw = W / 3, ch = H / 3, ib = b.getBoundingClientRect(), dx = ib.left + ib.width / 2 - (R.left + W / 2), dy = ib.top + ib.height / 2 - (R.top + H / 2);
+  const mk = (cls, css, par) => { const e = document.createElement('div'); e.className = cls; e.style.cssText = css; par && par.appendChild(e); return e; };
+  const wrap = mk('pvc-flyw', `left:${R.left}px;top:${R.top}px;width:${W}px;height:${H}px`), mv = mk('pvc-mv', '', wrap), sh = mk('pvc-sh', '', mv), steps = [];
+  const cell = (par, x, y, o, st) => { const c = mk('pvc-c', `left:${x}px;top:${y}px;width:${cw}px;height:${ch}px;transform-origin:${o}`, par); c.innerHTML = '<i class="f"></i><i class="k"></i>'; if (st) steps.push({ el: c, ...st }); return c; };
+  const col = (x, o, st) => { const c = mk('pvc-col', `left:${x}px;top:0;width:${cw}px;height:${H}px;transform-origin:${o}`, sh); if (st) steps.push({ el: c, ...st }); return c; };
+  const SR = { ax: 'rotateY', from: -180, z: 2, s: .3, e: .5 }, SL = { ax: 'rotateY', from: 180, z: 2, s: .42, e: .62 }, SB = { ax: 'rotateX', from: 180, z: 1, s: .56, e: .74 }, ST = { ax: 'rotateX', from: -180, z: 1, s: .68, e: .86 };
+  [[0, '100% 50%', SL], [cw, '50% 50%', null], [2 * cw, '0% 50%', SR]].forEach(([x, o, st]) => {
+    const c = col(x, o, st);
+    cell(c, 0, ch, '50% 50%', null);
+    cell(c, 0, 0, '50% 100%', ST); cell(c, 0, 2 * ch, '50% 0%', SB);
+  });
+  const ic = mk('pvc-ic', `left:${W / 2 - ib.width / 2}px;top:${H / 2 - ib.height / 2}px;width:${ib.width}px;height:${ib.height}px`, mv); ic.innerHTML = garmentSVG();
+  const sx0 = ib.width / cw, sy0 = ib.height / ch;
+  const ez = 'cubic-bezier(.45,.05,.25,1)';
+  return {
+    wrap, mv, sh, ic,
+    play(o) {
+      const A = [];
+      A.push(mv.animate([{ offset: 0, transform: `translate(${dx}px,${dy}px) scale(${sx0},${sy0})`, easing: 'cubic-bezier(.3,.7,.3,1)' }, { offset: .24, transform: 'translate(0,0) scale(1.6,1.25)' }, { offset: .3, transform: 'translate(0,0) scale(1.6,1.25)', easing: ez }, { offset: .86, transform: 'translate(0,0) scale(1,1)' }, { offset: 1, transform: 'translate(0,0) scale(1,1)' }], o));
+      A.push(ic.animate([{ offset: 0, opacity: 1, transform: `scale(${1 / sx0},${1 / sy0})` }, { offset: .16, opacity: 1 }, { offset: .3, opacity: 0, transform: `scale(${1 / sx0},${1 / sy0})` }, { offset: 1, opacity: 0 }], o));
+      steps.forEach(s => { const T = a => `translateZ(${s.z}px) ${s.ax}(${a}deg)`; A.push(s.el.animate([{ offset: 0, transform: T(s.from) }, { offset: s.s, transform: T(s.from), easing: ez }, { offset: s.e, transform: T(0) }, { offset: 1, transform: T(0) }], o)); });
+      return A;
+    },
+  };
 }
 
 // ── Página del pasaporte: regiones, sellos de destinos visitados, viajes y lo que falta ──
