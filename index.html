@@ -304,7 +304,7 @@ body.pnlopen #wx{visibility:hidden}body.pnlopen .wxp,body.pnlopen #wx *{animatio
 .card p{margin:4px 0 12px;font:700 12.5px Nunito;color:#5d5546;line-height:1.35}
 .rec{display:none;margin-top:6px;padding:3px 12px;border-radius:99px;background:var(--gold);border:2.5px solid var(--ink);font:900 10px Nunito;letter-spacing:1px}
 .stats{display:flex;gap:8px;margin:14px 0 4px}.stats div{flex:1;border-radius:14px;background:var(--paper);border:2.5px solid var(--ink);padding:7px 4px 6px;font:400 20px 'Lilita One',sans-serif}.stats small{display:block;font:900 8.5px Nunito;letter-spacing:1px;color:var(--mute)}
-.nudge{margin-top:14px;padding:8px 10px 9px 58px;border-radius:14px;background:var(--ink);color:var(--cream);text-align:left;position:relative;font:900 11px Nunito;display:none}.nudge svg{position:absolute;left:4px;top:-12px;width:54px;height:54px}
+.nudge{margin-top:14px;padding:8px 10px 9px 58px;border-radius:14px;background:var(--ink);color:var(--cream);text-align:left;position:relative;font:900 11px Nunito;display:none}.nudge{min-height:50px}.nudge svg{position:absolute;left:5px;top:50%;width:48px;height:48px;margin-top:-25px} /* el cuadro recorta lo que sobresale: la cabecita va entera adentro */
 .row2{display:flex;gap:10px;margin-top:16px}.row2 .btn{flex:1}.row2 .btn+.btn{flex:1.6}
 #rvBtn .ring{position:absolute;right:12px;top:8px;width:44px;height:44px;border-radius:50%;background:#ffffff40;overflow:hidden}
 #rvBtn .ring:before{content:"";position:absolute;inset:0;background:#fff;transform-origin:left;animation:drain 5s linear forwards}@keyframes drain{to{transform:scaleX(0)}}
@@ -667,7 +667,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
    <div id="mSet" hidden><button id="mute" data-i18n-aria="menu.sound.aria" aria-label="Sonido"></button><button id="howHome" data-i18n-aria="menu.how" aria-label="Cómo se juega"><span class="ri">?</span><span data-i18n="menu.how">Cómo se juega</span></button><div class="lr"><span class="ri">文</span><label for="langSel" data-i18n="menu.language">Idioma</label><select id="langSel"></select></div></div>
   </div>
   <button id="worldChip"></button>
-  <div id="mMid"></div>
+  <div id="mMid" style="position:relative"><button id="chestBtn" data-i18n-aria="chest.panel" aria-label="Cofres"></button></div>
   <div id="mission"></div>
   <div id="playWrap"><button class="btn" id="play" data-i18n="menu.play">JUGAR</button></div>
  </div>
@@ -721,6 +721,7 @@ import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRP
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { DESTINOS, IDX } from './paper-voyager/destinos.js';
 import * as V from './paper-voyager/viaje.js';
+import * as K from './paper-voyager/cofres.js';
 import { t, applyI18n, LANGS, lang, setLang } from './paper-voyager/i18n.js';
 const $=id=>document.getElementById(id);
 const Q=new URLSearchParams(location.search),DEBUG=Q.has('debug'),QUICK=Q.has('quick');
@@ -736,6 +737,7 @@ try{if(!localStorage.getItem('pv.wallet'))for(const k of Object.keys(localStorag
 // ?rico: MODO PRUEBA (solo web; apagado en la app nativa). Monedas infinitas y nada se guarda en el progreso real: lo escrito va a sessionStorage 'pvr.*' (sobrevive a recargar, no al cerrar la pestaña)
 const RICO=Q.has('rico')&&window.Capacitor?.isNativePlatform?.()!==true,RICO_N=999999;
 const store={get(k,d){try{if(RICO){if(k==='wallet')return RICO_N;const r=sessionStorage.getItem('pvr.'+k);if(r!=null)return JSON.parse(r);}const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){if(PREV)return;try{if(RICO){if(k==='wallet')wallet=RICO_N;else sessionStorage.setItem('pvr.'+k,JSON.stringify(v));return;}localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
+K.initCofres({store,Iap}); // el botón de cofres de inicio se dibuja antes de armar ctx
 const fmtW=n=>RICO?'\u221E':fmt(n);
 if(RICO){const b=document.createElement('div');b.id='ricoTag';b.textContent=t('rico.label');document.body.appendChild(b);}
 V.setRico(RICO);V.initViaje(store);if(Q.has('demo')){if(!V.T.traveler)V.pickTraveler('nilo');V.T.passports=[...V.REGION_ORDER];store.set('trip',V.T);if(store.get('wallet',0)<5000)store.set('wallet',5000);} // ?demo: todos los pasaportes y 5000 monedas para probar
@@ -777,8 +779,9 @@ let prog=store.get('prog',null);if(!prog||!prog.set)prog={level:0,set:newSet(0)}
 function missionAdd(kind,n=1){let hit=false;
  for(const m of prog.set){if(m.id!==kind||m.done)continue;m.n=MPOOL[kind].max?Math.max(m.n,n):Math.min(m.goal,m.n+n);if(m.n>=m.goal){m.done=true;hit=true;}}
  if(hit){const left=prog.set.filter(m=>!m.done).length;
-  if(left){setTimeout(()=>{pop(t('toast.missionDone'),'big');SFX.win();},400);}
-  else{prog.level++;const reward=150*prog.level;wallet+=reward;store.set('wallet',wallet);prog.set=newSet(prog.level);setTimeout(()=>{pop(t('toast.levelUp',{level:prog.level+1,mult:baseMult(),reward}),'big');SFX.win();confetti();showCombo();},500);}}
+  const nDone=prog.set.filter(m=>m.done&&!m.paid).length;prog.set.forEach(m=>{if(m.done)m.paid=true;});for(let i=0;i<nDone;i++)K.addChest('plata'); // cada misión cumplida: cofre de plata
+  if(left){setTimeout(()=>{pop(t('toast.missionChest'),'big');SFX.win();},400);}
+  else{prog.level++;const reward=150*prog.level;wallet+=reward;store.set('wallet',wallet);K.addChest('oro');prog.set=newSet(prog.level);setTimeout(()=>{pop(t('toast.levelUp',{level:prog.level+1,mult:baseMult(),reward}),'big');SFX.win();confetti();showCombo();},500);}}
  store.set('prog',prog);}
 // Palabra del día: una letra por partida, escondida en la pista. Completarla da monedas y un revivir.
 const today=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
@@ -1090,7 +1093,7 @@ let score=carry?.score||0,coinCount=carry?.coins||0,banked=carry?.coins||0,strea
 $('score').textContent=score.toLocaleString(lang);$('coinsN').textContent=coinCount;
 const baseMult=()=>1+Math.min(9,prog.level); // sube un punto por cada set de misiones completado (hasta x10)
 const mult=()=>baseMult()+Math.min(4,Math.floor(streak/6));
-const POWER_MS=10000,boostUntil={double:0};let chests=carry?.chests||0;
+const POWER_MS=10000,boostUntil={double:0};let chests=carry?.chests||0;const runChests=[]; // cofres agarrados en esta partida (ya guardados)
 const fmt=n=>n.toLocaleString(lang);
 function addScore(n){score+=n;$('score').textContent=fmt(score);}
 let maxMult=carry?.maxMult||1;
@@ -1110,7 +1113,7 @@ function onCoin(id){const c=coins.find(x=>x.id===id);if(!c)return;if(c.power){on
 function onPower(c){const g=25*mult();addScore(g);sparks(12);missionAdd('power');buzz([15,30,15]);
  if(c.power==='double'){boostUntil.double=performance.now()+POWER_MS;pop(t('toast.coins2'),'big');SFX.power();}
  else if(c.power==='shield'){boost.shield=true;pop(t('toast.shield'),'big');SFX.power();}
- else if(c.power==='chest'){chests++;missionAdd('chest');pop(t('toast.chest'),'big');SFX.chest();}
+ else if(c.power==='chest'){chests++;const tr=K.rollTier(LAP),kr=K.addChest(tr);runChests.push(tr);missionAdd('chest');pop(kr.ok?t('toast.chestTier',{tier:K.tierName(tr).toUpperCase()}):t('chest.full',{n:kr.coins}),'big');SFX.chest();}
  else if(c.power==='letter'){const res=V.addSelfie(WI);wallet+=res.coins;if(res.region){wallet+=V.SELFIE_REWARD.regionCoins;stock.revive++;store.set('items',stock);}store.set('wallet',wallet);SFX.prize();drawMission();
   import('./paper-voyager/album.js').then(m=>m.selfieReveal(ctx,WI,res)).catch(()=>pop(res.nuevo?t('toast.selfieNew'):t('toast.selfieCoins',{n:res.coins}),'pink'));}
  drawBoosts();}
@@ -1126,27 +1129,23 @@ let ended=false;
 renderPolicy(()=>document.body.classList.contains('pnlopen')?0:(menuOpen||paused)?30:60);
 function endGame(title,reason){if(ended)return;ended=true;
  if(route){route=null;RT=null;store.set('route',null);drawRouteBar();reason+=' · '+t('route.lostToast');} // perder una partida cancela la ruta (sin premio de ruta)
- runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked;chests=0; // sin llegar no se cobra nada (ni cofres)
+ runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked; // sin llegar no se cobran las monedas; los cofres ya quedaron guardados
  const record=score>best&&score>0;if(record){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
  $('goTitle').textContent=title;$('gameReason').textContent=reason;$('goRec').style.display=record?'inline-block':'none';
  $('goScore').textContent=fmt(score);$('goCoins').innerHTML=lost>0?'<s style="opacity:.55">'+lost+'</s>':'0';if(lost>0)reason+=' · '+t('go.coinsNote');$('gameReason').textContent=reason;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
  const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0],nd=$('goNudge');
- if(next){nd.style.display='block';nd.innerHTML=thumbOf(next.id)+(wallet>=next.price?t('go.nudgeCan',{name:next.name.toUpperCase()}):t('go.nudgeNeed',{n:next.price-wallet,name:next.name.toUpperCase()}))+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
+ if(next){nd.style.display='block';nd.innerHTML=thumbOf(next.id).replace(/viewBox="[^"]*"/,'viewBox="-12 -22 144 144"')+(wallet>=next.price?t('go.nudgeCan',{name:next.name.toUpperCase()}):t('go.nudgeNeed',{n:next.price-wallet,name:next.name.toUpperCase()}))+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
  SFX.lose();buzz(120);if(record)confetti();setTimeout(()=>gameover.style.display='flex',350);
  drawChests();adDouble=false;$('goDouble').style.display='none';
  setTimeout(()=>Ads.intersticialQuizas(),1400);}
-// Cofres: se abren al terminar; cada uno trae monedas o un ítem. Después se puede abrir uno extra mirando un anuncio.
+// Cofres (paper-voyager/cofres.js): los de la partida ya están guardados; al terminar se muestran y, si no agarraste ninguno, un anuncio abre uno de madera en el momento.
 let adDouble=false,adChest=false;
-const PRIZES=[[30,{coins:60}],[24,{coins:120}],[12,{coins:250}],[10,{item:'shield'}],[9,{coins:90}],[8,{item:'double'}],[5,{item:'freeze'}],[4,{item:'revive'}],[2,{coins:600}],[4,{item:'anchor'}],[4,{item:'ballast'}],[4,{item:'needle'}],[3,{item:'compass'}]].filter(p=>!p[1].item||ITEMS.some(i=>i.id===p[1].item)); // los contrarrestos solo si ya están en la tienda
-function openChest(){let r=Math.random()*PRIZES.reduce((a,p)=>a+p[0],0),pz;for(const [w,v] of PRIZES){r-=w;if(r<=0){pz=v;break;}}pz||=PRIZES[0][1];
- if(pz.coins){wallet+=pz.coins;store.set('wallet',wallet);pop('+◉'+pz.coins,'gold');}else{stock[pz.item]++;store.set('items',stock);pop(t('toast.prize',{name:ITEMS.find(i=>i.id===pz.item).name.toUpperCase()}),'big');}
- SFX.prize();buzz([20,40,20]);confetti();const row=$('goChest');row.classList.remove('shake');void row.offsetWidth;row.classList.add('shake');}
-function drawChests(){const row=$('goChest');
- if(chests>0){row.style.display='flex';row.innerHTML=CHEST+'<div><b>'+t('chest.title',{n:chests})+'</b><small>'+t('chest.sub')+'</small></div><button class="btn green" id="openChest">'+t('chest.open')+'</button>';
-  $('openChest').onclick=()=>{audio();chests--;openChest();drawChests();};}
- else if(!adChest){row.style.display='flex';row.innerHTML=CHEST+'<div><b>'+t('chest.more')+'</b><small>'+t('chest.moreSub')+'</small></div><button class="btn" id="adChestBtn">▶ '+t('chest.watch')+'</button>';
-  $('adChestBtn').onclick=async()=>{audio();adChest=true;drawChests();if(await Ads.recompensa('chest'))openChest();};}
+function drawChests(){const row=$('goChest'),n=runChests.length,top=['oro','plata','madera'].find(k=>runChests.includes(k));
+ if(n){row.style.display='flex';row.innerHTML=K.chestArt(top)+'<div><b>'+t(n>1?'go.chestSaved.many':'go.chestSaved.one',{n})+'</b><small>'+t('go.chestSavedSub')+'</small></div><button class="btn green" id="openChest">'+t('go.chestsBtn')+'</button>';
+  $('openChest').onclick=()=>{audio();K.openCofres(ctx,drawHome);};}
+ else if(!adChest){row.style.display='flex';row.innerHTML=K.chestArt('madera')+'<div><b>'+t('chest.more')+'</b><small>'+t('chest.moreSub')+'</small></div><button class="btn" id="adChestBtn">▶ '+t('chest.watch')+'</button>';
+  $('adChestBtn').onclick=async()=>{audio();adChest=true;drawChests();if(await Ads.recompensa('chest'))K.reveal('madera').then(()=>{drawHome();});};}
  else row.style.display='none';}
 $('goDouble').addEventListener('click',async()=>{if(adDouble)return;audio();adDouble=true;$('goDouble').style.display='none';
  if(await Ads.recompensa('double')){wallet+=Math.round(coinCount*(Iap.pro?1.25:1));store.set('wallet',wallet);$('goCoins').textContent='+'+coinCount*2;pop(t('toast.coins2'),'big');SFX.prize();confetti();}});
@@ -1155,7 +1154,7 @@ function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBo
  if(route){const R=RT;if(route.i+1<route.seq.length){route={...route,i:route.i+1};store.set('route',route);rtNext=route.seq[route.i];V.hop(rtNext);}else{rtDone=R;store.set('route',null);V.routeComplete(R.id);}} // en ruta: siguiente ciudad sin tarifa; al final, premio
  confetti();runner.hitPause=999;const bonus=500*(DIF.P+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
- for(let i=0;i<chests;i++)setTimeout(openChest,2300+i*450);chests=0; // los cofres de la ronda se abren solos al llegar
+ chests=0; // los cofres de la ronda ya están guardados: se abren desde Inicio
  SFX.win();buzz([20,40,20,40,60]);pop(t('toast.worldDone',{place:theme.place.toUpperCase(),bonus}),'big');
  if(rtNext==null)try{sessionStorage.setItem('pv.map','1');}catch{} // al volver, el inicio abre el mapa para elegir el próximo viaje (en ruta sigue la próxima ciudad)
  if(rtNext!=null)setTimeout(()=>banner(t('route.next',{place:THEMES[rtNext].place.toUpperCase()}),t(RT.name).toUpperCase()+' · '+route.i+'/'+route.seq.length),900);
@@ -1404,7 +1403,11 @@ const ico=(k,style='')=>ICO[k].replace('<svg','<svg class="ico" style="'+style+'
 document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ico(e.dataset.ico));
 function drawMission(){V.syncAlbum?.();const m=$('mission');
  m.innerHTML='<b><em>x'+baseMult()+'</em>'+t('mission.header',{level:prog.level+1})+'<span class="word'+((V.ALBUM[WI]||[]).length>=V.SHOTS.length?' done':'')+'" title="'+t('mission.selfies')+'">'+V.SHOTS.map(s=>'<i class="'+((V.ALBUM[WI]||[]).includes(s.id)?'ok':'')+'">'+((V.ALBUM[WI]||[]).includes(s.id)?'▣':'')+'</i>').join('')+'</span></b>'
- +prog.set.map(x=>{const M=MPOOL[x.id];return '<div class="mrow'+(x.done?' ok':'')+'">'+ico(M.ico)+'<span>'+M.t(x.goal)+'</span><em>'+(x.done?'✓':x.n+'/'+x.goal)+'</em></div>';}).join('');}
+ +prog.set.map(x=>{const M=MPOOL[x.id];return '<div class="mrow'+(x.done?' ok':'')+'">'+ico(M.ico)+'<span>'+M.t(x.goal)+'</span><em>'+(x.done?'✓':x.n+'/'+x.goal+'<i class="mch">'+K.chestArt('plata')+'</i>')+'</em></div>';}).join('');
+ K.drawHomeChest($('chestBtn'));}
+$('mission').addEventListener('click',()=>{audio();SFX.tap();K.openMisiones(ctx,{prog,pool:MPOOL,mult:l=>1+Math.min(9,l),coins:l=>150*l,icon:k=>ico(k)});});
+$('chestBtn').addEventListener('click',e=>{e.stopPropagation();audio();SFX.tap();K.openCofres(ctx,drawHome);});
+setInterval(()=>{if(menuOpen)K.drawHomeChest($('chestBtn'));},5000);
 const tops=store.get('tops',[]);
 // marcas de los vehículos sobre la barra de avance
 {const pr=$('progress');rides.forEach(r=>pr.insertAdjacentHTML('beforeend',ico({boat:'boat',balloon:'balloon',train:'train'}[r.type],'left:'+((START-r.board)/(START-GOAL)*100)+'%')));pr.insertAdjacentHTML('beforeend',ico('gate','left:100%;top:-19px;width:34px;height:34px;margin-left:-24px'));}
@@ -1667,10 +1670,10 @@ $('menu').addEventListener('click',e=>{if(!e.target.closest('#mSet,#mGear'))$('m
 $('walletChip').addEventListener('click',()=>$('openShop').click());
 // la barra inferior queda fija sobre los paneles: marca la sección abierta y tocar otra cierra la actual
 {const NAVS=[['shop','openShop'],['scores','openScores'],['mapPanel','navMap']];
- const open=()=>{const o=id=>$(id).style.display==='block';for(const[id,b]of NAVS)if(o(id))return b;return document.querySelector('.panel.pva')?'openAlbum':'navHome';};
+ const open=()=>{const o=id=>$(id).style.display==='block';for(const[id,b]of NAVS)if(o(id))return b;return document.querySelector('.panel.pva')?'openAlbum':document.querySelector('.panel.pvk')?'pvk':'navHome';}; // pvk = cofres / misiones (sin botón propio en la barra)
  const sync=()=>{const on=open();$('menu').classList.toggle('pnl',on!=='navHome');document.body.classList.toggle('pnlopen',on!=='navHome');
   document.querySelectorAll('#mNav button').forEach(b=>{const a=b.id===on;b.classList.toggle('on',a);if(a)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});};
- const closeAll=()=>{NAVS.forEach(([id])=>{$(id).style.display='none';});document.querySelectorAll('.panel.pva').forEach(e=>e.remove());sync();};
+ const closeAll=()=>{NAVS.forEach(([id])=>{$(id).style.display='none';});document.querySelectorAll('.panel.pva,.panel.pvk').forEach(e=>e.remove());sync();};
  $('mNav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='navHome'){closeAll();drawHome();}else{closeAll();}},true);
  const mo=new MutationObserver(sync);NAVS.forEach(([id])=>mo.observe($(id),{attributes:true,attributeFilter:['style']}));mo.observe(document.body,{childList:true});
  // precarga los módulos de tienda y mochila cuando el navegador está libre: la primera apertura no espera ni redibuja
@@ -1729,6 +1732,7 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
  get owned(){return owned},saveOwned(){store.set('owned',owned);},get ownedV(){return ownedV},saveOwnedV(){store.set('ownedv',ownedV);},get wear(){return wear},wornOf,thumbOf,currentHero:V.currentHero,setWear(id,sk){if(sk&&sk!=='base')wear[id]=sk;else delete wear[id];store.set('wear',wear);if(id===skinId){applySkin(id);}drawHome();},get skinId(){return skinId},setSkin(id){const i=SKINS.findIndex(k=>k.id===id);if(i>=0&&owned.includes(id))pickSkin(i);},
  get stock(){return stock},saveStock(){store.set('items',stock);},SFX,pop,confetti,toast:t=>showToast(t),buzz,refresh(){drawHome();$('sWallet').textContent=fmtW(wallet);$('mapWallet').textContent=fmtW(wallet);},
  tops:()=>store.get('tops',[]),drawRecords(el){const tops=store.get('tops',[]);el.innerHTML='<div class="top5">'+(tops.length?tops.map((e,i)=>`<div><i>${i+1}</i>${fmt(e.s)}<small>${(THEMES[(e.w-1)%NW]?.place||t('scores.world',{n:e.w})).toUpperCase()}<br>${new Date(e.t).toLocaleDateString(lang)}</small></div>`).join(''):'<p class="note">'+t('scores.empty')+'</p>')+'</div>';}};
+ctx.Ads=Ads;K.initCofres(ctx);
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);{const m=mechDue();if(m.length&&!carry)showMech(m,null);}}
