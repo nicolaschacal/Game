@@ -34,6 +34,7 @@ const GEO = [
   [8.09, 98.91, 'as'], [7.74, 98.77, 'as', 1], [1.35, 103.82, 'as'], [38.64, 34.83, 'eu'], [59.93, 30.34, 'eu'],
   [-37.81, 144.96, 'oc'], [-25.34, 131.04, 'oc', 1], [-1.29, 36.82, 'af'], [-6.16, 39.2, 'af', 1], [-33.92, 18.42, 'af'],
   [35.17, -5.27, 'af'], [37.77, -122.42, 'am'], [19.43, -99.13, 'am'], [52.37, 4.9, 'eu'],
+  [35.10, 129.04, 'as'], [35.79, 129.33, 'as'], // 65 Busan (Gamcheon), 66 Gyeongju (Bulguksa)
 ];
 if (GEO.length !== NW) console.warn('viaje.js: GEO no coincide con DESTINOS', GEO.length, NW);
 export const regionOf = i => GEO[i]?.[2] || 'eu';
@@ -131,7 +132,7 @@ export const ROUTES = [
   { id: 'vietnam', name: 'route.vietnam', cities: ['Hanói', 'Ha Long', 'Hoi An', 'Ho Chi Minh'] },
   { id: 'malaca', name: 'route.malaca', cities: ['Singapur', 'Kuala Lumpur', 'Bali'] },
   { id: 'china', name: 'route.china', cities: ['Pekín', "Xi'an", 'Guilin', 'Shanghái', 'Hong Kong'] },
-  { id: 'corea', name: 'route.corea', cities: ['Seúl', 'Busan', 'Tokio'] },
+  { id: 'corea', name: 'route.corea', cities: ['Seúl', 'Gyeongju', 'Busan', 'Tokio'] },
   { id: 'india', name: 'route.india', cities: ['Delhi', 'Agra', 'Jaipur'] },
   { id: 'seda', name: 'route.seda', cities: ['Estambul', 'Capadocia', 'Samarcanda'] },
   { id: 'transiberiano', name: 'route.transiberiano', cities: ['Moscú', 'San Petersburgo', 'Lago Baikal', 'Vladivostok'] },

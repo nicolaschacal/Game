@@ -210,19 +210,6 @@ L.faro = cut(
     `<path d="${hill(6)}" fill="none"/>` + tws.map(([x, y, k]) => `<path d="M${x} ${y - 18 * k} L${x + 4 * k} ${y - 16 * k} L${x + 4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 18 * k} L${x + 7.4 * k} ${y - 14 * k} L${x + 6 * k} ${y - 14 * k} L${x + 6 * k} ${y - 1} L${x} ${y - 1}Z" fill="#B99E74" opacity=".5"/><path d="M${x - 2 * k} ${y - 1} L${x - 2 * k} ${y - 6 * k} Q${x} ${y - 8.4 * k} ${x + 2 * k} ${y - 6 * k} L${x + 2 * k} ${y - 1}Z" fill="#7A6442"/><rect x="${x - 1.4 * k}" y="${y - 12 * k}" width="${2.8 * k}" height="${3.4 * k}" rx="1" fill="#7A6442"/>`).join('')
     + pts.slice(1).map((p, i) => i % 2 ? '' : `<path d="M${pts[i][0]} ${pts[i][1] - 2} L${p[0]} ${p[1] - 2}" stroke="#A88E66" stroke-width="1.6" stroke-dasharray="3 3" fill="none"/>`).join('')
     + ``); }
-// Ciudad Prohibida (Pekín): puerta del Mediodía, pabellón de doble techo dorado sobre el muro rojo con tres arcos y dos pabellones laterales.
-// SIN suelo propio: el muro baja hasta el borde del recorte y las colinas del destino (FORE) tapan su pie y sus extremos
-{ const eave = (x0, x1, y, d, c) => `<path d="M${x0} ${y + 2} Q${x0 + d * .5} ${y + 1} ${x0 + d} ${y - 6} L${x1 - d} ${y - 6} Q${x1 - d * .5} ${y + 1} ${x1} ${y + 2} L${x1 - 4} ${y + 4} L${x0 + 4} ${y + 4}Z" fill="${c}"/>`;
-  const side = x => `<rect x="${x - 9}" y="62" width="18" height="10" fill="#C23A2C"/>` + eave(x - 14, x + 14, 58, 6, '#EDB53E') + `<rect x="${x - 7}" y="50" width="14" height="3" fill="#D9A032"/>`;
-  L.prohibida = cut(`<path d="M4 120 L4 74 L116 74 L116 120Z" fill="#B8382A"/><rect x="2" y="70" width="116" height="5" fill="#8E3226"/>`
-    + side(16) + side(104) + `<rect x="24" y="67" width="72" height="4" fill="#EFE8DA"/><rect x="28" y="48" width="64" height="19" fill="#C8402E"/>` + eave(12, 108, 46, 12, '#EDB53E')
-    + `<rect x="36" y="32" width="48" height="12" fill="#C8402E"/>` + eave(22, 98, 30, 12, '#F2C14E') + `<rect x="38" y="18" width="44" height="5" fill="#E2A836"/><path d="M36 23 L38 16 L41 18 L41 23Z M84 23 L82 16 L79 18 L79 23Z" fill="#E2A836"/>`,
-    [44, 60, 76].map(x => `<path d="M${x - 5} 120 L${x - 5} 94 Q${x} 87 ${x + 5} 94 L${x + 5} 120Z" fill="#5A2A22"/>`).join('')
-    + `<path d="M4 80 L116 80" stroke="#9A2E24" stroke-width="1.4"/><rect x="4" y="74" width="112" height="2.4" fill="#E2A836" opacity=".7"/>`
-    + [32, 40, 48, 56, 64, 72, 80, 88].map(x => `<rect x="${x - 1}" y="50" width="2" height="17" fill="#8E2A20"/>`).join('') + `<path d="M28 50 L92 50" stroke="#2F6A6A" stroke-width="2.4"/><path d="M36 34 L84 34" stroke="#2F6A6A" stroke-width="2"/>`
-    + [40, 48, 56, 64, 72, 80].map(x => `<rect x="${x - 1}" y="35" width="2" height="9" fill="#8E2A20"/>`).join('')
-    + `<path d="M18 46 Q40 44 60 44 Q80 44 102 46 M30 30 Q46 28 60 28 Q74 28 90 30" stroke="#C99A2E" stroke-width="1.4" fill="none"/><path d="M60 40 L108 48 L104 50 L60 50Z M60 26 L98 32 L94 34 L60 34Z" fill="#C99A2E" opacity=".35"/>`
-    + [16, 104].map(x => `<rect x="${x - 1}" y="62" width="2" height="10" fill="#8E2A20"/><path d="M${x} 52 L${x + 12} 58 L${x + 8} 62 L${x} 62Z" fill="#C99A2E" opacity=".35"/>`).join('')); }
 
 const mix = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
 // ── Monumentos de la tanda de ciudades nuevas (mismo formato cut()) ──
@@ -231,15 +218,6 @@ const M = {};
 const win = (x, y, cols, rows, c = '#FFE9A8', dx = 5, dy = 7, w = 2.6, h = 3.6) => { let s = ''; for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) s += `<rect x="${x + i * dx}" y="${y + j * dy}" width="${w}" height="${h}" fill="${c}"/>`; return s; };
 const shade = (c, t) => mix(c, '#3A2A3E', t);
 const lant = (x, y, c, r = 3.2) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.25}" fill="${c}"/><rect x="${x - r * .55}" y="${y - r * 1.5}" width="${r * 1.1}" height="${r * .5}" fill="#8A5F38"/>`;
-// 1 Hanói: casas tubo angostas con balcones y guirnalda de faroles rojos
-M.hanoi = cut(
-  `<rect x="4" y="66" width="16" height="44" fill="#E8D6B0"/><rect x="20" y="36" width="26" height="74" fill="#F2C35A"/><path d="M17 38 L33 25 L49 38Z" fill="#9A4E32"/>`
-  + `<rect x="46" y="22" width="26" height="88" fill="#7FB7AE"/><path d="M43 24 L59 11 L75 24Z" fill="#9A4E32"/><rect x="72" y="44" width="26" height="66" fill="#F0A07A"/><rect x="70" y="40" width="30" height="5" fill="#9A4E32"/><rect x="98" y="58" width="18" height="52" fill="#E8D6B0"/>`
-  + [[14, 62], [36, 70], [60, 74], [84, 70], [106, 64]].map(([x, y], i) => lant(x, y, i % 2 ? '#E8452C' : '#F2B937')).join(''),
-  `<path d="M4 58 Q60 78 116 60" stroke="#4A3F45" stroke-width="1.1" fill="none"/>` + [[20, 56], [46, 46], [72, 64]].map(([x, y]) => `<rect x="${x}" y="${y}" width="26" height="3" fill="#6B4A2E" opacity=".75"/><rect x="${x}" y="${y + 22}" width="26" height="3" fill="#6B4A2E" opacity=".75"/>`).join('')
-  + win(24, 42, 3, 1, '#3F7F6A', 7, 0, 4, 9) + win(50, 28, 3, 1, '#F6F2EA', 7, 0, 4, 10) + win(50, 52, 3, 1, '#F6F2EA', 7, 0, 4, 9) + win(76, 50, 3, 1, '#3F7F6A', 7, 0, 4, 9) + win(24, 84, 3, 1, '#3F7F6A', 7, 0, 4, 9) + win(76, 82, 3, 1, '#3F7F6A', 7, 0, 4, 9)
-  + `<rect x="28" y="96" width="10" height="14" fill="#6B4A2E"/><rect x="54" y="94" width="10" height="16" fill="#6B4A2E"/><rect x="80" y="96" width="10" height="14" fill="#6B4A2E"/><rect x="40" y="36" width="6" height="74" fill="#C99A3A" opacity=".35"/><rect x="66" y="22" width="6" height="88" fill="#4E8A80" opacity=".35"/><rect x="92" y="44" width="6" height="66" fill="#C9775A" opacity=".35"/>`
-  + `<circle cx="47" cy="44" r="3" fill="#5E9A4C"/><circle cx="73" cy="66" r="3" fill="#5E9A4C"/><circle cx="23" cy="78" r="3" fill="#E58BA5"/>` + win(7, 72, 2, 3, '#B8A684', 6, 10, 3, 5) + win(101, 64, 2, 4, '#B8A684', 7, 10, 3, 5));
 // 4 Siem Reap: Angkor Wat, cinco torres de capullo de loto y estanque
 const bud = (x, b, h, w, c) => `<path d="M${x - w} ${b} L${x - w} ${b - h * .45} Q${x - w * .9} ${b - h * .82} ${x} ${b - h} Q${x + w * .9} ${b - h * .82} ${x + w} ${b - h * .45} L${x + w} ${b}Z" fill="${c}"/>`;
 M.angkor = cut(
@@ -257,16 +235,6 @@ M.chiang = cut(
   `<path d="M61 58 Q80 66 78 88 L62 88Z M61 8 L67 52 L61 52Z M104 82 Q112 86 112 98 L104 98Z" fill="#C99A2E" opacity=".55"/><path d="M45 80 Q61 74 77 80 M47 72 Q61 66 75 72 M56 40 h10 M57 28 h8" stroke="#FFE27A" stroke-width="1.6" fill="none"/>`
   + `<path d="M36 100 h50 M41 92 h40" stroke="#C99A2E" stroke-width="1.6"/><path d="M18 62 L18 56 M18 54 L19 49" stroke="#F2B937" stroke-width="1.6"/><path d="M-2 88 L40 88" stroke="#F2B937" stroke-width="1.8"/>`
   + `<rect x="13" y="94" width="10" height="26" rx="5" fill="#8A5F38"/>` + win(5, 92, 2, 1, '#C99A2E', 24, 0, 3, 8));
-// 6 Krabi: torre de caliza (karst) con su copa de selva. SIN agua ni suelo propio: el mar y las lomas los pone el paisaje del destino (FORE)
-M.krabi = cut(
-  `<path d="M34 120 Q30 62 46 32 Q62 12 82 22 Q100 34 98 66 Q102 92 106 120Z" fill="#BBA68A"/>`,
-  `<path d="M46 32 Q62 12 82 22 Q92 28 96 40 Q80 26 66 30 Q54 30 46 40Z" fill="#5E9A5A"/><path d="M98 66 Q102 92 106 120 L92 120 Q94 80 90 62Z" fill="#8E7A62" opacity=".5"/><path d="M58 40 L60 62 M70 36 L69 54 M80 40 L82 58 M50 70 L52 90 M76 72 L78 92" stroke="#9A866C" stroke-width="2" stroke-linecap="round"/>`);
-// 7 Phi Phi: dos acantilados que encierran la bahía y una palmera. SIN agua ni playa propias: el paisaje del destino (FORE) tapa los pies
-M.phiphi = cut(
-  `<path d="M2 120 L6 52 Q12 24 26 20 Q38 22 40 46 L46 120Z" fill="#A39278"/><path d="M76 120 L80 58 Q86 30 100 28 Q114 32 116 60 L118 120Z" fill="#978670"/>`
-  + `<path d="M58 120 Q56 82 64 66 L68 67 Q62 84 62 120Z" fill="#B98D5A"/><path d="M66 66 Q52 56 40 64 Q54 62 64 70Z M66 66 Q80 54 92 62 Q80 62 68 70Z M66 66 Q62 52 52 48 Q62 56 64 68Z M66 66 Q74 52 84 50 Q74 58 68 68Z" fill="#4FA85A"/>`,
-  `<path d="M6 52 Q12 24 26 20 Q38 22 40 46 Q30 34 22 36 Q12 40 6 52Z M80 58 Q86 30 100 28 Q114 32 116 60 Q108 44 98 42 Q88 44 80 58Z" fill="#5E9A5A"/><path d="M40 46 L46 120 L34 120 Q36 70 32 52Z M116 60 L118 120 L106 120 Q108 76 104 60Z" fill="#6E5E4C" opacity=".45"/>`
-  + `<path d="M14 64 L16 80 M26 56 L24 72 M90 70 L92 86 M102 64 L100 78" stroke="#8A7A62" stroke-width="2" stroke-linecap="round"/>`);
 // 8 Singapur: tres superárboles frente al Marina Bay Sands
 const stree = (x, top, w, h) => `<path d="M${x - w} ${top} L${x + w} ${top} L${x + w * .22} ${top + 14} L${x - w * .22} ${top + 14}Z" fill="#9A7AC4"/><path d="M${x - w * .22} ${top + 12} L${x - 2.4} ${top + h * .7} L${x - 5} 110 L${x + 5} 110 L${x + 2.4} ${top + h * .7} L${x + w * .22} ${top + 12}Z" fill="#7A5C9A"/>`;
 M.singapur = cut(
@@ -344,7 +312,7 @@ const TABLA = [
   ['BAMBÚ', 'Kioto', 'Japón', LANDMARKS.pagoda, '#E3F0C8', '#D2E4AA', '#A0C672', '#9FBF6A', '#A9C873', '#5F9447', 'dune', 'bamboo', 11.5, 'oriente'],
   ['CIUDAD', 'Tokio', 'Japón', L.tokyo, '#FBE3E6', '#F2C4CE', '#DDA6B8', '#BDB9C4', PAV, VEREDA, 'city', 'petals', 10.5, 'moderna !cerezo'],
   ['PALACIO', 'Seúl', 'Corea del Sur', L.palacio, '#FBE6E4', '#F2C8CE', '#DEA8B6', '#C9C2B4', '#C9C2AE', '#A59D86', 'peak', 'petals', 10.5, 'oriente'],
-  ['MURALLA', 'Pekín', 'China', L.prohibida, '#E8F0D8', '#CFE0B4', '#A8C886', '#B7C596', '#C9C2AE', '#A59D86', 'peak', 'lanterns', 14.5, 'oriente rocaGris'],
+  fila(FICHAS['Pekín']), // ficha + kit (fichas-ciudades.js)
   ['CIUDAD', 'Shanghái', 'China', L.perla, '#EFE4F2', '#DCC8E4', '#C4A8D4', '#B8B4BE', PAV, VEREDA, 'city', 'lanterns', 15.5, 'moderna neon'],
   ['TEMPLOS', 'Bangkok', 'Tailandia', L.watarun, '#FBEAD8', '#F4D4B4', '#E8BA90', '#D9C8A8', '#C9BCA4', '#A89A80', 'dune', 'petals', 15.5, 'oriente'],
   ['CIUDAD', 'Kuala Lumpur', 'Malasia', L.petronas, '#E0EEF4', '#BCD6E2', '#98BCD0', '#B0B8BC', PAV, VEREDA, 'city', 'leaves', 13, 'moderna !palmeraTropical'],
@@ -386,15 +354,15 @@ const TABLA = [
   ['NIEVE', 'Ushuaia', 'Argentina', L.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'nieve'],
   ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'tropical moaiChico'],
   ['COSTA', 'Sídney', 'Australia', L.opera, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 11, 'tropical velero'],
-  ['CASTILLO', 'Osaka', 'Japón', LANDMARKS.pagoda, '#FBE6D6', '#F2CBB4', '#E0A894', '#BDB9A8', PAV, VEREDA, 'city', 'petals', 17, 'moderna !cerezo'], // Osaka: pagoda de Kioto con paleta de atardecer y ciudad de Tokio (variación mínima; va al final para no mover los índices guardados)
+  fila(FICHAS['Osaka']), // ficha + kit (fichas-ciudades.js): Castillo de Osaka
   // ── ciudades nuevas (se agregan al final: los índices guardados no cambian). El último campo puede ser una lista de 3 adornos (grande, chico, farol) en vez de un bioma ──
-  ['FAROLES', 'Hanói', 'Vietnam', NM.hanoi, '#FBEFD8', '#F2D8B8', '#E0B898', '#C9C0B0', '#B8AC9C', '#958A7A', 'city', 'leaves', 15, ['arbolUrbano', 'puesto', 'farolRojo']],
+  fila(FICHAS['Hanói']), // ficha + kit (fichas-ciudades.js): lago Hoàn Kiếm
   fila(FICHAS['Ha Long']), // ficha + kit (fichas-ciudades.js)
   fila(FICHAS['Hoi An']), // ficha + kit (fichas-ciudades.js)
   ['TEMPLOS', 'Siem Reap', 'Camboya', NM.angkor, '#FBE4CC', '#F2CDA8', '#DDAE84', '#9FBF6A', '#C9BCA4', '#A89A80', 'dune', 'leaves', 6.9, ['palmeraTropical', 'loto', 'farolSelva']],
   ['TEMPLOS', 'Chiang Mai', 'Tailandia', NM.chiang, '#EEF2D8', '#CFE0B0', '#A6C48A', '#9FBF6A', '#D9C8A8', '#A89A80', 'peak', 'petals', 16, ['pino', 'loto', 'farolPapel']],
-  ['COSTA', 'Krabi', 'Tailandia', NM.krabi, '#DDF3F5', '#B4E0E4', '#8CCBD4', '#F2E3B5', '#F4E6BC', '#E2CE97', 'peak', 'bubbles', 12, ['palmeraTropical', 'estrella', 'farolTiki']],
-  ['ISLA', 'Phi Phi', 'Tailandia', NM.phiphi, '#D8F2F2', '#A9DCDC', '#80C6C8', '#F4E6BC', '#F6EAC6', '#E2CE97', 'dune', 'bubbles', 14, ['sombrilla', 'velero', 'farolTiki']],
+  fila(FICHAS['Krabi']), // ficha + kit (fichas-ciudades.js)
+  fila(FICHAS['Phi Phi']), // ficha + kit (fichas-ciudades.js)
   ['JARDÍN', 'Singapur', 'Singapur', NM.singapur, '#EFE4F2', '#DCC8E4', '#C4A8D4', '#8FB87A', '#A4A0AE', '#827E8C', 'city', 'leaves', 18.6, ['palmeraTropical', 'monstera', 'farolModerno']],
   fila(FICHAS['Capadocia']), // ficha + kit (fichas-ciudades.js)
   ['CANALES', 'San Petersburgo', 'Rusia', NM.peter, '#E8F0F6', '#CCDCEA', '#AFC4DA', '#C9C2B4', '#A8A098', '#88807A', 'city', 'leaves', 13, ['castano', 'arbusto', 'farolEuropeo']],
@@ -407,12 +375,14 @@ const TABLA = [
   fila(FICHAS['San Francisco']), // ficha + kit (fichas-ciudades.js)
   ['CIUDAD', 'Ciudad de México', 'México', NM.cdmx, '#F6E4EC', '#E8C8D8', '#D4A8C2', '#C9C2B4', '#C2B49C', '#A0927A', 'city', 'petals', 15, ['jacaranda', 'cactus', 'farolEuropeo']],
   ['CANALES', 'Ámsterdam', 'Países Bajos', NM.amsterdam, '#E6ECF2', '#C8D2DE', '#A8B8CA', '#B4B8BE', '#A8A098', '#88807A', 'city', 'leaves', 14, ['castano', 'bici', 'farolEuropeo']],
+  fila(FICHAS['Busan']), // 65 · ficha + kit (fichas-ciudades.js): aldea de Gamcheon
+  fila(FICHAS['Gyeongju']), // 66 · ficha + kit (fichas-ciudades.js): templo Bulguksa
 ];
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base
-const LM_ESCALA = { 'Pekín': .88, 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
+const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35, 'Kilimanjaro': 1.15 };
 // Desplazamiento horizontal opcional del monumento (unidades de mundo; negativo = hacia la izquierda/centro): evita que se corte contra el borde derecho de la pantalla
-const LM_X = { 'Pekín': -1.3, 'Zanzíbar': -.8, 'Ciudad del Cabo': -.8, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0 };
+const LM_X = { 'Zanzíbar': -.8, 'Ciudad del Cabo': -.8, 'Kilimanjaro': -1.8, 'Salto Ángel': -1.0 };
 // Capas DELANTERAS del paisaje por destino (opcional): se dibujan entre el monumento y la cámara para "meterlo" en la escena
 // (como Kioto o Buenos Aires, donde el suelo y las colinas tapan la base). Usar cuando el recorte del monumento NO trae suelo propio.
 // Coordenadas relativas al monumento: x = fracción de su ancho (0 = borde izquierdo, 1 = derecho; puede salirse), dz = cuánto más
@@ -427,25 +397,10 @@ const JIRON = `<svg viewBox="0 0 120 120"><path d="M6 108 Q14 100 26 103 Q34 95 
 const FORE = {
   // San Francisco ya no está acá: su FORE lo arma solo el kit (kit-ciudades.js) y es la plantilla de las lomas de todas las fichas
   // Mismo esquema para los recortes sin suelo propio: loma baja al centro (pie del monumento) + lomas laterales (extremos) + capa más cercana y oscura
-  'Pekín': [
-    { t: 'hill', x: .5, w: 7, h: 1.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie del muro y de los tres arcos
-    { t: 'hill', x: -.02, w: 6, h: 2.4, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 6, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, // extremos del muro
-    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
-  ],
   'Chiang Mai': [
     { t: 'hill', x: .55, w: 7, h: 1.3, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie del chedi
     { t: 'hill', x: .02, w: 6, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 1.9, c: [2, 3, .5], dz: .5, kind: 'dune' }, // templo y chedi chico
     { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.4, c: 3, dz: .8, kind: 'dune' },
-  ],
-  'Krabi': [
-    { t: 'hill', x: .6, w: 7, h: 1.5, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de la torre de caliza
-    { t: 'hill', x: .15, w: 6, h: 2.1, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.0, w: 5, h: 2.3, c: [2, 3, .5], dz: .5, kind: 'dune' },
-    { t: 'hill', x: -.1, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
-  ],
-  'Phi Phi': [
-    { t: 'hill', x: .5, w: 6, h: 1.5, c: [2, 3, .7], dz: .45, kind: 'dune' }, // pie de la palmera entre los acantilados
-    { t: 'hill', x: .05, w: 5, h: 2.2, c: [2, 3, .5], dz: .5, kind: 'dune' }, { t: 'hill', x: .98, w: 5, h: 2.1, c: [2, 3, .5], dz: .5, kind: 'dune' },
-    { t: 'hill', x: -.15, w: 7, h: 1.6, c: 3, dz: .8, kind: 'dune' }, { t: 'hill', x: 1.15, w: 6, h: 1.5, c: 3, dz: .8, kind: 'dune' },
   ],
   'Zanzíbar': [
     { t: 'hill', x: .7, w: 7, h: 1.1, c: [2, 3, .7], dz: .5, kind: 'dune' }, { t: 'hill', x: 1.02, w: 5, h: 2.0, c: [2, 3, .5], dz: .5, kind: 'dune' }, // pie de la casa

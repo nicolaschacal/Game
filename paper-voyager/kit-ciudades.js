@@ -196,7 +196,7 @@ export function farolitos({ x0 = 10, x1 = 110, y = 60, comba = 6, n = 7, colores
 // Peñasco de caliza (karst): dedal alto apenas asimétrico, con estratos, sombra derecha y copa de vegetación
 const karstD = (x, b, h, w) => `M${f1(x - w)} ${b} C${f1(x - w * 1.08)} ${f1(b - h * .55)} ${f1(x - w * .8)} ${f1(b - h * .97)} ${f1(x - w * .08)} ${f1(b - h)} C${f1(x + w * .62)} ${f1(b - h * 1.02)} ${f1(x + w * .98)} ${f1(b - h * .62)} ${f1(x + w)} ${b}Z`;
 const karstS = (x, b, h, w) => `M${f1(x + w * .2)} ${f1(b - h * .99)} C${f1(x + w * .7)} ${f1(b - h * .96)} ${f1(x + w * .98)} ${f1(b - h * .62)} ${f1(x + w)} ${b} L${f1(x + w * .45)} ${b} C${f1(x + w * .6)} ${f1(b - h * .5)} ${f1(x + w * .55)} ${f1(b - h * .85)} ${f1(x + w * .2)} ${f1(b - h * .99)}Z`;
-export function karst({ x = 60, base = 118, h = 70, w = 16, c = '#93B09C', veg = '#6F956F', seed = 1 } = {}) {
+export function karst({ x = 60, base = 118, h = 70, w = 16, c = '#93B09C', veg = '#6F956F', seed = 1, vetas } = {}) {
   semilla(seed * 31 + 7); const T = tonos(c), top = base - h;
   let d = P(karstS(x, base, h, w), T.som, ' opacity=".55"');
   // copa de selva: dosel de puntas suaves que baja un poco por los costados
@@ -207,6 +207,9 @@ export function karst({ x = 60, base = 118, h = 70, w = 16, c = '#93B09C', veg =
   // estratos de la roca y manchas de verde colgante
   for (let i = 0; i < 4; i++) { const yy = top + h * (.38 + i * .14), x1 = x - w * (.75 - rnd() * .2), x2 = x + w * (.1 + rnd() * .4); d += Ln(`M${f1(x1)} ${f1(yy)} Q${f1((x1 + x2) / 2)} ${f1(yy - 1.6)} ${f1(x2)} ${f1(yy + .6)}`, T.lin, 1, ' opacity=".55"'); }
   for (let i = 0; i < 4; i++) { const yy = top + h * (.3 + rnd() * .35), xx = x - w * .65 + rnd() * w * 1.1; d += Ln(`M${f1(xx)} ${f1(yy)} q${f1(-.6)} ${f1(3)} ${f1(.2)} ${f1(5 + rnd() * 4)}`, veg, 1.6, ' opacity=".6"'); }
+  // vetas: chorreaduras de color (la caliza naranja de Krabi), recortadas a la roca
+  if (vetas) { let v = ''; for (let i = 0; i < 7; i++) { const xx = x - w * .8 + rnd() * w * 1.5, y1 = top + h * (.22 + rnd() * .2); v += Ln(`M${f1(xx)} ${f1(y1)} q${f1((rnd() - .5) * 2)} ${f1(h * .2)} ${f1((rnd() - .5) * 2.4)} ${f1(h * (.3 + rnd() * .35))}`, vetas, 1.4 + rnd() * 1.6, ' opacity=".4"'); }
+    d += `<g clip-path="url(#kc${seed})">${v}</g>`; }
   d += Ln(`M${f1(x - w * .7)} ${f1(top + h * .35)} Q${f1(x - w * .78)} ${f1(top + h * .6)} ${f1(x - w * .74)} ${f1(top + h * .85)}`, T.luz, 1.3);
   return pieza(P(karstD(x, base, h, w), c), d, [x - w * 1.02, top - 2.5, x + w, base]);
 }
@@ -282,7 +285,144 @@ export function agua({ x0 = 4, x1 = 116, y0 = 100, y1 = 120, c = '#A9CBC6', bril
   return pieza(f, d, [x0, y0, x1, y1]);
 }
 
-export const PIEZAS = { puenteColgante, puenteArco, torreReloj, cupula, techoTeja, fachada, casas, farolitos, karst, chimenea, macizo, junco, globo, palmera, agua };
+// ───────────── Tanda 2: arquitectura de Asia oriental, castillos, costa de caliza ─────────────
+
+// Muro (con puertas): pared de y a base, albardilla de teja arriba y arcos de puerta oscuros con su dovela clara.
+//   piedra: true → muro de sillares (ishigaki / terraza de piedra): hiladas desparejas en vez de friso; talud: cuánto se abre abajo cada costado
+//   arcos: [{ x, w, h }] (h desde la base). cTeja: color de la albardilla (sin cTeja, cornisa clara)
+export function muro({ x0 = 10, x1 = 110, y = 70, base = 118, c = '#B46252', arcos = [], piedra = false, talud = 0, cTeja, seed = 4, pilastras = 0 } = {}) {
+  semilla(seed); const T = tonos(c), w = x1 - x0, h = base - y;
+  const d0 = talud ? `M${f1(x0 - talud)} ${base} Q${f1(x0 - talud * .12)} ${f1(base - h * .45)} ${f1(x0)} ${f1(y)} L${f1(x1)} ${f1(y)} Q${f1(x1 + talud * .12)} ${f1(base - h * .45)} ${f1(x1 + talud)} ${base}Z` : `M${f1(x0)} ${base} V${f1(y)} H${f1(x1)} V${base}Z`;
+  let f = P(d0, c), d = '';
+  if (cTeja) { const TT = tonos(cTeja); f += P(`M${f1(x0 - 2.5)} ${f1(y + 1)} L${f1(x0 + 1)} ${f1(y - 3.2)} L${f1(x1 - 1)} ${f1(y - 3.2)} L${f1(x1 + 2.5)} ${f1(y + 1)}Z`, cTeja); d += R(x0 - 2, y + .2, w + 4, 1, TT.osc) + Ln(`M${f1(x0 + 1)} ${f1(y - 2.6)} H${f1(x1 - 1)}`, TT.luz, .9); }
+  else if (!piedra) { f += R(x0 - 1.5, y - 2.4, w + 3, 3, T.luz); }
+  if (piedra) { // hiladas de sillares desparejos, con juntas trabadas
+    for (let yy = y + 4, k = 0; yy < base; yy += 4.6 + rnd() * 1.4, k++) { const xa = x0 - (talud ? talud * Math.pow((yy - y) / h, 2) * .9 : 0) + 1, xb = x1 + (talud ? talud * Math.pow((yy - y) / h, 2) * .9 : 0) - 1;
+      d += Ln(`M${f1(xa)} ${f1(yy)} Q${f1((xa + xb) / 2)} ${f1(yy + (rnd() - .5) * 1.2)} ${f1(xb)} ${f1(yy)}`, T.lin, .7, ' opacity=".5"');
+      for (let xx = xa + 2 + rnd() * 5; xx < xb - 2; xx += 5 + rnd() * 6) d += Ln(`M${f1(xx)} ${f1(yy)} v${f1(-3.6 - rnd())}`, T.lin, .6, ' opacity=".45"'); }
+    for (let i = 0; i < 5; i++) { const xx = x0 + w * (.08 + rnd() * .8), yy = y + h * (.15 + rnd() * .7); d += R(xx, yy, 3 + rnd() * 4, 2.6, T.luz, ' opacity=".5"'); } }
+  else { d += R(x0, y + 4, w, 1, T.som, ' opacity=".6"'); for (let yy = y + 12; yy < base - 4; yy += 11) d += Ln(`M${f1(x0 + 1)} ${f1(yy)} H${f1(x1 - 1)}`, T.lin, .6, ' opacity=".35"'); }
+  // pilastras: postes de piedra con viga (terrazas de Bulguksa) o pilastras apenas marcadas y zócalo en sombra (muros rojos)
+  for (let i = 1; i < pilastras; i++) { const xx = x0 + w * i / pilastras;
+    d += piedra ? R(xx - 1.8, y + 1, 3.6, h, T.luz, ' opacity=".75"') + R(xx + 1.8, y + 1, .9, h, T.som, ' opacity=".5"') : R(xx - 2.2, y + 6, 4.4, h - 6, T.som, ' opacity=".22"') + R(xx - 2.2, y + 6, 1, h - 6, T.luz, ' opacity=".35"'); }
+  if (pilastras && piedra) d += R(x0, y + h * .42, w, 2.6, T.luz, ' opacity=".7"') + R(x0, y + h * .42 + 2.6, w, .8, T.som, ' opacity=".5"');
+  if (pilastras && !piedra) d += R(x0, base - h * .22, w, h * .22, T.som, ' opacity=".28"') + R(x0, base - h * .22, w, 1.2, T.luz, ' opacity=".6"');
+  arcos.forEach(a => { const ay = base - a.h; d += arco(a.x - a.w / 2, ay, a.w, a.h + 1, '#4E3634') + Ln(`M${f1(a.x - a.w / 2 - 1.2)} ${f1(ay + a.w / 2)} A${f1(a.w / 2 + 1.2)} ${f1(a.w / 2 + 1.2)} 0 0 1 ${f1(a.x + a.w / 2 + 1.2)} ${f1(ay + a.w / 2)}`, T.luz, 1.3)
+    + Ln(`M${f1(a.x)} ${f1(ay + a.w * .5)} V${base}`, '#3A2A2C', .7, ' opacity=".6"'); });
+  d += talud ? P(`M${f1(x1 - w * .16)} ${f1(y)} L${f1(x1)} ${f1(y)} Q${f1(x1 + talud * .12)} ${f1(base - h * .45)} ${f1(x1 + talud)} ${base} L${f1(x1 - w * .16 + talud * .5)} ${base}Z`, T.som, SOMBRA) : R(x1 - w * .16, y, w * .16, h, T.som, SOMBRA);
+  return pieza(f, d, [x0 - talud - 2.5, y - (cTeja ? 3.2 : 2.4), x1 + talud + 2.5, base]);
+}
+
+// Pabellón de madera (Ciudad Prohibida, templos coreanos, puertas): cuerpo con columnas y celosías, uno o dos techos de teja curva.
+//   cBanda: friso pintado bajo el alero (dancheong coreano, viga verde china); techos: 1 | 2 (el de arriba más angosto)
+export function pabellon({ x0 = 20, x1 = 100, y = 70, base = 118, c = '#B8665A', cTecho = '#8C8E96', cCol, cBanda, columnas = 6, techos = 1, alto, vuelo = 6, celosia = true, alto2 } = {}) {
+  const T = tonos(c), w = x1 - x0, al = alto ?? Math.min(16, w * .22), cc = cCol ?? shade(c, .14), cw = w / columnas;
+  let fBody = R(x0, y, w, base - y, c), d = '', fUp = '', dUp = '', fRoof2 = '', dRoof2 = '';
+  if (cBanda) d += R(x0, y + 1.6, w, 2.8, cBanda) + R(x0, y + 4.4, w, .9, luz(cBanda, .45));
+  for (let i = 0; i <= columnas; i++) d += R(x0 + i * cw - 1.1, y + 3, 2.2, base - y - 3, cc);
+  if (celosia) for (let i = 0; i < columnas; i++) { const vx = x0 + i * cw + cw * .2, vw = cw * .6, vy = y + 7.5, vh = Math.min((base - y) * .42, 15);
+    d += R(vx, vy, vw, vh, T.osc, ' opacity=".5"'); for (let k = 1; k < 4; k++) d += Ln(`M${f1(vx + vw * k / 4)} ${f1(vy)} V${f1(vy + vh)}`, T.luz, .55, ' opacity=".7"'); d += Ln(`M${f1(vx)} ${f1(vy + vh / 2)} H${f1(vx + vw)}`, T.luz, .55, ' opacity=".7"'); }
+  d += R(x1 - w * .2, y, w * .2, base - y, T.som, SOMBRA);
+  const r1 = techoTeja({ x0, x1, y: y + 1, alto: al, c: cTecho, vuelo, curva: vuelo * .7, cumbrera: techos < 2 });
+  let top = y - al - (techos < 2 ? 4.4 : 0);
+  if (techos > 1) { const h2 = alto2 ?? al * .9, ux0 = x0 + w * .17, ux1 = x1 - w * .17, uw = ux1 - ux0, ub = y - al + 1, uy = ub - h2;
+    fUp = R(ux0, uy, uw, ub - uy + 2, c); if (cBanda) dUp += R(ux0, uy + 1.4, uw, 2.4, cBanda);
+    for (let i = 0; i <= 4; i++) dUp += R(ux0 + i * uw / 4 - .9, uy + 3, 1.8, ub - uy - 4, cc);
+    dUp += R(ux1 - uw * .2, uy, uw * .2, ub - uy - 1, T.som, SOMBRA);
+    const r2 = techoTeja({ x0: ux0, x1: ux1, y: uy + 1, alto: al * .9, c: cTecho, vuelo: vuelo * .85, curva: vuelo * .6 }); fRoof2 = r2.f; dRoof2 = r2.d; top = uy - al * .9 - 4.4; }
+  return pieza(fUp + fBody + r1.f + fRoof2, dUp + d + r1.d + dRoof2, [x0 - vuelo, top, x1 + vuelo, base]);
+}
+
+// Torre del homenaje de castillo japonés (tenshu): pisos blancos que se angostan hacia arriba, techos de teja curva verde,
+// el último piso oscuro con friso dorado y los shachihoko dorados en la cumbrera. y0 = donde termina la muralla de piedra.
+// Devuelve además .techos (eje, ancho e y de cada alero) para poner hastiales (hastial) en una capa de adelante.
+export function tenshu({ x = 60, y0 = 84, base = 118, anchos = [58, 48, 40, 32, 24], hp = 11, c = '#EDE6D8', cTecho = '#7C9E92', oro = '#C9A65A', cAlto = '#4E6260' } = {}) {
+  const T = tonos(c), TA = tonos(cAlto); let fW = '', fR = '', d = '', dR = '', yb = base, techos = [];
+  anchos.forEach((w, i) => { const ultimo = i === anchos.length - 1, top = i === 0 ? y0 - hp : yb - hp, cw = ultimo ? cAlto : c, Tw = ultimo ? TA : T;
+    fW += R(x - w / 2, top, w, yb - top + (i ? 1 : 0), cw);
+    // ventanas chicas (con hueco al centro, donde va el hastial del piso de abajo) y sombra derecha
+    const n = Math.max(2, Math.round(w / 9)); for (let k = 0; k < n; k++) { const vx = x - w / 2 + (k + .5) * w / n - 1.4; if (!ultimo && Math.abs(vx + 1.4 - x) < w * .16 && i % 2 === 1) continue; d += R(vx, top + hp * .38, 2.8, hp * .32, ultimo ? oro : '#6A625E', ultimo ? ' opacity=".8"' : ''); }
+    if (ultimo) d += R(x - w / 2, top + hp * .18, w, 1.2, oro) + R(x - w / 2, top + hp * .82, w, 1.2, oro);
+    d += R(x + w / 2 - w * .2, top, w * .2, yb - top, Tw.som, SOMBRA) + R(x - w / 2, top + 1.6, w, 1.4, Tw.osc, ' opacity=".35"');
+    const al = hp * (ultimo ? .85 : .6), r = techoTeja({ x0: x - w / 2 - 1, x1: x + w / 2 + 1, y: top + 1, alto: al, c: cTecho, vuelo: ultimo ? 4.5 : 5, curva: ultimo ? 4 : 3.6, cumbrera: ultimo });
+    fR = r.f + fR; dR += r.d; techos.push({ x, w: w + 2, y: top + 1, alto: al }); // los techos de arriba van debajo de los de abajo
+    if (!ultimo) dR += Ln(`M${f1(x - w / 2 - 4)} ${f1(top + 2.4)} H${f1(x + w / 2 + 4)}`, luz(cTecho, .55), .8, ' opacity=".8"');
+    if (ultimo) { const yr = top + 1 - al - 2.6, xa = x - w / 2 + al * .9 - 2, xb = x + w / 2 - al * .9 + 2; // shachihoko: pececitos dorados de cola levantada
+      dR += [[xa, 1], [xb, -1]].map(([sx, s]) => P(`M${f1(sx)} ${f1(yr)} q${f1(s * 2.6)} -.6 ${f1(s * 2.2)} -3.6 q${f1(-s * .4)} -1.6 ${f1(-s * 1.8)} -2.6 q${f1(s * .2)} 1.8 ${f1(-s * .9)} 3.2Z`, oro)).join('') + Ln(`M${f1(xa + 1)} ${f1(yr + .6)} H${f1(xb - 1)}`, oro, .8, ' opacity=".7"'); }
+    yb = top + 1 - al * .5; });
+  const p = pieza(fW + fR, d + dR, [x - anchos[0] / 2 - 6, yb - 12, x + anchos[0] / 2 + 6, base]); p.techos = techos; return p;
+}
+// Hastial (frontón triangular o curvo sobre un techo: chidori-hafu / kara-hafu). (x, y) = centro de su base, w ancho, h alto
+export function hastial({ x = 60, y = 60, w = 16, h = 8, c = '#EDE6D8', marco = '#7C9E92', oro = '#C9A65A', curvo = false } = {}) {
+  const M = tonos(marco);
+  const out = curvo ? `M${f1(x - w / 2 - 1)} ${f1(y + 1)} Q${f1(x - w * .32)} ${f1(y + .4)} ${f1(x - w * .22)} ${f1(y - h * .6)} Q${f1(x - w * .1)} ${f1(y - h - 1)} ${f1(x)} ${f1(y - h - 1)} Q${f1(x + w * .1)} ${f1(y - h - 1)} ${f1(x + w * .22)} ${f1(y - h * .6)} Q${f1(x + w * .32)} ${f1(y + .4)} ${f1(x + w / 2 + 1)} ${f1(y + 1)}Z`
+    : `M${f1(x - w / 2 - 1.5)} ${f1(y + 1)} Q${f1(x - w * .2)} ${f1(y - h * .35)} ${f1(x)} ${f1(y - h - 1.5)} Q${f1(x + w * .2)} ${f1(y - h * .35)} ${f1(x + w / 2 + 1.5)} ${f1(y + 1)}Z`;
+  const inn = curvo ? `M${f1(x - w * .3)} ${f1(y)} Q${f1(x - w * .14)} ${f1(y - h * .62)} ${f1(x)} ${f1(y - h * .66)} Q${f1(x + w * .14)} ${f1(y - h * .62)} ${f1(x + w * .3)} ${f1(y)}Z`
+    : `M${f1(x - w * .32)} ${f1(y)} L${f1(x)} ${f1(y - h * .72)} L${f1(x + w * .32)} ${f1(y)}Z`;
+  const d = P(inn, c) + P(`M${f1(x)} ${f1(y - h * .7)} L${f1(x + w * .32)} ${f1(y)} L${f1(x)} ${f1(y)}Z`, shade(c, .2), ' opacity=".35"') + C(x, y - h * .3, Math.max(.9, w * .06), oro) + Ln(`M${f1(x - w / 2)} ${f1(y + .4)} H${f1(x + w / 2)}`, M.osc, .8);
+  return pieza(P(out, marco), d, [x - w / 2 - 1.5, y - h - 1.5, x + w / 2 + 1.5, y + 1]);
+}
+
+// Escalinata-puente de piedra (Bulguksa): tramo de escalones de frente, con el ojo de puente en arco a media altura y barandas a los costados
+export function escalinata({ x = 40, w = 12, y = 70, base = 118, c = '#C8BCA8', ojo = .5 } = {}) {
+  const T = tonos(c), h = base - y, yo = y + h * ojo;
+  const f = R(x - w / 2, y, w, h, c) + R(x - w / 2 - 1.6, y - 2, 1.6, h + 2, T.luz) + R(x + w / 2, y - 2, 1.6, h + 2, T.luz);
+  let d = ''; for (let yy = y + 2.2; yy < base; yy += 2.4) if (Math.abs(yy - yo) > w * .55) d += Ln(`M${f1(x - w / 2 + .6)} ${f1(yy)} H${f1(x + w / 2 - .6)}`, T.lin, .7, ' opacity=".6"');
+  d += arco(x - w * .36, yo - w * .3, w * .72, w * .66, '#5A4A40') + Ln(`M${f1(x - w * .44)} ${f1(yo + .3)} A${f1(w * .44)} ${f1(w * .44)} 0 0 1 ${f1(x + w * .44)} ${f1(yo + .3)}`, T.luz, 1)
+    + R(x + w * .2, y, w * .3, h, T.som, SOMBRA);
+  return pieza(f, d, [x - w / 2 - 1.6, y - 2, x + w / 2 + 1.6, base]);
+}
+
+// Puente curvo de madera (puente Thê Húc de Hanói, puentes de jardín): tablero en arco, baranda con postes y patas que bajan al agua
+export function puenteCurvo({ x0 = 6, x1 = 70, y = 88, alto = 10, c = '#B8665A', base = 118, patas = 5, grosor = 3.2 } = {}) {
+  const T = tonos(c), m = (x0 + x1) / 2, yc = y - alto * 2;
+  const curva = (dy, dir = 1) => dir > 0 ? `M${f1(x0)} ${f1(y + dy)} Q${f1(m)} ${f1(yc + dy)} ${f1(x1)} ${f1(y + dy)}` : `L${f1(x1)} ${f1(y + dy)} Q${f1(m)} ${f1(yc + dy)} ${f1(x0)} ${f1(y + dy)}`;
+  let f = P(`${curva(0)} ${curva(grosor, -1).replace(/^L/, 'L')}Z`, c) + P(`${curva(-4.6)} ${curva(-3.4, -1)}Z`, c), d = '';
+  for (let i = 0; i < patas; i++) { const t = (i + .5) / patas, [px, py] = [x0 + (x1 - x0) * t, y + (yc - y) * 2 * t * (1 - t)]; f += R(px - 1, py + grosor - .5, 2, base - py, c); d += R(px + .3, py + grosor, .7, base - py, T.som, SOMBRA); }
+  for (let i = 0; i <= 14; i++) { const t = i / 14, px = x0 + (x1 - x0) * t, py = y + (yc - y) * 2 * t * (1 - t); d += Ln(`M${f1(px)} ${f1(py - 4)} V${f1(py)}`, T.osc, .8, ' opacity=".8"'); }
+  d += Ln(curva(grosor - .6), T.osc, 1, ' opacity=".5"') + Ln(curva(.6), T.luz, .8);
+  return pieza(f, d, [x0 - 1, yc - 5, x1 + 1, base]);
+}
+
+// Acantilado de caliza (paredes de bahía, islas de pared alta): bloque de laderas casi verticales, cima ondulada con selva, vetas y alero
+//   cara: 'izq' | 'der' → de qué lado está la pared que mira al centro (más vertical y con alero); vetas: color de las chorreaduras
+export function acantilado({ x0 = 0, x1 = 50, base = 118, h = 80, c = '#B4A890', veg = '#7E9C74', cara = 'der', vetas, seed = 1 } = {}) {
+  semilla(seed * 19 + 5); const T = tonos(c), w = x1 - x0, top = base - h, iz = cara === 'izq';
+  // contorno: lado "abierto" en talud suave, lado de la cara casi a plomo con un alero arriba
+  const L = iz ? [x0 + w * .02, x0 - w * .04] : [x0 - w * .06, x0 + w * .12], Rr = iz ? [x1 + w * .06, x1 - w * .12] : [x1 - w * .02, x1 + w * .04];
+  let path = `M${f1(L[1])} ${base} C${f1(L[0])} ${f1(base - h * .5)} ${f1(L[0])} ${f1(top + h * .2)} ${f1(x0 + w * .08)} ${f1(top + h * .08)} `;
+  const n = 4; for (let i = 0; i < n; i++) { const xa = x0 + w * (.08 + .84 * (i + .5) / n), xb = x0 + w * (.08 + .84 * (i + 1) / n), ya = top - rnd() * h * .05, yb = top + h * (.02 + rnd() * .06); path += `Q${f1(xa)} ${f1(ya)} ${f1(xb)} ${f1(yb)} `; }
+  path += `C${f1(Rr[0])} ${f1(top + h * .2)} ${f1(Rr[0])} ${f1(base - h * .5)} ${f1(Rr[1])} ${base}Z`;
+  const id = 'ac' + seed + Math.round(x0);
+  let d = `<clipPath id="${id}"><path d="${path}"/></clipPath><g clip-path="url(#${id})">`;
+  // selva en la cima (copa de puntas suaves que baja un poco por las paredes)
+  let cap = `M${f1(x0 - 4)} ${f1(top + h * .2)} `; for (let i = 0; i <= 7; i++) { const t = i / 7, cx = x0 - 4 + t * (w + 8), cy = top + h * (.1 + .06 * Math.abs(t - .5)) + (rnd() - .5) * 3; cap += `Q${f1(cx - w * .05)} ${f1(cy - 3)} ${f1(cx)} ${f1(cy)} `; }
+  cap += `L${f1(x1 + 4)} ${f1(top - 10)} L${f1(x0 - 4)} ${f1(top - 10)}Z`;
+  d += P(cap, veg) + P(`M${f1(x0 - 4)} ${f1(top - 10)} H${f1(x1 + 4)} V${f1(top + h * .2)} L${f1(iz ? x0 + w * .35 : x0 + w * .65)} ${f1(top + h * .18)}Z`, shade(veg, .22), ' opacity=".35"');
+  // la pared de la cara en sombra (luz desde la izquierda) y el alero
+  d += iz ? P(`M${f1(x0 - 8)} ${base} V${f1(top)} L${f1(x0 + w * .22)} ${f1(top)} L${f1(x0 + w * .12)} ${base}Z`, T.som, ' opacity=".2"') : P(`M${f1(x1 + 8)} ${base} V${f1(top)} L${f1(x1 - w * .28)} ${f1(top)} L${f1(x1 - w * .16)} ${base}Z`, T.som, ' opacity=".5"');
+  for (let i = 0; i < 6; i++) { const xx = x0 + w * (.12 + rnd() * .76), y1 = top + h * (.2 + rnd() * .15); d += Ln(`M${f1(xx)} ${f1(y1)} q${f1((rnd() - .5) * 3)} ${f1(h * .25)} ${f1((rnd() - .5) * 2)} ${f1(h * (.35 + rnd() * .3))}`, vetas ?? T.lin, vetas ? 1.6 : .9, vetas ? ' opacity=".42"' : ' opacity=".45"'); }
+  for (let i = 0; i < 3; i++) { const yy = top + h * (.42 + i * .17); d += Ln(`M${f1(x0 + w * .1)} ${f1(yy)} Q${f1(x0 + w * .5)} ${f1(yy - 2)} ${f1(x1 - w * .15)} ${f1(yy + 1)}`, T.lin, .8, ' opacity=".35"'); }
+  for (let i = 0; i < 4; i++) { const xx = x0 + w * (.15 + rnd() * .7), yy = top + h * (.2 + rnd() * .2); d += Ln(`M${f1(xx)} ${f1(yy)} q-.6 3 .2 ${f1(5 + rnd() * 5)}`, veg, 1.6, ' opacity=".65"'); }
+  d += `</g>` + Ln(`M${f1(L[0] + (iz ? 3 : 4))} ${f1(top + h * .3)} Q${f1(L[0] + 2)} ${f1(top + h * .6)} ${f1(L[0] + 3)} ${f1(base - h * .1)}`, T.luz, 1.3, ' opacity=".8"');
+  return pieza(P(path, c), d, [Math.min(L[1], x0 - w * .06), top - h * .06, Math.max(Rr[1], x1 + w * .06), base]);
+}
+
+// Barca de cola larga (long-tail tailandesa): casco largo y fino de proa muy levantada con cintas de colores, toldo y la caña del motor
+export function colaLarga({ x = 60, y = 100, s = 1, c = '#9A6E50', toldo = '#C9B48E', cintas = ['#C8705A', '#D9B060', '#7FA8B0'], dir = 1 } = {}) {
+  const T = tonos(c), k = v => f1(v * s);
+  const g = inner => `<g transform="translate(${f1(x)} ${f1(y)}) scale(${dir} 1)">${inner}</g>`;
+  const casco = `M${k(-26)} ${k(-15)} Q${k(-22)} ${k(-5)} ${k(-12)} ${k(-3)} L${k(20)} ${k(-3)} Q${k(23)} ${k(-3.4)} ${k(24)} ${k(-5.6)} L${k(22)} ${k(1)} Q${k(0)} ${k(2.4)} ${k(-14)} ${k(1)} Q${k(-22)} ${k(-1)} ${k(-27.5)} ${k(-14)}Z`;
+  const f = P(casco, c) + R(-8 * s, -11.5 * s, 22 * s, 1.8 * s, toldo);
+  let d = Ln(`M${k(-12)} ${k(-1)} H${k(21)}`, T.luz, Math.max(.6, .8 * s)) + P(`M${k(-14)} ${k(1)} Q${k(0)} ${k(2.4)} ${k(22)} ${k(1)} L${k(22)} ${k(-.6)} Q${k(0)} ${k(.8)} ${k(-14)} ${k(-.6)}Z`, T.osc, ' opacity=".5"')
+    + [-6, 3, 12].map(px => Ln(`M${k(px)} ${k(-10)} V${k(-3)}`, T.osc, Math.max(.5, .7 * s))).join('')
+    + Ln(`M${k(18)} ${k(-5)} L${k(34)} ${k(1.5)}`, '#5E4A40', Math.max(.6, .9 * s)) + R(14.5 * s, -8 * s, 4 * s, 3 * s, '#6E625A');
+  cintas.forEach((cc, i) => { d += Ln(`M${k(-25.5 + i * .6)} ${k(-13 + i * 1.6)} q${k(-1.2)} ${k(2)} ${k(-.4)} ${k(4)}`, cc, Math.max(.7, 1.1 * s)); });
+  return pieza(g(f), g(d), [x - 28 * s, y - 16 * s, x + 34 * s, y + 3 * s]);
+}
+
+export const PIEZAS = { puenteColgante, puenteArco, torreReloj, cupula, techoTeja, fachada, casas, farolitos, karst, chimenea, macizo, junco, globo, palmera, agua,
+  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga };
 
 // ═════════════════════════ PALETA ═════════════════════════
 // Una semilla de color (el tono de las colinas del destino) → paleta completa. Reglas sacadas de las 65 filas de destinos.js:

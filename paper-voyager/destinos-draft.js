@@ -93,13 +93,7 @@ const M = {}, F = {};
     { t: 'hill', x: -.08, w: 7, h: 2.2, c: [2, 3, .5], dz: .55 }, { t: 'hill', x: 1.08, w: 7, h: 2, c: [2, 3, .5], dz: .55 },
     { t: 'hill', x: -.2, w: 6, h: 1.6, c: 3, dz: .9 }, { t: 'hill', x: 1.2, w: 6, h: 1.5, c: 3, dz: .9 }]; }
 
-// ───────── Busan: Gamcheon, casitas pastel con techos de color escalonadas en la ladera, escalera blanca ─────────
-{ const top = x => x < 98 ? 30 + 70 * ((98 - x) / 98) ** 1.7 : 30 + ((x - 98) / 22) ** 2 * 50, PAS = ['#F4A7B9', '#9ED8C6', '#F6D36B', '#8EC3E8', '#F28B6D', '#C9B3E8', '#FFFFFF'], TE = ['#4F8FC0', '#3E9A8A', '#E8735A', '#4F8FC0'];
-  let casas = '', det = '';
-  for (let r = 0, b = 118; b > 34; r++, b -= 9.5) for (let x = 3 + (r % 2) * 5, k = 0; x < 114; x += 10.5, k++) { const h = 8 + (k + r) % 2, c = PAS[(k * 3 + r * 5) % 7]; if (b - h < top(x + 5) + 7 || x + 9.6 > 118 || b - h < top(x) + 6 || b - h < top(x + 9.6) + 6) continue;
-    casas += Rr(x, f1(b - h), 9.6, f1(h + 1.5), c); det += Rr(x - .4, f1(b - h - .9), 10.4, 2, TE[(k + r * 3) % 4]) + Rr(x + 2, f1(b - h + 3), 2.4, 2.4, '#5A6A80') + Rr(x + 6, f1(b - h + 3), 2.4, 2.4, '#5A6A80'); }
-  seed(71); M.busan = cut(Pp(`M0 118 ${[...Array(25)].map((_, i) => `L${i * 5} ${f1(top(i * 5))}`).join(' ')} L120 118Z`, '#8FB888') + casas, det + Ln('M50 116 L54 108 L58 106 L62 98 L66 96 L70 88 L74 86 L78 78 L82 76 L86 68', '#FFF8EE', 1.4) + Pp(pinos(66, 112, x => top(x) + 5, 8, 12, 5), '#5E8A5A'));
-  F['Busan'] = lomas(1.9, 'dune', { ch: .55 }); }
+// (Busan pasó a destino real: ficha en fichas-ciudades.js)
 
 // ───────── Cairns: selva tropical de montaña (Kuranda/Barron) con el Skyrail; delante la costa de la Esplanade con palmeras ─────────
 { seed(23);
@@ -280,7 +274,6 @@ const TABLA = [
   ['PAGODA', "Xi'an", 'China', M.xian, '#F2E6CE', '#DDC7A2', '#B89874', '#C9AE80', '#B59A6E', '#9A8058', 'dune', 'sand', 15, ['pino', 'rocaJardin', 'farolPiedra']],
   ['KARST', 'Guilin', 'China', M.guilin, '#E3EFEA', '#B8D4C6', '#7FA88F', '#8FBF78', '#A8C48A', '#7FA46A', 'dune', 'bamboo', 9, ['bambu', 'bambuAlto', 'farolBosque']],
   ['PUERTO', 'Hong Kong', 'China', M.hk, '#E4DCEF', '#B8A8D6', '#7A6AA8', '#8E94B0', PAV, VEREDA, 'dune', 'lanterns', 18.6, ['arbolUrbano', 'taxi', 'farolModerno']],
-  ['LADERA', 'Busan', 'Corea del Sur', M.busan, '#EAF2F4', '#CFE2C8', '#9ABF94', '#B7C98F', '#C4B8A8', '#A09484', 'dune', 'petals', 15.5, ['cerezo', 'pagodita', 'farolPapel']],
   ['SELVA', 'Cairns', 'Australia', M.cairns, '#E0F2EC', '#B4DCC4', '#7FBC98', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'leaves', 10.5, ['palmeraTropical', 'sombrilla', 'farolTiki']],
   ['LAGO', 'Queenstown', 'Nueva Zelanda', M.queens, '#E6EEF8', '#BCCCE4', '#7F98C4', '#C9B25A', '#B8A878', '#968660', 'peak', 'leaves', 15, ['arbolOtono', 'arbustoNieve', 'farolMontana']],
   ['NILO', 'Luxor', 'Egipto', M.luxor, '#FBE3C4', '#F2C896', '#D69A62', '#D4B98A', '#C9A86A', '#A8884E', 'dune', 'sand', 16.5, ['palmera', 'columna', 'farolDesierto']],

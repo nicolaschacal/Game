@@ -88,13 +88,21 @@ Todas bajan hasta la base (y = 110–118, queda bajo el piso) **sin suelo propio
 | `fachada` | bloque con pisos de `arcos`, `ventanas` o `puertas`, cornisa y bandas |
 | `casas` | casas angostas con techo de teja o gablete, persianas, balcones y faroles de alero |
 | `farolitos`, `farol` | guirnalda en comba / farolito suelto (van en detalles, sin borde grueso) |
-| `karst` | peñasco de caliza con estratos, copa de selva y sombra |
+| `karst` | peñasco de caliza con estratos, copa de selva y sombra; `vetas` = chorreaduras de color (la caliza naranja de Krabi) |
 | `chimenea` | chimenea de hada con sombrero de basalto, surcos y cuevas |
 | `macizo` | loma de roca de cumbre ondulada para unir piezas |
 | `junco` | barco de velas de abanico con listones |
 | `globo` | globo aerostático de gajos |
 | `palmera` | palmera de tronco curvo |
 | `agua` | lámina de agua de orilla irregular con brillos |
+| `muro` | muro con puertas en arco (rojo con albardilla de teja) o de sillares (`piedra`, con `talud` de muralla de castillo); `pilastras` para cortar superficies grandes |
+| `pabellon` | pabellón de madera de Asia oriental: columnas, celosías, friso pintado (`cBanda`) y uno o dos techos de teja curva |
+| `tenshu` | torre de castillo japonés: pisos que se angostan, techos verdes, último piso oscuro con friso y shachihoko dorados; devuelve `.techos` |
+| `hastial` | frontón triangular o curvo (`curvo`) para poner sobre un techo, en una capa de adelante |
+| `escalinata` | escalinata-puente de piedra de frente con su ojo en arco (Bulguksa) |
+| `puenteCurvo` | puente de madera en arco con baranda y patas al agua (Thê Húc) |
+| `acantilado` | pared de caliza de laderas a plomo con selva en la cima; `cara` = lado de la pared que mira al centro; `vetas` |
+| `colaLarga` | barca de cola larga tailandesa (proa levantada con cintas, toldo, caña del motor); `dir` = -1 la da vuelta |
 
 Ayudas de color: `tono(c)` (filtro de papel: saturación ≤ .55, luz .34–.84), `tonos(c)` (luz / sombra / oscuro de una pieza), `mix`, `luz`, `shade`.
 Primitivas: `P`, `R`, `C`, `Ln`, `arco`, `cut`, `cutFore`.
@@ -137,10 +145,16 @@ Lo que el usuario rechazó. Cada rechazo nuevo se anota acá.
 - **Las capas no siempre son montañas**: en una ciudad las capas de adelante y del fondo son perfiles de edificios, no lomas ni cordilleras. El tipo de capa sale del `paisaje` (tabla `LOMAS` en kit-ciudades.js: ciudad → `city`, montaña/nieve → `peak`, costa/desierto/selva → `dune`) y la ficha lo puede forzar con `composicion.lomas`. Antes de elegir el paisaje, preguntate qué hay realmente alrededor del monumento.
 - **No todo monumento necesita capas delante**: si ya resalta solo (Melbourne, la estación Flinders Street), va con `composicion: { solo: true }`: sin lomas, edificios ni agua delante; el QA no le exige base tapada.
 - Melbourne era "un rectángulo naranja con cúpula, flotando": ahora es la estación entera (torre del reloj, pabellón con cúpula, arcadas) con la ciudad baja delante.
+- **Cada pieza que debe verse por encima de otra va en su propia capa**: dentro de una capa todos los detalles (`d`) se pintan después de todas las formas (`f`), así que las ventanas o hiladas de una pieza de atrás se dibujan ENCIMA de la de adelante. Hastiales sobre los techos del castillo, la puerta delante de la galería, las escalinatas delante de la terraza: cada una en una capa nueva.
+- **Ciudades vecinas, iconos distintos**: Hanói y Hoi An no pueden ser las dos "casas con farolitos" ni Krabi, Phi Phi y Ha Long "peñascos con barco". Hanói es el lago Hoàn Kiếm (torre de la Tortuga + puente rojo, casas tubo pálidas detrás); Krabi una sola torre de caliza tibia con vetas naranjas y una barca de cola larga; Phi Phi dos paredes enfrentadas que encierran la bahía; Ha Long, el bosque de peñascos verdes con el junco.
+- **Si los adornos del costado tapan una parte clave, correr el monumento** con `composicion.centro` (unidades de mundo; San Francisco = 4.4): en Pekín el farol del costado derecho tapaba el tercer arco; con `centro: 3.2` y `escala: .8` se ven los tres.
+- **Un rojo grande y liso sube el contraste contra el cielo**: el muro de la Ciudad Prohibida pasó el QA recién con el rojo aclarado hacia el papel (`#CA9482`) y pilastras + zócalo en sombra. Mejor rojo empolvado que bermellón.
+- **Lo que define al monumento no puede quedar debajo de las lomas**: si la base ES el monumento (la terraza y las escalinatas de Bulguksa, la muralla del castillo de Osaka), subir la pieza para que las lomas tapen sólo el pie, o bajar `tapar`. Mirar la captura: el QA puede pasar con lo importante tapado.
+- **La regla de base del QA tiene ruido** (±4 %: adornos y monedas que pasan): dejar margen (tapada ≥ 85 %), no quedarse en el borde.
 - No le gustan los arbolitos de bolita ni una luna extra en el cielo.
 - Quiere ver los destinos como se ven dentro del juego, no en maqueta aparte (por eso la galería usa el motor real).
 
 ## Pendiente
 
-Sólo San Francisco, Melbourne, Ha Long, Hoi An y Capadocia usan ficha. El resto sigue con su fila escrita a mano en `TABLA`
+Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan y Gyeongju. El resto sigue con su fila escrita a mano en `TABLA`
 (con `LM_ESCALA`, `LM_X` y `FORE`) y se puede migrar de a una con el mismo procedimiento.
