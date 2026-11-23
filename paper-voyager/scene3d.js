@@ -482,6 +482,15 @@ function renderWeather(t) {
 }
 let renderPol = null;
 export function renderPolicy(fn) { renderPol = fn; }
+// ── Galería de ciudades (index.html?galeria) ──
+// cambiarEscenario: reemplaza el escenario de fondo (monumento, horizonte, FORE, adornos) por el de otro destino sin recargar la partida
+export function cambiarEscenario(theme) { const W = E?.worlds.sanct, R = W?.opts.runner; if (!R) return;
+  Object.assign(R, { fx: theme.id, look: theme.look, landmark: theme.art || null, lmScale: theme.lmScale || 1, lmX: theme.lmX || 0, fore: theme.fore || null });
+  if (W.look) { W.scene.remove(W.look); W.look = null; } }
+// capturaEscena: dibuja un cuadro ya mismo y devuelve el lienzo como imagen (JPEG). Se llama en la misma tarea que el render (sin preserveDrawingBuffer)
+export function capturaEscena(q = .82) { if (!E?.W) return null; const t = (performance.now() - E.t0) / 1000; E.W.update(t, 0);
+  const r = E.renderer; r.autoClear = false; r.clear(); if (E.W.bg) { r.render(E.W.bg.scene, E.W.bg.cam); r.clearDepth(); } r.render(E.W.scene, E.W.camera); r.autoClear = true;
+  return r.domElement.toDataURL('image/jpeg', q); }
 export function poke(id) { const o = E?.W?.items.get(id); if (o) o.squash = 1; }
 export function hopAll(p = .3) { E?.W?.items.forEach(o => o.sprite && Math.random() < p && (o.hop = 1)); }
 
@@ -869,14 +878,14 @@ function sanctuary() {
             L.userData.far = [ridge(26, 5.2 * k, T.far[0], -9, -36), ridge(30, 6.4 * k, T.far[1], 10, -37), ridge(18, 3.6 * k, T.far[2], 0, -34), ridge(16, 3 * k, T.far[3], -13, -32), ridge(16, 3.2 * k, T.far[3], 14, -34.6)];
             // (sin disco de sol acá: el cielo de papel ya trae su sol y sus estrellas)
             // Monumento del destino (Cristo, pagoda, faro…): un recorte grande de papel entre las colinas; si el destino no trae uno, no se dibuja
-            if (runner.landmark) { const s = 8.5 * (runner.lmScale || 1), g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: paperTexture(runner.landmark), transparent: true, alphaTest: .5, fog: false, color: 0xF2EEE8 })); lm.position.set(5.2 - (s - 8.5) * .5 + (runner.lmX || 0), -1.2, -33) /* si es más grande, crece hacia el centro y no se sale de la pantalla */; L.add(lm); L.userData.far.push(lm);
+            if (runner.landmark) { const s = 8.5 * (runner.lmScale || 1), g = new THREE.PlaneGeometry(s, s); g.translate(0, s / 2, 0); const lm = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: paperTexture(runner.landmark), transparent: true, alphaTest: .5, fog: false, color: 0xF2EEE8 })); lm.position.set(5.2 - (s - 8.5) * .5 + (runner.lmX || 0), -1.2, -33) /* si es más grande, crece hacia el centro y no se sale de la pantalla */; lm.userData.qa = 'monumento'; L.add(lm); L.userData.far.push(lm);
               // Capas delanteras del destino (runner.fore, ver FORE en destinos.js): bahía, colinas y bruma que tapan la base del monumento
               if (runner.fore) { const x0 = lm.position.x - s / 2, z0 = lm.position.z, col = c => Array.isArray(c) ? '#' + new THREE.Color(col(c[0])).lerp(new THREE.Color(col(c[1])), c[2]).getHexString() : typeof c === 'number' ? T.far[c] : c === 'fog' ? T.fog : c;
                 runner.fore.forEach(f => { let m;
                   if (f.t === 'hill') { m = ridge(f.w, f.h, col(f.c), x0 + f.x * s, z0 + (f.dz || .4), f.kind || T.ridge); m.renderOrder = 40; } // después de todo el horizonte (las cordilleras no escriben profundidad y la taparían)
                   else if (f.t === 'band') { m = new THREE.Mesh(new THREE.PlaneGeometry(f.w ? f.w * s : 60, f.z1 - f.z0), new THREE.MeshBasicMaterial({ color: col(f.c), fog: false })); m.rotation.x = -Math.PI / 2; m.position.set(f.w ? x0 + (f.x ?? .5) * s : 0, -.3, z0 + (f.z0 + f.z1) / 2); m.renderOrder = -30; L.add(m); }
                   else if (f.t === 'cut') { const g2 = new THREE.PlaneGeometry(f.s, f.s); g2.translate(0, f.s / 2, 0); m = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({ map: paperTexture(f.svg), transparent: true, opacity: f.o ?? 1, alphaTest: f.at ?? .02 /* at: umbral de alfa; .5 para recortes nítidos (con .02 las mipmaps lejanas dejan un halo crema en todo el cuadrado) */, depthWrite: false, fog: false, color: 0xF2EEE8 })); m.position.set(x0 + f.x * s, (f.y || 0) - .4, z0 + (f.dz || .2)); m.renderOrder = f.ro ?? 35; L.add(m); }
-                  if (m) L.userData.far.push(m); }); } }
+                  if (m) { m.userData.qa = 'fore'; L.userData.far.push(m); } }); } } // qa: lo usan scripts/qa-ciudades.py y la galería
             const C = '#FFF4DC', wrap = inner => `<svg viewBox="0 0 120 120"><g stroke="${C}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">${inner}</g>${inner}</svg>`;
             const ARTS = runner.look?.props || {
               sand: [wrap('<path d="M52 110 L52 40 Q60 26 68 40 L68 110Z" fill="#6FA255"/><path d="M52 78 L34 78 Q26 78 26 68 L26 54 Q32 46 38 54 L38 66 L52 66Z" fill="#6FA255"/><path d="M68 70 L84 70 Q92 70 92 60 L92 44 Q86 36 80 44 L80 58 L68 58Z" fill="#6FA255"/>'),

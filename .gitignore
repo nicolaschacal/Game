@@ -11,3 +11,8 @@ ios/App/build/
 ios/App/App.xcworkspace/xcuserdata/
 ios/App/App.xcodeproj/xcuserdata/
 ios/DerivedData/
+__pycache__/
+# QA de ciudades: sólo se versionan la lámina y el reporte; las capturas sueltas se regeneran
+qa/*
+!qa/galeria.png
+!qa/reporte.md
