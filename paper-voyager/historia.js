@@ -33,8 +33,8 @@ export const STORIES = {
   nilo: {
     title: 'El cuaderno de Opa',
     chapters: [
-      { id: 1, at: null, place: 'Berlín', title: 'El ático', hint: 'Todo empieza con el primer viaje.', req: {},
-        lines: [[N, 'Antes de salir de Berlín subí al ático de la abuela. Solo quería las antiparras de Opa.'],
+      { id: 1, at: 'Berlín', title: 'El ático', hint: 'Todo empieza en casa: volvé a Berlín, la ciudad de Nilo.', req: {},
+        lines: [[N, 'Volví a Berlín y subí al ático de la abuela. Solo quería las antiparras de Opa.'],
           [N, 'Pero en la caja había algo más: su cuaderno de vuelo. Siete lugares marcados con tinta roja.'],
           [N, 'La última página está arrancada. Y en cada página hay una sola letra, apretada contra el borde: M.'],
           [N, 'Opa desapareció en 1974, volando sobre Sudamérica. Nunca encontraron el avión.'],
@@ -59,14 +59,15 @@ export const STORIES = {
           ['Hassan, el vendedor', 'Mi padre guardó esta carta sesenta años. Dijo que un piloto alemán vendría a buscarla.'],
           ['Hassan, el vendedor', 'Nunca vino. Vino su nieto. A veces eso alcanza.'],
           [N, '«M.: si me esperás, te lo voy a decir donde el agua cae del cielo.»'],
-          [N, 'Opa nunca mandó esta carta. Entonces M. nunca supo adónde ir.']],
+          [N, 'Opa nunca mandó esta carta. Entonces M. nunca supo adónde ir.'],
+          ['Hassan, el vendedor', 'Mi padre contaba que el piloto se fue de acá hacia Río de Janeiro. Que lo esperaba una tormenta.']],
         back: 'La carta nunca le llegó a M. Opa la dejó acá y siguió volando. ¿Ella lo esperó? ¿Y qué le iba a decir donde el agua cae del cielo?', reward: { coins: 300, chest: 'plata' } },
       { id: 5, at: 'Río de Janeiro', title: 'Aterrizaje a ciegas', hint: 'Una tormenta que cerró el cielo tres días.', req: { route: 'andes' },
         lines: [[N, 'La página de Río tiene una sola palabra, escrita tan fuerte que rompió el papel: «tormenta».'],
           ['Dona Lúcia, la controladora', '1961. Un piloto aterrizó a ciegas en plena tormenta. Lo vi yo misma desde la torre.'],
           ['Dona Lúcia, la controladora', 'Gritaba que tenía que llegar a Buenos Aires esa noche, que alguien lo esperaba. Le cerramos el cielo tres días.'],
           [N, 'Tres días tarde. Por eso la carta, por eso los dos cafés. Opa siempre llegaba tarde a M.'],
-          ['Dona Lúcia, la controladora', 'Antes de irse preguntó por una cascada en Venezuela. Dijo que era su última oportunidad.']],
+          ['Dona Lúcia, la controladora', 'Antes de irse preguntó por una cascada en Venezuela. Pero primero, dijo, quería pararse en la mitad del mundo.']],
         back: 'Hoy vi el cielo de Río ponerse negro en un minuto. Entendí que no fue culpa de Opa. Igual duele.', reward: { coins: 350 } },
       { id: 6, at: 'Mitad del Mundo', title: 'Un pie en cada mitad', hint: 'La línea que parte el mundo en dos.', req: { stamps: { r: 'am', n: 8 }, trips: 18 },
         lines: [[N, 'Un pie en el norte, un pie en el sur. La línea pasa justo entre mis botas.'],
@@ -105,7 +106,7 @@ export function markSeen(hero) { const s = st(hero); s.seen = [...new Set([...s.
 // Requisitos del capítulo con su avance (para el diario y para decidir)
 export function reqs(V, hero, ch) {
   const stamps = (V.heroStamps ? V.heroStamps() : V.T.visits) || {}, trips = Object.values(stamps).reduce((a, n) => a + (n || 0), 0), out = [];
-  if (ch.at) out.push({ label: `Viajá a ${ch.at} con ${hero === 'nilo' ? 'Nilo' : hero}`, kind: 'at' });
+  if (ch.at) out.push({ label: `Próximo destino: ${ch.at} (viajá con ${hero === 'nilo' ? 'Nilo' : hero})`, kind: 'at' });
   if (ch.req.trips) out.push({ label: `${ch.req.trips} viajes con Nilo`, n: Math.min(trips, ch.req.trips), goal: ch.req.trips, ok: trips >= ch.req.trips });
   if (ch.req.stamps) { const { r, n } = ch.req.stamps, have = Object.keys(stamps).filter(i => stamps[i] > 0 && V.regionOf(+i) === r).length; out.push({ label: `${n} sellos de ${V.REGIONS[r].name}`, n: Math.min(have, n), goal: n, ok: have >= n }); }
   if (ch.req.route) { const R = V.ROUTES.find(x => x.id === ch.req.route), ok = (V.heroRoutes ? V.heroRoutes() : []).includes(ch.req.route); out.push({ label: `Completar la ${R ? (window.t ? window.t(R.name) : R.name) : 'ruta'}`, ok, n: ok ? 1 : 0, goal: 1 }); }

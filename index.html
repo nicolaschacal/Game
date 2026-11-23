@@ -279,6 +279,7 @@ body.pnlopen #wx{visibility:hidden}body.pnlopen .wxp,body.pnlopen #wx *{animatio
 #mapView::-webkit-scrollbar{display:none}
 #mapWorld{position:relative;--pk:1}
 #mapView.zm #mapWorld{margin-bottom:260px}
+.mpin .hst{position:absolute;left:4px;top:-34px;width:22px;height:16px;background:#FFFDF6;border:2px solid #E8452C;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.3);transform:rotate(-10deg);animation:hstBob 1.4s ease-in-out infinite;pointer-events:none}.mpin .hst:after{content:"";position:absolute;right:2px;top:2px;width:5px;height:6px;background:#E8452C}@keyframes hstBob{50%{transform:rotate(-4deg) translateY(-3px)}}
 .mpin{position:absolute;transform:translate(-50%,-50%) scale(calc(1.2*var(--pk,1)));text-align:center;background:none;border:0;padding:0;color:var(--ink);width:0;height:0}
 .mpin .t{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:9px;border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink);transform:rotate(-6deg);display:flex;align-items:center;justify-content:center;font:400 14px 'Lilita One',sans-serif;color:#fff}
 .mpin .t svg{width:30px;height:30px}
@@ -1648,7 +1649,8 @@ async function buildMap(){
  const seg=(a,b,on)=>`<path d="M${a[0]} ${a[1]} Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-Math.min(46,Math.abs(b[0]-a[0])*.35)} ${b[0]} ${b[1]}" ${GP?`stroke="${on?'#7A4A2B':'#7A4A2B66'}" stroke-width="2.6" stroke-dasharray="7 6"`:`stroke="${on?'#1B1730':'#1B173055'}" stroke-width="4" stroke-dasharray="2 10"`} stroke-linecap="round" fill="none"/>`;
  let segs='';for(let i=0;i<V.NW0-1;i++){const a=M.pts[i],b=M.pts[i+1],on=V.hasPass(V.regionOf(i))&&V.hasPass(V.regionOf(i+1));
   if(Math.abs(b[0]-a[0])>M.W/2){const y=(a[1]+b[1])/2,l=a[0]<b[0]?a:b,r=a[0]<b[0]?b:a;segs+=seg(l,[0,y],on)+seg([M.W,y],r,on);}else segs+=seg(a,b,on);}
- const pins1=(p,i,ox)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):(startPick?'<b class="fare">✈</b>':'<b class="fare">'+s.cost+'</b>');const vs=V.T.visits[i]>0;return `<button class="mpin ${pinCls[s.st]}${vs?' vis':''}" data-i="${i}" style="left:${p[0]+ox}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div>${vs?'<i class="stk">✓</i>':''}<div class="n">${THEMES[i].place}${s.st==='cur'||startPick?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;};
+ const hNext=H.nextChapter(V.heroId?.()||'nilo'),hCity=hNext&&hNext.at?IDX[hNext.at]:-1; // la pista del diario: el próximo destino de la historia lleva una postal en el pin
+ const pins1=(p,i,ox)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):(startPick?'<b class="fare">✈</b>':'<b class="fare">'+s.cost+'</b>');const vs=V.T.visits[i]>0;return `<button class="mpin ${pinCls[s.st]}${vs?' vis':''}" data-i="${i}" style="left:${p[0]+ox}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div>${vs?'<i class="stk">✓</i>':''}${i===hCity?'<i class="hst" aria-label="Pista del diario"></i>':''}<div class="n">${THEMES[i].place}${s.st==='cur'||startPick?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;};
  const w=$('mapWorld'),W3=M.W*3;w.style.cssText='margin-top:58px';
  const nz=(getComputedStyle(document.body).getPropertyValue('--nz').match(/url\("?(.*?)"?\)$/)||[])[1]||'';
  // tierra: se rasteriza una sola vez como imagen SVG (sombra, cartulina y grano) y se repite 3 veces como background: sin filtros ni 3 copias de un path enorme
