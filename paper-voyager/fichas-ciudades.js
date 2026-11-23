@@ -184,19 +184,23 @@ FICHAS['Phi Phi'] = {
 // (las de atrás más pálidas), con la escalera blanca que trepa entre ellas. Delante, la ciudad baja del puerto ──
 { const PAS = ['#D9AFAA', '#A9C9BE', '#DCC890', '#AEBCD6', '#D2B4C6', '#E2D4B8', '#B8CCA4'], TE = ['#7C9EB0', '#6E9E94', '#C48A6C', '#8E8EB4'];
   const fila = (y, x0, x1, pal, seed, step = 10.5) => { let f = '', d = '', i = seed;
-    for (let x = x0; x < x1; x += step, i++) { const w = step - .6, top = y + ((i * 5) % 3) * 1.6 + (60 - x) * .14, c = K.mix(PAS[(i * 3) % PAS.length], '#F4EEE4', pal), te = K.mix(TE[i % TE.length], '#F4EEE4', pal), Tc = K.tonos(c);
+    for (let x = x0; x < x1; x += step, i++) { const w = step - .6, top = y + ((i * 5) % 3) * 1.4 + Math.abs(x + step / 2 - 84) * .06, c = K.mix(PAS[(i * 3) % PAS.length], '#F4EEE4', pal), te = K.mix(TE[i % TE.length], '#F4EEE4', pal), Tc = K.tonos(c);
       f += K.R(x, top, w, 118 - top, c) + K.R(x - .7, top - 2, w + 1.4, 2.4, te);
       d += K.R(x + w * .16, top + 3.4, w * .24, 3, '#6E6E80', ' opacity=".7"') + K.R(x + w * .58, top + 3.4, w * .24, 3, '#6E6E80', ' opacity=".7"') + K.R(x + w * .16, top + 9, w * .24, 3, '#6E6E80', ' opacity=".55"')
         + K.R(x + w * .78, top, w * .22, 118 - top, Tc.som, ' opacity=".4"') + K.R(x, top + .4, w, 1, Tc.osc, ' opacity=".3"'); }
     return { f, d, box: [x0 - 1, y - 6, x1 + 1, 118] }; };
   FICHAS['Busan'] = {
     mundo: 'LADERA', nombre: 'Busan', pais: 'Corea del Sur', color: '#A6BCC8', paisaje: 'ciudad', hora: 15.5, clima: 'petals', horizonte: 'peak',
+    // La ladera es una MONTAÑA con cumbre (baja hasta el suelo por los dos lados, en el tono de las montañas del fondo) y las
+    // hileras de casitas siguen su forma: más cortas arriba, más largas abajo. Así se lee como un cerro con el pueblo encima y no como un bloque recortado
     monumento: [
-      [{ f: P('M0 118 L0 40 Q30 30 60 44 Q90 60 120 78 L120 118Z', '#A9BCA4'), d: '', box: [0, 34, 120, 118] }],
-      [fila(38, 6, 58, .45, 1, 12.5)],
-      [fila(52, 2, 86, .28, 4, 12.5)],
-      [fila(67, 0, 110, .14, 7, 12.5), { f: '', d: Ln('M64 118 L66 110 L70 108 L72 100 L76 98 L78 90 L82 88 L84 80', '#FBF4E6', 2.2), box: [62, 78, 86, 118] }],
-      [fila(84, 0, 120, 0, 2, 13)],
+      [{ f: P('M0 118 Q8 104 20 92 Q36 74 52 56 Q66 40 78 34 Q86 31 94 36 Q106 46 113 66 Q118 86 120 118Z', '#AFC0B2'),
+         d: P('M78 34 Q86 31 94 36 Q106 46 113 66 Q118 86 120 118 L104 118 Q104 82 96 60 Q90 46 82 38Z', '#8FA294', ' opacity=".45"')
+           + [[30, 92], [44, 76], [100, 50], [108, 74]].map(([x, y]) => P(`M${x - 5} ${y + 3} Q${x} ${y - 5} ${x + 5} ${y + 3}Z`, '#94AE90')).join(''), box: [0, 30, 120, 118] },
+       // las hileras van como DETALLE del cerro (sin borde crema propio): el borde rodea sólo la silueta del cerro y las casitas
+       // quedan pintadas encima, sin franjas crema entre hilera e hilera (con borde propio se leía como un bloque recortado)
+       { f: '', d: [fila(44, 70, 92, .45, 1, 9), fila(56, 55, 104, .32, 4, 9.5), fila(69, 45, 108, .2, 7, 10.5), fila(84, 31, 114, .08, 2, 11.5), fila(98, 17, 118, 0, 3, 12.5)].map(r => r.f + r.d).join('')
+           + Ln('M64 118 L66 110 L70 108 L72 100 L76 98 L78 90 L82 88 L84 80', '#FBF4E6', 2.2), box: [17, 40, 118, 118] }],
     ],
     composicion: { tapar: .26, tamano: .82, laterales: 1.2 },
     adornos: ['cerezo', 'pagodita', 'farolPapel'],
