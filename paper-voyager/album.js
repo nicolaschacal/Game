@@ -659,7 +659,7 @@ export function openBag(ctx) {
 <div class="pvb-t">
  <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
  <div class="pvb-dec" style="left:6%;top:50.5%;width:32%;transform:rotate(-4deg)">${pencilSVG()}</div>
- <button class="pvb-dia" data-dia aria-label="Abrir el diario">${diaryNow()}</button>
+ <button class="pvb-dia" data-dia aria-label="${tt('diary.open')}">${diaryNow()}</button>
  <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${clothPile(ctx)}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
  <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}${eq ? `<span class="pvb-eqm">✓ ${tt('pass.equipped')} · ${esc(V.REGIONS[eq].name)}</span>` : ''}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
@@ -733,7 +733,7 @@ export function openBag(ctx) {
   // ── Diario del viajero: ficha + postales de su historia. La libreta viaja al centro y se abre como el álbum ──
   function diaryNow() {
     const hero = V.heroId?.() || 'nilo', P = H.progress(hero), n = P ? P.got.length : 0;
-    return `<div class="dv">${H.diarySVG(hero, n, P ? P.unseen : 0)}</div><span class="pvb-tag">DIARIO${P ? ` · <b>${Math.min(n, P.total)}</b>/${P.total}` : ''}</span>`;
+    return `<div class="dv">${H.diarySVG(hero, n, P ? P.unseen : 0)}</div><span class="pvb-tag">${tt('diary.word')}${P ? ` · <b>${Math.min(n, P.total)}</b>/${P.total}` : ''}</span>`;
   }
   const DIA = { hx: .073, top: .114, bot: .043, ang: -6, page: '#EFE3C6', back: '#6A4226', line: '#8A5A3B' };
   async function flyDiary(b) {

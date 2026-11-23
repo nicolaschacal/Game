@@ -7,6 +7,10 @@
 // Guardado: 'hist.<hero>' = { got: [ids], seen: [ids] } · 'histPend' = { hero, ch } (escena a mostrar al volver al inicio).
 // TODO(i18n): los textos de las historias están en español; se traducen cuando el guion esté aprobado.
 import { DESTINOS, IDX } from './destinos.js';
+import { t as tt } from './i18n.js';
+// nombre de una ciudad (clave en español) en el idioma del juego · nombre visible del viajero
+const placeOf = p => (p && IDX[p] != null ? DESTINOS[IDX[p]].place : p || '');
+const heroName = h => h[0].toUpperCase() + h.slice(1);
 
 const CREAM = '#FFF4DC';
 let UID = 0;
@@ -16,14 +20,14 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 
 // ── Fichas de los ocho viajeros (cada uno con su propio motivo) ──
 export const FICHAS = {
-  nilo: { home: 'Berlín, Alemania', why: 'Encontró el cuaderno de vuelo de su abuelo, el piloto que desapareció en 1974 sobre Sudamérica.', quote: 'El cielo es el único país sin fronteras.', likes: 'El ruido de los motores viejos, el café sin azúcar, las ciudades de noche.', fears: 'Que el cuaderno termine en nada.', dream: 'Salto Ángel', dreamHint: 'Donde el agua cae desde las nubes.', color: '#3E5BA9', dark: '#24305E' },
-  mora: { home: 'Buenos Aires, Argentina', why: 'Su hermano Tomi se fue hace tres años y desde entonces le llegan postales sin remitente.', quote: 'Si no sabés adónde vas, cualquier colectivo te sirve.', color: '#4E9A4A', dark: '#2F6B30' },
-  sipho: { home: 'Ciudad del Cabo, Sudáfrica', why: 'Va a ser el último farero de su faro y quiere conocer las voces de radio con las que hablaba su padre.', quote: 'Una luz no sirve si nadie la mira.', color: '#C98A1E', dark: '#7A4E12' },
-  minji: { home: 'Seúl, Corea del Sur', why: 'Se congeló en la final de baile y se prometió una gira sola hasta animarse a volver al escenario.', quote: 'Si nadie mira, igual bailo.', color: '#7B5CC4', dark: '#523B8E' },
-  tuk: { home: 'Reikiavik, Islandia', why: 'Encontró una carta de 1979 que nunca se entregó y juró llevarla a destino.', quote: 'Una carta que no llega es una pregunta sin respuesta.', color: '#2F8C8A', dark: '#1F5E5C' },
-  layla: { home: 'Amán, Jordania', why: 'Completa la guía de fotos del desierto que su madre dejó sin terminar.', quote: 'La luz buena siempre llega si sabés esperar.', color: '#B8673A', dark: '#7A4024' },
-  cal: { home: 'Boulder, EE. UU.', why: 'Cumple la lista de cumbres que su compañero de montaña no llegó a subir.', quote: 'Un paso. Después otro.', color: '#3F6E9E', dark: '#24486E' },
-  anaya: { home: 'Jaipur, India', why: 'Le lleva a su abuela, que está perdiendo la vista, el color de cada ciudad del mundo.', quote: 'Todo lugar tiene un color que nadie nombró.', color: '#D9507E', dark: '#9E2F57' },
+  nilo: { home: tt('ficha.nilo.home'), why: tt('ficha.nilo.why'), quote: tt('ficha.nilo.quote'), likes: tt('ficha.nilo.likes'), fears: tt('ficha.nilo.fears'), dream: 'Salto Ángel', dreamHint: tt('ficha.nilo.dreamHint'), color: '#3E5BA9', dark: '#24305E' },
+  mora: { home: tt('ficha.mora.home'), why: tt('ficha.mora.why'), quote: tt('ficha.mora.quote'), color: '#4E9A4A', dark: '#2F6B30' },
+  sipho: { home: tt('ficha.sipho.home'), why: tt('ficha.sipho.why'), quote: tt('ficha.sipho.quote'), color: '#C98A1E', dark: '#7A4E12' },
+  minji: { home: tt('ficha.minji.home'), why: tt('ficha.minji.why'), quote: tt('ficha.minji.quote'), color: '#7B5CC4', dark: '#523B8E' },
+  tuk: { home: tt('ficha.tuk.home'), why: tt('ficha.tuk.why'), quote: tt('ficha.tuk.quote'), color: '#2F8C8A', dark: '#1F5E5C' },
+  layla: { home: tt('ficha.layla.home'), why: tt('ficha.layla.why'), quote: tt('ficha.layla.quote'), color: '#B8673A', dark: '#7A4024' },
+  cal: { home: tt('ficha.cal.home'), why: tt('ficha.cal.why'), quote: tt('ficha.cal.quote'), color: '#3F6E9E', dark: '#24486E' },
+  anaya: { home: tt('ficha.anaya.home'), why: tt('ficha.anaya.why'), quote: tt('ficha.anaya.quote'), color: '#D9507E', dark: '#9E2F57' },
 };
 
 // ── La historia de Nilo: «El cuaderno de Opa» (7 postales + 1 secreta) ──
@@ -31,143 +35,67 @@ export const FICHAS = {
 const N = 'Nilo';
 export const STORIES = {
   nilo: {
-    title: 'El cuaderno de Opa',
+    title: tt('hist.nilo.title'),
     chapters: [
-      { id: 1, at: 'Berlín', title: 'El ático', hint: 'Todo empieza en casa: volvé a Berlín, la ciudad de Nilo.', req: {},
-        lines: [[N, 'Volví a Berlín y subí al ático de la abuela. Solo quería las antiparras de Opa.', 'hat'],
-          [N, 'Pero en la caja había algo más: su cuaderno de vuelo. Siete lugares marcados con tinta roja.'],
-          [N, 'La última página está arrancada. Y en cada página hay una sola letra, apretada contra el borde: M.', 'look'],
-          [N, 'Opa desapareció en 1974, volando sobre Sudamérica. Nunca encontraron el avión.'],
-          [N, 'La abuela dice que no lo lea. Por eso lo voy a leer entero. Primera parada: París.', 'wave']],
-        objs: { 1: 'cuaderno', 2: 'cuaderno' },
-        back: 'Hoy encontré el cuaderno de Opa. La abuela me pidió que lo deje en la caja. No pude. Primera página: un café de París y una letra, M. Allá voy.', reward: { coins: 150 } },
-      { id: 2, at: 'París', title: 'Dos cafés', hint: 'Un café donde siempre sobraba una taza.', req: {},
-        lines: [[N, 'La página de París tiene la dirección de un café. Sigue abierto, con las mismas sillas de mimbre.'],
-          ['Étienne, el mozo', '¿Esas antiparras? Las conozco. Tu abuelo venía cada martes y pedía dos cafés.'],
-          ['Étienne, el mozo', 'Uno se enfriaba siempre. Cuarenta años sirviendo mesas y nunca supe para quién era el segundo.'],
-          [N, 'Para M. Tiene que ser para M.', 'up'],
-          ['Étienne, el mozo', 'Un día dejó una propina enorme y un papel: «Me voy a Estambul. Si viene, dígale que la espero allá».']],
-        back: 'El mozo tiene ochenta años y reconoció las antiparras antes que a mí. Opa pedía dos cafés y uno se enfriaba siempre. ¿Quién eras, M.?', reward: { coins: 200 } },
-      { id: 3, at: 'Estambul', title: 'La foto de M.', hint: 'Una foto de 1960 que nadie vino a buscar.', req: { trips: 6 },
-        lines: [[N, 'Entre las páginas del cuaderno había un recibo: un estudio de fotos en Gálata, 1960.'],
-          ['Selin, la fotógrafa', 'Mi abuelo guardaba todos los negativos que nadie retiraba. Mirá este: un piloto y una chica, riéndose.'],
-          [N, 'Ella tiene un pañuelo con una M bordada. Y Opa… nunca lo vi sonreír así en ninguna foto de casa.'],
-          ['Selin, la fotógrafa', 'Atrás hay algo escrito a lápiz. «Marrakech. El zoco. Esperame.»'],
-          [N, 'Opa la seguía por el mundo. O ella lo seguía a él.', 'look']],
-        objs: { 1: 'foto', 2: 'foto', 3: 'foto' },
-        back: 'Opa tenía 24 años en la foto. Tiene mi misma sonrisa torcida. Nadie en casa me lo dijo nunca. Ella se reía con los ojos cerrados.', reward: { coins: 250 } },
-      { id: 4, at: 'Marrakech', title: 'La carta del zoco', hint: 'Una puerta con un avioncito pintado.', req: { stamps: { r: 'af', n: 3 } },
-        lines: [[N, 'Ese puesto de lámparas tiene el avioncito de Opa pintado en la puerta.', 'look'],
-          ['Hassan, el vendedor', 'Mi padre guardó esta carta sesenta años. Dijo que un piloto alemán vendría a buscarla.'],
-          ['Hassan, el vendedor', 'Nunca vino. Vino su nieto. A veces eso alcanza.'],
-          [N, '«M.: si me esperás, te lo voy a decir donde el agua cae del cielo.»'],
-          [N, 'Opa nunca mandó esta carta. Entonces M. nunca supo adónde ir.'],
-          ['Hassan, el vendedor', 'Mi padre contaba que el piloto se fue de acá hacia Río de Janeiro. Que lo esperaba una tormenta.']],
-        objs: { 3: 'carta', 4: 'carta' },
-        back: 'La carta nunca le llegó a M. Opa la dejó acá y siguió volando. ¿Ella lo esperó? ¿Y qué le iba a decir donde el agua cae del cielo?', reward: { coins: 300, chest: 'plata' } },
-      { id: 5, at: 'Río de Janeiro', title: 'Aterrizaje a ciegas', hint: 'Una tormenta que cerró el cielo tres días.', req: { route: 'andes' },
-        lines: [[N, 'La página de Río tiene una sola palabra, escrita tan fuerte que rompió el papel: «tormenta».'],
-          ['Dona Lúcia, la controladora', '1961. Un piloto aterrizó a ciegas en plena tormenta. Lo vi yo misma desde la torre.'],
-          ['Dona Lúcia, la controladora', 'Gritaba que tenía que llegar a Buenos Aires esa noche, que alguien lo esperaba. Le cerramos el cielo tres días.'],
-          [N, 'Tres días tarde. Por eso la carta, por eso los dos cafés. Opa siempre llegaba tarde a M.', 'hat'],
-          ['Dona Lúcia, la controladora', 'Antes de irse preguntó por una cascada en Venezuela. Pero primero, dijo, quería pararse en la mitad del mundo.']],
-        back: 'Hoy vi el cielo de Río ponerse negro en un minuto. Entendí que no fue culpa de Opa. Igual duele.', reward: { coins: 350 } },
-      { id: 6, at: 'Mitad del Mundo', title: 'Un pie en cada mitad', hint: 'La línea que parte el mundo en dos.', req: { stamps: { r: 'am', n: 8 }, trips: 18 },
-        lines: [[N, 'Un pie en el norte, un pie en el sur. La línea pasa justo entre mis botas.', 'side'],
-          [N, 'La penúltima página dice: «Último intento. Si no está, me quedo con el cielo».'],
-          [N, '¿Y si Opa no desapareció en un accidente? ¿Y si eligió no volver?'],
-          [N, 'No. Primero el agua que cae del cielo. Después las preguntas.', 'hat']],
-        back: 'Hoy por primera vez tuve miedo de lo que voy a encontrar. Sigo igual. Opa también tenía miedo y volaba igual.', reward: { coins: 400 } },
-      { id: 7, at: 'Salto Ángel', title: 'Donde el agua cae del cielo', hint: 'Donde el agua cae desde las nubes.', req: { trips: 30 },
-        lines: [[N, 'Salto Ángel. Casi mil metros de agua cayendo desde las nubes. Opa tenía razón: parece que el cielo se rompe.', 'up'],
-          [N, 'Hay una piedra con el avioncito tallado. Debajo, una lata oxidada.'],
-          [N, 'Adentro está la página arrancada. La letra de Opa, temblando:'],
-          [N, '«1974. Llegué tarde otra vez: M. ya no estaba. No voy a volver a casa a explicar por qué. Que alguien de los míos llegue a tiempo por mí.»'],
-          [N, 'Y abajo, unas coordenadas. No son de acá. Son de una isla en el medio del Pacífico.']],
-        objs: { 2: 'pagina', 3: 'pagina', 4: 'pagina' },
-        back: 'Opa no se cayó. Opa se fue. Y dejó un mapa para que alguien lo siguiera. Ese alguien soy yo.', reward: { coins: 600, chest: 'oro' } },
-      { id: 8, at: 'Isla de Pascua', title: 'La isla', hint: 'Unas coordenadas en el medio del océano.', secret: true, req: {},
-        lines: [[N, 'Las coordenadas me trajeron frente a los moáis. No hay nadie. Solo un hangar viejo con la puerta abierta.'],
-          [N, 'Adentro hay cientos de postales colgadas con broches. Todas firmadas con un avioncito.'],
-          ['???', 'Llegaste a tiempo. Yo nunca pude.'],
-          [N, '…¿Opa?', 'up'],
-          ['Albrecht', 'Cincuenta años mandando postales a desconocidos para que se animaran a viajar. La que más esperaba era la tuya.'],
-          ['Albrecht', '¿Tomamos un café? Pido dos. Esta vez no se enfría ninguno.'], [N, 'Pedí dos, Opa. Yo invito.', 'wave']],
-        objs: { 1: 'postales' },
-        back: 'No le voy a contar a nadie dónde está. Le prometí volver el martes. Con dos cafés.', reward: { coins: 1000, chest: 'oro' } },
+      { id: 1, at: 'Berlín', title: tt('hist.nilo.1.title'), hint: tt('hist.nilo.1.hint'), req: {},
+        lines: [[N, tt('hist.nilo.1.l1')],
+          [N, tt('hist.nilo.1.l2')],
+          [N, tt('hist.nilo.1.l3'), 'look'],
+          [N, tt('hist.nilo.1.l4')],
+          [N, tt('hist.nilo.1.l5'), 'wave']],
+        back: tt('hist.nilo.1.back'), reward: { coins: 150 } },
+      { id: 2, at: 'París', title: tt('hist.nilo.2.title'), hint: tt('hist.nilo.2.hint'), req: {},
+        lines: [[N, tt('hist.nilo.2.l1')],
+          [tt('hist.npc.etienne'), tt('hist.nilo.2.l2')],
+          [tt('hist.npc.etienne'), tt('hist.nilo.2.l3')],
+          [N, tt('hist.nilo.2.l4'), 'up'],
+          [tt('hist.npc.etienne'), tt('hist.nilo.2.l5')]],
+        back: tt('hist.nilo.2.back'), reward: { coins: 200 } },
+      { id: 3, at: 'Estambul', title: tt('hist.nilo.3.title'), hint: tt('hist.nilo.3.hint'), req: { trips: 6 },
+        lines: [[N, tt('hist.nilo.3.l1')],
+          [tt('hist.npc.selin'), tt('hist.nilo.3.l2')],
+          [N, tt('hist.nilo.3.l3')],
+          [tt('hist.npc.selin'), tt('hist.nilo.3.l4')],
+          [N, tt('hist.nilo.3.l5'), 'look']],
+        back: tt('hist.nilo.3.back'), reward: { coins: 250 } },
+      { id: 4, at: 'Marrakech', title: tt('hist.nilo.4.title'), hint: tt('hist.nilo.4.hint'), req: { stamps: { r: 'af', n: 3 } },
+        lines: [[N, tt('hist.nilo.4.l1'), 'look'],
+          [tt('hist.npc.hassan'), tt('hist.nilo.4.l2')],
+          [tt('hist.npc.hassan'), tt('hist.nilo.4.l3')],
+          [N, tt('hist.nilo.4.l4')],
+          [N, tt('hist.nilo.4.l5')],
+          [tt('hist.npc.hassan'), tt('hist.nilo.4.l6')]],
+        back: tt('hist.nilo.4.back'), reward: { coins: 300, chest: 'plata' } },
+      { id: 5, at: 'Río de Janeiro', title: tt('hist.nilo.5.title'), hint: tt('hist.nilo.5.hint'), req: { route: 'andes' },
+        lines: [[N, tt('hist.nilo.5.l1')],
+          [tt('hist.npc.lucia'), tt('hist.nilo.5.l2')],
+          [tt('hist.npc.lucia'), tt('hist.nilo.5.l3')],
+          [N, tt('hist.nilo.5.l4')],
+          [tt('hist.npc.lucia'), tt('hist.nilo.5.l5')]],
+        back: tt('hist.nilo.5.back'), reward: { coins: 350 } },
+      { id: 6, at: 'Mitad del Mundo', title: tt('hist.nilo.6.title'), hint: tt('hist.nilo.6.hint'), req: { stamps: { r: 'am', n: 8 }, trips: 18 },
+        lines: [[N, tt('hist.nilo.6.l1'), 'side'],
+          [N, tt('hist.nilo.6.l2')],
+          [N, tt('hist.nilo.6.l3')],
+          [N, tt('hist.nilo.6.l4')]],
+        back: tt('hist.nilo.6.back'), reward: { coins: 400 } },
+      { id: 7, at: 'Salto Ángel', title: tt('hist.nilo.7.title'), hint: tt('hist.nilo.7.hint'), req: { trips: 30 },
+        lines: [[N, tt('hist.nilo.7.l1'), 'up'],
+          [N, tt('hist.nilo.7.l2')],
+          [N, tt('hist.nilo.7.l3')],
+          [N, tt('hist.nilo.7.l4')],
+          [N, tt('hist.nilo.7.l5')]],
+        back: tt('hist.nilo.7.back'), reward: { coins: 600, chest: 'oro' } },
+      { id: 8, at: 'Isla de Pascua', title: tt('hist.nilo.8.title'), hint: tt('hist.nilo.8.hint'), secret: true, req: {},
+        lines: [[N, tt('hist.nilo.8.l1')],
+          [N, tt('hist.nilo.8.l2')],
+          [tt('hist.npc.unknown'), tt('hist.nilo.8.l3')],
+          [N, tt('hist.nilo.8.l4'), 'up'],
+          [tt('hist.npc.albrecht'), tt('hist.nilo.8.l5')],
+          [tt('hist.npc.albrecht'), tt('hist.nilo.8.l6')], [N, tt('hist.nilo.8.l7'), 'wave']],
+        back: tt('hist.nilo.8.back'), reward: { coins: 1000, chest: 'oro' } },
     ],
   },
-};
-
-// ── Personajes secundarios (NPC): un busto de papel genérico que se arma con piezas y colores. Se reusa en todas las historias cambiando la receta. ──
-// receta: { piel, pelo: 'calvo'|'corto'|'largo'|'rodete'|'canoso', cPelo, ropa, cuello: 'delantal'|'pañuelo'|'uniforme'|'chilaba'|'chaqueta',
-//           extra: ['bigote','barba','lentes','fez','antiparras','camara','arrugas'], cExtra }
-export const NPCS = {
-  'Étienne, el mozo': { piel: '#F1CDB0', pelo: 'calvo', cPelo: '#E8E4DC', ropa: '#2B2C3A', cuello: 'delantal', extra: ['bigote', 'arrugas'] },
-  'Selin, la fotógrafa': { piel: '#E8BE9C', pelo: 'largo', cPelo: '#3A2420', ropa: '#5E7A8C', cuello: 'pañuelo', cExtra: '#C9573E', extra: ['camara'] },
-  'Hassan, el vendedor': { piel: '#C9915F', pelo: 'corto', cPelo: '#2A1C16', ropa: '#C98A4A', cuello: 'chilaba', extra: ['barba', 'fez'], cExtra: '#B8402E' },
-  'Dona Lúcia, la controladora': { piel: '#9A6644', pelo: 'rodete', cPelo: '#D8D4CC', ropa: '#3E5BA9', cuello: 'uniforme', extra: ['lentes', 'arrugas'] },
-  '???': { piel: '#E9C4A4', pelo: 'canoso', cPelo: '#EEEAE2', ropa: '#7A5A3C', cuello: 'chaqueta', extra: ['antiparras', 'bigote', 'arrugas'], sombra: true },
-  'Albrecht': { piel: '#E9C4A4', pelo: 'canoso', cPelo: '#EEEAE2', ropa: '#7A5A3C', cuello: 'chaqueta', extra: ['antiparras', 'bigote', 'arrugas'] },
-};
-const dk = (c, t = .22) => { const n = parseInt(c.slice(1), 16), f = v => Math.round(v * (1 - t)).toString(16).padStart(2, '0'); return '#' + [n >> 16, (n >> 8) & 255, n & 255].map(f).join(''); };
-export function npcSVG(r) {
-  const P = (d, c, o = '') => `<path d="${d}" fill="${c}"${o}/>`, E = r.extra || [], has = k => E.includes(k), cp = r.cPelo, sk = r.piel;
-  let back = '', body = '', head = '', front = '';
-  // cuerpo y cuello
-  body += P('M14 128 Q16 96 36 90 Q60 84 84 90 Q104 96 106 128Z', r.ropa) + `<rect x="51" y="74" width="18" height="18" rx="5" fill="${dk(sk, .12)}"/>`;
-  if (r.cuello === 'delantal') body += P('M40 128 L44 96 Q60 100 76 96 L80 128Z', '#F4F0E6') + P('M52 90 L60 96 L68 90 L68 98 L60 95 L52 98Z', '#B8402E') + P('M36 90 L46 92 L50 104 Z M84 90 L74 92 L70 104Z', '#F4F0E6');
-  if (r.cuello === 'pañuelo') body += P('M44 88 Q60 100 76 88 Q74 98 60 104 Q46 98 44 88Z', r.cExtra || '#C9573E') + P('M60 102 L56 118 L62 116 L66 120 L64 102Z', dk(r.cExtra || '#C9573E'));
-  if (r.cuello === 'uniforme') body += P('M48 88 L60 104 L72 88 L66 88 L60 96 L54 88Z', '#F4F0E6') + `<circle cx="60" cy="112" r="2" fill="#F2B937"/><circle cx="60" cy="122" r="2" fill="#F2B937"/>` + P('M86 98 l10 2 l-2 6 l-10 -2Z', '#F2B937');
-  if (r.cuello === 'chilaba') body += P('M50 88 Q60 102 70 88 L66 128 L54 128Z', dk(r.ropa, .15)) + P('M52 92 Q60 98 68 92', 'none', ` stroke="#F2B937" stroke-width="1.6"`);
-  if (r.cuello === 'chaqueta') body += P('M40 92 L56 100 L52 128 L40 128Z M80 92 L64 100 L68 128 L80 128Z', dk(r.ropa, .25)) + P('M44 90 Q60 82 76 90 L72 96 Q60 90 48 96Z', '#D9C7A6');
-  // pelo de atrás
-  if (r.pelo === 'largo') back += P('M30 46 Q28 16 60 14 Q92 16 90 46 L94 96 Q78 102 60 100 Q42 102 26 96Z', cp);
-  // cabeza
-  head += `<ellipse cx="33" cy="52" rx="5" ry="7" fill="${dk(sk, .08)}"/><ellipse cx="87" cy="52" rx="5" ry="7" fill="${dk(sk, .08)}"/><ellipse cx="60" cy="48" rx="27" ry="28" fill="${sk}"/>`;
-  head += P('M60 20 Q84 22 86 48 Q86 70 66 76 Q82 64 80 44 Q78 26 60 20Z', dk(sk, .06), ' opacity=".7"');
-  if (r.pelo === 'calvo') head += P('M33 40 Q34 30 40 28 Q38 38 37 48Z M87 40 Q86 30 80 28 Q82 38 83 48Z', cp);
-  if (r.pelo === 'corto') head += P('M33 42 Q32 20 60 18 Q88 20 87 42 Q80 30 66 30 Q60 34 50 30 Q38 32 33 42Z', cp);
-  if (r.pelo === 'largo') head += P('M33 46 Q32 18 60 17 Q88 18 87 46 Q78 28 62 30 Q48 28 33 46Z', cp);
-  if (r.pelo === 'rodete') head += `<circle cx="60" cy="16" r="10" fill="${cp}"/>` + P('M33 44 Q32 20 60 19 Q88 20 87 44 Q80 28 60 28 Q40 28 33 44Z', cp);
-  if (r.pelo === 'canoso') head += P('M33 46 Q30 22 60 20 Q90 22 87 46 Q84 34 78 32 Q70 26 60 30 Q50 26 42 32 Q36 34 33 46Z', cp);
-  // cara
-  head += `<ellipse cx="43" cy="58" rx="4.5" ry="2.6" fill="#EE9A8E" opacity=".75"/><ellipse cx="77" cy="58" rx="4.5" ry="2.6" fill="#EE9A8E" opacity=".75"/>`
-    + `<ellipse cx="50" cy="50" rx="3.6" ry="4.6" fill="#2B2236"/><circle cx="51.4" cy="48.2" r="1.4" fill="#FFF8EA"/><ellipse cx="70" cy="50" rx="3.6" ry="4.6" fill="#2B2236"/><circle cx="71.4" cy="48.2" r="1.4" fill="#FFF8EA"/>`
-    + `<rect x="45" y="40" width="10" height="2.6" rx="1.3" fill="${dk(cp === '#EEEAE2' || cp === '#E8E4DC' || cp === '#D8D4CC' ? '#9A948A' : cp, 0)}" transform="rotate(-6 50 41)"/><rect x="65" y="40" width="10" height="2.6" rx="1.3" fill="${dk(cp === '#EEEAE2' || cp === '#E8E4DC' || cp === '#D8D4CC' ? '#9A948A' : cp, 0)}" transform="rotate(6 70 41)"/>`
-    + `<ellipse cx="60" cy="56" rx="2" ry="1.4" fill="${dk(sk, .16)}"/>` + P('M54 62 Q60 67 66 62 Q60 64.5 54 62Z', '#2B2236');
-  if (has('arrugas')) head += P('M41 47 l-3 -1 M79 47 l3 -1 M54 70 q6 2 12 0', 'none', ` stroke="${dk(sk, .2)}" stroke-width="1.1" stroke-linecap="round"`);
-  if (has('bigote')) head += P('M50 62 Q55 58 60 61 Q65 58 70 62 Q66 64 60 62.5 Q54 64 50 62Z', r.cPelo === '#E8E4DC' || r.cPelo === '#EEEAE2' ? '#E2DED6' : dk(cp, 0));
-  if (has('barba')) head += P('M34 54 Q36 78 60 82 Q84 78 86 54 Q80 66 70 66 Q60 70 50 66 Q40 66 34 54Z', cp) + P('M54 63 Q60 66 66 63', 'none', ` stroke="#2B2236" stroke-width="1.6" stroke-linecap="round"`);
-  if (has('lentes')) head += `<g fill="none" stroke="#6A4E3A" stroke-width="1.8"><circle cx="50" cy="50" r="6.4"/><circle cx="70" cy="50" r="6.4"/><path d="M56.4 50 Q60 48 63.6 50"/></g>`;
-  if (has('fez')) head += P('M44 26 L47 8 Q60 5 73 8 L76 26 Q60 30 44 26Z', r.cExtra || '#B8402E') + P('M60 6 Q66 10 68 20', 'none', ` stroke="#2B2236" stroke-width="1.6"`) + `<circle cx="68" cy="21" r="2" fill="#2B2236"/>`;
-  if (has('antiparras')) head += `<rect x="36" y="28" width="48" height="6" rx="3" fill="#5E3B2A"/><circle cx="49" cy="31" r="7" fill="#BFE3F5" stroke="#C9A15A" stroke-width="3"/><circle cx="71" cy="31" r="7" fill="#BFE3F5" stroke="#C9A15A" stroke-width="3"/>`;
-  if (has('camara')) front += `<g transform="translate(70 100) rotate(-8)"><rect x="0" y="0" width="26" height="17" rx="3" fill="#3A3548"/><circle cx="13" cy="9" r="5.4" fill="#8E9AAA" stroke="#2B2236" stroke-width="1.6"/><rect x="3" y="-3" width="7" height="4" rx="1" fill="#3A3548"/></g>`;
-  const all = back + body + head + front;
-  return `<svg viewBox="0 -4 120 132" aria-hidden="true"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round">${(back + body + head + front).replace(/<path d="[^"]*" fill="none"[^>]*\/>/g, '')}</g>${all}</svg>`;
-}
-
-// ── Objetos que se muestran al centro de la conversación (el personaje queda de fondo) ──
-const OBJ = {
-  cuaderno: () => `<svg viewBox="0 0 220 150"><g stroke="#FFF4DC" stroke-width="8" stroke-linejoin="round"><rect x="10" y="14" width="200" height="126" rx="8" fill="#8A5A3B"/></g><rect x="10" y="14" width="200" height="126" rx="8" fill="#8A5A3B"/>`
-    + `<rect x="18" y="20" width="90" height="114" rx="3" fill="#FBF4E2"/><rect x="112" y="20" width="90" height="114" rx="3" fill="#F3E8CC"/><rect x="107" y="18" width="6" height="118" fill="#6A4226"/>`
-    + `<text x="28" y="40" font-family="'Lilita One',sans-serif" font-size="11" fill="#7A6A54">FLUGBUCH · A. V.</text><path d="M28 52 h70 M28 62 h62 M28 72 h68 M28 82 h56 M28 92 h66 M28 102 h48" stroke="#B9A57E" stroke-width="2" stroke-linecap="round"/>`
-    + `<path d="M124 112 C140 70 160 96 176 52 L190 42" stroke="#C9402A" stroke-width="2" stroke-dasharray="4 3" fill="none"/><circle cx="124" cy="112" r="4" fill="#C9402A"/><circle cx="160" cy="80" r="4" fill="#C9402A"/><circle cx="190" cy="42" r="4" fill="#C9402A"/>`
-    + `<text x="184" y="124" font-family="'Lilita One',sans-serif" font-size="26" fill="#C9402A">M.</text><path d="M200 20 L212 34 L200 30Z" fill="#E8E0CA"/></svg>`,
-  foto: () => `<svg viewBox="0 0 170 190"><g transform="rotate(-4 85 95)"><rect x="12" y="10" width="146" height="170" rx="3" fill="#FFFDF6" stroke="#FFF4DC" stroke-width="8"/><rect x="12" y="10" width="146" height="170" rx="3" fill="#FFFDF6"/>`
-    + `<rect x="24" y="22" width="122" height="118" fill="#B8A07A"/><rect x="24" y="22" width="122" height="60" fill="#D2BE98"/><path d="M24 100 Q60 90 146 104 V140 H24Z" fill="#9E865E"/>`
-    + `<circle cx="64" cy="66" r="14" fill="#E2CBA8"/><path d="M50 60 Q64 44 78 60 L78 54 Q64 40 50 54Z" fill="#5E4A34"/><rect x="52" y="56" width="24" height="6" rx="3" fill="#7A6040"/><path d="M44 140 Q46 92 64 86 Q82 92 84 140Z" fill="#5E4A34"/>`
-    + `<circle cx="104" cy="70" r="13" fill="#E2CBA8"/><path d="M90 70 Q88 50 104 52 Q120 50 118 70 L122 96 Q104 90 86 96Z" fill="#3A2A20"/><path d="M88 140 Q90 94 104 88 Q118 94 120 140Z" fill="#8A6A52"/><path d="M92 92 Q104 100 116 92 L112 104 Q104 108 96 104Z" fill="#C9907A"/><text x="104" y="104" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="8" fill="#FBF4E2">M</text>`
-    + `<rect x="24" y="22" width="122" height="118" fill="#C9A86A" opacity=".18"/><text x="85" y="164" text-anchor="middle" font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-style="italic" font-size="12" fill="#5E4A34">Gálata, 1960</text></g></svg>`,
-  carta: () => `<svg viewBox="0 0 170 200"><g transform="rotate(3 85 100)"><rect x="16" y="10" width="138" height="180" rx="3" fill="#F7EED6" stroke="#FFF4DC" stroke-width="8"/><rect x="16" y="10" width="138" height="180" rx="3" fill="#F7EED6"/>`
-    + `<path d="M16 70 H154 M16 130 H154" stroke="#E2D6B6" stroke-width="1.6"/><text x="30" y="40" font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-style="italic" font-weight="700" font-size="15" fill="#24305E">M.:</text>`
-    + `<g font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-style="italic" font-size="11.5" fill="#24305E"><text x="30" y="62">si me esperás,</text><text x="30" y="80">te lo voy a decir</text><text x="30" y="98">donde el agua</text><text x="30" y="116">cae del cielo.</text></g>`
-    + `<path d="M104 150 L132 140 L124 150 L132 160Z" fill="#C9402A"/><text x="124" y="180" text-anchor="end" font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-style="italic" font-size="12" fill="#24305E">— A.</text><circle cx="140" cy="30" r="14" fill="none" stroke="#C9402A" stroke-width="2" opacity=".6"/></g></svg>`,
-  pagina: () => `<svg viewBox="0 0 180 200"><g transform="rotate(-3 90 100)"><path d="M14 12 H164 V188 H14 L20 170 L12 150 L20 130 L12 110 L20 90 L12 70 L20 50 L12 30Z" fill="#EFE2C2" stroke="#FFF4DC" stroke-width="8" stroke-linejoin="round"/><path d="M14 12 H164 V188 H14 L20 170 L12 150 L20 130 L12 110 L20 90 L12 70 L20 50 L12 30Z" fill="#EFE2C2"/>`
-    + `<g font-family="'Segoe Print','Bradley Hand','Comic Sans MS',cursive" font-style="italic" font-size="11" fill="#3A2A20"><text x="32" y="38" font-weight="700">1974.</text><text x="32" y="58">Llegué tarde otra vez.</text><text x="32" y="76">No voy a volver a casa</text><text x="32" y="94">a explicar por qué.</text><text x="32" y="116">Que alguien de los míos</text><text x="32" y="134">llegue a tiempo por mí.</text></g>`
-    + `<text x="34" y="170" font-family="'Lilita One',sans-serif" font-size="12" fill="#C9402A">27°07'S · 109°21'O</text><path d="M120 40 q20 10 30 0" stroke="#A0602A" stroke-width="5" opacity=".25" fill="none"/></g></svg>`,
-  postales: () => `<svg viewBox="0 0 220 150"><path d="M6 20 Q110 40 214 20" stroke="#8A6A44" stroke-width="2" fill="none"/><path d="M6 80 Q110 100 214 80" stroke="#8A6A44" stroke-width="2" fill="none"/>`
-    + [[14, 26, '#F2B98A', -6], [62, 32, '#9CC9DE', 4], [112, 33, '#F4B6C2', -3], [162, 27, '#BFE3A8', 6], [30, 86, '#E8C45A', 5], [84, 92, '#B9C8EE', -4], [140, 90, '#F2B98A', 3]].map(([x, y, c, r]) => `<g transform="rotate(${r} ${x + 22} ${y + 18})"><rect x="${x}" y="${y}" width="44" height="34" rx="2" fill="#FFFDF6" stroke="#FFF4DC" stroke-width="5"/><rect x="${x}" y="${y}" width="44" height="34" rx="2" fill="#FFFDF6"/><rect x="${x + 3}" y="${y + 3}" width="38" height="20" fill="${c}"/><path d="M${x + 26} ${y + 30} l8 -3 l-2 3 l2 3Z" fill="#C9402A"/><rect x="${x + 18}" y="${y - 4}" width="8" height="8" rx="1" fill="#8A6A44"/></g>`).join('') + `</svg>`,
 };
 
 // ── Estado ──
@@ -182,10 +110,10 @@ export function markSeen(hero) { const s = st(hero); s.seen = [...new Set([...s.
 // Requisitos del capítulo con su avance (para el diario y para decidir)
 export function reqs(V, hero, ch) {
   const stamps = (V.heroStamps ? V.heroStamps() : V.T.visits) || {}, trips = Object.values(stamps).reduce((a, n) => a + (n || 0), 0), out = [];
-  if (ch.at) out.push({ label: `Próximo destino: ${ch.at} (viajá con ${hero === 'nilo' ? 'Nilo' : hero})`, kind: 'at' });
-  if (ch.req.trips) out.push({ label: `${ch.req.trips} viajes con Nilo`, n: Math.min(trips, ch.req.trips), goal: ch.req.trips, ok: trips >= ch.req.trips });
-  if (ch.req.stamps) { const { r, n } = ch.req.stamps, have = Object.keys(stamps).filter(i => stamps[i] > 0 && V.regionOf(+i) === r).length; out.push({ label: `${n} sellos de ${V.REGIONS[r].name}`, n: Math.min(have, n), goal: n, ok: have >= n }); }
-  if (ch.req.route) { const R = V.ROUTES.find(x => x.id === ch.req.route), ok = (V.heroRoutes ? V.heroRoutes() : []).includes(ch.req.route); out.push({ label: `Completar la ${R ? (window.t ? window.t(R.name) : R.name) : 'ruta'}`, ok, n: ok ? 1 : 0, goal: 1 }); }
+  if (ch.at) out.push({ label: tt('diary.nextAt', { place: placeOf(ch.at), name: heroName(hero) }), kind: 'at' });
+  if (ch.req.trips) out.push({ label: tt('diary.trips', { n: ch.req.trips, name: heroName(hero) }), n: Math.min(trips, ch.req.trips), goal: ch.req.trips, ok: trips >= ch.req.trips });
+  if (ch.req.stamps) { const { r, n } = ch.req.stamps, have = Object.keys(stamps).filter(i => stamps[i] > 0 && V.regionOf(+i) === r).length; out.push({ label: tt('diary.stamps', { n, region: V.REGIONS[r].name }), n: Math.min(have, n), goal: n, ok: have >= n }); }
+  if (ch.req.route) { const R = V.ROUTES.find(x => x.id === ch.req.route), ok = (V.heroRoutes ? V.heroRoutes() : []).includes(ch.req.route); out.push({ label: tt('diary.route', { route: R ? tt(R.name) : '' }), ok, n: ok ? 1 : 0, goal: 1 }); }
   return out;
 }
 export const nextChapter = hero => { const S = STORIES[hero]; if (!S) return null; const s = st(hero); return S.chapters.find(c => !s.got.includes(c.id)) || null; };
@@ -244,15 +172,12 @@ export function playScene(ctx, hero, id, opts = {}) {
     const ov = document.createElement('div'); ov.className = 'pvh';
     const dots = ch.lines.map(() => '<i></i>').join('');
     ov.style.setProperty('--htop', topY);
-    ov.innerHTML = `<div class="hbg"></div><div class="htop"><div class="hdots">${dots}</div><button class="hskip">SALTAR</button></div>
-<div class="htag"><div class="ribbon"><small>${esc(S.title.toUpperCase())}</small>Capítulo ${ch.id}${ch.secret ? ' · secreto' : ''} · ${esc(ch.title)}</div></div>
-<div class="hhero"><div class="hhf">${art}</div></div><div class="hnpc"></div><div class="hobj"></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
+    ov.innerHTML = `<div class="hbg"></div><div class="htop"><div class="hdots">${dots}</div><button class="hskip">${tt('diary.skip')}</button></div>
+<div class="htag"><div class="ribbon"><small>${esc(S.title.toUpperCase())}</small>${tt('diary.chapter', { n: ch.id })}${ch.secret ? ' · ' + tt('diary.secretCh') : ''} · ${esc(ch.title)}</div></div>
+<div class="hhero"><div class="hhf">${art}</div></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
     document.body.appendChild(ov); document.body.classList.add('pvh-on');
     const hn = ov.querySelector('.hn'), ht = ov.querySelector('.ht'), hh = ov.querySelector('.hhero'), bub = ov.querySelector('.hbub'), dd = [...ov.querySelectorAll('.hdots i')];
-    let k = -1, typing = null, full = '', npcNow = null, objNow = null;
-    const hnp = ov.querySelector('.hnpc'), hob = ov.querySelector('.hobj');
-    const setNpc = who => { const R = NPCS[who]; if (!R) return; if (npcNow !== who) { npcNow = who; hnp.classList.remove('on'); setTimeout(() => { if (npcNow !== who) return; hnp.innerHTML = `<div class="hnf${R.sombra ? ' sil' : ''}">${npcSVG(R)}</div>`; hnp.classList.add('on'); }, hnp.innerHTML ? 180 : 0); } };
-    const setObj = key => { if (key === objNow) return; objNow = key; ov.classList.toggle('obj', !!key); hob.classList.remove('on'); if (key && OBJ[key]) setTimeout(() => { if (objNow !== key) return; hob.innerHTML = OBJ[key](); hob.classList.add('on'); sfx('tap'); }, hob.innerHTML ? 160 : 60); };
+    let k = -1, typing = null, full = '';
     // Gestos: respira y parpadea siempre; al hablar mueve la cabeza; en algunas líneas saluda, mira alrededor o se acomoda la gorra; cuando habla otro, lo mira
     const hf = ov.querySelector('.hhf'), UC = new Map(), G = { ph: 0, lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: Date.now() + 1500, bk: -1, clip: null, ck: 0, cph: 0, wave: 0, t: 0 };
     const put = f => { if (!f || hf._f === f) return; let u = UC.get(f); if (!u) { u = uniq(f); if (UC.size > 80) UC.clear(); UC.set(f, u); } hf.innerHTML = u; hf._f = f; };
@@ -280,18 +205,16 @@ export function playScene(ctx, hero, id, opts = {}) {
       k++; if (k >= ch.lines.length) return finale();
       const [who, txt, g] = ch.lines[k], me = who === name || who === N && hero === 'nilo';
       hn.textContent = who; hn.style.color = me ? F.dark : '#A4521A'; bub.classList.toggle('npc', !me); hh.classList.toggle('hdim', !me);
-      if (!me) setNpc(who); hnp.classList.toggle('hdim', me); hnp.classList.toggle('talk', !me); ov.classList.toggle('duo', !!npcNow);
-      setObj(ch.objs?.[k] || null);
       gesture(me ? g : 'listen'); hh.classList.toggle('talk', me);
       dd.forEach((d, j) => d.classList.toggle('on', j <= k)); full = txt; ht.textContent = ''; bub.classList.remove('done');
       let c = 0; clearInterval(typing); sfx('tap');
-      typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); hh.classList.remove('talk'); hnp.classList.remove('talk'); } }, 22);
+      typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); hh.classList.remove('talk'); } }, 22);
     };
     const finale = () => {
       clearInterval(typing); ov.classList.add('fin'); sfx('prize'); try { ctx.buzz?.([20, 40, 20]); ctx.confetti?.(); } catch (e) {}
-      const r = ch.reward || {}, chips = [r.coins ? `+◉ ${r.coins}` : '', r.chest ? `Cofre de ${r.chest}` : ''].filter(Boolean).map(x => `<span>${x}</span>`).join('');
+      const r = ch.reward || {}, chips = [r.coins ? `+◉ ${r.coins}` : '', r.chest ? tt('chest.t.' + r.chest) : ''].filter(Boolean).map(x => `<span>${x}</span>`).join('');
       const card = document.createElement('div'); card.className = 'hend';
-      card.innerHTML = `<small>NUEVA POSTAL · ${ch.id}/${S.chapters.filter(c => !c.secret).length}${ch.secret ? ' · SECRETA' : ''}</small><div class="hpc">${postalFront(ch, 250)}</div><b>${esc(ch.title)}</b>${opts.replay ? '' : `<div class="hrw">${chips}</div>`}<button class="hok">${opts.replay ? 'CERRAR' : 'GUARDAR EN EL DIARIO'}</button>`;
+      card.innerHTML = `<small>${tt('diary.newPostal')} · ${ch.id}/${S.chapters.filter(c => !c.secret).length}${ch.secret ? ' · ' + tt('diary.secret') : ''}</small><div class="hpc">${postalFront(ch, 250)}</div><b>${esc(ch.title)}</b>${opts.replay ? '' : `<div class="hrw">${chips}</div>`}<button class="hok">${opts.replay ? tt('diary.close') : tt('diary.saveIt')}</button>`;
       ov.appendChild(card);
       card.querySelector('.hok').onclick = e => { e.stopPropagation(); close(true); };
     };
@@ -333,27 +256,27 @@ export function openDiary(ctx, hero, onClose, opts = {}) {
   let art = ''; try { art = uniq(ctx.thumbOf(hero, ctx.wornOf ? ctx.wornOf(hero) : 'base')); } catch (e) {}
   function draw() {
     const s = st(hero), got = s.got, total = S ? S.chapters.filter(c => !c.secret).length : 0, next = S ? nextChapter(hero) : null, done7 = S && S.chapters.filter(c => !c.secret).every(c => got.includes(c.id));
-    const dream = F.dream ? (done7 ? `<b class="L">${esc(F.dream)}</b>` : `<b class="L">Tapado con tinta</b><small>«${esc(F.dreamHint)}»</small>`) : '<b class="L">Todavía no lo cuenta</b>';
-    const nextHTML = next ? `<div class="dnx"><div class="dnxh"><b>${next.secret ? 'Postal secreta' : `Capítulo ${next.id} de ${total}`}</b><span>«${esc(next.hint)}»</span></div>${reqs(V, hero, next).map(r => `<div class="drq${r.ok ? ' ok' : ''}"><i>${r.ok ? '✓' : ''}</i><span>${esc(r.label)}</span>${r.goal ? `<em>${r.n}/${r.goal}</em>` : ''}</div>`).join('')}</div>` : '';
+    const dream = F.dream ? (done7 ? `<b class="L">${esc(placeOf(F.dream))}</b>` : `<b class="L">${tt('diary.inked')}</b><small>«${esc(F.dreamHint)}»</small>`) : `<b class="L">${tt('diary.untold')}</b>`;
+    const nextHTML = next ? `<div class="dnx"><div class="dnxh"><b>${next.secret ? tt('diary.secretPostal') : tt('diary.chOf', { n: next.id, total })}</b><span>«${esc(next.hint)}»</span></div>${reqs(V, hero, next).map(r => `<div class="drq${r.ok ? ' ok' : ''}"><i>${r.ok ? '✓' : ''}</i><span>${esc(r.label)}</span>${r.goal ? `<em>${r.n}/${r.goal}</em>` : ''}</div>`).join('')}</div>` : '';
     const cards = S ? S.chapters.filter(c => !c.secret || got.includes(c.id) || done7).map(c => {
       const ok = got.includes(c.id), nu = ok && !s.seen.includes(c.id);
-      if (ok) return `<button class="dpc${nu ? ' nu' : ''}${c.secret ? ' sec' : ''}" data-ch="${c.id}"><div class="dpi">${postalFront(c, 150)}</div><small>${c.id} · ${esc((c.place || c.at || '').toUpperCase())}</small><b>${esc(c.title)}</b>${nu ? '<u>¡NUEVA!</u>' : ''}</button>`;
-      return `<div class="dpc lk${c.secret ? ' sec' : ''}"><div class="dpi"><span>${c.secret ? '?' : `«${esc(c.hint)}»`}</span></div><small>${c.id} · ${c.secret ? 'SECRETA' : '???'}</small><b>???</b></div>`;
+      if (ok) return `<button class="dpc${nu ? ' nu' : ''}${c.secret ? ' sec' : ''}" data-ch="${c.id}"><div class="dpi">${postalFront(c, 150)}</div><small>${c.id} · ${esc(placeOf(c.place || c.at).toUpperCase())}</small><b>${esc(c.title)}</b>${nu ? `<u>${tt('diary.new')}</u>` : ''}</button>`;
+      return `<div class="dpc lk${c.secret ? ' sec' : ''}"><div class="dpi"><span>${c.secret ? '?' : `«${esc(c.hint)}»`}</span></div><small>${c.id} · ${c.secret ? tt('diary.secret') : '???'}</small><b>???</b></div>`;
     }).join('') : '';
-    root.innerHTML = `<div class="head"><button class="round close" data-x aria-label="Cerrar">✕</button><small>EL DIARIO DE</small><h2>${esc(name.toUpperCase())}</h2></div>
-<div class="dfi"><div class="dpol"><div class="dph">${art}</div><span>${esc(name)}</span></div><div class="dtx"><h5>CIUDAD NATAL</h5><b class="L">${esc(F.home)}</b><h5>VIAJA PORQUE</h5><p>${esc(F.why)}</p><q>${esc(F.quote)}</q></div></div>
-<div class="dst"><div><b>${trips}</b><small>VIAJES</small></div><div><b>${nSt}</b><small>SELLOS</small></div><div><b>${selfies}</b><small>SELFIES</small></div></div>
-<div class="ddr"><div class="ink">?</div><div><h5>DESTINO SOÑADO</h5>${dream}</div></div>
-${S ? `<div class="dsec"><b>${esc(S.title)}</b><span>${got.filter(i => i <= total).length}/${total} postales</span></div><div class="dbar"><i style="width:${Math.round(got.filter(i => i <= total).length / total * 100)}%"></i></div>${nextHTML}<div class="dgr">${cards}</div>`
-      : `<div class="dsoon"><b class="L">Su historia llega pronto</b><p>Cada viajero va a tener su propio diario de postales.</p></div>`}`;
+    root.innerHTML = `<div class="head"><button class="round close" data-x aria-label="${tt('common.close')}">✕</button><small>${tt('diary.of')}</small><h2>${esc(name.toUpperCase())}</h2></div>
+<div class="dfi"><div class="dpol"><div class="dph">${art}</div><span>${esc(name)}</span></div><div class="dtx"><h5>${tt('diary.home')}</h5><b class="L">${esc(F.home)}</b><h5>${tt('diary.why')}</h5><p>${esc(F.why)}</p><q>${esc(F.quote)}</q></div></div>
+<div class="dst"><div><b>${trips}</b><small>${tt('diary.tripsUp')}</small></div><div><b>${nSt}</b><small>${tt('diary.stampsUp')}</small></div><div><b>${selfies}</b><small>SELFIES</small></div></div>
+<div class="ddr"><div class="ink">?</div><div><h5>${tt('diary.dream')}</h5>${dream}</div></div>
+${S ? `<div class="dsec"><b>${esc(S.title)}</b><span>${tt('diary.postals', { n: got.filter(i => i <= total).length, total })}</span></div><div class="dbar"><i style="width:${Math.round(got.filter(i => i <= total).length / total * 100)}%"></i></div>${nextHTML}<div class="dgr">${cards}</div>`
+      : `<div class="dsoon"><b class="L">${tt('diary.soon')}</b><p>${tt('diary.soonSub')}</p></div>`}`;
     root.querySelector('[data-x]').onclick = close;
     root.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { sfx('tap'); postal(+b.dataset.ch); });
   }
   function postal(id) {
     const ch = chapterOf(hero, id), ov = document.createElement('div'); ov.className = 'pvhp';
-    ov.innerHTML = `<button class="round close" aria-label="Cerrar">✕</button><small>POSTAL ${id}${ch.secret ? ' · SECRETA' : ''} · ${esc(S.title.toUpperCase())}</small>
-<div class="hpf"><div class="hpin"><div class="fr">${postalFront(ch, 300)}</div><div class="bk"><p>${esc(ch.back)}</p><div class="hps"><span>${esc((ch.place || ch.at || '').toUpperCase())}</span></div><em>— N.</em></div></div></div>
-<div class="hpb"><button class="hflip">DAR VUELTA</button><button class="hplay">VER LA ESCENA</button></div>`;
+    ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><small>${tt('diary.postal', { n: id })}${ch.secret ? ' · ' + tt('diary.secret') : ''} · ${esc(S.title.toUpperCase())}</small>
+<div class="hpf"><div class="hpin"><div class="fr">${postalFront(ch, 300)}</div><div class="bk"><p>${esc(ch.back)}</p><div class="hps"><span>${esc(placeOf(ch.place || ch.at).toUpperCase())}</span></div><em>— N.</em></div></div></div>
+<div class="hpb"><button class="hflip">${tt('diary.flip')}</button><button class="hplay">${tt('diary.replay')}</button></div>`;
     root.appendChild(ov);
     ov.querySelector('.round').onclick = () => { ov.remove(); sfx('tap'); };
     ov.querySelector('.hflip').onclick = () => { ov.querySelector('.hpin').classList.toggle('flip'); sfx('tap'); };
@@ -380,16 +303,6 @@ body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 @keyframes pvhTag{0%{transform:translateY(-30px) rotate(-6deg);opacity:0}}
 .pvh .hhero{position:absolute;left:-30px;bottom:calc(var(--sb,0px) + 70px);width:min(88vw,370px);aspect-ratio:1;overflow:hidden;transition:filter .25s,transform .3s;animation:pvhHero .55s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
 .pvh .hhero svg{display:block;width:100%;height:100%}
-.pvh .hnpc{position:absolute;right:-22px;bottom:calc(var(--sb,0px) + 92px);width:min(62vw,250px);opacity:0;transform:translateX(40%);transition:opacity .25s,transform .45s cubic-bezier(.2,1.3,.4,1),filter .25s}
-.pvh .hnpc.on{opacity:1;transform:none}.pvh .hnpc.on.hdim{filter:brightness(.55);transform:translateX(12px) scale(.96)}
-.pvh .hnpc svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
-.pvh .hnf{transform-origin:50% 90%;animation:pvhBreath 3.2s ease-in-out infinite}.pvh .hnpc.talk .hnf{animation:pvhTalk .26s ease-in-out infinite alternate}
-.pvh .hnf.sil svg{filter:brightness(0) drop-shadow(0 0 10px rgba(255,220,150,.55))}
-@keyframes pvhBreath{50%{transform:translateY(-2px) scale(1.006,.995)}}
-.pvh.duo .hhero{transform:translateX(-14%)}
-.pvh .hobj{position:absolute;left:50%;top:calc(var(--htop,0px) + 120px);width:min(80vw,330px);transform:translate(-50%,30px) scale(.6) rotate(-8deg);opacity:0;transition:opacity .25s,transform .5s cubic-bezier(.2,1.4,.4,1);filter:drop-shadow(0 14px 22px rgba(0,0,0,.5));pointer-events:none}
-.pvh .hobj.on{opacity:1;transform:translate(-50%,0) scale(1) rotate(0)}.pvh .hobj svg{display:block;width:100%;height:auto;overflow:visible}
-.pvh.obj .hhero,.pvh.obj .hnpc{filter:blur(2.5px) brightness(.5)!important}
 .pvh .hhf{width:100%;height:100%;transform-origin:50% 90%}
 .pvh .hhero.talk .hhf{animation:pvhTalk .26s ease-in-out infinite alternate}
 @keyframes pvhTalk{to{transform:translateY(-3px) scale(1.012,.99)}}
