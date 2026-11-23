@@ -66,7 +66,7 @@ function paperTexture(svg) {
     for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; o.drawImage(base, Math.cos(a) * r, Math.sin(a) * r); }
     o.globalCompositeOperation = 'source-in'; o.fillStyle = CREAM; o.fillRect(0, 0, S, S);
     o.globalCompositeOperation = 'source-over'; o.drawImage(base, 0, 0);
-    t.needsUpdate = true;
+    t.needsUpdate = true; t.userData.ok = true;
   };
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
   return t;
@@ -1010,11 +1010,13 @@ function sanctuary() {
         if (o.frames) {
           const R = W.opts.runner, sailing = R?.boatId === d.id && R.onBoat;
           const st = (isRunner ? (R.started || R.hidden /* oculto en el inicio ya queda corriendo: aparece sin girar */) && !R.gameOver : sailing) ? 'run' : 'idle', set = o.frames[st] || o.frames.idle;
-          const fr = set[Math.floor(t * (d.fps || 10) * (isRunner ? (R.speed || 1.2) / 1.25 : 1)) % set.length];
+          const fk = o.frames[st] ? st : 'idle', fi = Math.floor(t * (d.fps || 10) * (isRunner ? (R.speed || 1.2) / 1.25 : 1)) % set.length;
+          const frTex = (k, i) => { const a = o.frames[k]; return a[i] || (a[i] = paperTexture(o.fsvg[k][i])); };
+          const want = frTex(fk, fi), fr = want.userData.ok ? (o.shownTex = want) : o.shownTex;
           if (o.state && o.state !== st) o.turn = 1; o.state = st;
           if (isRunner && R.noTurn) o.turn = 0; // recién aterrizado del salto del inicio: ya viene de espaldas, sin giro   // giro de papel al cambiar de pose
           o.turn = Math.max(0, o.turn - dt * 4);
-          const shown = o.turn > .5 ? (o.frames[st === 'run' ? 'idle' : 'run'] || set)[0] : fr;
+          const ak = o.frames[st === 'run' ? 'idle' : 'run'] ? (st === 'run' ? 'idle' : 'run') : fk, alt = o.turn > .5 ? frTex(ak, 0) : null, shown = alt && alt.userData.ok ? alt : fr;
           if (o.sprite.material.map !== shown) { o.sprite.material.map = o.sprite.material.emissiveMap = shown; o.sprite.customDepthMaterial.map = shown; }
           o.sprite.scale.x *= Math.abs(Math.cos(o.turn * Math.PI));
           const lean = THREE.MathUtils.clamp(R?.lean || 0, -1, 1);
@@ -1163,7 +1165,9 @@ function updateItem(W, o, d, OBJ) {
       const s = makeSprite(d.svg, size, d.id); Object.assign(o, { sprite: s.sprite, blob: s.blob, size, ph: s.ph, squash: 0, hop: 0, flip: 1, flash: 0, mon: true });
       o.group.add(s.group);
       // Recortes animados: d.frames = { idle:[svg…], run:[svg…] } (personaje que corre, barco que navega)
-      o.frames = d.frames ? Object.fromEntries(Object.entries(d.frames).map(([k, v]) => [k, v.map(paperTexture)])) : null; o.frameKey = ''; o.turn = 0;
+      // Las texturas se piden bajo demanda (cada SVG tarda en rasterizar); 'run' se precarga primero. Mientras un cuadro no está listo se sigue mostrando el anterior (nunca queda invisible).
+      o.fsvg = d.frames || null; o.frames = d.frames ? Object.fromEntries(Object.entries(d.frames).map(([k, v]) => [k, new Array(v.length).fill(null)])) : null; o.frameKey = ''; o.turn = 0; o.shownTex = o.sprite.material.map;
+      if (o.frames) { const want = (o.fsvg.run || []).concat(o.fsvg.idle ? [o.fsvg.idle[0]] : []); want.forEach(sv => paperTexture(sv)); }
     } else if (d.kind === 'obstacle') { const m = runnerObstacleMesh(d.obstacle); m.traverse(n => n.userData.id = d.id); o.group.add(m); o.sprite = m; o.size = 1.2; o.blob = { x: 0, z: 0, sx: d.obstacle === 'rock' ? .95 : 1.35, sz: .75, op: .9 };
     } else {
       const def = OBJ?.[d.t] || {}, id = def.art || 'roca', lvK = 1 + ((d.lv || 1) - 1) * .05;

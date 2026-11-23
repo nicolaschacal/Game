@@ -27,8 +27,11 @@ function heroSet(ctx, hero, skin, plain) {
 function heroArt(ctx, hero, skin, shot, plain) {
   const H = heroSet(ctx, hero, skin, plain) || {};
   const svg = shot === 0 ? (H.wave?.[1] || H.wave?.[0] || H.idle?.[0]) : H.idle?.[0];
-  return svg && uniqIds(svg);
+  const out = svg && uniqIds(svg);
+  return out && !plain && TOPS[hero] != null ? out.replace('<svg ', `<svg data-top="${TOPS[hero]}" `) : out;
 }
+// Cima real de la cabeza (gorro, orejas, sombrero) de cada personaje en el cuadro de 128 (medida sobre todos sus atuendos): el encuadre de la selfie parte de ahí con margen
+const TOPS = { nilo: -5, mora: -15, sipho: 5, minji: -5, tuk: -15, layla: -14, anaya: 1, cal: -4 };
 // Cada uso lleva ids propios: dos atuendos del mismo personaje en una página no pisan sus defs/clipPath
 function uniqIds(svg) {
   const u = 'h' + (++UID) + '_';
@@ -59,7 +62,9 @@ const nest = (svg, x, y, size) => svg.replace(/<svg[^>]*>/, `<svg viewBox="0 0 1
 // Recorta el busto (cabeza y torso) del viajero
 const HERO_BOX = '20 6 84 84';
 function heroNode(svg, x, y, size, rot = 0, flip = false) {
-  const inner = (svg || FALLBACK_HERO).replace(/<svg[^>]*>/, `<svg viewBox="${HERO_BOX}" x="${x}" y="${y}" width="${size}" height="${size}">`);
+  // Caja cuadrada que arranca 3 unidades sobre la cabeza (data-top) y llega a la misma base que antes; overflow visible: la ventana de la foto ya recorta lo demás
+  const top = +((/data-top="(-?[\d.]+)"/.exec(svg || '') || [])[1] ?? NaN), h = isNaN(top) ? 84 : 90 - (top - 3), box = isNaN(top) ? HERO_BOX : `${62 - h / 2} ${top - 3} ${h} ${h}`;
+  const inner = (svg || FALLBACK_HERO).replace(/<svg[^>]*>/, `<svg viewBox="${box}" x="${x}" y="${y}" width="${size}" height="${size}" overflow="visible">`);
   const cx = x + size / 2, cy = y + size / 2;
   return `<g transform="rotate(${rot} ${cx} ${cy})${flip ? ` translate(${cx * 2} 0) scale(-1 1)` : ''}">${inner}</g>`;
 }
