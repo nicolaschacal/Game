@@ -35,7 +35,7 @@ FICHAS['San Francisco'] = {
         K.cupula({ x: 54, y: 50, w: 30, tipo: 'semi', c: cobre, tambor: 9, cTambor: crema }),
         K.torreReloj({ x: 104, w: 10, top: 54, c: ocre, cTecho: cobre, reloj: false })],
     ],
-    composicion: { tapar: .2 },
+    composicion: { tapar: .2, solo: true }, // sin nada delante: la estación resalta sola
     adornos: ['arbolUrbano', 'buzon', 'farolModerno'],
   };
 }

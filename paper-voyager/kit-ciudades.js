@@ -352,6 +352,8 @@ export function componer(ficha, mon) {
   // ciudad: hilera continua de edificios bajos (la textura 'city' del horizonte) que tapa el zócalo de punta a punta, entre el monumento y las lomas
   if (paisaje === 'ciudad' && o.edificios !== false) extras.push({ t: 'hill', x: f2(bx2plano(.5)), w: f1(M.W * 1.3), h: f1(hc * (o.edificiosAlto ?? .8)), c: [1, 2, .65], dz: .4, kind: 'city' });
   fore = [...extras, ...fore, ...(o.foreExtra || [])];
+  // solo: el monumento va sin nada delante (ni lomas, ni edificios, ni agua); para los que ya resaltan solos, como Melbourne
+  if (o.solo) fore = [...(o.foreExtra || [])];
   return { lmScale: k, lmX, fore };
 }
 

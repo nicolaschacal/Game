@@ -155,6 +155,7 @@ def medir(A, M, F, G):
             exp += 1   # se ve el final del dibujo: flota o deja ver su suelo
     n = max(1, cub + exp)
     m['base_tapada'] = round(cub / n, 3)
+    m['solo'] = not bool(fore.any())  # composicion.solo: el monumento va sin capas delante, a propósito
     m['base_expuesta'] = round(exp / n, 3)
     # pausa: cuánto del monumento queda debajo del botón
     x0, y0, x1, y1 = [v * DPR for v in PAUSA]
@@ -203,10 +204,13 @@ def reglas(m, ref):
     x0, y0, x1, y1 = m['bbox']
     r = {}
     r['borde'] = (x0 > 3 and x1 < W - 4 and y0 > 3, f"recorte x {x0}–{x1} de {W}")
-    r['base'] = (m['base_tapada'] >= .7 and m['base_expuesta'] <= .12, f"tapada {m['base_tapada']:.0%}, expuesta {m['base_expuesta']:.0%}")
+    if m.get('solo'):  # sin nada delante a propósito (composicion.solo): no se exige base tapada
+        r['base'] = (True, "solo: sin capas delante (a propósito)")
+    else:
+        r['base'] = (m['base_tapada'] >= .7 and m['base_expuesta'] <= .12, f"tapada {m['base_tapada']:.0%}, expuesta {m['base_expuesta']:.0%}")
     if ref:
         ka, kw = m['area_visible'] / ref['area_visible'], m['ancho'] / ref['ancho']
-        r['tamaño'] = (.55 <= ka <= 1.6 and kw >= .5, f"área {ka:.2f}× SF, ancho {kw:.2f}× SF")
+        r['tamaño'] = (.55 <= ka <= (1.9 if m.get('solo') else 1.6) and kw >= .5, f"área {ka:.2f}× SF, ancho {kw:.2f}× SF")
     r['pausa'] = (m['bajo_pausa'] <= .03, f"{m['bajo_pausa']:.1%} bajo el botón de pausa")
     for k in ('sat_media', 'sat_p90'):
         lo, hi = RANGOS[k]
