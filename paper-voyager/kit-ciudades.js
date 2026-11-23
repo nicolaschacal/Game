@@ -304,6 +304,7 @@ export function paleta(semillaColor, paisaje = 'ciudad') {
   return { fog: deHsl(h, Math.min(.86, s * 1.315), .9333), c1: deHsl(h, s * 1.09, .8392), c2: deHsl(h, s, .7373), around, ground, hill };
 }
 const RIDGE = { costa: 'dune', montana: 'peak', ciudad: 'city', desierto: 'dune', selva: 'dune', nieve: 'peak' };
+const LOMAS = { costa: 'dune', montana: 'peak', ciudad: 'city', desierto: 'dune', selva: 'dune', nieve: 'peak' }; // tipo de capa delantera por paisaje
 const CLIMA = { costa: 'bubbles', montana: 'leaves', ciudad: 'leaves', desierto: 'sand', selva: 'leaves', nieve: 'snow' };
 
 // ═════════════════════════ COMPOSICIÓN AUTOMÁTICA ═════════════════════════
@@ -334,7 +335,9 @@ export function componer(ficha, mon) {
   const lmX = o.x ?? f2(cx - S * (u(cxSvg) - .5) - (5.2 - (S - 8.5) / 2));
   // 3) lomas delanteras: la plantilla de San Francisco escalada al ancho del dibujo; la central sube hasta tapar `tapar` de su altura
   const tapar = o.tapar ?? SF.tapar, yc = box[3] - tapar * (box[3] - box[1]), hc = M.y(yc) + .4;
-  const kind = o.lomas ?? (paisaje === 'montana' || paisaje === 'nieve' ? 'dune' : 'dune');
+  // Las capas delanteras siguen al PAISAJE, no siempre son montañas: ciudad → perfiles de edificios ('city'); montaña/nieve → picos ('peak');
+  // costa/desierto/selva → lomas suaves ('dune'). La ficha puede forzarlo con composicion.lomas.
+  const kind = o.lomas ?? LOMAS[paisaje] ?? 'dune';
   const bx2plano = bx => u(box[0]) + bx * (u(box[2]) - u(box[0]));
   const agua0 = o.agua ?? (paisaje === 'costa'), hA = o.aguaAlto ?? hc * .62;
   const minLat = agua0 ? hA * 1.3 : 0; // con agua, las lomas de los costados tienen que tapar las puntas de la lámina

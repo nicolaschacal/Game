@@ -134,6 +134,7 @@ Lo que el usuario rechazó. Cada rechazo nuevo se anota acá.
 - **Nada de cajas planas**: Hoi An eran cajas amarillas lisas; ahora es una hilera de casas con techos de teja, balcones y persianas.
 - **Nada de objetos sueltos que no se integran**: el junco de Ha Long estaba flotando delante; ahora navega en el agua con su reflejo.
 - **Nada cortado en el borde**: Melbourne y el puente de San Francisco se cortaban contra el borde derecho; la composición automática lo evita.
+- **Las capas no siempre son montañas**: en una ciudad las capas de adelante y del fondo son perfiles de edificios, no lomas ni cordilleras. El tipo de capa sale del `paisaje` (tabla `LOMAS` en kit-ciudades.js: ciudad → `city`, montaña/nieve → `peak`, costa/desierto/selva → `dune`) y la ficha lo puede forzar con `composicion.lomas`. Antes de elegir el paisaje, preguntate qué hay realmente alrededor del monumento.
 - Melbourne era "un rectángulo naranja con cúpula, flotando": ahora es la estación entera (torre del reloj, pabellón con cúpula, arcadas) con la ciudad baja delante.
 - No le gustan los arbolitos de bolita ni una luna extra en el cielo.
 - Quiere ver los destinos como se ven dentro del juego, no en maqueta aparte (por eso la galería usa el motor real).
