@@ -94,65 +94,6 @@ export const STORIES = {
   },
 };
 
-// Gestos de Nilo en cada línea (expresión + hacia dónde mira + lo que tiene en la mano). Cuando habla otro, Nilo reacciona con esto mientras lo mira.
-// Expresiones: feliz · sorpresa · confundido · triste · decidido · Mirada: up · side · listen · Objetos: cuaderno · carta · foto · cafe · lata
-const GEST = { nilo: {
-  1: ['decidido', 'sorpresa+cuaderno', 'confundido+cuaderno', 'triste', 'decidido+cuaderno'],
-  2: ['feliz+up', 'sorpresa+listen', 'confundido+listen', 'decidido', 'sorpresa+listen+cuaderno'],
-  3: ['decidido+cuaderno', 'sorpresa+listen', 'feliz+foto', 'sorpresa+listen+foto', 'triste+foto'],
-  4: ['sorpresa+up', 'sorpresa+listen', 'feliz+listen', 'confundido+carta', 'triste+carta', 'decidido+listen'],
-  5: ['confundido+cuaderno', 'sorpresa+listen', 'triste+listen', 'triste', 'decidido+listen'],
-  6: ['feliz+side', 'confundido+cuaderno', 'triste', 'decidido'],
-  7: ['sorpresa+up', 'confundido', 'sorpresa+lata', 'triste+lata', 'sorpresa+cuaderno'],
-  8: ['confundido+up', 'sorpresa', 'sorpresa+listen', 'sorpresa', 'triste+listen', 'feliz+listen+cafe', 'feliz+cafe'],
-} };
-
-// ── Expresiones: se cambian cejas, ojos y boca de la cara visible del cuadro (las piezas son iguales en todo el elenco) ──
-function expr(f, e) {
-  if (!e) return f;
-  const a = f.lastIndexOf('data-j="eyI"'); if (a < 0) return f;
-  const s0 = f.indexOf('>', a) + 1, s1 = f.indexOf('</g><g data-j="eyC"', s0); if (s1 < 0) return f;
-  const tag = f.slice(f.lastIndexOf('<g', a), s0); if (/display:\s*none/.test(tag)) return f; // parpadeando: se respeta el parpadeo
-  let g = f.slice(s0, s1);
-  const pup = [...g.matchAll(/<ellipse cx="([\d.]+)" cy="([\d.]+)" rx="([\d.]+)" ry="([\d.]+)" fill="#2B2236"\/>/g)];
-  if (pup.length < 2) return f;
-  const ink = '#2B2236', [L, R] = pup.map(m => ({ x: +m[1], y: +m[2], rx: +m[3], ry: +m[4] }));
-  const mx = (L.x + R.x) / 2, my = L.y + 11.6; // la boca va debajo de la nariz
-  const brows = (dyL, aL, dyR, aR) => { let i = 0; g = g.replace(/transform="translate\(([\d.]+) ([\d.]+)\) rotate\((-?[\d.]+)\)"/g, (m, x, y) => { const k = i++; return k > 1 ? m : `transform="translate(${x} ${(+y + (k ? dyR : dyL)).toFixed(1)}) rotate(${k ? aR : aL})"`; }); };
-  const mouth = svg => { const idx = g.lastIndexOf('<path d="M'); if (idx >= 0 && /fill="#2B2236"\/>$/.test(g.slice(idx))) g = g.slice(0, idx); g += svg; };
-  const eyes = fn => { g = g.replace(/<ellipse cx="[\d.]+" cy="[\d.]+" rx="[\d.]+" ry="[\d.]+" fill="#2B2236"\/>|<circle cx="[\d.]+" cy="[\d.]+" r="[\d.]+" fill="#FFF8EA"\/>/g, ''); g += fn(L) + fn(R); };
-  const shine = (E, k = 1) => `<circle cx="${E.x + 1.5}" cy="${E.y - 2.2 * k}" r="1.7" fill="#FFF8EA"/><circle cx="${E.x - 1.6}" cy="${E.y + 2.4 * k}" r=".8" fill="#FFF8EA"/>`;
-  if (e === 'feliz') {
-    brows(-1.2, -6, -1.2, 6);
-    eyes(E => `<path d="M${E.x - 4.6} ${E.y + 1.6} Q${E.x} ${E.y - 4.4} ${E.x + 4.6} ${E.y + 1.6}" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round"/>`);
-    mouth(`<path d="M${mx - 7.4} ${my - 4} Q${mx} ${my - 2.2} ${mx + 7.4} ${my - 4} Q${mx + 6.4} ${my + 3.4} ${mx} ${my + 3.5} Q${mx - 6.4} ${my + 3.4} ${mx - 7.4} ${my - 4}Z" fill="${ink}"/><path d="M${mx - 3.4} ${my + 1.8} Q${mx} ${my - .4} ${mx + 3.4} ${my + 1.8} Q${mx} ${my + 3.6} ${mx - 3.4} ${my + 1.8}Z" fill="#E97F73"/>`);
-  } else if (e === 'sorpresa') {
-    brows(-3.6, 4, -3.6, -4);
-    eyes(E => `<ellipse cx="${E.x}" cy="${E.y - .4}" rx="${(E.rx * 1.12).toFixed(2)}" ry="${(E.ry * 1.18).toFixed(2)}" fill="${ink}"/>` + shine({ x: E.x, y: E.y - .4 }, 1.1));
-    mouth(`<ellipse cx="${mx}" cy="${my + .6}" rx="2.7" ry="3.4" fill="${ink}"/><ellipse cx="${mx}" cy="${my + 2}" rx="1.6" ry="1.2" fill="#E97F73"/>`);
-  } else if (e === 'confundido') {
-    brows(1, 10, -3, -10);
-    eyes(E => E === L ? `<ellipse cx="${E.x}" cy="${E.y + .6}" rx="${E.rx}" ry="${(E.ry * .8).toFixed(2)}" fill="${ink}"/>` + shine({ x: E.x, y: E.y + .6 }, .8) : `<ellipse cx="${E.x}" cy="${E.y - .4}" rx="${E.rx}" ry="${(E.ry * 1.05).toFixed(2)}" fill="${ink}"/>` + shine({ x: E.x, y: E.y - .4 }));
-    mouth(`<path d="M${mx - 5} ${my - .4} q2.5 -2.2 5 0 t5 0" fill="none" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`);
-  } else if (e === 'triste') {
-    brows(-.6, -14, -.6, 14);
-    eyes(E => `<ellipse cx="${E.x}" cy="${E.y + .8}" rx="${E.rx}" ry="${(E.ry * .86).toFixed(2)}" fill="${ink}"/>` + shine({ x: E.x, y: E.y + .8 }, .85) + `<path d="M${E.x - 4.2} ${E.y - 4.6} L${E.x + 4.2} ${E.y - 5.6}" stroke="#E2B987" stroke-width="2" opacity="0"/>`);
-    mouth(`<path d="M${mx - 4.6} ${my + 1.6} Q${mx} ${my - 2.6} ${mx + 4.6} ${my + 1.6}" fill="none" stroke="${ink}" stroke-width="2.2" stroke-linecap="round"/>`);
-  } else if (e === 'decidido') {
-    brows(1.2, 12, 1.2, -12);
-    mouth(`<path d="M${mx - 4.4} ${my - .6} Q${mx} ${my + 1.6} ${mx + 4.4} ${my - .6}" fill="none" stroke="${ink}" stroke-width="2.2" stroke-linecap="round"/>`);
-  }
-  return f.slice(0, s0) + g + f.slice(s1);
-}
-// Objetos de la historia que el personaje sostiene en la escena (papel recortado, borde crema)
-const PROPS = {
-  cuaderno: `<g transform="rotate(-8 60 60)"><rect x="22" y="30" width="76" height="58" rx="5" fill="${CREAM}" stroke="${CREAM}" stroke-width="7"/><rect x="22" y="30" width="38" height="58" rx="4" fill="#FBF4E2"/><rect x="60" y="30" width="38" height="58" rx="4" fill="#F3E8CC"/><path d="M28 42 h26 M28 50 h22 M28 58 h25 M66 42 h26 M66 50 h20" stroke="#B9A57E" stroke-width="2" stroke-linecap="round"/><text x="79" y="76" text-anchor="middle" font-family="'Lilita One',sans-serif" font-size="16" fill="#C9402A">M.</text><path d="M60 30 V88" stroke="#8A5A3B" stroke-width="2.4"/><rect x="18" y="28" width="6" height="62" rx="2" fill="#8A5A3B"/><rect x="96" y="28" width="6" height="62" rx="2" fill="#8A5A3B"/></g>`,
-  carta: `<g transform="rotate(6 60 60)"><rect x="28" y="22" width="64" height="80" rx="3" fill="#FFFDF6" stroke="${CREAM}" stroke-width="7"/><rect x="28" y="22" width="64" height="80" rx="3" fill="#F7EED6"/><path d="M36 36 h40 M36 45 h46 M36 54 h38 M36 63 h44 M36 72 h30" stroke="#5E6FA0" stroke-width="2" stroke-linecap="round" opacity=".8"/><text x="72" y="92" font-family="'Lilita One',sans-serif" font-size="11" fill="#5E6FA0">— A.</text></g>`,
-  foto: `<g transform="rotate(-6 60 60)"><rect x="30" y="24" width="60" height="72" rx="2" fill="#FFFDF6" stroke="${CREAM}" stroke-width="7"/><rect x="36" y="30" width="48" height="48" fill="#C9B48A"/><circle cx="52" cy="46" r="7" fill="#8A6A44"/><circle cx="69" cy="47" r="7" fill="#6A4A30"/><path d="M40 78 Q52 56 64 78Z M58 78 Q69 58 82 78Z" fill="#7A5A3A"/><path d="M36 30 h48 v48 h-48Z" fill="#E8D7A8" opacity=".25"/></g>`,
-  cafe: `<g><path d="M34 52 h46 l-5 38 q-1 6 -7 6 h-22 q-6 0 -7 -6Z" fill="#FFFDF6" stroke="${CREAM}" stroke-width="7" stroke-linejoin="round"/><path d="M34 52 h46 l-5 38 q-1 6 -7 6 h-22 q-6 0 -7 -6Z" fill="#E8452C"/><path d="M80 60 q14 0 12 12 q-2 10 -14 8" fill="none" stroke="#E8452C" stroke-width="6"/><ellipse cx="57" cy="52" rx="23" ry="5" fill="#5E3B2A"/><path d="M50 44 q-4 -8 2 -14 M62 44 q-4 -8 2 -14" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/></g>`,
-  lata: `<g transform="rotate(-10 60 60)"><rect x="30" y="40" width="60" height="44" rx="6" fill="#B9C2CC" stroke="${CREAM}" stroke-width="7"/><rect x="30" y="40" width="60" height="44" rx="6" fill="#8E9AA6"/><rect x="28" y="36" width="64" height="10" rx="4" fill="#A9B3BE"/><path d="M38 56 q6 6 14 2 M66 70 q8 -2 12 4" stroke="#A0602A" stroke-width="3" fill="none" opacity=".7"/><rect x="44" y="24" width="34" height="22" rx="1" fill="#FBF4E2" transform="rotate(8 61 35)"/><path d="M48 30 h22 M48 36 h18" stroke="#5E6FA0" stroke-width="1.6" transform="rotate(8 61 35)"/></g>`,
-};
-
 // ── Estado ──
 let STORE = null;
 const st = hero => { const s = STORE?.get('hist.' + hero, null) || {}; return { got: s.got || [], seen: s.seen || [] }; };
@@ -229,21 +170,16 @@ export function playScene(ctx, hero, id, opts = {}) {
     ov.style.setProperty('--htop', topY);
     ov.innerHTML = `<div class="hbg"></div><div class="htop"><div class="hdots">${dots}</div><button class="hskip">SALTAR</button></div>
 <div class="htag"><div class="ribbon"><small>${esc(S.title.toUpperCase())}</small>Capítulo ${ch.id}${ch.secret ? ' · secreto' : ''} · ${esc(ch.title)}</div></div>
-<div class="hhero"><div class="hhf">${art}</div><div class="hprop"></div></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
+<div class="hhero"><div class="hhf">${art}</div></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
     document.body.appendChild(ov); document.body.classList.add('pvh-on');
     const hn = ov.querySelector('.hn'), ht = ov.querySelector('.ht'), hh = ov.querySelector('.hhero'), bub = ov.querySelector('.hbub'), dd = [...ov.querySelectorAll('.hdots i')];
     let k = -1, typing = null, full = '';
     // Gestos: respira y parpadea siempre; al hablar mueve la cabeza; en algunas líneas saluda, mira alrededor o se acomoda la gorra; cuando habla otro, lo mira
-    const hf = ov.querySelector('.hhf'), hp = ov.querySelector('.hprop'), UC = new Map(), G = { ph: 0, lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: Date.now() + 1500, bk: -1, clip: null, ck: 0, cph: 0, wave: 0, t: 0, ex: null, prop: null };
+    const hf = ov.querySelector('.hhf'), UC = new Map(), G = { ph: 0, lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: Date.now() + 1500, bk: -1, clip: null, ck: 0, cph: 0, wave: 0, t: 0 };
     const put = f => { if (!f || hf._f === f) return; let u = UC.get(f); if (!u) { u = uniq(f); if (UC.size > 80) UC.clear(); UC.set(f, u); } hf.innerHTML = u; hf._f = f; };
-    const gesture = spec => {
+    const gesture = g => {
       G.clip = null; G.wave = 0;
-      const parts = String(spec || '').split('+'), has = k => parts.includes(k);
-      G.ex = ['feliz', 'sorpresa', 'confundido', 'triste', 'decidido'].find(has) || null;
-      const pr = Object.keys(PROPS).find(has) || null;
-      if (pr !== G.prop) { G.prop = pr; hp.classList.remove('on'); if (pr) setTimeout(() => { hp.innerHTML = `<svg viewBox="0 0 120 120">${PROPS[pr]}</svg>`; hp.classList.add('on'); }, hp.innerHTML ? 160 : 0); }
       if (!HA || !HA.at) return;
-      const g = has('up') ? 'up' : has('side') ? 'side' : has('listen') ? 'listen' : has('look') ? 'look' : has('wave') ? 'wave' : has('hat') ? 'hat' : '';
       if (g === 'wave' && HA.wave) G.wave = 12;
       else if (g === 'look' && HA.clips?.lookAround) { G.clip = HA.clips.lookAround; G.ck = 0; G.cph = G.ph; }
       else if (g === 'hat' && HA.clips?.fixHat) { G.clip = HA.clips.fixHat; G.ck = 0; G.cph = G.ph; }
@@ -259,13 +195,13 @@ export function playScene(ctx, hero, id, opts = {}) {
       if (G.clip) { if (G.ck >= G.clip.len) G.clip = null; else { put(G.clip.frame(G.ck++, G.cph)); return; } }
       G.lx += Math.max(-.25, Math.min(.25, G.tx - G.lx)); G.ly += Math.max(-.5, Math.min(.5, G.ty - G.ly));
       let bl = 0; if (G.bk >= 0) { bl = [1, 2, 1][G.bk++]; if (G.bk > 2) { G.bk = -1; G.blinkAt = now + 1800 + Math.random() * 2600; } } else if (now >= G.blinkAt) { G.bk = 1; bl = 1; }
-      put(expr(HA.at(G.ph, { lx: G.lx, ly: G.ly, blink: bl }), bl ? null : G.ex));
+      put(HA.at(G.ph, { lx: G.lx, ly: G.ly, blink: bl }));
     }, 110);
     const show = () => {
       k++; if (k >= ch.lines.length) return finale();
-      const [who, txt, g0] = ch.lines[k], me = who === name || who === N && hero === 'nilo', g = GEST[hero]?.[ch.id]?.[k] ?? g0 ?? '';
+      const [who, txt, g] = ch.lines[k], me = who === name || who === N && hero === 'nilo';
       hn.textContent = who; hn.style.color = me ? F.dark : '#A4521A'; bub.classList.toggle('npc', !me); hh.classList.toggle('hdim', !me);
-      gesture(me || /listen/.test(g) ? g : 'listen'); hh.classList.toggle('talk', me);
+      gesture(me ? g : 'listen'); hh.classList.toggle('talk', me);
       dd.forEach((d, j) => d.classList.toggle('on', j <= k)); full = txt; ht.textContent = ''; bub.classList.remove('done');
       let c = 0; clearInterval(typing); sfx('tap');
       typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); hh.classList.remove('talk'); } }, 22);
@@ -364,8 +300,6 @@ body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 .pvh .hhero{position:absolute;left:-30px;bottom:calc(var(--sb,0px) + 70px);width:min(88vw,370px);aspect-ratio:1;overflow:hidden;transition:filter .25s,transform .3s;animation:pvhHero .55s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
 .pvh .hhero svg{display:block;width:100%;height:100%}
 .pvh .hhf{width:100%;height:100%;transform-origin:50% 90%}
-.pvh .hprop{position:absolute;left:27%;top:43%;width:44%;opacity:0;transform:translateY(40%) rotate(-12deg);transition:opacity .2s,transform .35s cubic-bezier(.2,1.5,.4,1);filter:drop-shadow(0 4px 5px rgba(0,0,0,.35))}
-.pvh .hprop.on{opacity:1;transform:none}.pvh .hprop svg{display:block;width:100%;height:auto;overflow:visible}
 .pvh .hhero.talk .hhf{animation:pvhTalk .26s ease-in-out infinite alternate}
 @keyframes pvhTalk{to{transform:translateY(-3px) scale(1.012,.99)}}
 .pvh .hhero.hdim{filter:brightness(.55) drop-shadow(0 10px 14px rgba(0,0,0,.4));transform:translateX(-14px) scale(.96)}
