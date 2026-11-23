@@ -34,17 +34,17 @@ export const STORIES = {
     title: 'El cuaderno de Opa',
     chapters: [
       { id: 1, at: 'Berlín', title: 'El ático', hint: 'Todo empieza en casa: volvé a Berlín, la ciudad de Nilo.', req: {},
-        lines: [[N, 'Volví a Berlín y subí al ático de la abuela. Solo quería las antiparras de Opa.'],
+        lines: [[N, 'Volví a Berlín y subí al ático de la abuela. Solo quería las antiparras de Opa.', 'hat'],
           [N, 'Pero en la caja había algo más: su cuaderno de vuelo. Siete lugares marcados con tinta roja.'],
-          [N, 'La última página está arrancada. Y en cada página hay una sola letra, apretada contra el borde: M.'],
+          [N, 'La última página está arrancada. Y en cada página hay una sola letra, apretada contra el borde: M.', 'look'],
           [N, 'Opa desapareció en 1974, volando sobre Sudamérica. Nunca encontraron el avión.'],
-          [N, 'La abuela dice que no lo lea. Por eso lo voy a leer entero. Primera parada: París.']],
+          [N, 'La abuela dice que no lo lea. Por eso lo voy a leer entero. Primera parada: París.', 'wave']],
         back: 'Hoy encontré el cuaderno de Opa. La abuela me pidió que lo deje en la caja. No pude. Primera página: un café de París y una letra, M. Allá voy.', reward: { coins: 150 } },
       { id: 2, at: 'París', title: 'Dos cafés', hint: 'Un café donde siempre sobraba una taza.', req: {},
         lines: [[N, 'La página de París tiene la dirección de un café. Sigue abierto, con las mismas sillas de mimbre.'],
           ['Étienne, el mozo', '¿Esas antiparras? Las conozco. Tu abuelo venía cada martes y pedía dos cafés.'],
           ['Étienne, el mozo', 'Uno se enfriaba siempre. Cuarenta años sirviendo mesas y nunca supe para quién era el segundo.'],
-          [N, 'Para M. Tiene que ser para M.'],
+          [N, 'Para M. Tiene que ser para M.', 'up'],
           ['Étienne, el mozo', 'Un día dejó una propina enorme y un papel: «Me voy a Estambul. Si viene, dígale que la espero allá».']],
         back: 'El mozo tiene ochenta años y reconoció las antiparras antes que a mí. Opa pedía dos cafés y uno se enfriaba siempre. ¿Quién eras, M.?', reward: { coins: 200 } },
       { id: 3, at: 'Estambul', title: 'La foto de M.', hint: 'Una foto de 1960 que nadie vino a buscar.', req: { trips: 6 },
@@ -52,10 +52,10 @@ export const STORIES = {
           ['Selin, la fotógrafa', 'Mi abuelo guardaba todos los negativos que nadie retiraba. Mirá este: un piloto y una chica, riéndose.'],
           [N, 'Ella tiene un pañuelo con una M bordada. Y Opa… nunca lo vi sonreír así en ninguna foto de casa.'],
           ['Selin, la fotógrafa', 'Atrás hay algo escrito a lápiz. «Marrakech. El zoco. Esperame.»'],
-          [N, 'Opa la seguía por el mundo. O ella lo seguía a él.']],
+          [N, 'Opa la seguía por el mundo. O ella lo seguía a él.', 'look']],
         back: 'Opa tenía 24 años en la foto. Tiene mi misma sonrisa torcida. Nadie en casa me lo dijo nunca. Ella se reía con los ojos cerrados.', reward: { coins: 250 } },
       { id: 4, at: 'Marrakech', title: 'La carta del zoco', hint: 'Una puerta con un avioncito pintado.', req: { stamps: { r: 'af', n: 3 } },
-        lines: [[N, 'Ese puesto de lámparas tiene el avioncito de Opa pintado en la puerta.'],
+        lines: [[N, 'Ese puesto de lámparas tiene el avioncito de Opa pintado en la puerta.', 'look'],
           ['Hassan, el vendedor', 'Mi padre guardó esta carta sesenta años. Dijo que un piloto alemán vendría a buscarla.'],
           ['Hassan, el vendedor', 'Nunca vino. Vino su nieto. A veces eso alcanza.'],
           [N, '«M.: si me esperás, te lo voy a decir donde el agua cae del cielo.»'],
@@ -66,17 +66,17 @@ export const STORIES = {
         lines: [[N, 'La página de Río tiene una sola palabra, escrita tan fuerte que rompió el papel: «tormenta».'],
           ['Dona Lúcia, la controladora', '1961. Un piloto aterrizó a ciegas en plena tormenta. Lo vi yo misma desde la torre.'],
           ['Dona Lúcia, la controladora', 'Gritaba que tenía que llegar a Buenos Aires esa noche, que alguien lo esperaba. Le cerramos el cielo tres días.'],
-          [N, 'Tres días tarde. Por eso la carta, por eso los dos cafés. Opa siempre llegaba tarde a M.'],
+          [N, 'Tres días tarde. Por eso la carta, por eso los dos cafés. Opa siempre llegaba tarde a M.', 'hat'],
           ['Dona Lúcia, la controladora', 'Antes de irse preguntó por una cascada en Venezuela. Pero primero, dijo, quería pararse en la mitad del mundo.']],
         back: 'Hoy vi el cielo de Río ponerse negro en un minuto. Entendí que no fue culpa de Opa. Igual duele.', reward: { coins: 350 } },
       { id: 6, at: 'Mitad del Mundo', title: 'Un pie en cada mitad', hint: 'La línea que parte el mundo en dos.', req: { stamps: { r: 'am', n: 8 }, trips: 18 },
-        lines: [[N, 'Un pie en el norte, un pie en el sur. La línea pasa justo entre mis botas.'],
+        lines: [[N, 'Un pie en el norte, un pie en el sur. La línea pasa justo entre mis botas.', 'side'],
           [N, 'La penúltima página dice: «Último intento. Si no está, me quedo con el cielo».'],
           [N, '¿Y si Opa no desapareció en un accidente? ¿Y si eligió no volver?'],
-          [N, 'No. Primero el agua que cae del cielo. Después las preguntas.']],
+          [N, 'No. Primero el agua que cae del cielo. Después las preguntas.', 'hat']],
         back: 'Hoy por primera vez tuve miedo de lo que voy a encontrar. Sigo igual. Opa también tenía miedo y volaba igual.', reward: { coins: 400 } },
       { id: 7, at: 'Salto Ángel', title: 'Donde el agua cae del cielo', hint: 'Donde el agua cae desde las nubes.', req: { trips: 30 },
-        lines: [[N, 'Salto Ángel. Casi mil metros de agua cayendo desde las nubes. Opa tenía razón: parece que el cielo se rompe.'],
+        lines: [[N, 'Salto Ángel. Casi mil metros de agua cayendo desde las nubes. Opa tenía razón: parece que el cielo se rompe.', 'up'],
           [N, 'Hay una piedra con el avioncito tallado. Debajo, una lata oxidada.'],
           [N, 'Adentro está la página arrancada. La letra de Opa, temblando:'],
           [N, '«1974. Llegué tarde otra vez: M. ya no estaba. No voy a volver a casa a explicar por qué. Que alguien de los míos llegue a tiempo por mí.»'],
@@ -86,9 +86,9 @@ export const STORIES = {
         lines: [[N, 'Las coordenadas me trajeron frente a los moáis. No hay nadie. Solo un hangar viejo con la puerta abierta.'],
           [N, 'Adentro hay cientos de postales colgadas con broches. Todas firmadas con un avioncito.'],
           ['???', 'Llegaste a tiempo. Yo nunca pude.'],
-          [N, '…¿Opa?'],
+          [N, '…¿Opa?', 'up'],
           ['Albrecht', 'Cincuenta años mandando postales a desconocidos para que se animaran a viajar. La que más esperaba era la tuya.'],
-          ['Albrecht', '¿Tomamos un café? Pido dos. Esta vez no se enfría ninguno.']],
+          ['Albrecht', '¿Tomamos un café? Pido dos. Esta vez no se enfría ninguno.'], [N, 'Pedí dos, Opa. Yo invito.', 'wave']],
         back: 'No le voy a contar a nadie dónde está. Le prometí volver el martes. Con dos cafés.', reward: { coins: 1000, chest: 'oro' } },
     ],
   },
@@ -160,22 +160,51 @@ export function playScene(ctx, hero, id, opts = {}) {
   const F = FICHAS[hero], S = STORIES[hero], name = hero[0].toUpperCase() + hero.slice(1);
   const sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
   let art = ''; try { art = uniq(ctx.thumbOf(hero, ctx.wornOf ? ctx.wornOf(hero) : 'base')); } catch (e) {}
+  let HA = null; try { HA = ctx.artFor ? ctx.artFor(hero, ctx.wornOf ? ctx.wornOf(hero) : 'base').HERO : null; } catch (e) {}
+  // justo debajo del encabezado rojo del panel abierto (mapa, mochila…); en el inicio, arriba de todo
+  const heads = [...document.querySelectorAll('.panel .head')].map(e => e.getBoundingClientRect()).filter(r => r.height > 0 && r.top < 60 && r.bottom > 0);
+  const topY = heads.length ? Math.max(...heads.map(r => r.bottom)) + 'px' : 'var(--st,0px)';
   return new Promise(done => {
     const ov = document.createElement('div'); ov.className = 'pvh';
     const dots = ch.lines.map(() => '<i></i>').join('');
+    ov.style.setProperty('--htop', topY);
     ov.innerHTML = `<div class="hbg"></div><div class="htop"><div class="hdots">${dots}</div><button class="hskip">SALTAR</button></div>
-<div class="htag"><small>${esc(S.title.toUpperCase())}</small><b>Capítulo ${ch.id}${ch.secret ? ' · secreto' : ''} · ${esc(ch.title)}</b></div>
-<div class="hhero">${art}</div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
+<div class="htag"><div class="ribbon"><small>${esc(S.title.toUpperCase())}</small>Capítulo ${ch.id}${ch.secret ? ' · secreto' : ''} · ${esc(ch.title)}</div></div>
+<div class="hhero"><div class="hhf">${art}</div></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
     document.body.appendChild(ov); document.body.classList.add('pvh-on');
     const hn = ov.querySelector('.hn'), ht = ov.querySelector('.ht'), hh = ov.querySelector('.hhero'), bub = ov.querySelector('.hbub'), dd = [...ov.querySelectorAll('.hdots i')];
     let k = -1, typing = null, full = '';
+    // Gestos: respira y parpadea siempre; al hablar mueve la cabeza; en algunas líneas saluda, mira alrededor o se acomoda la gorra; cuando habla otro, lo mira
+    const hf = ov.querySelector('.hhf'), UC = new Map(), G = { ph: 0, lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: Date.now() + 1500, bk: -1, clip: null, ck: 0, cph: 0, wave: 0, t: 0 };
+    const put = f => { if (!f || hf._f === f) return; let u = UC.get(f); if (!u) { u = uniq(f); if (UC.size > 80) UC.clear(); UC.set(f, u); } hf.innerHTML = u; hf._f = f; };
+    const gesture = g => {
+      G.clip = null; G.wave = 0;
+      if (!HA || !HA.at) return;
+      if (g === 'wave' && HA.wave) G.wave = 12;
+      else if (g === 'look' && HA.clips?.lookAround) { G.clip = HA.clips.lookAround; G.ck = 0; G.cph = G.ph; }
+      else if (g === 'hat' && HA.clips?.fixHat) { G.clip = HA.clips.fixHat; G.ck = 0; G.cph = G.ph; }
+      else if (g === 'up') { G.tx = 0; G.ty = 1; }
+      else if (g === 'side') { G.tx = -1; G.ty = 0; }
+      else if (g === 'listen') { G.tx = 1; G.ty = 0; }
+      else { G.tx = [-.5, 0, .5][Math.floor(Math.random() * 3)]; G.ty = 0; }
+    };
+    const anim = setInterval(() => {
+      if (!ov.isConnected) return clearInterval(anim);
+      if (!HA || !HA.at) return; G.t++; G.ph = (G.ph + 1) % 27; const now = Date.now();
+      if (G.wave > 0) { G.wave--; put(HA.wave[G.t % HA.wave.length]); return; }
+      if (G.clip) { if (G.ck >= G.clip.len) G.clip = null; else { put(G.clip.frame(G.ck++, G.cph)); return; } }
+      G.lx += Math.max(-.25, Math.min(.25, G.tx - G.lx)); G.ly += Math.max(-.5, Math.min(.5, G.ty - G.ly));
+      let bl = 0; if (G.bk >= 0) { bl = [1, 2, 1][G.bk++]; if (G.bk > 2) { G.bk = -1; G.blinkAt = now + 1800 + Math.random() * 2600; } } else if (now >= G.blinkAt) { G.bk = 1; bl = 1; }
+      put(HA.at(G.ph, { lx: G.lx, ly: G.ly, blink: bl }));
+    }, 110);
     const show = () => {
       k++; if (k >= ch.lines.length) return finale();
-      const [who, txt] = ch.lines[k], me = who === name || who === N && hero === 'nilo';
+      const [who, txt, g] = ch.lines[k], me = who === name || who === N && hero === 'nilo';
       hn.textContent = who; hn.style.color = me ? F.dark : '#A4521A'; bub.classList.toggle('npc', !me); hh.classList.toggle('hdim', !me);
+      gesture(me ? g : 'listen'); hh.classList.toggle('talk', me);
       dd.forEach((d, j) => d.classList.toggle('on', j <= k)); full = txt; ht.textContent = ''; bub.classList.remove('done');
       let c = 0; clearInterval(typing); sfx('tap');
-      typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); } }, 22);
+      typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); hh.classList.remove('talk'); } }, 22);
     };
     const finale = () => {
       clearInterval(typing); ov.classList.add('fin'); sfx('prize'); try { ctx.buzz?.([20, 40, 20]); ctx.confetti?.(); } catch (e) {}
@@ -198,7 +227,7 @@ export function playScene(ctx, hero, id, opts = {}) {
     ov.addEventListener('click', e => {
       if (ov.classList.contains('fin')) return;
       if (e.target.closest('.hskip')) { k = ch.lines.length - 1; clearInterval(typing); typing = null; show(); return; }
-      if (typing) { clearInterval(typing); typing = null; ht.textContent = full; bub.classList.add('done'); return; }
+      if (typing) { clearInterval(typing); typing = null; ht.textContent = full; bub.classList.add('done'); hh.classList.remove('talk'); return; }
       show();
     });
     setTimeout(show, 450);
@@ -261,16 +290,18 @@ function css() {
 body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 .pvh{position:fixed;inset:0;z-index:95;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;animation:pvhIn .35s}
 @keyframes pvhIn{0%{opacity:0}}
-.pvh .hbg{position:absolute;inset:0;background:linear-gradient(rgba(18,14,36,.15),rgba(18,14,36,.35) 45%,rgba(18,14,36,.88))}
-.pvh .htop{position:absolute;left:14px;right:14px;top:calc(var(--st,0px) + 14px);display:flex;justify-content:space-between;align-items:center}
+.pvh .hbg{position:absolute;inset:0;background:linear-gradient(rgba(18,14,36,.3),rgba(18,14,36,.45) 45%,rgba(18,14,36,.9));-webkit-backdrop-filter:blur(7px) saturate(.85);backdrop-filter:blur(7px) saturate(.85)}
+.pvh .htop{position:absolute;left:14px;right:14px;top:calc(var(--htop,0px) + 12px);display:flex;justify-content:space-between;align-items:center}
 .pvh .hdots{display:flex;gap:5px}.pvh .hdots i{width:20px;height:6px;border-radius:3px;background:#FFF4DC;opacity:.35}.pvh .hdots i.on{opacity:1}
 .pvh .hskip{border:0;padding:6px 14px;border-radius:99px;background:rgba(27,23,48,.55);color:#FFF4DC;font:400 13px 'Lilita One',sans-serif;letter-spacing:.5px}
-.pvh .htag{position:absolute;left:0;right:0;top:calc(var(--st,0px) + 56px);text-align:center;animation:pvhTag .6s .2s cubic-bezier(.2,1.5,.4,1) both}
+.pvh .htag{position:absolute;left:0;right:0;top:calc(var(--htop,0px) + 56px);height:60px;animation:pvhTag .6s .2s cubic-bezier(.2,1.5,.4,1) both}
+.pvh .htag .ribbon{top:0;font-size:18px;white-space:nowrap;line-height:1.1}
 @keyframes pvhTag{0%{transform:translateY(-30px) rotate(-6deg);opacity:0}}
-.pvh .htag small{display:block;font:900 10px Nunito,sans-serif;letter-spacing:1.6px;color:#FFE3B0;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.pvh .htag b{display:inline-block;margin-top:4px;padding:5px 14px 6px;background:#F6EBD0;color:#3A2A12;font:400 17px 'Lilita One',sans-serif;transform:rotate(-1.5deg);box-shadow:0 4px 10px rgba(0,0,0,.3)}
-.pvh .hhero{position:absolute;left:-34px;bottom:calc(var(--sb,0px) + 150px);width:min(78vw,330px);aspect-ratio:1;overflow:hidden;clip-path:inset(0 0 22% 0);transition:filter .25s,transform .3s;animation:pvhHero .55s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
+.pvh .hhero{position:absolute;left:-30px;bottom:calc(var(--sb,0px) + 70px);width:min(88vw,370px);aspect-ratio:1;overflow:hidden;transition:filter .25s,transform .3s;animation:pvhHero .55s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
 .pvh .hhero svg{display:block;width:100%;height:100%}
+.pvh .hhf{width:100%;height:100%;transform-origin:50% 90%}
+.pvh .hhero.talk .hhf{animation:pvhTalk .26s ease-in-out infinite alternate}
+@keyframes pvhTalk{to{transform:translateY(-3px) scale(1.012,.99)}}
 .pvh .hhero.hdim{filter:brightness(.55) drop-shadow(0 10px 14px rgba(0,0,0,.4));transform:translateX(-14px) scale(.96)}
 @keyframes pvhHero{0%{transform:translateX(-60%)}}
 .pvh .hbub{position:absolute;left:14px;right:14px;bottom:calc(var(--sb,0px) + 24px);min-height:132px;box-sizing:border-box;padding:14px 18px 22px;background:#F6EBD0;border-radius:6px;box-shadow:0 12px 26px rgba(0,0,0,.45);animation:pvhBub .4s .25s cubic-bezier(.2,1.4,.4,1) both}
