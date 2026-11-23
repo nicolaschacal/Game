@@ -111,6 +111,16 @@ export const SOUVENIRS = [
   { id: 's-af', country: tt('country.s-af'), region: 'af', name: tt('souvenir.s-af'), price: 200 },
   { id: 's-as', country: tt('country.s-as'), region: 'as', name: tt('souvenir.s-as'), price: 200 },
   { id: 's-oc', country: tt('country.s-oc'), region: 'oc', name: tt('souvenir.s-oc'), price: 200 },
+  // Souvenirs de otras ciudades: más objetos para que la mochila se llene de color
+  { id: 's-mx', country: tt('country.s-mx'), region: 'am', name: tt('souvenir.s-mx'), price: 220 },
+  { id: 's-pe', country: tt('country.s-pe'), region: 'am', name: tt('souvenir.s-pe'), price: 260 },
+  { id: 's-nl', country: tt('country.s-nl'), region: 'eu', name: tt('souvenir.s-nl'), price: 220 },
+  { id: 's-es', country: tt('country.s-es'), region: 'eu', name: tt('souvenir.s-es'), price: 240 },
+  { id: 's-ma', country: tt('country.s-ma'), region: 'af', name: tt('souvenir.s-ma'), price: 240 },
+  { id: 's-eg', country: tt('country.s-eg'), region: 'af', name: tt('souvenir.s-eg'), price: 260 },
+  { id: 's-jp', country: tt('country.s-jp'), region: 'as', name: tt('souvenir.s-jp'), price: 260 },
+  { id: 's-in', country: tt('country.s-in'), region: 'as', name: tt('souvenir.s-in'), price: 240 },
+  { id: 's-nz', country: tt('country.s-nz'), region: 'oc', name: tt('souvenir.s-nz'), price: 240 },
 ];
 
 // ── Rutas especiales ──
@@ -161,7 +171,13 @@ export const routeOf = i => routesOf(i)[0] || null;
 export const routeSeq = (r, start) => { const k = Math.max(0, r.cities.indexOf(start)); return [...r.cities.slice(k), ...r.cities.slice(0, k)]; };
 export const routeRegions = r => [...new Set(r.cities.map(regionOf))];
 export const routesDone = () => store.get('routesDone', []);
-export function routeComplete(id) { const d = routesDone(); if (!d.includes(id)) { d.push(id); store.set('routesDone', d); } return d.length; }
+export function routeComplete(id) {
+  const d = routesDone(); if (!d.includes(id)) { d.push(id); store.set('routesDone', d); }
+  syncAlbum(); const h = heroRoutes(); if (!h.includes(id)) { h.push(id); store.set(akey('routeStamps'), h); } // sello de ruta en el pasaporte del personaje actual
+  return d.length;
+}
+// Sellos de rutas del personaje actual (Nilo hereda las rutas que ya estaban completadas)
+export const heroRoutes = () => store.get(akey('routeStamps'), null) || (heroId() === 'nilo' ? [...routesDone()] : []);
 // Avanza al jugador a la siguiente ciudad de la ruta sin cobrar tarifa (la ruta ya está paga con el primer tramo).
 export function hop(i) { T.at = i; save(); store.set('world', i); }
 
@@ -279,7 +295,13 @@ export function travel(i, wallet) {
   T.at = i; save(); store.set('world', i); return s.cost;
 }
 // Ronda completada en el destino actual
-export function roundDone() { T.trips++; T.visits[T.at] = (T.visits[T.at] || 0) + 1; save(); }
+export function roundDone() {
+  T.trips++; T.visits[T.at] = (T.visits[T.at] || 0) + 1; save();
+  syncAlbum(); const st = heroStamps(); st[T.at] = (st[T.at] || 0) + 1; store.set(akey('stamps'), st);
+}
+// Sellos de destinos POR PERSONAJE (como las selfies): los pasaportes se compran una vez para todos, pero cada viajero llena los suyos.
+// 'stamps' = { destino: veces } (Nilo hereda las visitas que ya había); el resto en 'stamps.<id>'. T.visits sigue siendo global (mapa y dificultad).
+export const heroStamps = () => store.get(akey('stamps'), null) || (heroId() === 'nilo' ? { ...(T.visits || {}) } : {});
 
 // Dificultad según cuántos destinos DISTINTOS completaste (sin importar cuáles ni en qué orden; repetir uno no la sube).
 // Así empezar en Buenos Aires o Kioto es igual de amable. Partidas migradas parten de los destinos que ya habían alcanzado.

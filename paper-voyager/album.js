@@ -268,6 +268,42 @@ function souvenirSVG(id) {
     case 's-oc': // boomerang pintado
       return cutS(`<path d="M10 44 Q60 18 106 84 L112 98 Q100 112 88 104 Q68 54 14 62Z" fill="#D8913E"/>`,
         `<path d="M10 44 Q60 18 106 84 L112 98 L100 90 Q62 36 12 52Z" fill="#B87426" opacity=".5"/><g fill="${CREAM}"><circle cx="24" cy="54" r="2.4"/><circle cx="38" cy="53" r="2.4"/><circle cx="52" cy="58" r="2.4"/><circle cx="64" cy="66" r="2.4"/><circle cx="75" cy="77" r="2.4"/><circle cx="85" cy="90" r="2.4"/></g><path d="M18 47 Q56 30 94 82" stroke="#E8452C" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1 7"/><path d="M12 57 Q56 44 96 98" stroke="#3E5BA9" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/>`);
+    case 's-jp': // maneki-neko con su moneda
+      return cutS(`<path d="M84 66 C90 56 92 40 95 30 C98 22 108 23 107 33 C106 46 101 62 95 74Z" fill="#FFFDF6"/><path d="M28 108 C24 86 30 68 40 60 L80 60 C90 68 96 86 92 108Z" fill="#FFFDF6"/><path d="M33 36 L35 12 L52 25Z M87 36 L85 12 L68 25Z" fill="#FFFDF6"/><ellipse cx="60" cy="44" rx="30" ry="25" fill="#FFFDF6"/><ellipse cx="44" cy="88" rx="13" ry="16" fill="#F2B937"/>`,
+        `<path d="M37 31 L38 17 L48 25Z M83 31 L82 17 L72 25Z" fill="#F4A0A6"/><path d="M68 22 Q80 20 86 32 Q78 36 70 30Z" fill="#F2A23A"/><path d="M78 80 Q90 84 91 104 L80 106 Q76 92 78 80Z" fill="#2B2440" opacity=".85"/><path d="M76 62 C86 70 92 88 92 108 L84 108 C84 88 82 72 76 62Z" fill="#E6DCC4" opacity=".6"/>`
+        + `<path d="M45 45 q5 -5 10 0 M65 45 q5 -5 10 0" stroke="#1B1730" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M57 51 h6 l-3 3Z" fill="#E8798C"/><path d="M60 54 q-3 4 -7 2 M60 54 q3 4 7 2" stroke="#1B1730" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M38 50 h-10 M38 54 l-9 3 M82 50 h10 M82 54 l9 3" stroke="#B8AFA0" stroke-width="1.3" stroke-linecap="round"/>`
+        + `<path d="M38 63 Q60 73 82 63 L82 69 Q60 79 38 69Z" fill="#E8452C"/><circle cx="60" cy="75" r="5" fill="#F2B937" stroke="#C48E2E" stroke-width="1.2"/><path d="M56 75 h8" stroke="#C48E2E" stroke-width="1.2"/><ellipse cx="101" cy="31" rx="4" ry="3.4" fill="#F4A0A6"/>`
+        + `<ellipse cx="44" cy="88" rx="9" ry="12" fill="none" stroke="#C48E2E" stroke-width="1.4"/><path d="M40 82 h8 M40 88 h8 M40 94 h8" stroke="#C48E2E" stroke-width="1.6" stroke-linecap="round"/><path d="M36 80 q3 -5 7 -6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>`);
+    case 's-in': // elefante pintado
+      return cutS(`<path d="M42 50 C46 36 92 34 100 50 C106 62 104 80 98 84 L98 106 L86 106 L86 90 L62 90 L62 106 L50 106 L50 86 C44 82 40 66 42 50Z" fill="#8E9AB4"/><path d="M46 44 C32 36 18 44 18 60 C18 72 22 82 24 92 C25 100 19 103 15 99 L12 104 C20 112 33 108 33 96 C33 88 31 80 35 74 C44 76 52 66 52 56Z" fill="#8E9AB4"/><path d="M42 46 C54 40 64 50 62 64 C60 76 48 78 42 70Z" fill="#7A87A3"/><path d="M64 40 L94 42 L96 74 L80 82 L66 74Z" fill="#E8452C"/>`,
+        `<path d="M66 72 L80 80 L94 72" stroke="#F2B937" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M66 44 L94 46" stroke="#F2B937" stroke-width="3"/><path d="M80 50 L87 60 L80 70 L73 60Z" fill="#3E5BA9"/><circle cx="80" cy="60" r="2.6" fill="#F2B937"/><g fill="#5DB84F"><circle cx="70" cy="54" r="2.2"/><circle cx="90" cy="54" r="2.2"/><circle cx="70" cy="66" r="2.2"/><circle cx="90" cy="66" r="2.2"/></g><g fill="#F2B937"><circle cx="70" cy="78" r="2.2"/><circle cx="80" cy="85" r="2.6"/><circle cx="90" cy="78" r="2.2"/></g>`
+        + `<path d="M22 50 l6 -7 l6 7 l-6 7Z" fill="#F2B937"/><circle cx="28" cy="50" r="2" fill="#E8452C"/><circle cx="30" cy="60" r="2.6" fill="#1B1730"/><path d="M31 76 q-6 7 -13 5" stroke="#FFFDF6" stroke-width="3.6" fill="none" stroke-linecap="round"/><g fill="#F28CB4"><circle cx="22" cy="72" r="1.8"/><circle cx="23" cy="80" r="1.8"/><circle cx="25" cy="88" r="1.8"/></g><path d="M98 52 C108 52 110 62 106 70" stroke="#7A87A3" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M50 104 h12 M86 104 h12" stroke="#FFFDF6" stroke-width="2.4"/><path d="M92 50 C102 60 102 80 98 86 L98 106 L92 106Z" fill="#6E7A95" opacity=".45"/>`);
+    case 's-nl': // zueco con tulipanes
+      return cutS(`<path d="M12 86 C12 74 24 70 34 72 L86 70 C96 70 102 76 106 84 C110 92 110 100 104 106 L22 106 C14 104 10 96 12 86Z" fill="#F2BC3E"/><ellipse cx="66" cy="74" rx="24" ry="6" fill="#9A6A1C"/><path d="M64 76 L63 30 L67 30 L68 76Z M54 76 L40 36 L44 35 L58 76Z M76 76 L88 38 L92 39 L80 76Z" fill="#3E7F3E"/><path d="M58 76 C44 68 40 54 44 46 C52 54 58 64 60 74Z" fill="#4E9A4A"/><path d="M74 76 C88 68 92 56 88 48 C80 56 74 64 72 74Z" fill="#5DB84F"/><path d="M55 16 Q55 32 65 34 Q75 32 75 16 L70 23 L65 12 L60 23Z" fill="#E8452C"/><path d="M32 22 Q32 38 42 40 Q52 38 52 22 L47 29 L42 18 L37 29Z" fill="#F28CB4"/><path d="M80 24 Q80 40 90 42 Q100 40 100 24 L95 31 L90 20 L85 31Z" fill="#F07A2A"/><path d="M40 78 Q66 86 90 78 L90 82 Q66 90 40 82Z" fill="#F2BC3E"/>`,
+        `<path d="M14 100 Q60 104 106 98 L104 106 L22 106Z" fill="#D69A1D"/><path d="M65 12 L65 30 M42 18 L42 36 M90 20 L90 38" stroke="#000" stroke-opacity=".12" stroke-width="2"/><path d="M58 20 q2 8 6 10 M35 26 q2 8 6 10 M83 28 q2 8 6 10" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>`
+        + `<g transform="translate(34 92)"><path d="M-3 6 L0 -4 L3 6Z" fill="#3E5BA9"/><path d="M0 -4 l-6 -6 M0 -4 l6 -6 M0 -4 l-6 6 M0 -4 l6 6" stroke="#3E5BA9" stroke-width="1.8" stroke-linecap="round"/></g><path d="M50 94 q4-4 8 0 q-4 6 -8 0Z M70 92 q4-4 8 0 q-4 6 -8 0Z" fill="#E8452C"/><circle cx="88" cy="92" r="2.4" fill="#3E5BA9"/>`);
+    case 's-es': // abanico flamenco
+      return cutS(`<rect x="55" y="88" width="10" height="24" rx="4" fill="#7A4A2B"/><path d="M60 92 L13.0 74.9 A50 50 0 0 1 107.0 74.9Z" fill="#E8452C"/>`,
+        `<g fill="#1B1730"><circle cx="13.0" cy="74.9" r="3.2"/><circle cx="15.4" cy="69.3" r="3.2"/><circle cx="18.5" cy="64.0" r="3.2"/><circle cx="22.3" cy="59.2" r="3.2"/><circle cx="26.5" cy="54.8" r="3.2"/><circle cx="31.3" cy="51.0" r="3.2"/><circle cx="36.5" cy="47.9" r="3.2"/><circle cx="42.1" cy="45.3" r="3.2"/><circle cx="47.9" cy="43.5" r="3.2"/><circle cx="53.9" cy="42.4" r="3.2"/><circle cx="60.0" cy="42.0" r="3.2"/><circle cx="66.1" cy="42.4" r="3.2"/><circle cx="72.1" cy="43.5" r="3.2"/><circle cx="77.9" cy="45.3" r="3.2"/><circle cx="83.5" cy="47.9" r="3.2"/><circle cx="88.7" cy="51.0" r="3.2"/><circle cx="93.5" cy="54.8" r="3.2"/><circle cx="97.7" cy="59.2" r="3.2"/><circle cx="101.5" cy="64.0" r="3.2"/><circle cx="104.6" cy="69.3" r="3.2"/><circle cx="107.0" cy="74.9" r="3.2"/></g><path d="M60 92 L13.0 74.9 A50 50 0 0 1 107.0 74.9Z" fill="#E8452C"/><path d="M19.6 77.3 A43 43 0 0 1 100.4 77.3" stroke="#1B1730" stroke-width="3" fill="none" stroke-dasharray="2 2.4"/><path d="M60 92 L20.2 65.2 M60 92 L27.9 56.3 M60 92 L37.5 49.6 M60 92 L48.4 45.4 M60 92 L60.0 44.0 M60 92 L71.6 45.4 M60 92 L82.5 49.6 M60 92 L92.1 56.3 M60 92 L99.8 65.2" stroke="#B8341F" stroke-width="1.4"/><g fill="#FFF4DC"><circle cx="27.9" cy="75.7" r="2.6"/><circle cx="38.6" cy="81.1" r="2"/><circle cx="32.8" cy="68.4" r="2.6"/><circle cx="41.9" cy="76.3" r="2"/><circle cx="39.4" cy="62.5" r="2.6"/><circle cx="46.2" cy="72.3" r="2"/><circle cx="47.1" cy="58.4" r="2.6"/><circle cx="51.4" cy="69.6" r="2"/><circle cx="55.6" cy="56.3" r="2.6"/><circle cx="57.1" cy="68.2" r="2"/><circle cx="64.4" cy="56.3" r="2.6"/><circle cx="62.9" cy="68.2" r="2"/><circle cx="72.9" cy="58.4" r="2.6"/><circle cx="68.6" cy="69.6" r="2"/><circle cx="80.6" cy="62.5" r="2.6"/><circle cx="73.8" cy="72.3" r="2"/><circle cx="87.2" cy="68.4" r="2.6"/><circle cx="78.1" cy="76.3" r="2"/><circle cx="92.1" cy="75.7" r="2.6"/><circle cx="81.4" cy="81.1" r="2"/></g>`
+        + `<g transform="translate(60 62)"><circle r="9" fill="#F28CB4"/><path d="M-5 -2 q5 -6 10 0 q-5 8 -10 0Z" fill="#D9567E"/><circle r="2.6" fill="#F2B937"/><path d="M6 6 q8 2 12 -2 q-6 -4 -12 2Z M-6 6 q-8 2 -12 -2 q6 -4 12 2Z" fill="#4E9A4A"/></g><circle cx="60" cy="92" r="3.4" fill="#F2B937" stroke="#C48E2E" stroke-width="1"/><path d="M58 112 q2 4 4 0" stroke="#E8452C" stroke-width="2" fill="none"/>`);
+    case 's-ma': // tetera marroquí y su vasito
+      return cutS(`<path d="M34 82 C24 76 18 62 9 54 L13 49 C23 56 30 63 38 67Z" fill="#D9A13A"/><path d="M86 64 C104 62 104 92 88 92 L88 86 C97 85 97 71 86 70Z" fill="#B9852A"/><path d="M34 100 C26 84 30 64 44 57 L76 57 C90 64 94 84 86 100Z" fill="#D9A13A"/><rect x="38" y="98" width="44" height="8" rx="3" fill="#B9852A"/><path d="M46 57 C46 45 52 39 60 37 C68 39 74 45 74 57Z" fill="#E7B952"/><path d="M60 38 L56 27 Q60 18 64 27Z" fill="#E7B952"/><path d="M8 84 L28 84 L25 110 L11 110Z" fill="#E8798C"/>`,
+        `<path d="M36 72 Q60 80 84 72" stroke="#8A5A12" stroke-width="2" fill="none"/><path d="M33 90 Q60 96 87 90" stroke="#8A5A12" stroke-width="2" fill="none"/><g fill="#8A5A12"><circle cx="46" cy="82" r="1.8"/><circle cx="54" cy="84" r="1.8"/><circle cx="62" cy="84.6" r="1.8"/><circle cx="70" cy="84" r="1.8"/><circle cx="78" cy="82" r="1.8"/></g><path d="M74 60 C86 66 90 84 85 100 L78 100 C82 86 80 70 72 60Z" fill="#A9701B" opacity=".4"/><path d="M42 66 q4 -4 9 -4" stroke="#FFF1B8" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/><path d="M50 50 Q60 46 70 50" stroke="#A9701B" stroke-width="1.6" fill="none"/>`
+        + `<path d="M8 84 L28 84" stroke="#F2B937" stroke-width="3"/><path d="M12 94 L24 94 M13 100 L23 100" stroke="#F2B937" stroke-width="1.6" stroke-dasharray="2 2"/><path d="M14 88 L24 88 L23 92 L15 92Z" fill="#B8341F" opacity=".5"/><path d="M22 80 C30 70 36 78 28 84 C26 80 24 80 22 80Z" fill="#5DB84F"/>`);
+    case 's-eg': // escarabajo de la suerte
+      return cutS(`<circle cx="60" cy="14" r="9" fill="#F2B937"/><path d="M34 50 L14 40 L11 45 L31 58Z M32 70 L10 72 L10 78 L32 78Z M36 90 L18 104 L22 108 L40 96Z M86 50 L106 40 L109 45 L89 58Z M88 70 L110 72 L110 78 L88 78Z M84 90 L102 104 L98 108 L80 96Z" fill="#2B2440"/><ellipse cx="60" cy="68" rx="30" ry="38" fill="#2E9C8E"/><path d="M42 34 Q60 16 78 34 Q60 40 42 34Z" fill="#1F6E7A"/>`,
+        `<path d="M60 40 V104" stroke="#1F6E7A" stroke-width="2.4"/><path d="M33 44 Q60 54 87 44 L87 50 Q60 60 33 50Z" fill="#F2B937"/><g fill="#3E5BA9"><circle cx="46" cy="70" r="4"/><circle cx="74" cy="70" r="4"/><circle cx="50" cy="88" r="3"/><circle cx="70" cy="88" r="3"/></g><g fill="none" stroke="#F2B937" stroke-width="1.6"><circle cx="46" cy="70" r="6"/><circle cx="74" cy="70" r="6"/></g><path d="M42 58 q-6 10 -2 26" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".45"/><path d="M78 40 C92 56 92 84 76 100 C86 82 86 60 72 44Z" fill="#1F6E7A" opacity=".5"/><circle cx="60" cy="14" r="5" fill="#F2C230"/><circle cx="57.6" cy="11.8" r="1.6" fill="#fff" opacity=".7"/>`);
+    case 's-mx': // maracas
+      return cutS(`<g transform="rotate(-26 42 70)"><rect x="38" y="64" width="9" height="46" rx="4.5" fill="#8A5A3B"/><ellipse cx="42.5" cy="44" rx="20" ry="24" fill="#E8452C"/></g><g transform="rotate(24 80 70)"><rect x="75" y="64" width="9" height="46" rx="4.5" fill="#C98F55"/><ellipse cx="79.5" cy="44" rx="20" ry="24" fill="#F2BC3E"/></g>`,
+        `<g transform="rotate(-26 42 70)"><path d="M23 40 Q42.5 46 62 40 L62 48 Q42.5 54 23 48Z" fill="#4E9A4A"/><path d="M25 56 l5 -5 l5 5 l5 -5 l5 5 l5 -5 l5 5 l5 -5" stroke="#F2BC3E" stroke-width="2.6" fill="none" stroke-linejoin="round"/><g fill="#FFF4DC"><circle cx="34" cy="30" r="2.4"/><circle cx="44" cy="26" r="2.4"/><circle cx="52" cy="32" r="2.4"/></g><path d="M30 34 q2 -10 10 -12" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".55"/><path d="M38 80 h9 M38 88 h9" stroke="#E8452C" stroke-width="2.4"/></g>`
+        + `<g transform="rotate(24 80 70)"><path d="M60 40 Q79.5 46 99 40 L99 48 Q79.5 54 60 48Z" fill="#3E5BA9"/><path d="M62 56 l5 -5 l5 5 l5 -5 l5 5 l5 -5 l5 5 l5 -5" stroke="#E8452C" stroke-width="2.6" fill="none" stroke-linejoin="round"/><g fill="#E8452C"><circle cx="70" cy="30" r="2.4"/><circle cx="80" cy="26" r="2.4"/><circle cx="89" cy="32" r="2.4"/></g><path d="M67 34 q2 -10 10 -12" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".6"/><path d="M75 80 h9 M75 88 h9" stroke="#4E9A4A" stroke-width="2.4"/></g>`);
+    case 's-pe': // llama de peluche con su manta
+      return cutS(`<rect x="44" y="84" width="9" height="24" rx="4" fill="#EADBB8"/><rect x="58" y="86" width="9" height="22" rx="4" fill="#EADBB8"/><rect x="76" y="86" width="9" height="22" rx="4" fill="#EADBB8"/><rect x="90" y="84" width="9" height="24" rx="4" fill="#EADBB8"/><ellipse cx="72" cy="76" rx="32" ry="17" fill="#F3E6C4"/><path d="M100 68 C110 64 112 74 104 78Z" fill="#F3E6C4"/><path d="M30 78 L28 38 C28 26 34 22 42 22 C50 23 52 30 50 38 L52 78Z" fill="#F3E6C4"/><path d="M31 26 L28 8 L37 20Z M44 22 L48 6 L50 22Z" fill="#F3E6C4"/><ellipse cx="30" cy="40" rx="11" ry="8" fill="#F3E6C4"/>`,
+        `<path d="M54 60 L94 60 L96 84 L52 84Z" fill="#E8452C"/><path d="M54 66 H95 M53 78 H96" stroke="#F2BC3E" stroke-width="3"/><path d="M54 72 l4 -3 l4 3 l4 -3 l4 3 l4 -3 l4 3 l4 -3 l4 3 l4 -3 l4 3" stroke="#3E5BA9" stroke-width="2" fill="none"/><g fill="#5DB84F"><circle cx="56" cy="88" r="3"/><circle cx="74" cy="88" r="3"/><circle cx="92" cy="88" r="3"/></g><g fill="#F28CB4"><circle cx="65" cy="88" r="3"/><circle cx="83" cy="88" r="3"/></g>`
+        + `<circle cx="29" cy="10" r="4" fill="#E8798C"/><circle cx="48" cy="7" r="4" fill="#F2BC3E"/><path d="M32 22 C40 24 46 30 46 38" stroke="#F2BC3E" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="38" cy="34" r="2.6" fill="#1B1730"/><circle cx="38.8" cy="33.2" r=".8" fill="#fff"/><ellipse cx="21" cy="40" rx="2" ry="1.4" fill="#8A6A44"/><path d="M22 45 q4 2 8 0" stroke="#8A6A44" stroke-width="1.4" fill="none" stroke-linecap="round"/><g fill="none" stroke="#E6D2A6" stroke-width="1.6" stroke-linecap="round"><path d="M36 50 q3 -2 6 0 M36 58 q3 -2 6 0 M36 66 q3 -2 6 0 M64 92 q0 0 0 0"/></g><path d="M86 62 C100 66 104 80 96 88 L92 88 C96 78 94 70 86 62Z" fill="#D9C79F" opacity=".5"/>`);
+    case 's-nz': // kiwi de peluche
+      return cutS(`<path d="M56 94 L54 108 L46 110 L58 110 L61 96Z M76 94 L76 108 L68 110 L80 110 L81 96Z" fill="#E9C08A"/><path d="M22 58 Q8 76 4 96 L8 97 Q15 78 27 64Z" fill="#E9C08A"/><ellipse cx="68" cy="68" rx="36" ry="30" fill="#8A5A3B"/><circle cx="34" cy="54" r="16" fill="#8A5A3B"/><path d="M90 30 C100 40 104 52 100 62 C96 52 90 44 82 40Z" fill="#5DB84F"/>`,
+        `<path d="M70 40 q6 4 4 10 M84 46 q6 4 4 10 M56 44 q6 4 4 10 M64 62 q6 4 4 10 M80 66 q6 4 4 10 M94 60 q4 4 2 10 M52 70 q6 4 4 10 M70 82 q6 4 4 10" stroke="#6A4226" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M80 92 C96 88 106 74 104 62 C100 78 90 88 74 94Z" fill="#6A4226" opacity=".45"/><circle cx="30" cy="50" r="2.8" fill="#1B1730"/><circle cx="31" cy="49" r=".9" fill="#fff"/><path d="M26 58 q4 4 8 2" stroke="#E9C08A" stroke-width="1.6" fill="none"/><ellipse cx="40" cy="60" rx="4" ry="2.4" fill="#E8798C" opacity=".6"/><path d="M92 36 L88 46 M96 42 L91 50 M99 50 L93 56" stroke="#3E7F3E" stroke-width="1.6" stroke-linecap="round"/><path d="M46 46 q6 -8 14 -8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".3"/>`);
   }
   return '';
 }
@@ -502,6 +538,7 @@ const BAG_CSS = `
 .pvb-dec{position:absolute;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 5px 6px rgba(27,23,48,.25))}
 .pvb-sv{position:absolute;left:6%;right:6%;top:57%;bottom:1%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
 .pvb-stage{position:relative;flex:1;width:100%;min-height:120px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:pointer}
+.pvb-sc svg *{pointer-events:visiblePainted}
 .pvb-sc{position:absolute;left:0;top:0;transition:transform .45s cubic-bezier(.3,1.35,.5,1),opacity .3s;pointer-events:none;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.32)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
 .pvb-sn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;min-height:30px}
 .pvb-all{border:0;padding:4px 11px 5px;font:400 12px 'Lilita One',sans-serif;letter-spacing:.6px;color:#3A2410;background:#F2BC3E;border-radius:99px;box-shadow:0 2px 0 #A9701B,0 4px 6px rgba(27,23,48,.2)}.pvb-all:active{transform:translateY(2px);box-shadow:0 0 0 #A9701B}
@@ -534,23 +571,32 @@ const BAG_CSS = `
 .pvp-eqr{display:flex;align-items:center;gap:8px;margin:8px 0 0 6px;font:700 10.5px Nunito;color:#6B4E26}
 .pvp-eq{flex:none;border:0;cursor:pointer;font:400 13px 'Lilita One',sans-serif;padding:3px 14px 4px;border-radius:99px;background:#F2BC3E;color:#3A2410;box-shadow:0 2px 0 #A9701B}.pvp-eq.on{background:#76B85A;color:#fff;box-shadow:0 2px 0 #356F2E}
 .pvp-r.eq{box-shadow:0 0 0 3px #76B85A,0 6px 10px rgba(27,23,48,.22)}
-.pvp-rt{display:flex;gap:8px;margin:12px 12px 0;padding:10px;border-radius:16px;background:#F7ECD3;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 10px rgba(27,23,48,.22);color:#3A2A12;align-items:center}.pvp-rt>div:first-child{flex:1;min-width:0}.pvp-rt b{display:block;font:400 15px/1.1 'Lilita One',sans-serif}.pvp-rt small{font:900 9px Nunito;letter-spacing:.8px;color:#6B4E26}
-.pvp-rs{width:46px;text-align:center}.pvp-rs svg{display:block;width:100%;height:auto}.pvp-rs span{display:block;font:900 7px Nunito;color:#6B4E26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pvp-rs.nv{opacity:.5}
+.pvp-rt{margin:12px 12px 0;padding:10px 0 4px;border-radius:16px;background:#F7ECD3;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 10px rgba(27,23,48,.22);color:#3A2A12;overflow:hidden}
+.pvp-rth{display:flex;align-items:center;gap:8px;padding:0 12px}.pvp-rth>div{flex:1;min-width:0}.pvp-rth b{display:block;font:400 17px/1.1 'Lilita One',sans-serif}.pvp-rth small{font:900 9px Nunito;letter-spacing:.8px;color:#6B4E26}
+.pvp-rth u{text-decoration:none;font:400 13px 'Lilita One',sans-serif;padding:2px 11px;border-radius:99px;background:#C9402A;color:#fff;box-shadow:0 2px 0 #8E2A17}
+.pvp-car{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding:0 14px;padding:10px 14px 12px;touch-action:pan-x pan-y;scrollbar-width:none;-webkit-overflow-scrolling:touch}.pvp-car::-webkit-scrollbar{display:none}
+.pvp-rc{flex:none;width:112px;scroll-snap-align:start;padding:8px 6px 9px;border-radius:12px;background:#FFF8E6;box-shadow:0 1px 1px rgba(40,24,10,.25),0 4px 7px rgba(27,23,48,.16);text-align:center;transform:rotate(var(--r));position:relative}
+.pvp-rc:before{content:"";position:absolute;left:10px;right:10px;top:0;height:4px;border-radius:0 0 4px 4px;background:var(--rc);opacity:.85}
+.pvp-rc .st{width:76px;margin:0 auto 2px}.pvp-rc .st svg{display:block;width:100%;height:auto;overflow:visible}
+.pvp-rc b{display:block;font:400 13.5px/1.05 'Lilita One',sans-serif;color:#3A2A12;min-height:28px;display:flex;align-items:center;justify-content:center}
+.pvp-rc small{display:block;margin-top:3px;font:800 8.5px/1.25 Nunito,sans-serif;color:#6B4E26}
+.pvp-rc:not(.ok){background:#EFE3C6}.pvp-rc:not(.ok):before{background:#B3A37F}.pvp-rc:not(.ok) b{color:#8C7E5C}.pvp-rc:not(.ok) small{opacity:.7}
 .pvb-rop{position:absolute;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;transform:rotate(5deg)}
 .pvb-rop svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.3)) drop-shadow(0 6px 7px rgba(27,23,48,.3))}
-.pvb-rop:active:not(.opening) svg{transform:translateY(2px) scale(.985)}
+.pvb-rop .g0{position:relative}.pvb-rop .gu{position:absolute;left:0;top:0;width:100%}.pvb-rop .gu svg{filter:drop-shadow(0 1px 1px rgba(40,24,10,.3)) drop-shadow(0 3px 4px rgba(27,23,48,.22))}
+.pvb-rop:active:not(.opening) .g0 svg{transform:translateY(2px) scale(.985)}
 .pvb-rop .pvb-tag{position:absolute;left:50%;bottom:-8px;margin:0;transform:translateX(-50%) rotate(-3deg)}
 .pvc-flyw{position:fixed;z-index:70;pointer-events:none;perspective:1700px}
 .pvc-mv,.pvc-sh{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
 .pvc-col,.pvc-c{position:absolute;transform-style:preserve-3d}
 .pvc-c i{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .pvc-c .f{background:var(--paper,#F3E9D0);box-shadow:inset 0 0 0 1px #C9B88F77}
-.pvc-c .k{background:#3E5BA9;transform:rotateY(180deg);box-shadow:inset 0 0 0 1px #2C3F80,inset 0 0 26px rgba(20,25,70,.3)}
+.pvc-c .k{background:var(--gk,#3E5BA9);transform:rotateY(180deg);box-shadow:inset 0 0 0 1px #2C3F80,inset 0 0 26px rgba(20,25,70,.3)}
 .pvc-ic{position:absolute;translate:0 0 8px;filter:drop-shadow(0 3px 5px rgba(27,23,48,.35))}.pvc-ic svg{display:block;width:100%;height:100%}
 .pvcloth{background-image:linear-gradient(90deg,#0000 calc(33.33% - .5px),#C9B88F66 0 calc(33.33% + .5px),#0000 0),linear-gradient(90deg,#0000 calc(66.66% - .5px),#C9B88F66 0 calc(66.66% + .5px),#0000 0),linear-gradient(180deg,#0000 calc(33.33% - .5px),#C9B88F66 0 calc(33.33% + .5px),#0000 0),linear-gradient(180deg,#0000 calc(66.66% - .5px),#C9B88F66 0 calc(66.66% + .5px),#0000 0)}
 .pvc-hero{display:flex;flex-direction:column;align-items:center;margin:6px 0 0;color:#3A2A12}.pvc-hero .art{width:150px;filter:drop-shadow(0 3px 3px rgba(40,24,10,.3))}.pvc-hero svg,.pvc-sk svg{display:block;width:100%;height:auto}
 .pvc-hero b{font:400 24px/1 'Lilita One',sans-serif;margin-top:4px}.pvc-hero small{font:900 10px Nunito;letter-spacing:.9px;color:#6B4E26;text-transform:uppercase}
-.pvc-hint{margin:8px 22px 0;text-align:center;font:700 11.5px Nunito;color:#6B4E26}
+.pvc-hint{margin:18px 22px 0;text-align:center;font:700 11.5px Nunito;color:#6B4E26}
 .pvc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px 14px 6px}
 .pvc-sk{position:relative;padding:8px 8px 10px;border-radius:16px;background:#F7ECD3;box-shadow:0 1.5px 1.5px rgba(40,24,10,.28),0 6px 10px rgba(27,23,48,.22);color:#3A2A12;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
 .pvc-sk .art{width:78%}.pvc-sk b{font:400 16px/1.05 'Lilita One',sans-serif}.pvc-sk.on{box-shadow:0 0 0 3px #76B85A,0 6px 10px rgba(27,23,48,.22)}
@@ -600,7 +646,7 @@ export function openBag(ctx) {
     const cover = coverSVG(P.cover, { count: V.selfieCount(), total: V.selfieTotal(), deco: P.deco.filter(d => P.owned.includes(d)) });
     const m = pass.length, span = m < 2 ? 0 : Math.min(48, 16 * (m - 1));
     const eq = V.passEq ? V.passEq() : null, ordered = eq ? [...pass.filter(r => r !== eq), eq] : pass; // el pasaporte equipado va al frente
-    const fan = ordered.map((r, k) => { const a = m < 2 ? 4 : -span / 2 + span * k / (m - 1); return `<div class="bk${r === eq ? ' eq' : ''}" style="transform:translateX(-50%) rotate(${a.toFixed(1)}deg);z-index:${k + 1}">${passportSVG(V, r)}</div>`; }).join('');
+    const fan = ordered.map((r, k) => { const a = m < 2 ? 4 : -span / 2 + span * k / (m - 1); return `<div class="bk${r === eq ? ' eq' : ''}" data-r="${r}" style="transform:translateX(-50%) rotate(${a.toFixed(1)}deg);z-index:${k + 1}">${passportSVG(V, r)}</div>`; }).join('');
     const stage = sv.length
       ? `<div class="pvb-stage" data-st>${sv.map((s, k) => `<div class="pvb-sc" data-k="${k}">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div>`).join('')}</div><div class="pvb-sn"><span class="nm" data-nm></span><small data-ct></small><button class="pvb-all" data-all>${tt('bag.all')}</button></div>`
       : `<button class="pvb-empty" data-shop style="font-family:inherit">${LOCK.replace('class="lk"', '')}<b>${tt('bag.empty')}</b>${tt('bag.emptySub')}<u>${tt('bag.toShop')}</u></button>`;
@@ -609,7 +655,7 @@ export function openBag(ctx) {
  <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
  <div class="pvb-dec" style="left:9%;top:53%;width:34%;transform:rotate(-4deg)">${pencilSVG()}</div>
  <div class="pvb-dec" style="right:42%;top:45%;width:18%;transform:rotate(9deg)">${svgWrap('8 14 112 92', '', decoInner('d-pasajes'), '')}</div>
- <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${garmentSVG()}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
+ <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${clothPile(ctx)}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
  <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}${eq ? `<span class="pvb-eqm">✓ ${tt('pass.equipped')} · ${esc(V.REGIONS[eq].name)}</span>` : ''}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
 </div>`;
@@ -617,23 +663,35 @@ export function openBag(ctx) {
     q('[data-x]').onclick = close;
     q('[data-alb]').onclick = e => flyOpen(e.currentTarget);
     q('[data-rop]').onclick = e => flyCloth(e.currentTarget);
-    q('[data-pas]').onclick = () => { sfx('tap'); openPassport(ctx, () => draw()); };
+    q('[data-pas]').onclick = e => flyPass(e.currentTarget);
     q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
     if (sv.length) souvenirs(sv);
+    warmCloth();
   }
+  // Hornea en un rato libre el arte de los atuendos del personaje: la página Ropa abre sin trabarse al principio de la animación
+  let warmed = '';
+  function warmCloth() {
+    const hero = V.heroId?.() || 'nilo'; if (warmed === hero) return; warmed = hero;
+    const ric = window.requestIdleCallback || (f => setTimeout(f, 200));
+    ric(() => { try { wardrobe(ctx, hero).forEach(k => heroArt(ctx, hero, k.id, 1, true)); } catch (e) {} });
+  }
+  const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
   // ── Apertura/cierre del libro: viaja al centro, la tapa gira sobre el lomo (rotateY 0→-180°, con reverso) y la página interior crece hasta cubrir la pantalla y se funde en el álbum ya armado ──
-  const HX = .078; // el lomo está al 7.8 % del ancho del dibujo de la tapa
-  function bookFly(b, R) {
-    const cv = b.querySelector('.cv'), s = cv.getBoundingClientRect(), w = cv.offsetWidth, h = cv.offsetHeight, vw = R.width, vh = R.height, mx = R.left + vw / 2, my = R.top + vh / 2;
-    const cx = s.left + s.width / 2, cy = s.top + s.height / 2, a = w * (.5 - HX), th = -5 * Math.PI / 180;
-    const S = Math.max(vw / (w * (1 - 2 * HX)), vh / (h * .94)) * 1.03, s1 = Math.min(vw * .6 / w, vh * .56 / h), Ox = cx - a;
+  // Geometría de cada libro: lomo (hx = margen lateral del dibujo), márgenes de la página interior, giro sobre la mesa y colores
+  const ALB = { hx: .078, top: .025, bot: .037, ang: -5 };
+  const passGeo = el => { const r = el.dataset.r, R = V.REGIONS[r] || {}, m = /rotate\((-?[\d.]+)deg\)/.exec(el.style.transform || ''); return { hx: .05, top: .037, bot: .037, ang: m ? +m[1] : 0, page: '#F6EEDB', back: R.dark, line: R.color }; };
+  function bookFly(cv, R, G = ALB) {
+    const HX = G.hx, s = cv.getBoundingClientRect(), w = cv.offsetWidth, h = cv.offsetHeight, vw = R.width, vh = R.height, mx = R.left + vw / 2, my = R.top + vh / 2;
+    const cx = s.left + s.width / 2, cy = s.top + s.height / 2, a = w * (.5 - HX), th = G.ang * Math.PI / 180;
+    const S = Math.max(vw / (w * (1 - 2 * HX)), vh / (h * (1 - G.top - G.bot))) * 1.03, s1 = Math.min(vw * .6 / w, vh * .56 / h), Ox = cx - a;
     const fly = document.createElement('div'); fly.className = 'pvb-fly';
-    fly.style.cssText = `left:${cx - w / 2 - R.left}px;top:${cy - h / 2 - R.top}px;width:${w}px;height:${h}px`;
-    fly.innerHTML = `<div class="pg"></div><div class="cv3"><div class="front">${cv.innerHTML}</div><div class="back"></div></div>`;
+    fly.style.cssText = `left:${cx - w / 2 - R.left}px;top:${cy - h / 2 - R.top}px;width:${w}px;height:${h}px;transform-origin:${HX * 100}% 50%`;
+    const ins = `left:${HX * 100}%;right:${HX * 100}%;top:${G.top * 100}%;bottom:${G.bot * 100}%`;
+    fly.innerHTML = `<div class="pg" style="${ins}${G.page ? `;background-color:${G.page}` : ''}"></div><div class="cv3" style="transform-origin:${HX * 100}% 50%"><div class="front">${cv.innerHTML}</div><div class="back" style="${ins}${G.back ? `;background:${G.back};box-shadow:inset 0 0 0 3px ${G.line || G.back},inset 14px 0 18px -8px rgba(0,0,0,.3)` : ''}"></div></div>`;
     fly.querySelector('.pg').style.backgroundSize = (160 / S).toFixed(2) + 'px';
     const wrap = document.createElement('div'); wrap.className = 'pvb-flyw'; wrap.style.cssText = `left:${R.left}px;top:${R.top}px;width:${vw}px;height:${vh}px`; wrap.appendChild(fly); document.body.appendChild(wrap);
     const move = [
-      { offset: 0, transform: `translate(${(a * (1 - Math.cos(th))).toFixed(2)}px,${(-a * Math.sin(th)).toFixed(2)}px) rotate(-5deg) scale(1)`, easing: 'cubic-bezier(.3,.7,.3,1)' },
+      { offset: 0, transform: `translate(${(a * (1 - Math.cos(th))).toFixed(2)}px,${(-a * Math.sin(th)).toFixed(2)}px) rotate(${G.ang}deg) scale(1)`, easing: 'cubic-bezier(.3,.7,.3,1)' },
       { offset: .3, transform: `translate(${(mx - Ox - s1 * a).toFixed(2)}px,${(my - cy).toFixed(2)}px) rotate(0deg) scale(${s1.toFixed(4)})`, easing: 'cubic-bezier(.55,0,.2,1)' },
       { offset: 1, transform: `translate(${(R.left - Ox).toFixed(2)}px,${(my - cy).toFixed(2)}px) rotate(0deg) scale(${S.toFixed(4)})` }];
     const turn = [{ offset: 0, transform: 'rotateY(0deg)' }, { offset: .22, transform: 'rotateY(0deg)', easing: 'cubic-bezier(.45,.05,.25,1)' }, { offset: .8, transform: 'rotateY(-180deg)' }, { offset: 1, transform: 'rotateY(-180deg)' }];
@@ -646,7 +704,7 @@ export function openBag(ctx) {
     if (!b.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { album.style.animation = 'none'; album.style.opacity = ''; album.style.pointerEvents = ''; done(); return; }
     try { await document.fonts?.ready; } catch (e) {}
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // el álbum ya está pintado (opacity 0) antes de tocar la tapa
-    const { fly, move, turn, inner } = bookFly(b, album.getBoundingClientRect()); b.style.visibility = 'hidden';
+    const { fly, move, turn, inner } = bookFly(b.querySelector('.cv'), album.getBoundingClientRect()); b.style.visibility = 'hidden';
     const D = 900, o = { duration: D, fill: 'both' };
     inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
     // el álbum real aparece debajo de la página (papel con papel) y recién después se retira la página
@@ -659,37 +717,65 @@ export function openBag(ctx) {
   function flyClose(album, finish) {
     const b = root.querySelector('[data-alb]');
     if (!b || !b.animate || matchMedia('(prefers-reduced-motion:reduce)').matches) { finish(); return; }
-    const { fly, move, turn, inner } = bookFly(b, album.getBoundingClientRect()), F = 110, D = 520, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
+    const { fly, move, turn, inner } = bookFly(b.querySelector('.cv'), album.getBoundingClientRect()), F = 110, D = 520, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
     fly.style.opacity = '0';
     fly.animate([{ opacity: 0 }, { opacity: 1 }], { duration: F, fill: 'forwards' });
     inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
     setTimeout(() => { finish(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = 'hidden'; fly.style.opacity = '1'; }, F);
     setTimeout(() => { fly.remove(); const nb = root.querySelector('[data-alb]'); if (nb) nb.style.visibility = ''; }, F + D + 30);
   }
+  // ── Pasaporte: la libreta de adelante del abanico viaja al centro y se abre igual que el álbum ──
+  const topPass = () => [...root.querySelectorAll('.pvb-pas .bk')].pop() || null;
+  async function flyPass(b) {
+    if (b.classList.contains('opening')) return;
+    const bk = topPass(); sfx('tap');
+    if (!bk || !b.animate || reduced()) { openPassport(ctx, () => draw()); return; }
+    b.classList.add('opening');
+    const page = openPassport(ctx, () => draw(), { preload: true, closeAnim: passClose });
+    const done = () => { b.classList.remove('opening'); bk.style.visibility = ''; };
+    try { await document.fonts?.ready; } catch (e) {}
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const { fly, move, turn, inner } = bookFly(bk, page.getBoundingClientRect(), passGeo(bk)); bk.style.visibility = 'hidden';
+    const D = 820, o = { duration: D, fill: 'both' };
+    inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
+    const up = page.animate([{ opacity: 0 }, { opacity: 0, offset: .72 }, { opacity: 1 }], { duration: D, fill: 'both' });
+    const out = fly.animate([{ opacity: 1 }, { opacity: 1, offset: .86 }, { opacity: 0 }], { duration: D, fill: 'both' });
+    const cleanup = () => { page.style.opacity = ''; page.style.pointerEvents = ''; page.style.animation = 'none'; fly.remove(); done(); };
+    Promise.all([up.finished, out.finished]).then(() => { up.cancel(); cleanup(); }, cleanup);
+  }
+  function passClose(page, finish) {
+    const bk = topPass();
+    if (!bk || !bk.animate || reduced()) { finish(); return; }
+    const { fly, move, turn, inner } = bookFly(bk, page.getBoundingClientRect(), passGeo(bk)), F = 110, D = 500, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
+    fly.style.opacity = '0';
+    fly.animate([{ opacity: 0 }, { opacity: 1 }], { duration: F, fill: 'forwards' });
+    inner.animate(move, o); inner.querySelector('.cv3').animate(turn, o);
+    setTimeout(() => { finish(); const nb = topPass(); if (nb) nb.style.visibility = 'hidden'; fly.style.opacity = '1'; }, F);
+    setTimeout(() => { fly.remove(); const nb = topPass(); if (nb) nb.style.visibility = ''; }, F + D + 30);
+  }
   // ── Ropa: la prenda viaja al centro y se desdobla en pasos hasta la página; al cerrar, la animación inversa ──
-  const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
   async function flyCloth(b) {
     if (b.classList.contains('opening')) return; b.classList.add('opening'); sfx('tap');
     const page = openCloth(ctx, () => draw(), { preload: true, closeAnim: clothClose });
-    const done = () => { b.classList.remove('opening'); b.style.visibility = ''; };
+    const done = () => { b.classList.remove('opening'); b.querySelectorAll('.g0').forEach(x => x.style.visibility = ''); };
     if (!b.animate || reduced()) { page.style.animation = 'none'; page.style.opacity = ''; page.style.pointerEvents = ''; done(); return; }
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const cs = clothSheet(page.getBoundingClientRect(), b); document.body.appendChild(cs.wrap); b.style.visibility = 'hidden';
-    const D = 1500, o = { duration: D, fill: 'both' }; cs.play(o);
-    const up = page.animate([{ opacity: 0 }, { opacity: 0, offset: .8 }, { opacity: 1 }], { duration: D, fill: 'both' });
-    const out = cs.wrap.animate([{ opacity: 1 }, { opacity: 1, offset: .88 }, { opacity: 0 }], { duration: D, fill: 'both' });
+    await new Promise(r => requestAnimationFrame(r));
+    const g0 = b.querySelector('.g0') || b, cs = clothSheet(page.getBoundingClientRect(), g0, clothCol(ctx)); document.body.appendChild(cs.wrap); g0.style.visibility = 'hidden';
+    const D = 1150, o = { duration: D, fill: 'both' }; cs.play(o);
+    const up = page.animate([{ opacity: 0 }, { opacity: 0, offset: .78 }, { opacity: 1 }], { duration: D, fill: 'both' });
+    const out = cs.wrap.animate([{ opacity: 1 }, { opacity: 1, offset: .86 }, { opacity: 0 }], { duration: D, fill: 'both' });
     const cleanup = () => { page.style.opacity = ''; page.style.pointerEvents = ''; page.style.animation = 'none'; cs.wrap.remove(); done(); };
     Promise.all([up.finished, out.finished]).then(() => { up.cancel(); cleanup(); }, cleanup);
   }
   function clothClose(page, finish) {
-    const b = root.querySelector('[data-rop]');
+    const b = root.querySelector('[data-rop] .g0');
     if (!b || !b.animate || reduced()) { finish(); return; }
-    const cs = clothSheet(page.getBoundingClientRect(), b), F = 110, D = 1000, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
+    const cs = clothSheet(page.getBoundingClientRect(), b, clothCol(ctx)), F = 110, D = 850, o = { duration: D, delay: F, direction: 'reverse', fill: 'both' };
     cs.wrap.style.opacity = '0'; document.body.appendChild(cs.wrap);
     cs.wrap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: F, fill: 'forwards' });
     cs.play(o);
-    setTimeout(() => { finish(); const nb = root.querySelector('[data-rop]'); if (nb) nb.style.visibility = 'hidden'; cs.wrap.style.opacity = '1'; }, F);
-    setTimeout(() => { cs.wrap.remove(); const nb = root.querySelector('[data-rop]'); if (nb) nb.style.visibility = ''; }, F + D + 30);
+    setTimeout(() => { finish(); const nb = root.querySelector('[data-rop] .g0'); if (nb) nb.style.visibility = 'hidden'; cs.wrap.style.opacity = '1'; }, F);
+    setTimeout(() => { cs.wrap.remove(); const nb = root.querySelector('[data-rop] .g0'); if (nb) nb.style.visibility = ''; }, F + D + 30);
   }
   // Carrusel de souvenirs: uno al frente sobre una pila en abanico; toque o deslizar para rotar
   function souvenirs(sv) {
@@ -714,9 +800,22 @@ export function openBag(ctx) {
     let x0 = null;
     const go = d => { if (n < 2) { st.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-3deg)' }, { transform: 'rotate(2deg)' }, { transform: 'none' }], { duration: 320 }); return; } idx = (idx + d + n) % n; sfx('tap'); place(); };
     st.addEventListener('pointerdown', e => { x0 = e.clientX; });
-    st.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; go(Math.abs(dx) > 28 ? (dx < 0 ? 1 : -1) : 1); });
+    st.addEventListener('pointerup', e => {
+      if (x0 == null) return; const dx = e.clientX - x0; x0 = null;
+      if (Math.abs(dx) > 28) return go(dx < 0 ? 1 : -1);
+      const hit = e.target.closest?.('.pvb-sc'); if (!hit) return; // sólo cuenta el dibujo tocado (no la caja transparente)
+      const k = +hit.dataset.k;
+      if (k === idx) { sfx('tap'); souvenirBig(sv[k]); return; }
+      idx = k; sfx('tap'); place();
+    });
     st.addEventListener('pointercancel', () => { x0 = null; });
     root.querySelector('[data-all]').onclick = () => { sfx('tap'); souvenirGrid(sv); };
+  }
+  function souvenirBig(s, par = root) {
+    const R = V.REGIONS[s.region], ov = document.createElement('div'); ov.className = 'pva-det';
+    ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${esc(s.country || (R ? R.name : ''))}</small></div>`;
+    ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) { ov.remove(); sfx('tap'); } };
+    par.appendChild(ov);
   }
   // Vista ordenada de todos los souvenirs; al tocar uno se ve grande
   function souvenirGrid(sv) {
@@ -724,25 +823,42 @@ export function openBag(ctx) {
     g.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('bag.inBag', { n: sv.length })}</small><h2>${tt('bag.souvenirs')}</h2></div><div class="pvs-g">${sv.map((s, k) => `<button class="pvs-i" data-k="${k}" style="--r:${(((k * 7) % 9) - 4) * .9}deg"><div class="th">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><small>${esc(s.country || '')}</small><b>${esc(s.name)}</b></button>`).join('')}</div>`;
     document.body.appendChild(g);
     g.querySelector('[data-x]').onclick = () => { g.remove(); sfx('tap'); };
-    g.querySelectorAll('.pvs-i').forEach(b => b.onclick = () => {
-      sfx('tap'); const s = sv[+b.dataset.k], R = V.REGIONS[s.region], ov = document.createElement('div'); ov.className = 'pva-det';
-      ov.innerHTML = `<button class="round close" aria-label="${tt('common.close')}">✕</button><div class="big pvs-big">${svgWrap('0 0 120 120', '', souvenirInner(s.id), s.name)}</div><div class="info"><b>${esc(s.name)}</b><small>${esc(s.country || (R ? R.name : ''))}</small></div>`;
-      ov.onclick = e => { if (e.target === ov || e.target.closest('.round')) { ov.remove(); sfx('tap'); } };
-      g.appendChild(ov);
-    });
+    g.querySelectorAll('.pvs-i').forEach(b => b.onclick = () => { sfx('tap'); souvenirBig(sv[+b.dataset.k], g); });
   }
   draw();
   return root;
 }
 
 // ── Ropa: prenda de papel doblada en la mochila → se desdobla por pasos hasta la página "Ropa" (skins del personaje actual) ──
-function garmentSVG() {
-  const B = '#3E5BA9', D = '#34468A', L = '#5970AF';
+// Colores de cada prenda (sacados del arte de cada viajero): [tela, cuello/acento, botones]
+const CLOTH = {
+  nilo: { base: ['#3E5BA9', '#E8452C', '#F2B937'], nieve: ['#E9EEF3', '#F07A2A', '#F07A2A'], marinero: ['#F4F1EA', '#24305E', '#EFC76A'] },
+  mora: { base: ['#4E9A4A', '#E8B425', '#F2B937'], lluvia: ['#D8473B', '#F2C230', '#F2B937'], montana: ['#3A7CA5', '#E8B425', '#F2B937'] },
+  sipho: { base: ['#D9952B', '#E8E2D0', '#6B4A2E'], tormenta: ['#2F5D7C', '#B8402E', '#6B4A2E'] },
+  minji: { base: ['#8C6BD1', '#6FD3BE', '#6FD3BE'], escenario: ['#2B2836', '#E8452C', '#E8452C'] },
+  tuk: { base: ['#2F8C8A', '#F07A2A', '#F2C230'], invierno: ['#3E5BA9', '#C2463A', '#F2C230'] },
+  layla: { base: ['#5E7A4A', '#C9A15A', '#F2B937'], wadirum: ['#C9733E', '#F2B937', '#FFF4DC'] },
+  cal: { base: ['#3F6E9E', '#E0663A', '#F3E6C4'], nevada: ['#8E3B46', '#2F4A6E', '#F3E6C4'] },
+  anaya: { base: ['#D9507E', '#F2A32A', '#F2C230'] },
+};
+const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16), f = c => Math.round(k < 0 ? c * (1 + k) : c + (255 - c) * k); return '#' + [n >> 16, (n >> 8) & 255, n & 255].map(c => f(c).toString(16).padStart(2, '0')).join(''); };
+const clothOf = (hero, skin = 'base') => (CLOTH[hero] || CLOTH.nilo)[skin] || (CLOTH[hero] || CLOTH.nilo).base || CLOTH.nilo.base;
+const clothCol = ctx => clothOf(ctx.V?.heroId?.() || VV.heroId?.() || 'nilo');
+function garmentSVG(col = CLOTH.nilo.base) {
+  const [B, A, K] = col, light = parseInt(B.slice(1, 3), 16) + parseInt(B.slice(3, 5), 16) + parseInt(B.slice(5, 7), 16) > 600;
+  const D = shade(B, light ? -.12 : -.16), L = shade(B, light ? -.04 : .14), ln = light ? '#8C8CA0' : '#1B1730';
   return `<svg viewBox="0 0 120 112" aria-hidden="true"><g stroke="${CREAM}" stroke-width="5" stroke-linejoin="round"><rect x="12" y="14" width="96" height="86" rx="6" fill="${B}"/></g><rect x="12" y="14" width="96" height="86" rx="6" fill="${B}"/>`
     + `<path d="M12 20Q12 14 18 14H44V100H18Q12 100 12 94Z" fill="${L}"/><path d="M76 14H102Q108 14 108 20V94Q108 100 102 100H76Z" fill="${D}"/>`
-    + `<path d="M44 14H76L60 42Z" fill="${CREAM}"/><path d="M52 14L60 30L68 14" fill="#E8452C"/><path d="M44 14L60 42L76 14" fill="none" stroke="#D9C9A2" stroke-width="1.4" stroke-linejoin="round"/>`
-    + `<path d="M44 14V100M76 14V100" stroke="#1B1730" stroke-opacity=".28" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M12 76H108" stroke="#1B1730" stroke-opacity=".3" stroke-width="1.6"/><path d="M12 77.5H108" stroke="#fff" stroke-opacity=".18" stroke-width="1.2"/>`
-    + `<circle cx="60" cy="58" r="3.6" fill="#F2B937" stroke="#C48E2E" stroke-width="1"/><circle cx="60" cy="70" r="3.6" fill="#F2B937" stroke="#C48E2E" stroke-width="1"/><path d="M20 90H34M86 90H100" stroke="#fff" stroke-opacity=".4" stroke-width="1.4" stroke-dasharray="3 2.4"/></svg>`;
+    + `<path d="M44 14H76L60 42Z" fill="${CREAM}"/><path d="M52 14L60 30L68 14" fill="${A}"/><path d="M44 14L60 42L76 14" fill="none" stroke="#D9C9A2" stroke-width="1.4" stroke-linejoin="round"/>`
+    + `<path d="M44 14V100M76 14V100" stroke="${ln}" stroke-opacity=".28" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M12 76H108" stroke="${ln}" stroke-opacity=".3" stroke-width="1.6"/><path d="M12 77.5H108" stroke="#fff" stroke-opacity=".18" stroke-width="1.2"/>`
+    + `<circle cx="60" cy="58" r="3.6" fill="${K}" stroke="${shade(K, -.2)}" stroke-width="1"/><circle cx="60" cy="70" r="3.6" fill="${K}" stroke="${shade(K, -.2)}" stroke-width="1"/><path d="M20 90H34M86 90H100" stroke="${light ? A : '#fff'}" stroke-opacity=".4" stroke-width="1.4" stroke-dasharray="3 2.4"/></svg>`;
+}
+// Pila de ropa en la mochila: arriba la prenda base del viajero elegido y debajo, medio desordenadas, las que compró
+const PILE = [[0, 0, 0], [-16, -16, -12], [15, -28, 10], [-6, -40, -5]];
+function clothPile(ctx) {
+  const V = ctx.V || VV, hero = V.heroId?.() || 'nilo', list = wardrobe(ctx, hero).filter(k => k.owned);
+  const under = list.slice(1, PILE.length).reverse().map((k, j, arr) => { const [x, y, r] = PILE[arr.length - j]; return `<div class="gu" style="transform:translate(${x}%,${y}%) rotate(${r}deg)">${garmentSVG(clothOf(hero, k.id))}</div>`; }).join('');
+  return under + `<div class="g0">${garmentSVG(clothOf(hero, 'base'))}</div>`;
 }
 // Atuendos del personaje: base + los suyos (SKINS[i].skins); comprados = ctx.ownedV 'personaje:atuendo'; puesto = ctx.wornOf / ctx.setWear (pv.wear, del integrador)
 function wardrobe(ctx, hero) {
@@ -772,7 +888,7 @@ export function openCloth(ctx, onClose, opts = {}) {
     const list = wardrobe(ctx, hero), cur = equippedSkin(ctx, hero), keep = root.scrollTop;
     const art = id => { try { return heroArt(ctx, hero, id, 1, true) || ''; } catch (e) { return ''; } };
     root.innerHTML = `<div class="head"><button class="round close" data-x aria-label="${tt('common.close')}">✕</button><small>${esc(tt('cloth.sub', { name: nm }))}</small><h2>${tt('cloth.title')}</h2></div>`
-      + `<div class="pvc-hero"><div class="art">${art(cur)}</div><b>${esc(nm)}</b><small>${esc((list.find(k => k.id === cur) || list[0]).name)}</small></div><div class="pvc-hint">${esc(tt('cloth.hint', { name: nm }))}</div>`
+      + `<div class="pvc-hint">${esc(tt('cloth.hint', { name: nm }))}</div>`
       + `<div class="pvc-grid">${list.map(k => {
         const on = k.id === cur;
         return `<div class="pvc-sk${on ? ' on' : ''}${k.owned ? '' : ' lock'}" data-id="${esc(k.id)}"><div class="art">${art(k.id)}</div><b>${esc(k.name)}</b>`
@@ -787,27 +903,28 @@ export function openCloth(ctx, onClose, opts = {}) {
   return root;
 }
 // Hoja de 3×3 pliegues: el paquete (centro) se abre en pasos: derecha, izquierda, abajo, arriba. Devuelve la capa y play(opts) que anima todo.
-function clothSheet(R, b) {
+function clothSheet(R, b, gcol = CLOTH.nilo.base) {
   const W = R.width, H = R.height, cw = W / 3, ch = H / 3, ib = b.getBoundingClientRect(), dx = ib.left + ib.width / 2 - (R.left + W / 2), dy = ib.top + ib.height / 2 - (R.top + H / 2);
   const mk = (cls, css, par) => { const e = document.createElement('div'); e.className = cls; e.style.cssText = css; par && par.appendChild(e); return e; };
-  const wrap = mk('pvc-flyw', `left:${R.left}px;top:${R.top}px;width:${W}px;height:${H}px`), mv = mk('pvc-mv', '', wrap), sh = mk('pvc-sh', '', mv), steps = [];
+  const wrap = mk('pvc-flyw', `left:${R.left}px;top:${R.top}px;width:${W}px;height:${H}px;--gk:${gcol[0]}`), mv = mk('pvc-mv', '', wrap), sh = mk('pvc-sh', '', mv), steps = [];
   const cell = (par, x, y, o, st) => { const c = mk('pvc-c', `left:${x}px;top:${y}px;width:${cw}px;height:${ch}px;transform-origin:${o}`, par); c.innerHTML = '<i class="f"></i><i class="k"></i>'; if (st) steps.push({ el: c, ...st }); return c; };
   const col = (x, o, st) => { const c = mk('pvc-col', `left:${x}px;top:0;width:${cw}px;height:${H}px;transform-origin:${o}`, sh); if (st) steps.push({ el: c, ...st }); return c; };
-  const SR = { ax: 'rotateY', from: -180, z: 2, s: .3, e: .5 }, SL = { ax: 'rotateY', from: 180, z: 2, s: .42, e: .62 }, SB = { ax: 'rotateX', from: 180, z: 1, s: .56, e: .74 }, ST = { ax: 'rotateX', from: -180, z: 1, s: .68, e: .86 };
+  const SR = { ax: 'rotateY', from: -180, z: 2, s: .2, e: .42 }, SL = { ax: 'rotateY', from: 180, z: 2, s: .33, e: .55 }, SB = { ax: 'rotateX', from: 180, z: 1, s: .48, e: .68 }, ST = { ax: 'rotateX', from: -180, z: 1, s: .6, e: .8 };
   [[0, '100% 50%', SL], [cw, '50% 50%', null], [2 * cw, '0% 50%', SR]].forEach(([x, o, st]) => {
     const c = col(x, o, st);
     cell(c, 0, ch, '50% 50%', null);
     cell(c, 0, 0, '50% 100%', ST); cell(c, 0, 2 * ch, '50% 0%', SB);
   });
-  const ic = mk('pvc-ic', `left:${W / 2 - ib.width / 2}px;top:${H / 2 - ib.height / 2}px;width:${ib.width}px;height:${ib.height}px`, mv); ic.innerHTML = garmentSVG();
+  const ic = mk('pvc-ic', `left:${W / 2 - ib.width / 2}px;top:${H / 2 - ib.height / 2}px;width:${ib.width}px;height:${ib.height}px`, mv); ic.innerHTML = garmentSVG(gcol);
   const sx0 = ib.width / cw, sy0 = ib.height / ch;
   const ez = 'cubic-bezier(.45,.05,.25,1)';
   return {
     wrap, mv, sh, ic,
     play(o) {
       const A = [];
-      A.push(mv.animate([{ offset: 0, transform: `translate(${dx}px,${dy}px) scale(${sx0},${sy0})`, easing: 'cubic-bezier(.3,.7,.3,1)' }, { offset: .24, transform: 'translate(0,0) scale(1.6,1.25)' }, { offset: .3, transform: 'translate(0,0) scale(1.6,1.25)', easing: ez }, { offset: .86, transform: 'translate(0,0) scale(1,1)' }, { offset: 1, transform: 'translate(0,0) scale(1,1)' }], o));
-      A.push(ic.animate([{ offset: 0, opacity: 1, transform: `scale(${1 / sx0},${1 / sy0})` }, { offset: .16, opacity: 1 }, { offset: .3, opacity: 0, transform: `scale(${1 / sx0},${1 / sy0})` }, { offset: 1, opacity: 0 }], o));
+      // arranca rápido (ease-out) hacia el centro: antes parecía que tardaba en reaccionar
+      A.push(mv.animate([{ offset: 0, transform: `translate(${dx}px,${dy}px) scale(${sx0},${sy0})`, easing: 'cubic-bezier(.15,.85,.3,1)' }, { offset: .16, transform: 'translate(0,0) scale(1.6,1.25)' }, { offset: .2, transform: 'translate(0,0) scale(1.6,1.25)', easing: ez }, { offset: .8, transform: 'translate(0,0) scale(1,1)' }, { offset: 1, transform: 'translate(0,0) scale(1,1)' }], o));
+      A.push(ic.animate([{ offset: 0, opacity: 1, transform: `scale(${1 / sx0},${1 / sy0})` }, { offset: .1, opacity: 1 }, { offset: .21, opacity: 0, transform: `scale(${1 / sx0},${1 / sy0})` }, { offset: 1, opacity: 0 }], o));
       steps.forEach(s => { const T = a => `translateZ(${s.z}px) ${s.ax}(${a}deg)`; A.push(s.el.animate([{ offset: 0, transform: T(s.from) }, { offset: s.s, transform: T(s.from), easing: ez }, { offset: s.e, transform: T(0) }, { offset: 1, transform: T(0) }], o)); });
       return A;
     },
@@ -815,30 +932,47 @@ function clothSheet(R, b) {
 }
 
 // ── Página del pasaporte: regiones, sellos de destinos visitados, viajes y lo que falta ──
-export function openPassport(ctx, onClose) {
+// Los pasaportes se compran una vez para todos, pero los sellos son de cada viajero (como las selfies)
+export function openPassport(ctx, onClose, opts = {}) {
   bagCss();
   const V = ctx.V || VV, sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
-  const root = document.createElement('div'); root.className = 'panel pva pvpass'; root.style.display = 'block'; document.body.appendChild(root); lockScroll(root);
-  const T = V.T, vis = T.visits || {}, have = r => (T.passports || []).includes(r);
-  const visited = Object.keys(vis).filter(k => vis[k] > 0).length;
+  V.syncAlbum?.();
+  document.querySelectorAll('.pvpass').forEach(e => e.remove());
+  const root = document.createElement('div'); root.className = 'panel pva pvpass'; root.style.display = 'block';
+  if (opts.preload) { root.style.animation = 'none'; root.style.opacity = '0'; root.style.pointerEvents = 'none'; }
+  document.body.appendChild(root); lockScroll(root);
+  let closing = false;
+  const finish = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
+  const close = () => { if (closing) return; closing = true; if (opts.closeAnim) opts.closeAnim(root, finish); else finish(); };
+  const T = V.T, vis = (V.heroStamps ? V.heroStamps() : T.visits) || {}, have = r => (T.passports || []).includes(r);
+  const visited = Object.keys(vis).filter(k => vis[k] > 0).length, trips = Object.values(vis).reduce((a, n) => a + (n || 0), 0);
+  const hero = V.heroId?.() || 'nilo', nm = heroName(ctx, hero);
   const order = [...V.REGION_ORDER.filter(have), ...V.REGION_ORDER.filter(r => !have(r))];
   const stamp = (d, i, R, k) => {
     const rot = ((i * 37) % 21) - 10, n = vis[i] || 0;
     if (!n) return `<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="25" fill="none" stroke="#B3A37F" stroke-width="2" stroke-dasharray="3.4 3"/><text x="30" y="38" text-anchor="middle" font-family="${LIL}" font-size="22" fill="#B3A37F" opacity=".7">?</text></svg>`;
     return `<svg viewBox="0 0 60 60" aria-label="${esc(d.place)}"><g transform="rotate(${rot} 30 30)"><circle cx="30" cy="30" r="27" fill="#FFF8E6"/><circle cx="30" cy="30" r="27" fill="none" stroke="${R.dark}" stroke-width="2.6"/><circle cx="30" cy="30" r="23" fill="none" stroke="${R.color}" stroke-width="1.2"/>${nest(d.art, 12, 9, 36)}<path d="M8 49 q5-3 10 0 t10 0 t10 0 t10 0" stroke="${R.dark}" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/>${n > 1 ? `<circle cx="48" cy="12" r="8" fill="${R.dark}"/><text x="48" y="15.6" text-anchor="middle" font-family="${LIL}" font-size="10" fill="#fff">×${n}</text>` : ''}</g></svg>`;
   };
-  const eq = () => (V.passEq ? V.passEq() : null), done = V.routesDone ? V.routesDone() : [];
-  const routeStamp = r => { const ok = done.includes(r.id); return `<div class="pvp-rs${ok ? '' : ' nv'}"><svg viewBox="0 0 60 60" aria-hidden="true"><g transform="rotate(${((r.cities[0] * 13) % 17) - 8} 30 30)"><circle cx="30" cy="30" r="26" fill="${ok ? '#FFF8E6' : 'none'}" stroke="${ok ? '#C9402A' : '#B3A37F'}" stroke-width="2.6" ${ok ? '' : 'stroke-dasharray="3.4 3"'}/>${ok ? `<circle cx="30" cy="30" r="21" fill="none" stroke="#C9402A" stroke-width="1.2"/><path d="${plane(30, 25, 1.25)}" fill="#C9402A"/><path d="M16 41 L22 47 L44 36" stroke="#C9402A" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : `<text x="30" y="38" text-anchor="middle" font-family="${LIL}" font-size="22" fill="#B3A37F" opacity=".7">?</text>`}</g></svg><span>${esc(tt(r.name))}</span></div>`; };
-  const routesHTML = V.ROUTES ? `<div class="pvp-rt"><div><b>${tt('route.stamps')}</b><small>${tt('route.stampsSub')}</small></div>${V.ROUTES.map(routeStamp).join('')}</div>` : '';
-  root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${tt('pass.sub')}</small><h2>${tt('pass.plural')}</h2></div>
-<div class="pvp-st"><div><b>${T.trips || 0}</b><small>${tt('pass.trips')}</small></div><div><b>${visited}</b><small>${tt('pass.dests', { n: DESTINOS.length })}</small></div><div><b>${(T.passports || []).length}/${V.REGION_ORDER.length}</b><small>${tt('pass.plural')}</small></div></div>${routesHTML}`
+  const eq = () => (V.passEq ? V.passEq() : null), done = V.heroRoutes ? V.heroRoutes() : (V.routesDone ? V.routesDone() : []);
+  // Sellos de rutas especiales: carrusel de tarjetas (sello grande, nombre y ciudades). El sello toma el color de la región de la ruta.
+  const routeCard = (r, k) => {
+    const ok = done.includes(r.id), R = V.REGIONS[(V.routeRegions ? V.routeRegions(r) : [])[0]] || { color: '#C9402A', dark: '#8E2A17' }, ink = ok ? R.dark : '#B3A37F', rot = ((r.cities[0] * 13) % 17) - 8;
+    const svg = `<svg viewBox="0 0 80 80" aria-hidden="true"><g transform="rotate(${rot} 40 40)">${ok
+      ? `<circle cx="40" cy="40" r="36" fill="#FFF8E6"/><circle cx="40" cy="40" r="35" fill="none" stroke="${ink}" stroke-width="3.2"/><circle cx="40" cy="40" r="29" fill="none" stroke="${R.color}" stroke-width="1.4"/><path d="M13 40 a27 27 0 0 1 54 0" fill="none" stroke="${R.color}" stroke-width="1" stroke-dasharray="1.5 3"/><path d="${plane(40, 33, 1.6)}" fill="${ink}"/><text x="40" y="58" text-anchor="middle" font-family="${LIL}" font-size="8" fill="${ink}" letter-spacing="1">${r.cities.length} × ✓</text>`
+      : `<circle cx="40" cy="40" r="34" fill="none" stroke="${ink}" stroke-width="2.6" stroke-dasharray="4 3.4"/><text x="40" y="50" text-anchor="middle" font-family="${LIL}" font-size="28" fill="${ink}" opacity=".7">?</text>`}</g></svg>`;
+    return `<div class="pvp-rc${ok ? ' ok' : ''}" style="--rc:${R.color};--rd:${R.dark};--r:${(((k * 5) % 7) - 3) * .8}deg"><div class="st">${svg}</div><b>${esc(tt(r.name))}</b><small>${r.cities.map(i => esc(DESTINOS[i]?.place || '')).join(' · ')}</small></div>`;
+  };
+  const rts = V.ROUTES ? [...V.ROUTES.filter(r => done.includes(r.id)), ...V.ROUTES.filter(r => !done.includes(r.id))] : [];
+  const routesHTML = rts.length ? `<div class="pvp-rt"><div class="pvp-rth"><div><b>${tt('route.stamps')}</b><small>${tt('route.stampsSub')}</small></div><u>${rts.filter(r => done.includes(r.id)).length}/${rts.length}</u></div><div class="pvp-car">${rts.map(routeCard).join('')}</div></div>` : '';
+  root.innerHTML = `<div class="head"><button class="round close" data-x>✕</button><small>${esc(tt('pass.subHero', { name: nm.toUpperCase() }))}</small><h2>${tt('pass.plural')}</h2></div>
+<div class="pvp-st"><div><b>${trips}</b><small>${tt('pass.trips')}</small></div><div><b>${visited}</b><small>${tt('pass.dests', { n: DESTINOS.length })}</small></div><div><b>${(T.passports || []).length}/${V.REGION_ORDER.length}</b><small>${tt('pass.plural')}</small></div></div>${routesHTML}`
     + order.map(r => {
       const R = V.REGIONS[r], ds = V.destsOf(r), ok = have(r), v = ds.filter(i => vis[i] > 0).length;
       return `<div class="pvp-r${eq() === r ? ' eq' : ''}" style="--rc:${R.color}"><div class="pvp-rh"><div class="bk">${passportSVG(V, r)}</div><div><b>${esc(R.pass)}</b><small>${esc(R.name.toUpperCase())} · ${tt('pass.destCount', { n: ds.length })}</small></div>${ok ? `<u>${v}/${ds.length}</u>` : `<u class="pr">◉ ${V.passPrice(r)}</u>`}</div>`
         + (ok ? `<div class="pvp-eqr"><button class="pvp-eq${eq() === r ? ' on' : ''}" data-eq="${r}">${eq() === r ? '✓ ' + tt('pass.equipped') : tt('pass.equip')}</button><span>${tt('pass.equipHint')}</span></div><div class="pvp-sg">${ds.map(i => `<div class="${vis[i] ? '' : 'nv'}">${stamp(DESTINOS[i], i, R)}<span>${esc(DESTINOS[i].place)}</span></div>`).join('')}</div>`
           : `<div class="pvp-go"><span>${tt('pass.missing', { n: ds.length, region: esc(R.name) })}</span><button class="btn sm" data-buy>${tt('nav.shop')}</button></div>`) + `</div>`;
     }).join('');
-  root.querySelector('[data-x]').onclick = () => { root.remove(); sfx('tap'); try { onClose?.(); } catch (e) {} };
+  root.querySelector('[data-x]').onclick = close;
   const paintEq = () => root.querySelectorAll('.pvp-r').forEach(el => { const b = el.querySelector('[data-eq]'); if (!b) return; const on = eq() === b.dataset.eq; el.classList.toggle('eq', on); b.classList.toggle('on', on); b.textContent = on ? '✓ ' + tt('pass.equipped') : tt('pass.equip'); });
   root.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => { sfx('tap'); V.setPassEq(eq() === b.dataset.eq ? null : b.dataset.eq); paintEq(); });
   root.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => { sfx('tap'); document.querySelectorAll('.pvbag').forEach(e => e.remove()); root.remove(); openShopTab(ctx, 'pasaportes'); });
