@@ -112,6 +112,18 @@ export function torreReloj({ x = 60, w = 14, top = 20, base = 118, c = '#D9B27A'
   return pieza(f, d, [x0 - 1.6, top - (techo === 'aguja' ? w * 1.9 : techo === 'cupula' ? w * .5 + 6 : techo === 'pira' ? w * .8 : 0), x0 + w + 1.6, base]);
 }
 
+// Minarete otomano: fuste fino de piedra, uno o dos balcones (şerefe) con baranda y el cono largo de plomo en punta ("lápiz")
+export function minarete({ x = 60, w = 5, top = 10, base = 118, c = '#E2D6C8', cTecho = '#8E9AAA', balcones = 2 } = {}) {
+  const T = tonos(c), TT = tonos(cTecho), x0 = x - w / 2, cono = w * 4.2, yc = top + cono;
+  let f = R(x0, yc, w, base - yc, c) + P(`M${f1(x0 - .3)} ${f1(yc + .5)} L${f1(x)} ${f1(top)} L${f1(x0 + w + .3)} ${f1(yc + .5)}Z`, cTecho) + R(x - .4, top - 3.5, .8, 4, TT.osc), d = '';
+  for (let i = 0; i < balcones; i++) { const yb = yc + 9 + i * (base - yc) * .2;
+    f += P(`M${f1(x0 - 1.8)} ${f1(yb)} L${f1(x0 + w + 1.8)} ${f1(yb)} L${f1(x0 + w + .2)} ${f1(yb + 3)} L${f1(x0 - .2)} ${f1(yb + 3)}Z`, T.luz);
+    d += R(x0 - 1.8, yb - 1.6, w + 3.6, .8, T.lin) + R(x0 - 1.8, yb - .9, w + 3.6, .9, T.luz) + R(x0 - .2, yb + 3, w + .4, .8, T.osc); }
+  d += P(`M${f1(x)} ${f1(top)} L${f1(x0 + w + .3)} ${f1(yc + .5)} L${f1(x)} ${f1(yc + .5)}Z`, TT.som, SOMBRA) + R(x0 + w * .55, yc, w * .45, base - yc, T.som, SOMBRA)
+    + R(x0, yc + 1, w, 1.1, T.lin) + R(x - .6, yc + 4, 1.2, 3, T.osc);
+  return pieza(f, d, [x0 - 1.8, top - 3.5, x0 + w + 1.8, base]);
+}
+
 // Cúpula sobre tambor. tipo: 'semi' (semiesfera) | 'bulbo' (cebolla) | 'chapitel' (en punta). y = base de la cúpula
 export function cupula({ x = 60, y = 50, w = 30, tipo = 'semi', c = '#7FA58C', tambor = 0, cTambor, linterna = true, costillas = 5 } = {}) {
   const T = tonos(c), h = tipo === 'semi' ? w * .55 : tipo === 'bulbo' ? w * .95 : w * .9, ctb = cTambor ?? '#E8D3A8', TB = tonos(ctb);

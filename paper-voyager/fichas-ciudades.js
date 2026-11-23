@@ -379,3 +379,23 @@ FICHAS['Sossusvlei'] = {
     adornos: ['liana', 'helecho', 'farolSelva'],
   };
 }
+
+// ── Estambul: Santa Sofía desde el Cuerno de Oro. Cúpula central chata de plomo sobre su tambor de ventanas, dos semicúpulas
+// a los costados, cupulitas en las esquinas, el cuerpo de piedra rosada con dos pisos de arcos y cuatro minaretes "lápiz"
+// (los dos de afuera más altos y atrás). Delante, el agua del Bósforo. Rosa empolvado, no ladrillo: integrado con la bruma ──
+{ const piedra = '#D6B4A4', piedra2 = '#CDA898', plomo = '#9AA4B2', blanco = '#E4D8CC';
+  FICHAS['Estambul'] = {
+    mundo: 'CÚPULAS', nombre: 'Estambul', pais: 'Turquía', color: '#C4AA9C', paisaje: 'costa', hora: 15.5, clima: 'leaves',
+    monumento: [
+      [K.minarete({ x: 9, w: 5, top: 12, c: blanco, cTecho: plomo, balcones: 2 }), K.minarete({ x: 111, w: 5, top: 12, c: blanco, cTecho: plomo, balcones: 2 })],
+      [K.cupula({ x: 36, y: 62, w: 30, tipo: 'semi', c: plomo, costillas: 4, linterna: false }), K.cupula({ x: 84, y: 62, w: 30, tipo: 'semi', c: plomo, costillas: 4, linterna: false }),
+        K.cupula({ x: 60, y: 46, w: 46, tipo: 'semi', c: plomo, tambor: 8, cTambor: piedra2, costillas: 8 })],
+      [K.fachada({ x0: 18, x1: 102, y0: 64, c: piedra, pisos: [{ tipo: 'arcos', n: 9 }, { tipo: 'arcos', n: 7 }], sombra: .2 })],
+      [K.cupula({ x: 26, y: 64, w: 13, tipo: 'semi', c: plomo, costillas: 3 }), K.cupula({ x: 94, y: 64, w: 13, tipo: 'semi', c: plomo, costillas: 3 }),
+        K.minarete({ x: 19, w: 4.4, top: 26, c: blanco, cTecho: plomo, balcones: 1 }), K.minarete({ x: 101, w: 4.4, top: 26, c: blanco, cTecho: plomo, balcones: 1 })],
+    ],
+    cAgua: '#A8BCC4',
+    composicion: { tapar: .26 },
+    adornos: ['cipres', 'columna', 'farolMediterraneo'],
+  };
+}

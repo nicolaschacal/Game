@@ -284,7 +284,7 @@ const TABLA = [
   fila(FICHAS['Kilimanjaro']), // 11 · ficha + kit: el Kibo desde la sabana
   ['CAÑÓN', 'Petra', 'Jordania', L.petra, '#FBE0D0', '#F2C0A4', '#E09C80', '#E0A888', '#E8B89A', '#C8906E', 'peak', 'sand', 13, 'desierto'],
   ['DESIERTO', 'El Cairo', 'Egipto', L.piramides, '#F6E2B4', '#EDD09A', '#DDB877', '#E3C98C', '#EBD49C', '#D9BC7C', 'dune', 'sand', 13, 'desierto'],
-  ['CÚPULAS', 'Estambul', 'Turquía', L.sofia, '#FBE6D8', '#F2CDBA', '#E0AE9C', '#D6C2A8', '#C2B49C', '#A0927A', 'city', 'leaves', 15.5, 'mediterraneo !cipres'],
+  fila(FICHAS['Estambul']), // 14 · ficha + kit (fichas-ciudades.js): Santa Sofía y el Bósforo
   ['RUINAS', 'Atenas', 'Grecia', L.partenon, '#E2F0FA', '#C0DCF0', '#A0C6E4', '#DDD2B8', '#E9E0CA', '#C8BC9C', 'dune', 'leaves', 12.5, 'mediterraneo !olivo'],
   ['CÚPULAS', 'Moscú', 'Rusia', L.basilio, '#EAF1F8', '#D2DEEC', '#B4C4DA', '#DCE4EC', '#E6EBF0', '#C3CDD8', 'city', 'snow', 13, 'nieve'],
   ['RÍO', 'Budapest', 'Hungría', L.parlamento, '#F4E8DC', '#E6D0BC', '#D0B49C', '#C9C0B0', '#A8A098', '#88807A', 'city', 'leaves', 15, 'europa'],
