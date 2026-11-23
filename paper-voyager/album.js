@@ -843,7 +843,7 @@ const CLOTH = {
 };
 const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16), f = c => Math.round(k < 0 ? c * (1 + k) : c + (255 - c) * k); return '#' + [n >> 16, (n >> 8) & 255, n & 255].map(c => f(c).toString(16).padStart(2, '0')).join(''); };
 const clothOf = (hero, skin = 'base') => (CLOTH[hero] || CLOTH.nilo)[skin] || (CLOTH[hero] || CLOTH.nilo).base || CLOTH.nilo.base;
-const clothCol = ctx => clothOf(ctx.V?.heroId?.() || VV.heroId?.() || 'nilo');
+const clothCol = ctx => { const h = ctx.V?.heroId?.() || VV.heroId?.() || 'nilo'; return clothOf(h, equippedSkin(ctx, h)); }; // la prenda que vuela es la de arriba de la pila (la puesta)
 function garmentSVG(col = CLOTH.nilo.base) {
   const [B, A, K] = col, light = parseInt(B.slice(1, 3), 16) + parseInt(B.slice(3, 5), 16) + parseInt(B.slice(5, 7), 16) > 600;
   const D = shade(B, light ? -.12 : -.16), L = shade(B, light ? -.04 : .14), ln = light ? '#8C8CA0' : '#1B1730';
@@ -853,12 +853,12 @@ function garmentSVG(col = CLOTH.nilo.base) {
     + `<path d="M44 14V100M76 14V100" stroke="${ln}" stroke-opacity=".28" stroke-width="1.4" stroke-dasharray="4 3"/><path d="M12 76H108" stroke="${ln}" stroke-opacity=".3" stroke-width="1.6"/><path d="M12 77.5H108" stroke="#fff" stroke-opacity=".18" stroke-width="1.2"/>`
     + `<circle cx="60" cy="58" r="3.6" fill="${K}" stroke="${shade(K, -.2)}" stroke-width="1"/><circle cx="60" cy="70" r="3.6" fill="${K}" stroke="${shade(K, -.2)}" stroke-width="1"/><path d="M20 90H34M86 90H100" stroke="${light ? A : '#fff'}" stroke-opacity=".4" stroke-width="1.4" stroke-dasharray="3 2.4"/></svg>`;
 }
-// Pila de ropa en la mochila: arriba la prenda base del viajero elegido y debajo, medio desordenadas, las que compró
+// Pila de ropa en la mochila: arriba el atuendo PUESTO del viajero elegido (como el pasaporte equipado) y debajo, medio desordenados, los otros que tiene
 const PILE = [[0, 0, 0], [-16, -16, -12], [15, -28, 10], [-6, -40, -5]];
 function clothPile(ctx) {
-  const V = ctx.V || VV, hero = V.heroId?.() || 'nilo', list = wardrobe(ctx, hero).filter(k => k.owned);
-  const under = list.slice(1, PILE.length).reverse().map((k, j, arr) => { const [x, y, r] = PILE[arr.length - j]; return `<div class="gu" style="transform:translate(${x}%,${y}%) rotate(${r}deg)">${garmentSVG(clothOf(hero, k.id))}</div>`; }).join('');
-  return under + `<div class="g0">${garmentSVG(clothOf(hero, 'base'))}</div>`;
+  const V = ctx.V || VV, hero = V.heroId?.() || 'nilo', cur = equippedSkin(ctx, hero), list = wardrobe(ctx, hero).filter(k => k.owned && k.id !== cur);
+  const under = list.slice(0, PILE.length - 1).reverse().map((k, j, arr) => { const [x, y, r] = PILE[arr.length - j]; return `<div class="gu" style="transform:translate(${x}%,${y}%) rotate(${r}deg)">${garmentSVG(clothOf(hero, k.id))}</div>`; }).join('');
+  return under + `<div class="g0">${garmentSVG(clothOf(hero, cur))}</div>`;
 }
 // Atuendos del personaje: base + los suyos (SKINS[i].skins); comprados = ctx.ownedV 'personaje:atuendo'; puesto = ctx.wornOf / ctx.setWear (pv.wear, del integrador)
 function wardrobe(ctx, hero) {
