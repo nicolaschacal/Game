@@ -26,13 +26,13 @@ export const FICHAS = {
   minji: { home: tt('ficha.minji.home'), why: tt('ficha.minji.why'), quote: tt('ficha.minji.quote'), likes: tt('ficha.minji.likes'), fears: tt('ficha.minji.fears'), dream: 'Nueva York', dreamHint: tt('ficha.minji.dreamHint'), color: '#7B5CC4', dark: '#523B8E' },
   tuk: { home: tt('ficha.tuk.home'), why: tt('ficha.tuk.why'), quote: tt('ficha.tuk.quote'), likes: tt('ficha.tuk.likes'), fears: tt('ficha.tuk.fears'), dream: 'Ushuaia', dreamHint: tt('ficha.tuk.dreamHint'), color: '#2F8C8A', dark: '#1F5E5C' },
   layla: { home: tt('ficha.layla.home'), why: tt('ficha.layla.why'), quote: tt('ficha.layla.quote'), likes: tt('ficha.layla.likes'), fears: tt('ficha.layla.fears'), dream: 'Sossusvlei', dreamHint: tt('ficha.layla.dreamHint'), color: '#B8673A', dark: '#7A4024' },
-  cal: { home: tt('ficha.cal.home'), why: tt('ficha.cal.why'), quote: tt('ficha.cal.quote'), color: '#3F6E9E', dark: '#24486E' },
+  cal: { home: tt('ficha.cal.home'), why: tt('ficha.cal.why'), quote: tt('ficha.cal.quote'), likes: tt('ficha.cal.likes'), fears: tt('ficha.cal.fears'), dream: 'Kilimanjaro', dreamHint: tt('ficha.cal.dreamHint'), color: '#3F6E9E', dark: '#24486E' },
   anaya: { home: tt('ficha.anaya.home'), why: tt('ficha.anaya.why'), quote: tt('ficha.anaya.quote'), likes: tt('ficha.anaya.likes'), fears: tt('ficha.anaya.fears'), dream: 'Agra', dreamHint: tt('ficha.anaya.dreamHint'), color: '#D9507E', dark: '#9E2F57' },
 };
 
 // ── La historia de Nilo: «El cuaderno de Opa» (7 postales + 1 secreta) ──
 // req: at = ciudad donde termina el viaje · trips = viajes con Nilo · stamps = {r, n} sellos distintos de una región · route = ruta especial completada con Nilo
-const N = 'Nilo', MO = 'Mora', SI = 'Sipho', MI = 'Minji', TU = 'Tuk', LA = 'Layla', AN = 'Anaya';
+const N = 'Nilo', MO = 'Mora', SI = 'Sipho', MI = 'Minji', TU = 'Tuk', LA = 'Layla', AN = 'Anaya', CA = 'Cal';
 // ── La historia de Mora: «Las postales de Tomi» (7 postales + 1 secreta). Mora nunca salió de Buenos Aires: sigue las postales sin remitente de su hermano y termina viajando por ella. Cada postal cierra con una pregunta que empuja a la siguiente ──
 export const STORIES = {
   nilo: {
@@ -444,6 +444,62 @@ export const STORIES = {
           [AN, tt('hist.anaya.8.l3')],
           [tt('hist.npc.dadi'), tt('hist.anaya.8.l4')]],
         back: tt('hist.anaya.8.back'), reward: { coins: 1000, chest: 'oro' } },
+    ],
+  },
+  // ── La historia de Cal: «Las Polaroid de Eli». Sube la lista de cumbres de su compañero y encuentra Polaroids firmadas «E.» una semana antes ──
+  cal: {
+    title: tt('hist.cal.title'),
+    chapters: [
+      { id: 1, at: 'San Francisco', title: tt('hist.cal.1.title'), hint: tt('hist.cal.1.hint'), req: {},
+        lines: [[CA, tt('hist.cal.1.l1')],
+          [CA, tt('hist.cal.1.l2')],
+          [CA, tt('hist.cal.1.l3'), 'look'],
+          [CA, tt('hist.cal.1.l4')],
+          [CA, tt('hist.cal.1.l5'), 'up']],
+        back: tt('hist.cal.1.back'), reward: { coins: 150 } },
+      { id: 2, at: 'Edimburgo', title: tt('hist.cal.2.title'), hint: tt('hist.cal.2.hint'), req: {},
+        lines: [[CA, tt('hist.cal.2.l1')],
+          [CA, tt('hist.cal.2.l2'), 'look'],
+          [CA, tt('hist.cal.2.l3')],
+          [CA, tt('hist.cal.2.l4'), 'up']],
+        back: tt('hist.cal.2.back'), reward: { coins: 200 } },
+      { id: 3, at: 'Ciudad del Cabo', title: tt('hist.cal.3.title'), hint: tt('hist.cal.3.hint'), req: { trips: 6 },
+        lines: [[CA, tt('hist.cal.3.l1')],
+          [tt('hist.npc.telef'), tt('hist.cal.3.l2')],
+          [CA, tt('hist.cal.3.l3'), 'look']],
+        back: tt('hist.cal.3.back'), reward: { coins: 250 } },
+      { id: 4, at: 'Machu Picchu', title: tt('hist.cal.4.title'), hint: tt('hist.cal.4.hint'), req: { stamps: { r: 'am', n: 4 } },
+        lines: [[CA, tt('hist.cal.4.l1')],
+          [tt('hist.npc.guiaC'), tt('hist.cal.4.l2')],
+          [tt('hist.npc.guiaC'), tt('hist.cal.4.l3')],
+          [CA, tt('hist.cal.4.l4'), 'look']],
+        back: tt('hist.cal.4.back'), reward: { coins: 300, chest: 'plata' } },
+      { id: 5, at: 'Río de Janeiro', title: tt('hist.cal.5.title'), hint: tt('hist.cal.5.hint'), req: { trips: 14 },
+        lines: [[CA, tt('hist.cal.5.l1'), 'up'],
+          [tt('hist.npc.eli'), tt('hist.cal.5.l2')],
+          [CA, tt('hist.cal.5.l3')],
+          [CA, tt('hist.cal.5.l4'), 'look']],
+        back: tt('hist.cal.5.back'), reward: { coins: 350 } },
+      { id: 6, at: 'Mitad del Mundo', title: tt('hist.cal.6.title'), hint: tt('hist.cal.6.hint'), req: { stamps: { r: 'af', n: 3 }, trips: 20 },
+        lines: [[tt('hist.npc.eli'), tt('hist.cal.6.l1')],
+          [tt('hist.npc.eli'), tt('hist.cal.6.l2')],
+          [CA, tt('hist.cal.6.l3')],
+          [tt('hist.npc.eli'), tt('hist.cal.6.l4')],
+          [tt('hist.npc.eli'), tt('hist.cal.6.l5')]],
+        back: tt('hist.cal.6.back'), reward: { coins: 400 } },
+      { id: 7, at: 'Kilimanjaro', title: tt('hist.cal.7.title'), hint: tt('hist.cal.7.hint'), req: { trips: 28 },
+        lines: [[CA, tt('hist.cal.7.l1')],
+          [CA, tt('hist.cal.7.l2'), 'up'],
+          [tt('hist.npc.eli'), tt('hist.cal.7.l3')],
+          [CA, tt('hist.cal.7.l4'), 'look'],
+          [CA, tt('hist.cal.7.l5'), 'wave']],
+        back: tt('hist.cal.7.back'), reward: { coins: 600, chest: 'oro' } },
+      { id: 8, at: 'San Francisco', title: tt('hist.cal.8.title'), hint: tt('hist.cal.8.hint'), secret: true, req: {},
+        lines: [[CA, tt('hist.cal.8.l1')],
+          [tt('hist.npc.eli'), tt('hist.cal.8.l2')],
+          [CA, tt('hist.cal.8.l3'), 'look'],
+          [CA, tt('hist.cal.8.l4'), 'wave']],
+        back: tt('hist.cal.8.back'), reward: { coins: 1000, chest: 'oro' } },
     ],
   },
 };
