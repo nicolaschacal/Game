@@ -671,7 +671,7 @@ body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 .pvh .htag{position:absolute;left:0;right:0;top:calc(var(--htop,0px) + 56px);height:60px;animation:pvhTag .6s .2s cubic-bezier(.2,1.5,.4,1) both}
 .pvh .htag .ribbon{top:0;font-size:18px;white-space:nowrap;line-height:1.1}
 @keyframes pvhTag{0%{transform:translateY(-30px) rotate(-6deg);opacity:0}}
-.pvh .hhero{position:absolute;left:-30px;bottom:calc(var(--sb,0px) + 70px);width:min(88vw,370px);aspect-ratio:1;overflow:hidden;transition:filter .25s,transform .3s;animation:pvhHero .55s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
+.pvh .hhero{position:absolute;left:-30px;bottom:calc(var(--sb,0px) + 70px);width:min(88vw,370px);aspect-ratio:1;overflow:visible;clip-path:inset(-25% -20% 0 -20%);transition:filter .25s,transform .3s;animation:pvhHero .55s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
 .pvh .hhero svg{display:block;width:100%;height:100%}
 .pvh .hhf{width:100%;height:100%;transform-origin:50% 90%}
 .pvh .hhero.talk .hhf{animation:pvhTalk .26s ease-in-out infinite alternate}
