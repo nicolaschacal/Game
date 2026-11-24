@@ -414,3 +414,46 @@ FICHAS['Sossusvlei'] = {
     adornos: ['palmera', 'rocaArena', 'farolDesierto'],
   };
 }
+
+// ── Río de Janeiro: el Pan de Azúcar desde la bahía de Botafogo. El domo de granito alto e inclinado, el Morro da Urca más bajo
+// y verde a su izquierda, el teleférico colgando entre las dos cumbres y detrás el pico del Corcovado, pálido y SIN estatua
+// (la estatua tiene derechos de imagen: el pico se lee solo). Delante el agua de la bahía con un velero ──
+{ const roca = '#B6ACAA', roca2 = '#ACA6A8', verde = '#7E9E78';
+  const corcovado = (() => { const c = '#B4C2C2', T = K.tonos(c);
+    const s = 'M0 118 C3 98 9 76 15 58 Q19 46 22 43 Q25 45 28 53 C34 68 46 80 60 88 L62 118Z';
+    const d = P('M22.5 43.5 Q25 45 28 53 C34 68 46 80 60 88 L62 118 L40 118 Q32 84 22.5 43.5Z', T.som, ' opacity=".4"')
+      + P('M0 118 C2 106 4 96 7 86 Q20 90 32 84 C42 88 52 92 61 96 L62 118Z', K.mix(verde, c, .45), ' opacity=".7"')
+      + Ln('M8 84 Q12 64 19 48', T.luz, 1.1, ' opacity=".8"');
+    return { f: P(s, c), d, box: [0, 42, 62, 118] }; })();
+  FICHAS['Río de Janeiro'] = {
+    mundo: 'COSTA', nombre: 'Río de Janeiro', pais: 'Brasil', color: '#9CC2BE', paisaje: 'costa', hora: 15, clima: 'bubbles', horizonte: 'peak',
+    monumento: [
+      [corcovado],
+      [K.morro({ x: 38, w: 21, top: 66, lean: 2, c: roca2, veg: verde, verde: .6, seed: 2 })],
+      [K.morro({ x: 84, w: 28, top: 26, lean: 4, c: roca, veg: verde, verde: .24, seed: 3 })],
+      [K.teleferico({ a: [40, 66.2], b: [86, 26.4], comba: 5, t: .42 })],
+    ],
+    cAgua: '#A4C8C8',
+    composicion: { tapar: .2, laterales: 1.1, enAgua: ({ y0 }) => {
+      const wl = y0 + 8, x = 60, hull = `M${x - 5} ${f1(wl)} L${x + 6} ${f1(wl)} L${x + 4} ${f1(wl + 2)} L${x - 3.6} ${f1(wl + 2)}Z`,
+        vela = `M${x} ${f1(wl - .5)} L${x} ${f1(wl - 12)} L${x + 5.4} ${f1(wl - .8)}Z M${x - .6} ${f1(wl - 1)} L${x - .6} ${f1(wl - 9)} L${x - 4.4} ${f1(wl - 1)}Z`;
+      const b = P(hull, '#8E7A6E') + P(vela, '#F0EADF');
+      return { bajo: `<g opacity=".22" transform="translate(0 ${f1(2 * wl + 4)}) scale(1 -1)">${b}</g>`, f: b, d: Ln(`M${x} ${f1(wl - 12)} V${f1(wl)}`, '#6E6264', .5) + Ln(`M40 ${f1(wl + 3)} h10 M74 ${f1(wl + 4)} h12`, '#EAF4F2', 1, ' opacity=".9"') }; } },
+    adornos: ['palmeraTropical', 'sombrilla', 'farolTiki'],
+  };
+}
+
+// ── Salto Ángel (Kerepakupai Merú): el Auyán-tepui, una meseta de arenisca rosada de paredes a plomo, con el hilo de agua más alto
+// del mundo cayendo del borde y deshaciéndose en bruma antes de tocar la selva. Detrás, otro tepui más pálido; delante, la selva ──
+FICHAS['Salto Ángel'] = {
+  mundo: 'SELVA', nombre: 'Salto Ángel', pais: 'Venezuela', color: '#8EB486', paisaje: 'selva', hora: 10, clima: 'leaves', horizonte: 'peak',
+  monumento: [
+    [K.tepui({ x0: 0, x1: 62, xa: 10, xb: 44, top: 58, pie: 84, c: '#BEB6B4', veg: '#9AB492', seed: 4, bloques: 4 })],
+    [K.tepui({ x0: 8, x1: 120, xa: 30, xb: 102, top: 32, pie: 82, c: '#AE9890', veg: '#7E9E70', muesca: 58, seed: 6, bloques: 7 })],
+    [K.chorro({ x: 58, top: 37, fin: 88, w: 1.6, deriva: 2.4, seed: 2 })],
+    [K.nube({ x0: 36, x1: 86, y: 94, h: 9, c: '#EEF0EC', seed: 5, jorobas: 6 })],
+    [K.macizo({ x0: 0, x1: 120, alto: 24, c: '#7EA270', ondas: 9, seed: 3 })],
+  ],
+  composicion: { tapar: .22, tamano: .8, laterales: 1.25 },
+  adornos: ['liana', 'monstera', 'farolSelva'],
+};

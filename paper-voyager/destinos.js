@@ -306,10 +306,10 @@ const TABLA = [
   ['MAYA', 'Chichén Itzá', 'México', L.chichen, '#F4ECC8', '#DCE0A0', '#B4C878', '#A9C070', '#C9C08A', '#A59D6A', 'dune', 'leaves', 13, 'selva'],
   ['CIUDAD', 'La Habana', 'Cuba', L.capitolio, '#DDF3F5', '#B4E0E4', '#8CCBD4', '#E6D6B0', '#B8AC9C', '#958A7A', 'city', 'bubbles', 15, 'tropical auto'],
   ['MURALLA', 'Cartagena', 'Colombia', L.reloj, '#FBEBC8', '#F4D69A', '#E8BE74', '#E6CFA0', '#D9C7A4', '#B8A47E', 'dune', 'bubbles', 14, 'tropical'],
-  ['SELVA', 'Salto Ángel', 'Venezuela', L.salto, '#DDF0E2', '#B4DCC0', '#86C098', '#6FA85A', '#8DBF6A', '#5F9447', 'peak', 'leaves', 11, 'selva'],
+  fila(FICHAS['Salto Ángel']), // ficha + kit (fichas-ciudades.js): el Auyán-tepui y su hilo de agua
   ['ECUADOR', 'Mitad del Mundo', 'Ecuador', L.mitad, '#E0F0F4', '#BCDDE4', '#94C4D0', '#9FBF7A', '#C9C2AE', '#A59D86', 'peak', 'leaves', 12, 'montana'],
   ['ANDES', 'Machu Picchu', 'Perú', L.machu, '#DCEFE0', '#B8DCC0', '#8FC49C', '#7FAE6A', '#93BF78', '#5F9447', 'peak', 'leaves', 11, 'montana llama'],
-  ['COSTA', 'Río de Janeiro', 'Brasil', LANDMARKS.cristo, '#DDF3F5', '#A9DCE2', '#8FCED6', '#F2E3B5', '#F4E6BC', '#E2CE97', 'dune', 'bubbles', 12, 'tropical sombrilla'],
+  fila(FICHAS['Río de Janeiro']), // ficha + kit: el Pan de Azúcar y el teleférico (sin la estatua del Corcovado)
   ['CIUDAD', 'Montevideo', 'Uruguay', L.salvo, '#E4EEF8', '#C4D6EA', '#A4BEDC', '#B8BCC4', PAV, VEREDA, 'city', 'leaves', 15, 'europa quiosco'],
   ['CIUDAD', 'Buenos Aires', 'Argentina', L.obelisco, '#E6E0F4', '#CDC2E8', '#B4A6D8', '#B8B4BE', PAV, VEREDA, 'city', 'petals', 15, 'europa !jacaranda quiosco'],
   ['NIEVE', 'Ushuaia', 'Argentina', L.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'nieve'],
@@ -346,7 +346,7 @@ const TABLA = [
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base
 const LM_ESCALA = { 'Dubái': 1.4, 'Sídney': 1.35 };
 // Desplazamiento horizontal opcional del monumento (unidades de mundo; negativo = hacia la izquierda/centro): evita que se corte contra el borde derecho de la pantalla
-const LM_X = { 'Salto Ángel': -1.0 };
+const LM_X = {};
 // Capas DELANTERAS del paisaje por destino (opcional): se dibujan entre el monumento y la cámara para "meterlo" en la escena
 // (como Kioto o Buenos Aires, donde el suelo y las colinas tapan la base). Usar cuando el recorte del monumento NO trae suelo propio.
 // Coordenadas relativas al monumento: x = fracción de su ancho (0 = borde izquierdo, 1 = derecho; puede salirse), dz = cuánto más

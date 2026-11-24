@@ -117,6 +117,10 @@ Todas bajan hasta la base (y = 110–118, queda bajo el piso) **sin suelo propio
 | `faro` | faro de torre ahusada con anillos de color (`bandas`), balcón y linterna con cúpula |
 | `veranda` | edificio de galerías: pisos con corredor en sombra, columnas finas y barandas (Casa de las Maravillas) |
 | `dhow` | velero del Índico de vela latina (va en el agua con `enAgua`, como el junco) |
+| `morro` | domo de granito de laderas casi a plomo y cumbre redondeada (Pan de Azúcar, Morro da Urca), con estrías y manto de selva al pie (`verde`) |
+| `teleferico` | cable doble en comba con una cabina, entre dos puntos (va sola en una capa de adelante; sin borde grueso) |
+| `tepui` | meseta de arenisca partida en bloques por grietas, borde almenado redondeado, cornisa con selva, cumbre verde y laderas de selva; `muesca` = de dónde cae el agua |
+| `chorro` | hilo de agua en caída libre que se abre en hebras y se deshace en bruma (sólo detalles, sin borde grueso) |
 | `rama(x1, y1, x2, y2, w1, w2)` | ayuda: cuadrilátero ahusado para troncos y ramas |
 
 Ayudas de color: `tono(c)` (filtro de papel: saturación ≤ .55, luz .34–.84), `tonos(c)` (luz / sombra / oscuro de una pieza), `mix`, `luz`, `shade`.
@@ -173,10 +177,12 @@ Lo que el usuario rechazó. Cada rechazo nuevo se anota acá.
 - **Fauna y árboles chicos, metidos en la escena**: las jirafas de Nairobi van en la capa de adelante con las patas tapadas por las lomas y una comiendo de la acacia (`cuello: 1`); las acacias del Kilimanjaro, al pie de la montaña. Nunca sueltas flotando.
 - **Sabana no es montaña**: Kilimanjaro, Nairobi y Madagascar van con lomas suaves (`paisaje: 'desierto'` con semilla de pasto dorado o tierra roja), aunque el monumento sea un volcán.
 - **Ramas finas con borde crema grueso se funden en una mancha**: en árboles de ramas finas (baobab, árbol seco) el borde grueso va sólo en tronco y ramas principales; lo fino, en los detalles o con un borde de 1.6.
+- **Nada de monumentos con derechos de imagen**: en Río no va la estatua del Cristo Redentor (tiene derechos de imagen); el Corcovado va como pico pálido sin estatua y el protagonista es el Pan de Azúcar con su teleférico.
+- **Un tepui no es una caja**: la meseta lisa de `mesa` se leía como un bloque; `tepui` parte la pared en columnas, almena el borde y le pone selva en la cumbre y en la cornisa. Ojo con los adornos altos del costado: tapaban el pie y el QA de base fallaba.
 - No le gustan los arbolitos de bolita ni una luna extra en el cielo.
 - Quiere ver los destinos como se ven dentro del juego, no en maqueta aparte (por eso la galería usa el motor real).
 
 ## Pendiente
 
-Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund y Cataratas Victoria. El resto sigue con su fila escrita a mano en `TABLA`
+Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund, Cataratas Victoria, Estambul, Marrakech, Río de Janeiro y Salto Ángel. El resto sigue con su fila escrita a mano en `TABLA`
 (con `LM_ESCALA`, `LM_X` y `FORE`) y se puede migrar de a una con el mismo procedimiento.

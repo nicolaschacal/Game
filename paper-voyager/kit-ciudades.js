@@ -667,8 +667,83 @@ export function mesa({ x0 = 0, x1 = 120, xa = 22, xb = 92, base = 118, top = 40,
   return pieza(P(perfil, c), d, [x0, top - 1, x1, base]);
 }
 
+// Morro de granito (Pan de Azúcar, Morro da Urca): domo de laderas casi a plomo y cumbre redondeada, inclinado (`lean`);
+// estrías verticales de la roca lavada por la lluvia y un manto de selva (`verde` = fracción de la altura) que sube por el pie
+const morroD = (x, b, top, w, ln) => { const h = b - top; return `M${f1(x - w)} ${b} C${f1(x - w * 1.02)} ${f1(b - h * .55)} ${f1(x - w * .66 + ln)} ${f1(top)} ${f1(x - w * .04 + ln)} ${f1(top)} C${f1(x + w * .52 + ln)} ${f1(top)} ${f1(x + w * 1.02)} ${f1(b - h * .5)} ${f1(x + w)} ${b}Z`; };
+export function morro({ x = 60, w = 20, top = 20, base = 118, lean = 0, c = '#B2A8A6', veg = '#7E9E78', verde = .3, seed = 1 } = {}) {
+  semilla(seed * 37 + 13); const T = tonos(c), V = tonos(veg), h = base - top, id = `mr${seed}`;
+  let g = P(`M${f1(x + w * .12 + lean)} ${f1(top + h * .01)} Q${f1(x + w * .36 + lean)} ${f1(top + h * .06)} ${f1(x + w * .5 + lean)} ${f1(top + h * .12)} C${f1(x + w * .8 + lean)} ${f1(top + h * .28)} ${f1(x + w * 1.02)} ${f1(base - h * .42)} ${f1(x + w)} ${base} L${f1(x + w * .3)} ${base} C${f1(x + w * .42)} ${f1(base - h * .5)} ${f1(x + w * .3 + lean)} ${f1(top + h * .3)} ${f1(x + w * .12 + lean)} ${f1(top + h * .01)}Z`, T.som, SOMBRA);
+  // estrías: líneas finas que bajan siguiendo la curva del domo
+  for (let i = 0; i < 9; i++) { const t = (i + .5 + (rnd() - .5) * .4) / 9, xx = x - w * .7 + t * w * 1.4 + lean * (1 - t * .3), y1 = top + h * (.08 + Math.pow(Math.abs(t - .5) * 2, 2) * .2 + rnd() * .06);
+    g += Ln(`M${f1(xx)} ${f1(y1)} Q${f1(xx + (t - .5) * w * .3)} ${f1(y1 + h * .3)} ${f1(xx + (t - .5) * w * .5)} ${f1(y1 + h * (.4 + rnd() * .25))}`, T.lin, .7 + rnd() * .5, ' opacity=".42"'); }
+  for (let i = 0; i < 5; i++) { const xx = x - w * .5 + rnd() * w + lean * .6, yy = top + h * (.15 + rnd() * .35); g += R(xx, yy, 1.6 + rnd() * 2.4, 1.1, T.luz, ' opacity=".45"'); }
+  // manto de selva al pie: borde de copas irregular que sube más por la ladera izquierda (la que da al mar)
+  const yv = base - h * verde; let m = `M${f1(x - w - 2)} ${base} L${f1(x - w - 2)} ${f1(yv - h * .1)} `; const n = 9;
+  for (let i = 1; i <= n; i++) { const xx = x - w - 2 + (w * 2 + 4) * i / n, yy = yv - h * .1 * (1 - i / n) + rnd() * h * .06; m += `Q${f1(xx - w / n)} ${f1(yy - 3.2)} ${f1(xx)} ${f1(yy)} `; }
+  m += `L${f1(x + w + 2)} ${base}Z`;
+  g += P(m, veg) + P(`M${f1(x + w * .35)} ${base} L${f1(x + w * .35)} ${f1(yv)} L${f1(x + w + 2)} ${f1(yv + 2)} L${f1(x + w + 2)} ${base}Z`, V.som, ' opacity=".5"');
+  for (let i = 0; i < 7; i++) { const xx = x - w * .9 + rnd() * w * 1.7, yy = yv + 2 + rnd() * h * verde * .6; g += P(`M${f1(xx)} ${f1(yy + 2.6)} Q${f1(xx + 1.8)} ${f1(yy - 1.6)} ${f1(xx + 3.8)} ${f1(yy + 2.6)}Z`, i % 2 ? V.luz : V.som, ' opacity=".6"'); }
+  for (let i = 0; i < 3; i++) { const xx = x - w * .72 + lean * .3 + rnd() * w * .3, yy = top + h * (.3 + rnd() * .25); g += P(`M${f1(xx)} ${f1(yy + 3)} q2 -4 4.4 0 q-2 1.4 -4.4 0Z`, veg, ' opacity=".8"'); } // matas colgadas de la pared
+  const d = `<clipPath id="${id}"><path d="${morroD(x, base, top, w, lean)}"/></clipPath><g clip-path="url(#${id})">${g}</g>`
+    + Ln(`M${f1(x - w * .62 + lean * .8)} ${f1(top + h * .2)} Q${f1(x - w * .82)} ${f1(top + h * .45)} ${f1(x - w * .86)} ${f1(top + h * .62)}`, T.luz, 1.2, ' opacity=".8"');
+  return pieza(P(morroD(x, base, top, w, lean), c), d, [x - w * 1.03, top - h * .04, x + w * 1.03, base]);
+}
+
+// Teleférico entre dos cumbres: cable doble en comba y una cabina chica a mitad de camino (va en los detalles de una capa de adelante)
+export function teleferico({ a = [20, 80], b = [80, 30], comba = 4, t = .45, c = '#5E5864', cabina = '#D9A26A' } = {}) {
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + comba, q = (u0, k) => (1 - k) * (1 - k) * u0[0] + 2 * (1 - k) * k * mx + k * k * u0[1];
+  const px = q([a[0], b[0]], t), py = q([a[1], b[1]], t);
+  const d = Ln(`M${f1(a[0])} ${f1(a[1])} Q${f1(mx)} ${f1(my)} ${f1(b[0])} ${f1(b[1])}`, c, .6, ' opacity=".8"') + Ln(`M${f1(a[0])} ${f1(a[1] + 1)} Q${f1(mx)} ${f1(my + 1)} ${f1(b[0])} ${f1(b[1] + 1)}`, c, .45, ' opacity=".6"')
+    + Ln(`M${f1(px)} ${f1(py)} V${f1(py + 2)}`, c, .6) + `<rect x="${f1(px - 2.2)}" y="${f1(py + 2)}" width="4.4" height="3.2" rx="1" fill="${cabina}" stroke="${CREAM}" stroke-width=".6"/>`
+    + R(px - 1.4, py + 2.7, 2.8, 1, '#EEF2F2', ' opacity=".8"');
+  return pieza('', d, [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]) + comba + 6]);
+}
+
+// Chorro de agua en caída libre (Salto Ángel): hilo fino que nace en el borde de la pared, se ensancha, se abre en hebras y
+// se deshace en bruma antes de llegar abajo. Sólo detalles (sin borde grueso: con el borde crema se volvería una cinta)
+export function chorro({ x = 60, top = 30, fin = 96, w = 3, deriva = 3, c = '#EEF2F0', seed = 1 } = {}) {
+  semilla(seed * 43 + 5); const L = fin - top, A = tonos(c);
+  let d = P(`M${f1(x - w * .35)} ${f1(top)} Q${f1(x - w * .5 + deriva * .3)} ${f1(top + L * .4)} ${f1(x - w + deriva)} ${f1(fin)} L${f1(x + w + deriva)} ${f1(fin)} Q${f1(x + w * .5 + deriva * .3)} ${f1(top + L * .4)} ${f1(x + w * .35)} ${f1(top)}Z`, c, ' opacity=".92"');
+  for (let i = 0; i < 5; i++) { const k = (i + .5) / 5 - .5; d += Ln(`M${f1(x + k * w * .5)} ${f1(top + 2)} Q${f1(x + k * w + deriva * .3)} ${f1(top + L * .5)} ${f1(x + k * w * 2.2 + deriva)} ${f1(fin + 2)}`, i % 2 ? A.som : '#FFFFFF', .5, ' opacity=".6"'); }
+  for (let i = 0; i < 6; i++) { const yy = top + L * (.55 + rnd() * .4), xx = x + deriva * ((yy - top) / L) + (rnd() - .5) * w * 2.6; d += `<circle cx="${f1(xx)}" cy="${f1(yy)}" r="${f1(.5 + rnd() * .8)}" fill="${c}" opacity=".7"/>`; }
+  d += P(`M${f1(x - w * .6)} ${f1(top + .6)} Q${f1(x)} ${f1(top - 1)} ${f1(x + w * .6)} ${f1(top + .6)} L${f1(x + w * .5)} ${f1(top + 2.2)} Q${f1(x)} ${f1(top + 1.4)} ${f1(x - w * .5)} ${f1(top + 2.2)}Z`, '#FFFFFF', ' opacity=".9"'); // labio de espuma
+  return pieza('', d, [x - w * 1.2, top - 1, x + w * 1.2 + deriva, fin + 3]);
+}
+
+// Tepui (Auyán-tepui, Roraima): meseta de arenisca con la pared partida en bloques por grietas verticales, el borde de arriba
+// almenado con cantos redondeados (no una regla), una cornisa a media altura con selva colgada, verde en la cumbre y laderas de
+// selva desde el pie de la pared (`pie`). `muesca` = x de la hendidura del borde de donde cae el agua
+export function tepui({ x0 = 0, x1 = 120, xa = 26, xb = 100, top = 30, pie = 80, base = 118, c = '#AE9890', veg = '#7E9E70', muesca, seed = 1, bloques = 7 } = {}) {
+  semilla(seed * 53 + 17); const T = tonos(c), V = tonos(veg), H = pie - top, id = `tp${seed}`, n = bloques, bw = (xb - xa) / n;
+  const ys = []; for (let i = 0; i <= n; i++) { const xx = xa + bw * i; ys.push(top + rnd() * 3.4 + (muesca != null && Math.abs(xx - muesca) < bw * .7 ? 3.6 : 0)); }
+  let s = `M${f1(x0)} ${base} C${f1(x0 + (xa - x0) * .5)} ${f1(base - (base - pie) * .35)} ${f1(xa - (xa - x0) * .3)} ${f1(pie + 3)} ${f1(xa - 1)} ${f1(pie)} `
+    + `L${f1(xa + 1)} ${f1(top + H * .56)} L${f1(xa - 2)} ${f1(top + H * .5)} L${f1(xa + .4)} ${f1(ys[0] + 3)} Q${f1(xa + .4)} ${f1(ys[0])} ${f1(xa + 3)} ${f1(ys[0])} `;
+  for (let i = 1; i <= n; i++) { const xx = xa + bw * i, ya = ys[i - 1], yb = ys[i];
+    if (i < n) s += `L${f1(xx - 1.6)} ${f1(ya)} Q${f1(xx)} ${f1(ya)} ${f1(xx)} ${f1(Math.max(ya, yb) + 1.4)} Q${f1(xx)} ${f1(yb)} ${f1(xx + 1.6)} ${f1(yb)} `;
+    else s += `L${f1(xb - 3)} ${f1(ya)} Q${f1(xb - .4)} ${f1(ya)} ${f1(xb - .4)} ${f1(ya + 3)} `; }
+  s += `L${f1(xb + 2)} ${f1(top + H * .5)} L${f1(xb - .6)} ${f1(top + H * .56)} L${f1(xb + 1)} ${f1(pie)} C${f1(xb + (x1 - xb) * .3)} ${f1(pie + 3)} ${f1(x1 - (x1 - xb) * .5)} ${f1(base - (base - pie) * .35)} ${f1(x1)} ${base}Z`;
+  let g = '';
+  // grietas verticales que parten la pared en columnas, unas más hondas (banda de sombra) que otras
+  for (let i = 1; i < n; i++) { const xx = xa + bw * i + (rnd() - .5) * 1.2; g += Ln(`M${f1(xx)} ${f1(ys[i] + 2)} L${f1(xx + (rnd() - .5) * 1.6)} ${f1(pie + 2)}`, T.osc, 1, ' opacity=".55"');
+    if (rnd() < .45) g += P(`M${f1(xx)} ${f1(ys[i] + 3)} L${f1(xx + 2.6)} ${f1(ys[i] + 5)} L${f1(xx + 2.2)} ${f1(pie)} L${f1(xx)} ${f1(pie)}Z`, T.som, ' opacity=".38"'); }
+  for (let i = 0; i < n * 2; i++) { const xx = xa + 2 + rnd() * (xb - xa - 4), y1 = top + 6 + rnd() * H * .5; g += Ln(`M${f1(xx)} ${f1(y1)} l${f1((rnd() - .5))} ${f1(4 + rnd() * 9)}`, T.lin, .6, ' opacity=".4"'); }
+  for (let i = 0; i < 3; i++) { const yy = top + H * (.22 + i * .26); g += Ln(`M${f1(xa + 2)} ${f1(yy)} Q${f1((xa + xb) / 2)} ${f1(yy + 1.4)} ${f1(xb - 2)} ${f1(yy - .4)}`, T.luz, .7, ' opacity=".35"'); }
+  // sombra del costado derecho de la pared y de la ladera
+  g += P(`M${f1(xb - (xb - xa) * .2)} ${f1(top - 2)} L${f1(xb + 4)} ${f1(top - 2)} L${f1(x1 + 2)} ${base} L${f1(xb - (xb - xa) * .1)} ${base} L${f1(xb - (xb - xa) * .16)} ${f1(pie)}Z`, T.som, SOMBRA);
+  // cumbre verde, cornisa con selva colgada y laderas de selva
+  let cap = `M${f1(xa - 3)} ${f1(top - 6)} L${f1(xb + 3)} ${f1(top - 6)} L${f1(xb + 3)} ${f1(top + 3)} `;
+  for (let i = n; i >= 0; i--) cap += `Q${f1(xa + bw * i + bw * .5)} ${f1(ys[Math.min(n, i)] + 4.6 + rnd() * 1.6)} ${f1(xa + bw * i)} ${f1(ys[i] + 2.4)} `;
+  g += P(cap + 'Z', shade(veg, .08));
+  const yc = top + H * .5; for (let i = 0; i < 5; i++) { const xx = xa + 4 + rnd() * (xb - xa - 14), w = 5 + rnd() * 8; g += P(`M${f1(xx)} ${f1(yc + 1)} Q${f1(xx + w / 2)} ${f1(yc - 2.6)} ${f1(xx + w)} ${f1(yc + 1)} L${f1(xx + w * .7)} ${f1(yc + 3 + rnd() * 3)} L${f1(xx + w * .3)} ${f1(yc + 2)}Z`, veg, ' opacity=".85"'); }
+  let lad = `M${f1(x0 - 2)} ${base} L${f1(x0 - 2)} ${f1(pie + 2)} `; for (let i = 1; i <= 12; i++) { const xx = x0 - 2 + (x1 - x0 + 4) * i / 12; lad += `Q${f1(xx - (x1 - x0) / 24)} ${f1(pie - 2.6 - rnd() * 2)} ${f1(xx)} ${f1(pie + 1 + rnd() * 2)} `; }
+  g += P(lad + `L${f1(x1 + 2)} ${base}Z`, veg) + P(`M${f1(xb - 6)} ${f1(pie)} L${f1(x1 + 2)} ${f1(pie)} L${f1(x1 + 2)} ${base} L${f1(xb - 2)} ${base}Z`, V.som, ' opacity=".45"');
+  for (let i = 0; i < 8; i++) { const xx = x0 + rnd() * (x1 - x0), yy = pie + 4 + rnd() * (base - pie - 8); g += P(`M${f1(xx)} ${f1(yy + 3)} Q${f1(xx + 2)} ${f1(yy - 2)} ${f1(xx + 4.4)} ${f1(yy + 3)}Z`, i % 2 ? V.luz : V.som, ' opacity=".6"'); }
+  const d = `<clipPath id="${id}"><path d="${s}"/></clipPath><g clip-path="url(#${id})">${g}</g>` + Ln(`M${f1(xa - .6)} ${f1(top + 5)} L${f1(xa - .2)} ${f1(top + H * .48)}`, T.luz, 1.1, ' opacity=".75"');
+  return pieza(P(s, c), d, [x0, top - 1, x1, base]);
+}
+
 export const PIEZAS = { puenteColgante, puenteArco, torreReloj, cupula, techoTeja, fachada, casas, farolitos, karst, chimenea, macizo, junco, globo, palmera, agua,
-  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga, baobab, acacia, jirafa, volcan, nube, duna, arbolSeco, cascada, faro, veranda, dhow, mesa };
+  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga, baobab, acacia, jirafa, volcan, nube, duna, arbolSeco, cascada, faro, veranda, dhow, mesa, morro, teleferico, chorro, tepui };
 
 // ═════════════════════════ PALETA ═════════════════════════
 // Una semilla de color (el tono de las colinas del destino) → paleta completa. Reglas sacadas de las 65 filas de destinos.js:
