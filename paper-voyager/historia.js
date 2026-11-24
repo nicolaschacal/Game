@@ -273,7 +273,7 @@ export const STORIES = {
           [tt('hist.npc.hana'), tt('hist.minji.8.l2'), null, 'serio'],
           [MI, tt('hist.minji.8.l3'), 'look', 'serio'],
           [MI, tt('hist.minji.8.l4'), 'wave']],
-        back: tt('hist.minji.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.minji.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'duo' } },
     ],
   },
   // ── La historia de Tuk: «La carta de 1979». Una carta sin entregar de Sólveig a su hermana Ingrid, llevada por el mundo ──
