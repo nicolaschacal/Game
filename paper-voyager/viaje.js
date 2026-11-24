@@ -36,6 +36,7 @@ const GEO = [
   [35.17, -5.27, 'af'], [37.77, -122.42, 'am'], [19.43, -99.13, 'am'], [52.37, 4.9, 'eu'],
   [35.10, 129.04, 'as'], [35.79, 129.33, 'as'], // 65 Busan (Gamcheon), 66 Gyeongju (Bulguksa)
   [-24.73, 15.29, 'af', 1], [-22.68, 14.53, 'af'], [-17.92, 25.86, 'af'], // 67 Sossusvlei (Deadvlei), 68 Swakopmund, 69 Cataratas Victoria
+  [31.95, 35.93, 'as'], // 70 Amán (Ciudadela)
 ];
 if (GEO.length !== NW) console.warn('viaje.js: GEO no coincide con DESTINOS', GEO.length, NW);
 export const regionOf = i => GEO[i]?.[2] || 'eu';

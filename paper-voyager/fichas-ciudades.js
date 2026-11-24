@@ -584,3 +584,32 @@ FICHAS['Machu Picchu'] = {
     adornos: ['pinoParasol', 'velero', 'farolMediterraneo'],
   };
 }
+
+// ── Amán: la Ciudadela sobre su colina, con las dos columnas que quedan del Templo de Hércules y la cúpula del palacio omeya;
+// en la ladera, las casas cúbicas de piedra blanca con sus tanques de agua en las azoteas ──
+{ const caliza = '#E4D4B2', Tc = K.tonos(caliza), cerro = '#CFB07E';
+  const columnas = (() => { let f = '', d = '';
+    [[64, 6], [78, 10]].forEach(([x, top]) => { const w = 7;
+      f += R(x - w / 2, top + 4, w, 62 - top - 4, caliza) + R(x - w / 2 - 1.6, top, w + 3.2, 4.4, caliza) + R(x - w / 2 - 1.2, 60, w + 2.4, 3, caliza);
+      for (let k = 1; k < 3; k++) d += Ln(`M${f1(x - w / 2 + k * w / 3)} ${top + 5} V60`, Tc.som, .6, ' opacity=".6"');
+      d += R(x + w * .15, top + 4, w * .35, 56 - top, Tc.som, ' opacity=".35"') + R(x - w / 2 - 1.6, top + 3.2, w + 3.2, 1, Tc.osc, ' opacity=".4"');
+      for (let y = top + 14; y < 58; y += 11) d += Ln(`M${f1(x - w / 2)} ${y} h${w}`, Tc.osc, .5, ' opacity=".4"'); });
+    f += P('M58 10 L86 12 L86 16 L60 15Z', caliza); d += Ln('M58 13.2 L86 15', Tc.osc, .5, ' opacity=".5"');
+    return { f, d, box: [56, 6, 88, 63] }; })();
+  const casas = (() => { let f = '', i = 0;
+    [[100, 6, 112], [92, 4, 116], [84, 2, 118]].forEach(([y, x0, x1]) => { for (let x = x0; x < x1 - 4; i++) { const w = 9 + (i * 7) % 5, top = y - ((i * 5) % 3) * 2.2, c = K.mix(caliza, ['#F2EBDD', '#E2D4BA', '#EDE3CF'][i % 3], .5);
+      f += R(x, top, w - .6, 118 - top, c) + R(x + w * .2, top + 3, 2.2, 2.6, '#7A6E62') + R(x + w * .55, top + 3, 2.2, 2.6, '#7A6E62') + R(x + w - 3, top, 2.4, 118 - top, K.tonos(c).som, ' opacity=".4"')
+        + (i % 3 === 0 ? `<ellipse cx="${f1(x + w * .45)}" cy="${f1(top - 1.6)}" rx="2.2" ry="1.4" fill="#5E6E80"/>` : ''); x += w; } });
+    return f; })();
+  const colina = 'M-2 118 Q8 96 26 82 Q44 70 60 64 L92 62 Q106 68 114 84 Q120 100 122 118Z';
+  FICHAS['Amán'] = {
+    mundo: 'CIUDADELA', nombre: 'Amán', pais: 'Jordania', color: '#E2C8A0', paisaje: 'desierto', hora: 16.5, clima: 'leaves', horizonte: 'dune',
+    monumento: [
+      [K.cupula({ x: 38, y: 66, w: 20, tipo: 'semi', c: '#C9B48E', tambor: 6, cTambor: caliza, linterna: false, costillas: 3 })],
+      [columnas],
+      [{ f: P(colina, cerro), d: `<clipPath id="amcol"><path d="${colina}"/></clipPath><g clip-path="url(#amcol)">${casas}</g>`, box: [-2, 62, 122, 118] }],
+    ],
+    composicion: { tapar: .2, tamano: .95 },
+    adornos: ['palmera', 'rocaArena', 'farolDesierto'],
+  };
+}

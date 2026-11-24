@@ -341,6 +341,7 @@ const TABLA = [
   fila(FICHAS['Sossusvlei']), // 67 · ficha + kit: Deadvlei (ruta overland Cabo → Namibia → Cataratas)
   fila(FICHAS['Swakopmund']), // 68 · ficha + kit: faro y costa atlántica de Namibia
   fila(FICHAS['Cataratas Victoria']), // 69 · ficha + kit: Mosi-oa-Tunya
+  fila(FICHAS['Amán']), // 70 · ficha + kit: la Ciudadela (Templo de Hércules) y las casas de piedra blanca
 ];
 // El último campo es el bioma y, opcionalmente, extras: 'europa cabina' (reemplaza el adorno chico), 'oriente farolPiedra' (reemplaza el farol), '!cerezo' (reemplaza el árbol grande)
 // Escala opcional del monumento en el fondo (1 = 8.5 unidades de lado), anclada a la base

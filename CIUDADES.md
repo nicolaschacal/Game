@@ -186,5 +186,5 @@ Lo que el usuario rechazó. Cada rechazo nuevo se anota acá.
 
 ## Pendiente
 
-Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund, Cataratas Victoria, Estambul, Marrakech, Río de Janeiro, Salto Ángel, Montevideo, Cartagena, Machu Picchu, Busan, Reikiavik, Edimburgo y Lisboa. El resto sigue con su fila escrita a mano en `TABLA`
+Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund, Cataratas Victoria, Estambul, Marrakech, Río de Janeiro, Salto Ángel, Montevideo, Cartagena, Machu Picchu, Busan, Reikiavik, Edimburgo, Lisboa y Amán (nueva, índice 70). El resto sigue con su fila escrita a mano en `TABLA`
 (con `LM_ESCALA`, `LM_X` y `FORE`) y se puede migrar de a una con el mismo procedimiento.
