@@ -1299,5 +1299,10 @@
  "hist.cal.8.l2": "J’ai commencé une nouvelle liste. Celle-là, tu ne la grimperas pas seul.",
  "hist.cal.8.l3": "Première ligne : « N’importe quel sommet, du moment qu’on est deux ».",
  "hist.cal.8.l4": "J’ai pris la liste en Polaroid. Elle n’a pas encore sa couleur, mais je sais déjà comment elle sera.",
- "hist.cal.8.back": "Une nouvelle liste : n’importe quel sommet, du moment qu’on est deux."
+ "hist.cal.8.back": "Une nouvelle liste : n’importe quel sommet, du moment qu’on est deux.",
+ "cast.skin.opa": "Opa",
+ "store.story": "Histoire",
+ "store.storyNeed": "S'obtient avec la carte secrète de l'histoire de {name}.",
+ "hist.win.title": "TU AS GAGNÉ UNE NOUVELLE TENUE !",
+ "hist.win.skinSub": "À toi pour toujours. Mets-la dans Vêtements."
 }

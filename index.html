@@ -484,7 +484,7 @@ body.gpapel .sk .tag{--top:var(--rc);--bot:var(--rc);--cant:0px;--P:polygon(0 0,
 body.gpapel .sk .ribbon2{--top:#F2BC3E;--bot:#A9701B;--cant:2px;--P:var(--pill-a);top:3px;z-index:2;color:#3A2410}
 body.gpapel .price{--top:#F2BC3E;--bot:#A9701B;--cant:3px;--P:var(--pill-a);color:#3A2410}
 body.gpapel .price.use{--top:#76B85A;--bot:#356F2E;color:#FFF7E2}
-body.gpapel .price.own,body.gpapel .price.lockp,body.gpapel .price.tk{--top:#EADBB8;--bot:#B39463;color:#6c6450}
+body.gpapel .price.own,body.gpapel .price.story,body.gpapel .price.lockp,body.gpapel .price.tk{--top:#EADBB8;--bot:#B39463;color:#6c6450}
 body.gpapel .it{--top:#F7ECD3;--bot:#C2A373;--cant:5px;--P:var(--card-b)}
 body.gpapel .it i{--P:var(--c-c);--cant:3px;--top:currentColor;background-color:transparent}
 body.gpapel .it.best{--top:#FFF3C2;--bot:#DDA42A}
@@ -757,6 +757,7 @@ let wear=store.get('wear',{}),ownedV=store.get('ownedv',[]),REFUND=0;
  if(!ids.includes(skinId)){skinId=V.T.traveler&&ids.includes(V.T.traveler)?V.T.traveler:'nilo';store.set('skin',skinId);}
  const okV=x=>{const [c,k]=String(x).split(':');return SKINS.some(h=>h.id===c&&h.skins.some(w=>w.id===k));};
  ownedV=ownedV.filter(okV);}
+if(RICO)SKINS.forEach(k=>k.skins.forEach(w=>{if(w.story&&!ownedV.includes(k.id+':'+w.id))ownedV.push(k.id+':'+w.id);})); // ?rico: también los trajes de historia
 const wornOf=id=>{const w=wear[id];return w&&ownedV.includes(id+':'+w)?w:'base';};
 if(!owned.includes(skinId))skinId=V.T.traveler||owned[0]||'nilo';
 // Ítems consumibles: se compran con monedas. Revivir se usa al perder; los demás se gastan al empezar la próxima partida.
@@ -1154,7 +1155,7 @@ $('goDouble').addEventListener('click',async()=>{if(adDouble)return;audio();adDo
 function nextWorld(){if(ended)return;ended=true;runner.gameOver=true;runner.onBoat=true;runner.boatId=null;/* Nilo entra a la terminal */Music.mode='menu';Music.sync();V.roundDone();store.set('maxWorld',Math.max(store.get('maxWorld',0),V.T.trips));
  let rtNext=null,rtDone=null;if(DELAYED)store.set('delay',null); // el vuelo demorado se consume al llegar
  if(route){const R=RT;if(route.i+1<route.seq.length){route={...route,i:route.i+1};store.set('route',route);rtNext=route.seq[route.i];V.hop(rtNext);}else{rtDone=R;store.set('route',null);V.routeComplete(R.id);}} // en ruta: siguiente ciudad sin tarifa; al final, premio
- {const hc=H.onArrive(V,WI);if(hc){const r=hc.reward||{};if(r.coins){wallet+=r.coins;store.set('wallet',wallet);}if(r.chest)K.addChest(r.chest);}else{const hb=H.blocked(V,WI);if(hb)store.set('histHint',hb);}} // capítulo de la historia del viajero: la escena se muestra al volver al inicio
+ {const hc=H.onArrive(V,WI);if(hc){const r=hc.reward||{};if(r.coins){wallet+=r.coins;store.set('wallet',wallet);}if(r.chest)K.addChest(r.chest);if(r.skin){const hk=(V.heroId?.()||'nilo')+':'+r.skin;if(!ownedV.includes(hk)){ownedV.push(hk);store.set('ownedv',ownedV);}}}else{const hb=H.blocked(V,WI);if(hb)store.set('histHint',hb);}} // capítulo de la historia del viajero: la escena se muestra al volver al inicio
  confetti();runner.hitPause=999;const bonus=500*(DIF.P+1);addScore(bonus);bank();missionAdd('world');if(score>best){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
  chests=0; // los cofres de la ronda ya están guardados: se abren desde Inicio

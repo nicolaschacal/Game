@@ -1299,5 +1299,10 @@
  "hist.cal.8.l2": "I started a new list. You’re not climbing this one alone.",
  "hist.cal.8.l3": "First line: “Any summit, as long as it’s for two.”",
  "hist.cal.8.l4": "I took a Polaroid of the list. It hasn’t got its color yet, but I already know how it’ll turn out.",
- "hist.cal.8.back": "A new list: any summit, as long as it’s for two."
+ "hist.cal.8.back": "A new list: any summit, as long as it’s for two.",
+ "cast.skin.opa": "Opa",
+ "store.story": "Story",
+ "store.storyNeed": "Earned with the secret postcard of {name}'s story.",
+ "hist.win.title": "YOU WON A NEW OUTFIT!",
+ "hist.win.skinSub": "Yours forever. Put it on in Clothes."
 }

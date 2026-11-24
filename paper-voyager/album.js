@@ -607,6 +607,7 @@ const BAG_CSS = `
 .pvc-sk .art{width:78%}.pvc-sk b{font:400 16px/1.05 'Lilita One',sans-serif}.pvc-sk.on{box-shadow:0 0 0 3px #76B85A,0 6px 10px rgba(27,23,48,.22)}
 .pvc-sk.lock .art{filter:grayscale(1) opacity(.55)}.pvc-sk.lock b{opacity:.7}
 .pvc-pr{font:400 14px 'Lilita One',sans-serif;color:#A9701B}
+.pvc-st{display:block;font:600 10.5px Nunito,sans-serif;color:#8a6a48;line-height:1.15;padding:0 4px;text-align:center}
 .pvc-b{border:0;cursor:pointer;font:400 13px 'Lilita One',sans-serif;padding:3px 16px 4px;border-radius:99px;background:#F2BC3E;color:#3A2410;box-shadow:0 2px 0 #A9701B}.pvc-b.on{background:#76B85A;color:#fff;box-shadow:0 2px 0 #356F2E}.pvc-b.shop{background:#EADBB8;color:#6B4E26;box-shadow:0 2px 0 #B3A37F}
 .pvp-go{margin-top:10px;display:flex;align-items:center;gap:10px;padding-left:6px;font:700 11.5px Nunito;color:#6B4E26}.pvp-go .btn{width:auto;flex:none;padding:0 16px;height:44px;font-size:16px}
 `;
@@ -902,7 +903,7 @@ function clothPile(ctx) {
 // Atuendos del personaje: base + los suyos (SKINS[i].skins); comprados = ctx.ownedV 'personaje:atuendo'; puesto = ctx.wornOf / ctx.setWear (pv.wear, del integrador)
 function wardrobe(ctx, hero) {
   const out = [{ id: 'base', name: tt('cloth.base'), price: 0, owned: true }], k = (ctx.SKINS || []).find(x => x.id === hero);
-  (k?.skins || []).forEach(w => out.push({ id: w.id, name: w.name, price: w.price, owned: (ctx.ownedV || []).includes(hero + ':' + w.id) }));
+  (k?.skins || []).forEach(w => out.push({ id: w.id, name: w.name, price: w.price, story: w.story, owned: (ctx.ownedV || []).includes(hero + ':' + w.id) }));
   return out;
 }
 const equippedSkin = (ctx, hero) => { try { return ctx.wornOf?.(hero) || 'base'; } catch (e) { return 'base'; } };
@@ -931,7 +932,7 @@ export function openCloth(ctx, onClose, opts = {}) {
       + `<div class="pvc-grid">${list.map(k => {
         const on = k.id === cur;
         return `<div class="pvc-sk${on ? ' on' : ''}${k.owned ? '' : ' lock'}" data-id="${esc(k.id)}"><div class="art">${art(k.id)}</div><b>${esc(k.name)}</b>`
-          + (k.owned ? `<button class="pvc-b${on ? ' on' : ''}" data-eq="${esc(k.id)}"${on ? ' disabled' : ''}>${on ? tt('cloth.equipped') : tt('cloth.equip')}</button>` : `<span class="pvc-pr">◉ ${k.price}</span><button class="pvc-b shop" data-shop>${tt('nav.shop')}</button>`) + `</div>`;
+          + (k.owned ? `<button class="pvc-b${on ? ' on' : ''}" data-eq="${esc(k.id)}"${on ? ' disabled' : ''}>${on ? tt('cloth.equipped') : tt('cloth.equip')}</button>` : (k.story ? `<span class="pvc-pr">📖 ${tt('store.story')}</span><small class="pvc-st">${esc(tt('store.storyNeed', { name: nm }))}</small>` : `<span class="pvc-pr">◉ ${k.price}</span><button class="pvc-b shop" data-shop>${tt('nav.shop')}</button>`)) + `</div>`;
       }).join('')}</div>`;
     root.querySelector('[data-x]').onclick = close;
     root.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => { sfx('tap'); equipSkin(ctx, hero, b.dataset.eq); draw(); });

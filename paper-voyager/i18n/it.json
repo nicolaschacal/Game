@@ -1299,5 +1299,10 @@
  "hist.cal.8.l2": "Ho cominciato una lista nuova. Questa non la scali da solo.",
  "hist.cal.8.l3": "Prima riga: «Qualsiasi cima, purché in due».",
  "hist.cal.8.l4": "Ho scattato una Polaroid alla lista. Non ha ancora il colore, ma so già come verrà.",
- "hist.cal.8.back": "Una lista nuova: qualsiasi cima, purché in due."
+ "hist.cal.8.back": "Una lista nuova: qualsiasi cima, purché in due.",
+ "cast.skin.opa": "Opa",
+ "store.story": "Storia",
+ "store.storyNeed": "Si ottiene con la cartolina segreta della storia di {name}.",
+ "hist.win.title": "HAI VINTO UN NUOVO COSTUME!",
+ "hist.win.skinSub": "È tuo per sempre. Indossalo in Abiti."
 }

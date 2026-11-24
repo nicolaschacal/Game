@@ -1299,5 +1299,10 @@
  "hist.cal.8.l2": "Empecé una lista nueva. Esta no la vas a subir solo.",
  "hist.cal.8.l3": "Primera línea: «Cualquier cumbre, mientras sea de a dos».",
  "hist.cal.8.l4": "Saqué una Polaroid de la lista. Todavía no tiene color, pero ya sé cómo va a quedar.",
- "hist.cal.8.back": "Una lista nueva: cualquier cumbre, mientras sea de a dos."
+ "hist.cal.8.back": "Una lista nueva: cualquier cumbre, mientras sea de a dos.",
+ "cast.skin.opa": "Opa",
+ "store.story": "Historia",
+ "store.storyNeed": "Se gana con la postal secreta de la historia de {name}.",
+ "hist.win.title": "¡GANASTE UN TRAJE NUEVO!",
+ "hist.win.skinSub": "Es tuyo para siempre. Ponételo en Ropa."
 }

@@ -94,7 +94,7 @@ export const STORIES = {
           [N, tt('hist.nilo.8.l4'), 'up', 'sorpresa'],
           [tt('hist.npc.margit'), tt('hist.nilo.8.l5')],
           [tt('hist.npc.margit'), tt('hist.nilo.8.l6')], [N, tt('hist.nilo.8.l7'), 'wave']],
-        back: tt('hist.nilo.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.nilo.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'opa' } },
     ],
   },
   mora: {
@@ -665,11 +665,14 @@ export function playScene(ctx, hero, id, opts = {}) {
       let c = 0; clearInterval(typing); sfx('tap');
       typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); hh.classList.remove('talk'); } }, 22);
     };
+    // Premio permanente de la historia: un traje nuevo que se anuncia en la tarjeta final
+    const winSkin = r => { if (!r.skin) return ''; let art = ''; try { art = ctx.thumbOf?.(hero, r.skin) || ''; } catch (e) {}
+      return `<div class="hwin"><div class="hwa">${art}</div><div><em>${tt('hist.win.title')}</em><b>${esc(tt('cast.skin.' + r.skin))}</b><small>${tt('hist.win.skinSub')}</small></div></div>`; };
     const finale = () => {
       clearInterval(typing); ov.classList.add('fin'); sfx('prize'); try { ctx.buzz?.([20, 40, 20]); ctx.confetti?.(); } catch (e) {}
       const r = ch.reward || {}, chips = [r.coins ? `+◉ ${r.coins}` : '', r.chest ? tt('chest.t.' + r.chest) : ''].filter(Boolean).map(x => `<span>${x}</span>`).join('');
       const card = document.createElement('div'); card.className = 'hend';
-      card.innerHTML = `<small>${tt('diary.newPostal')} · ${ch.id}/${S.chapters.filter(c => !c.secret).length}${ch.secret ? ' · ' + tt('diary.secret') : ''}</small><div class="hpc">${postalFront(ch, 250)}</div><b>${esc(ch.title)}</b>${opts.replay ? '' : `<div class="hrw">${chips}</div>`}<button class="hok">${opts.replay ? tt('diary.close') : tt('diary.saveIt')}</button>`;
+      card.innerHTML = `<small>${tt('diary.newPostal')} · ${ch.id}/${S.chapters.filter(c => !c.secret).length}${ch.secret ? ' · ' + tt('diary.secret') : ''}</small><div class="hpc">${postalFront(ch, 250)}</div><b>${esc(ch.title)}</b>${opts.replay ? '' : `<div class="hrw">${chips}</div>${winSkin(r)}`}<button class="hok">${opts.replay ? tt('diary.close') : tt('diary.saveIt')}</button>`;
       ov.appendChild(card);
       card.querySelector('.hok').onclick = e => { e.stopPropagation(); close(true); };
     };
@@ -785,6 +788,10 @@ body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 @keyframes pvhPc{0%{transform:translateY(-80vh) rotate(-30deg)}70%{transform:rotate(4deg)}100%{transform:rotate(-3deg)}}
 .pvh .hpc{transform:rotate(-3deg)}
 .pvh .hrw{display:flex;gap:8px}.pvh .hrw span{padding:4px 12px;border-radius:99px;background:#F2BC3E;color:#3A2410;font:400 15px 'Lilita One',sans-serif}
+.pvh .hwin{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:18px;background:#FFF6DF;color:#3A2410;border:3px solid #F2BC3E;box-shadow:0 6px 0 rgba(0,0,0,.25);text-align:left;animation:pvhWin .6s .5s cubic-bezier(.2,1.5,.4,1) both;max-width:300px}
+.pvh .hwin .hwa{width:64px;height:64px;flex:none;border-radius:14px;background:#F2E3BE}.pvh .hwin .hwa svg{width:100%;height:100%;display:block}
+.pvh .hwin em{display:block;font:400 13px 'Lilita One',sans-serif;color:#C0532A;font-style:normal;letter-spacing:.5px}.pvh .hwin b{display:block;font:400 21px 'Lilita One',sans-serif;line-height:1.05}.pvh .hwin small{display:block;font:600 12px Nunito,sans-serif;color:#7A5A3A;letter-spacing:0;text-transform:none}
+@keyframes pvhWin{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
 .pvh .hok{margin-top:8px;border:0;padding:14px 26px;border-radius:18px;background:#76B85A;color:#fff;font:400 20px 'Lilita One',sans-serif;box-shadow:0 5px 0 #356F2E}
 .pvh.bye1 .hbg{background:transparent;transition:background .5s}
 /* diario */

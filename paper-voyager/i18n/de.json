@@ -1299,5 +1299,10 @@
  "hist.cal.8.l2": "Ich habe eine neue Liste angefangen. Diese steigst du nicht allein hoch.",
  "hist.cal.8.l3": "Erste Zeile: „Jeder Gipfel, solange wir zu zweit sind“.",
  "hist.cal.8.l4": "Ich habe ein Polaroid von der Liste gemacht. Es hat noch keine Farbe, aber ich weiß schon, wie es aussehen wird.",
- "hist.cal.8.back": "Eine neue Liste: jeder Gipfel, solange wir zu zweit sind."
+ "hist.cal.8.back": "Eine neue Liste: jeder Gipfel, solange wir zu zweit sind.",
+ "cast.skin.opa": "Opa",
+ "store.story": "Geschichte",
+ "store.storyNeed": "Gibt es für die geheime Postkarte aus {name}s Geschichte.",
+ "hist.win.title": "NEUES OUTFIT GEWONNEN!",
+ "hist.win.skinSub": "Gehört dir für immer. Zieh es unter Kleidung an."
 }

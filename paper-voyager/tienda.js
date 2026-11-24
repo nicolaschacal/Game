@@ -92,7 +92,7 @@ function viajeros(c) {
     const ch = `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="sk" data-id="${k.id}" style="--rc:${rc};--bg:#DCE9F7">${tid === k.id ? `<span class="ribbon2">${tt('store.yourTraveler')}</span>` : ''}<div class="art">${thumb(c, k.id, 'base')}</div><b>${esc(k.name)}</b><small>${esc(k.tag.toUpperCase())}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(k.price)}</span></button>`;
     const sks = k.skins.map(w => {
       const hv = c.ownedV.includes(k.id + ':' + w.id), wearing = has && hv && worn === w.id;
-      return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${k.id}" data-s="${w.id}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, k.id, w.id)}</div><b>${esc(w.name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : coin(w.price)}</span></button>`;
+      return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${k.id}" data-s="${w.id}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, k.id, w.id)}</div><b>${esc(w.name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : w.story ? 'story' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : w.story ? '📖 ' + tt('store.story') : coin(w.price)}</span></button>`;
     }).join('');
     return `<div class="vg vg3">${ch}${sks}</div>`;
   }).join('');
@@ -191,6 +191,7 @@ async function onClick(e) {
   } else if (kind === 'wear') {
     const k = c.SKINS.find(s => s.id === id), w = k.skins.find(x => x.id === el.dataset.s), key = id + ':' + w.id;
     if (!c.owned.includes(id)) { c.SFX.nope(); c.toast(tt('store.skinNeed', { name: k.name.toUpperCase() })); return bad(el); }
+    if (!c.ownedV.includes(key) && w.story) { c.SFX.nope(); c.toast(tt('store.storyNeed', { name: k.name })); return bad(el); }
     if (!c.ownedV.includes(key)) {
       if (!c.buy(w.price, w.name)) return bad(el);
       c.ownedV.push(key); c.saveOwnedV(); c.SFX.buy(); c.pop(tt('toast.prize', { name: w.name.toUpperCase() }), 'big');
