@@ -499,7 +499,7 @@ export const STORIES = {
           [tt('hist.npc.eli'), tt('hist.cal.8.l2')],
           [CA, tt('hist.cal.8.l3'), 'look'],
           [CA, tt('hist.cal.8.l4'), 'wave']],
-        back: tt('hist.cal.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.cal.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'cumbres' } },
     ],
   },
 };
