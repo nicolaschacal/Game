@@ -66,7 +66,7 @@ export const STORIES = {
           [N, tt('hist.nilo.4.l5')],
           [tt('hist.npc.hassan'), tt('hist.nilo.4.l6')]],
         back: tt('hist.nilo.4.back'), reward: { coins: 300, chest: 'plata' } },
-      { id: 5, at: 'Río de Janeiro', title: tt('hist.nilo.5.title'), hint: tt('hist.nilo.5.hint'), req: { route: 'andes' },
+      { id: 5, at: 'Río de Janeiro', title: tt('hist.nilo.5.title'), hint: tt('hist.nilo.5.hint'), req: {},
         lines: [[N, tt('hist.nilo.5.l1')],
           [tt('hist.npc.lucia'), tt('hist.nilo.5.l2')],
           [tt('hist.npc.lucia'), tt('hist.nilo.5.l3')],

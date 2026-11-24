@@ -138,7 +138,6 @@ export const SOUVENIRS = [
 export const ROUTES = [
   { id: 'golden', name: 'route.golden', cities: ['Tokio', 'Kioto', 'Osaka'] },
   { id: 'classic', name: 'route.classic', cities: ['Londres', 'París', 'Roma'] },
-  { id: 'andes', name: 'route.andes', cities: ['Cartagena', 'Machu Picchu', 'Río de Janeiro'] },
   { id: 'thai', name: 'route.thai', cities: ['Bangkok', 'Krabi', 'Phi Phi'] },
   // Una ciudad puede estar en varias rutas. Las que tienen alguna ciudad que todavía no existe en DESTINOS quedan inactivas solas.
   { id: 'indochina', name: 'route.indochina', cities: ['Bangkok', 'Chiang Mai', 'Siem Reap', 'Hanói'] },
