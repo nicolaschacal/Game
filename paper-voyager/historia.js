@@ -666,7 +666,7 @@ export function playScene(ctx, hero, id, opts = {}) {
       typing = setInterval(() => { c += 2; ht.textContent = full.slice(0, c); if (c >= full.length) { clearInterval(typing); typing = null; bub.classList.add('done'); hh.classList.remove('talk'); } }, 22);
     };
     // Premio permanente de la historia: un traje nuevo que se anuncia en la tarjeta final
-    const winSkin = r => { if (!r.skin) return ''; let art = ''; try { art = ctx.thumbOf?.(hero, r.skin) || ''; } catch (e) {}
+    const winSkin = r => { if (!r.skin) return ''; let art = ''; try { art = (ctx.thumbOf?.(hero, r.skin) || '').replace(/(id="|href="#|url\(#)/g, '$1w_'); } catch (e) {} // ids propios: la escena ya tiene un personaje con los mismos ids
       return `<div class="hwin"><div class="hwa">${art}</div><div><em>${tt('hist.win.title')}</em><b>${esc(tt('cast.skin.' + r.skin))}</b><small>${tt('hist.win.skinSub')}</small></div></div>`; };
     const finale = () => {
       clearInterval(typing); ov.classList.add('fin'); sfx('prize'); try { ctx.buzz?.([20, 40, 20]); ctx.confetti?.(); } catch (e) {}
