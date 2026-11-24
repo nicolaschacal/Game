@@ -386,7 +386,7 @@ export const STORIES = {
           [tt('hist.npc.mamaLayla'), tt('hist.layla.8.l2')],
           [LA, tt('hist.layla.8.l3'), 'look'],
           [LA, tt('hist.layla.8.l4'), 'wave']],
-        back: tt('hist.layla.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.layla.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'l18' } },
     ],
   },
   // ── La historia de Anaya: «El color perdido». Sigue de mano en mano el pañuelo de un color que su abuela vio hace sesenta años ──
