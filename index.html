@@ -1739,7 +1739,7 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
 ctx.Ads=Ads;K.initCofres(ctx);
 // Historia del viajero: si se abrió un capítulo en el último viaje, su escena se cuenta al volver al inicio. ?historia=N la muestra para probar.
 {const hh=store.get('histHint',null);if(hh){store.set('histHint',null);setTimeout(()=>H.showHint(hh,t('diary.blockedOver',{n:hh.ch})),1400);} // llegaste a la ciudad del capítulo pero falta un requisito: se avisa qué
- const hp=H.pending(),qh=+Q.get('historia');if(hp||qh){if(hp)H.clearPending();setTimeout(()=>H.playScene(ctx,hp?.hero||'nilo',hp?.ch||qh,{replay:!hp}).then(()=>drawHome()),1300);}}
+ const hp=H.pending(),qh=+Q.get('historia');if(hp||qh){if(hp)H.clearPending();setTimeout(()=>H.playScene(ctx,hp?.hero||V.heroId?.()||'nilo',hp?.ch||qh,{replay:!hp}).then(()=>drawHome()),1300);}}
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
 else{document.body.classList.remove('home');if(!carry)useItems();else drawBoosts();setTimeout(()=>banner(theme.place.toUpperCase()),300);{const m=mechDue();if(m.length&&!carry)showMech(m,null);}}
