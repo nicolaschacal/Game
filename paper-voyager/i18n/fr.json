@@ -1305,5 +1305,6 @@
  "store.storyNeed": "S'obtient avec la carte secrète de l'histoire de {name}.",
  "hist.win.title": "TU AS GAGNÉ UNE NOUVELLE TENUE !",
  "hist.win.skinSub": "À toi pour toujours. Mets-la dans Vêtements.",
- "cast.skin.remitente": "Expéditrice"
+ "cast.skin.remitente": "Expéditrice",
+ "cast.skin.faro": "Terminé"
 }

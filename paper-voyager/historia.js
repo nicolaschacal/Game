@@ -216,7 +216,7 @@ export const STORIES = {
           [SI, tt('hist.sipho.8.l3'), 'up'],
           [SI, tt('hist.sipho.8.l4'), 'look', 'triste'],
           [SI, tt('hist.sipho.8.l5'), 'wave']],
-        back: tt('hist.sipho.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.sipho.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'faro' } },
     ],
   },
   // ── La historia de Minji: «Pasos perdidos». Se congeló en la final de baile; alguien sube cada baile suyo por el mundo ──

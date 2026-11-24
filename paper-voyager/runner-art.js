@@ -122,7 +122,7 @@ export const TRAIN = trainSet();
 // El arte (heroFor/thumbFor) sale de elenco.js y se cachea por personaje+atuendo. Cada personaje tiene atuendos (skins) en venta aparte: id 'nieve', 'lluvia'…
 // SKINS = los personajes (id, name, tag, price, skins[{id,name,price,story}]). story = traje de historia: no se compra, se gana con la postal secreta (reward.skin en historia.js). El atuendo que lleva puesto cada uno lo guarda index.html (pv.wear).
 const CAST = [
-  ['nilo', 'Nilo', 0, [['nieve', 600], ['marinero', 800], ['opa', 0, 1]]], ['mora', 'Mora', 1500, [['lluvia', 700], ['montana', 800], ['remitente', 0, 1]]], ['sipho', 'Sipho', 1800, [['tormenta', 800]]],
+  ['nilo', 'Nilo', 0, [['nieve', 600], ['marinero', 800], ['opa', 0, 1]]], ['mora', 'Mora', 1500, [['lluvia', 700], ['montana', 800], ['remitente', 0, 1]]], ['sipho', 'Sipho', 1800, [['tormenta', 800], ['faro', 0, 1]]],
   ['minji', 'Minji', 2000, [['escenario', 900]]], ['tuk', 'Tuk', 2000, [['invierno', 700]]], ['layla', 'Layla', 2200, [['wadirum', 800]]],
   ['cal', 'Cal', 2200, [['nevada', 700]]], ['anaya', 'Anaya', 2500, []],
 ];
