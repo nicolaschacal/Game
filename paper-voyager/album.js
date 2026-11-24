@@ -203,7 +203,7 @@ function coverInner(id, u, o = {}) {
       + `<path d="${plane(66, 24.5, .36)}" fill="${ptxt}"/>`;
   }
   if (o.count != null) {
-    s += `<rect x="30" y="60" width="72" height="14" rx="7" fill="${INK}" stroke="${CREAM}" stroke-width="1.6"/><text x="66" y="70.3" text-anchor="middle" font-family="${LIL}" font-size="8.4" fill="${CREAM}">${o.count} / ${o.total} selfies</text>`;
+    s += `<rect x="30" y="60" width="72" height="14" rx="7" fill="${INK}" stroke="${CREAM}" stroke-width="1.6"/><text x="66" y="70.3" text-anchor="middle" font-family="${LIL}" font-size="8.4" fill="${CREAM}">${esc(tt('album.selfies', { n: o.count, total: o.total }))}</text>`;
   }
   if (o.souvenirs?.length) {
     const n = o.souvenirs.length, w = 26, gap = (96 - n * w) / Math.max(1, n + 1);

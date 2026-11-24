@@ -107,7 +107,7 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 
 ## 7. Lo que todavía no está
 
-- **i18n**: otros idiomas pendientes (hoy la interfaz está en español).
+- **i18n**: listo en 8 idiomas (es, en, pt, fr, de, it, ja, ko). Las fichas de las tiendas todavía hay que escribirlas.
 - **Música**: las pistas van en `paper-voyager/audio/` (menu.mp3, run.mp3); el build avisa si faltan.
 - **IDs reales** de AdMob y RevenueCat (puntos 2 y 3).
 - **Probar en teléfonos reales**: sonido, vibración (en iOS va por Haptics), rendimiento del WebGL en gama baja, y los flujos de compra con cuentas de prueba (License testers en Play, Sandbox testers en App Store Connect).

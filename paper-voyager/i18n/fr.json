@@ -1311,5 +1311,16 @@
  "cast.skin.honor": "Facteur d'honneur",
  "cast.skin.l18": "Comète L-18",
  "cast.skin.color": "Couleur Anaya",
- "cast.skin.cumbres": "Sommets à deux"
+ "cast.skin.cumbres": "Sommets à deux",
+ "welcome.2": "Je cours tout seul. Tu ne me déplaces pas : tu construis le chemin où je vais passer. Touche une voie et j'y vais tout droit.",
+ "welcome.kicker": "PAPER VOYAGER",
+ "welcome.title": "Bienvenue à bord !",
+ "welcome.1": "Salut ! Moi, c'est Nilo. Trop content que tu sois là ! On va faire le tour du monde ensemble.",
+ "welcome.3": "Il y a des pièces en route. Attention : elles ne sont à toi que si on atteint l'aéroport à la fin.",
+ "welcome.4": "Avec les pièces, on paie des vols sur la carte. Plus c’est loin, plus le billet est cher.",
+ "welcome.5": "Chaque région a son passeport. Avec la bonne couleur équipée, la douane te laisse passer.",
+ "welcome.6": "Si tu vois un appareil photo sur la piste, attrape-le : c'est un selfie pour l'album du sac à dos.",
+ "welcome.7": "Et chaque voyageur a son histoire. La mienne commence dans le grenier de ma grand-mère, avec le carnet d'Opa…",
+ "welcome.8": "Les coffres et les missions donnent des bonus. Dans la boutique, tu trouveras des tenues et d’autres voyageurs.",
+ "welcome.9": "Prêt ? Touche JOUER et c'est parti. Rendez-vous à l'aéroport !"
 }

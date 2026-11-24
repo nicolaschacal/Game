@@ -3,7 +3,7 @@
 // cuando se evalúan las tablas de datos y el menú no muestra texto cambiando. Cambiar de idioma guarda la elección y recarga.
 export const LANGS = [
   { code: 'es', name: 'Español' }, { code: 'en', name: 'English' }, { code: 'pt', name: 'Português' },
-  { code: 'fr', name: 'Français' }, { code: 'de', name: 'Deutsch' }, { code: 'it', name: 'Italiano' }, { code: 'ja', name: '日本語' },
+  { code: 'fr', name: 'Français' }, { code: 'de', name: 'Deutsch' }, { code: 'it', name: 'Italiano' }, { code: 'ja', name: '日本語' }, { code: 'ko', name: '한국어' },
 ];
 const KEY = 'pv.lang'; // mismo sistema de guardado del juego: localStorage 'pv.*' con valor JSON
 const CODES = LANGS.map(l => l.code);

@@ -19,6 +19,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&family=Yuji+Syuku&display=swap" rel="stylesheet">
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
 <style>
+/* coreano: cortar líneas entre palabras, no dentro de ellas */
+html:lang(ko) body{word-break:keep-all;overflow-wrap:anywhere}
 /* GUI de papel recortado: piezas crema, borde de tinta grueso, sombra dura, botones con volumen */
 :root{--tk:polygon(4px 0.6px,30% 0,63% 0.8px,calc(100% - 4px) 0,100% 4px,100% 34%,calc(100% - 5px) 50%,100% 66%,calc(100% - 0.6px) calc(100% - 4px),calc(100% - 4px) 100%,58% calc(100% - 0.7px),26% 100%,4px calc(100% - 0.5px),0 calc(100% - 4px),0 66%,5px 50%,0.6px 34%,0 4px);color-scheme:dark;--ink:#1B1730;--cream:#FFF4DC;--paper:#F1E3C2;--gold:#F2B937;--goldD:#C98A1E;--red:#E8452C;--redD:#A92E1B;--green:#5DB84F;--greenD:#3A8A30;--mute:#8a8069;--st:env(safe-area-inset-top);--sb:env(safe-area-inset-bottom)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
@@ -557,6 +559,8 @@ body.gpapel #splash{background-color:#222B63;background-image:var(--nz),radial-g
 body.gpapel #splash .logo{transform:rotate(-1.5deg);animation:none}
 body.gpapel .logo .slogan{border:0;box-shadow:none;border-radius:0;background:#F6EBD0;color:#2B2236;clip-path:var(--pk);padding:5px 16px 6px}
 body.gpapel .logo .seal{border:0;box-shadow:none;border-radius:0;background:#E14E34;clip-path:var(--sq-a);transform:rotate(1.5deg)}
+#splash .logo{margin-top:-420px}#splash .sball{position:absolute;left:50%;top:37%;width:128px;transform:translateX(-50%) rotate(-4deg);animation:sbIn .45s ease-out both,sbF 3.2s .45s ease-in-out infinite}#splash .sball svg{display:block;width:100%;height:auto}#splash .load{top:78%}
+@keyframes sbIn{from{opacity:0;margin-top:30px}to{opacity:1;margin-top:0}}@keyframes sbF{0%,100%{margin-top:0}50%{margin-top:-8px}}
 body.gpapel #splash .load{border:0;height:12px;border-radius:0;background:#171C47;clip-path:var(--pill-a)}
 body.gpapel #splash .load i{background:#F2BC3E}
 body.gpapel #mapView{background-color:#5E9BB8;background-image:var(--nz),radial-gradient(circle at 50% 40%,#8CC3D8,#4F8CAB);background-size:160px,auto;background-blend-mode:multiply,normal}
@@ -844,7 +848,11 @@ const COLS=5,ROWS=QUICK?130:264,START=ROWS-12;
 const LEVELS=2,LV=.42,SKY=LEVELS*LV; // altura de la cima y del cielo (LV = alto de un nivel del motor)
 const rnd=(()=>{let a=(Date.now()^0x9E3779B9)>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}})();
 const pick=a=>a[Math.floor(rnd()*a.length)];
+// Globo de papel con canasta (splash de carga y primer arranque); el viajero va en <g class="inl">
+function ballSVG(){return '<svg viewBox="0 0 160 250" role="img" aria-label="'+t('intro.aria')+'"><path d="M62 142 L46 190 M98 142 L114 190 M74 144 L66 190 M86 144 L94 190" stroke="#704332" stroke-width="2.6" stroke-linecap="round"/><g transform="translate(-16 0) scale(1.6)"><g stroke="#FFF4DC" stroke-width="5" stroke-linejoin="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/></g><g class="inl" transform="translate(11 106) scale(1.1)"></g><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/></g><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/><path d="M56 202 L58 240 M68 202 L69 242 M80 202 V243 M92 202 L91 242 M104 202 L102 240" stroke="#7A5334" stroke-width="2.4" stroke-linecap="round"/><path d="M47 228 Q80 236 113 228 L111 240 Q80 247 49 240Z" fill="#6B4A2E"/><path d="M46 214 Q80 221 114 214" stroke="#7A5334" stroke-width="2.4" fill="none"/></svg>';}
 let art=artFor(skinId,wornOf(skinId));
+// Splash de carga: el globo con Nilo saludando debajo del logo
+{const sp=$('splash');if(sp&&!sp.querySelector('.sball')){const d=document.createElement('div');d.className='sball';d.innerHTML=ballSVG();sp.appendChild(d);const slot=d.querySelector('.inl'),NIL=art.HERO.wave||art.HERO.idle;let f=1;const put=()=>{slot.innerHTML=NIL[f%NIL.length].replace('<svg','<svg x="0" y="0" width="120" height="120" overflow="visible"');};put();const iv=setInterval(()=>{if(!d.isConnected)return clearInterval(iv);f++;put();},130);}}
 const tiles={},zone=new Array(ROWS).fill('free'),blockers=[],coins=[],rides=[],vehicles=[];
 const paintRow=(y,t)=>{for(let x=0;x<COLS;x++)tiles[x+','+y]=typeof t==='string'?{g:t,h:0}:{...t};};
 setGroundColor('empty',theme.ground);if(theme.hillColor)setGroundColor(theme.hill,theme.hillColor);
@@ -1719,7 +1727,7 @@ async function firstRunIntro(){introOn=true;const it=$('intro'),sp=$('splash');
  const ri=(k,w,h,c,sd,sn)=>{try{return S.ridgeURL(k,w,h,c,sd,sn);}catch{return '';}},th=id=>{try{return P.artThumb(id);}catch{return '';}},NIL=art.HERO.wave||art.HERO.idle;
  const mt=(u,bot,w,d)=>u?`<img class="imt" src="${u}" style="bottom:${bot};width:${w}px;animation-delay:${d}s" alt="">`:'';
  const cl=th('nube'),sun=th('sol');
- const ball='<svg viewBox="0 0 160 250" role="img" aria-label="'+t('intro.aria')+'"><path d="M62 142 L46 190 M98 142 L114 190 M74 144 L66 190 M86 144 L94 190" stroke="#704332" stroke-width="2.6" stroke-linecap="round"/><g transform="translate(-16 0) scale(1.6)"><g stroke="#FFF4DC" stroke-width="5" stroke-linejoin="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/></g><g class="inl" transform="translate(11 106) scale(1.1)"></g><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/></g><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/><path d="M56 202 L58 240 M68 202 L69 242 M80 202 V243 M92 202 L91 242 M104 202 L102 240" stroke="#7A5334" stroke-width="2.4" stroke-linecap="round"/><path d="M47 228 Q80 236 113 228 L111 240 Q80 247 49 240Z" fill="#6B4A2E"/><path d="M46 214 Q80 221 114 214" stroke="#7A5334" stroke-width="2.4" fill="none"/></svg>';
+ const ball=ballSVG();
  it.innerHTML=(sun?`<img class="isun" src="${sun}" alt="">`:'')+(cl?`<img class="icl c1" src="${cl}" style="left:-44px;top:318px;width:190px;animation-delay:.5s,1s" alt=""><img class="icl c2" src="${cl}" style="left:262px;top:408px;width:160px;animation-delay:.7s,1s" alt=""><img class="icl c3" src="${cl}" style="left:18px;top:20px;width:140px;animation-delay:.3s,1s" alt="">`:'')
   +mt(ri('peak',1,.62,'#C3D6E6',3,true),'24%',560,.3)+mt(ri('peak',1,.5,'#9DBBD3',7,true),'21%',620,.4)
   +mt(ri('dune',1,.42,'#B7D78E',11,false),'13%',640,.5).replace('class="imt"','class="imt" data-x="-150"')+mt(ri('dune',1,.4,'#B1D387',12,false),'12%',600,.55).replace('class="imt"','class="imt h2"')
@@ -1740,6 +1748,9 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
 ctx.Ads=Ads;K.initCofres(ctx);
 // Historia del viajero: si se abrió un capítulo en el último viaje, su escena se cuenta al volver al inicio. ?historia=N la muestra para probar.
 {const hh=store.get('histHint',null);if(hh){store.set('histHint',null);setTimeout(()=>H.showHint(hh,t('diary.blockedOver',{n:hh.ch})),1400);} // llegaste a la ciudad del capítulo pero falta un requisito: se avisa qué
+ // Bienvenida de Nilo: la primera vez que se llega al inicio después de elegir la ciudad de partida (?bienvenida la repite)
+ if(menuOpen&&!V.needsPick()&&(Q.has('bienvenida')||(!RICO&&!store.get('welcome',0)&&!(V.T.trips>0)))){store.set('welcome',1);setTimeout(()=>H.playWelcome(ctx).then(()=>drawHome()),1300);}
+ else if(!store.get('welcome',0))store.set('welcome',1);
  const hp=H.pending(),qh=+Q.get('historia');if(hp||qh){if(hp)H.clearPending();setTimeout(()=>H.playScene(ctx,hp?.hero||V.heroId?.()||'nilo',hp?.ch||qh,{replay:!hp}).then(()=>drawHome()),1300);}}
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}

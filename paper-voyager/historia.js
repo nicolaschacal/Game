@@ -510,6 +510,12 @@ const st = hero => { const s = STORE?.get('hist.' + hero, null) || {}; return { 
 const save = (hero, s) => STORE?.set('hist.' + hero, s);
 export function initHistoria(store) { STORE = store; }
 // ?rico (MODO PRUEBA): todas las historias de todos los personajes abiertas, secretos incluidos (se guarda en sessionStorage, no toca el progreso real)
+// Bienvenida de Nilo al primer arranque (después de elegir la ciudad de partida). ?bienvenida la repite.
+export function playWelcome(ctx) {
+  const L = [['wave'], ['up'], [null], ['look'], [null], ['side'], [null, 'serio'], ['up'], ['wave']];
+  return playScene(ctx, 'nilo', 0, { kicker: tt('welcome.kicker'), title: tt('welcome.title'), lines: L.map(([g, m], i) => [N, tt('welcome.' + (i + 1)), g, m]) });
+}
+
 export function unlockAll() { for (const hero in STORIES) { const s = st(hero); s.got = [...new Set([...s.got, ...STORIES[hero].chapters.map(c => c.id)])].sort((a, b) => a - b); save(hero, s); } }
 export const hasStory = hero => !!STORIES[hero];
 export const progress = hero => { const S = STORIES[hero]; if (!S) return null; const s = st(hero); return { got: s.got, total: S.chapters.filter(c => !c.secret).length, unseen: s.got.filter(i => !s.seen.includes(i)).length }; };
@@ -614,7 +620,8 @@ function applyMood(root, mood) {
 // ctx: { thumbOf, wornOf, SFX, buzz, confetti }. Devuelve una promesa al cerrarse.
 export function playScene(ctx, hero, id, opts = {}) {
   css();
-  const ch = chapterOf(hero, id); if (!ch) return Promise.resolve();
+  // opts.lines: una conversación suelta (p. ej. la bienvenida) con el mismo escenario de diálogo, sin postal al final
+  const ch = opts.lines ? { id: 0, lines: opts.lines, title: opts.title || '' } : chapterOf(hero, id); if (!ch) return Promise.resolve();
   const F = FICHAS[hero], S = STORIES[hero], name = hero[0].toUpperCase() + hero.slice(1);
   const sfx = n => { try { ctx.SFX?.[n]?.(); } catch (e) {} };
   let art = ''; try { art = uniq(ctx.thumbOf(hero, ctx.wornOf ? ctx.wornOf(hero) : 'base')); } catch (e) {}
@@ -627,7 +634,7 @@ export function playScene(ctx, hero, id, opts = {}) {
     const dots = ch.lines.map(() => '<i></i>').join('');
     ov.style.setProperty('--htop', topY);
     ov.innerHTML = `<div class="hbg"></div><div class="htop"><div class="hdots">${dots}</div><button class="hskip">${tt('diary.skip')}</button></div>
-<div class="htag"><div class="ribbon"><small>${esc(S.title.toUpperCase())}</small>${tt('diary.chapter', { n: ch.id })}${ch.secret ? ' · ' + tt('diary.secretCh') : ''} · ${esc(ch.title)}</div></div>
+<div class="htag"><div class="ribbon">${opts.lines ? `<small>${esc(opts.kicker || '')}</small>${esc(ch.title)}` : `<small>${esc(S.title.toUpperCase())}</small>${tt('diary.chapter', { n: ch.id })}${ch.secret ? ' · ' + tt('diary.secretCh') : ''} · ${esc(ch.title)}`}</div></div>
 <div class="hhero"><div class="hhf">${art}</div></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
     document.body.appendChild(ov); document.body.classList.add('pvh-on');
     const hn = ov.querySelector('.hn'), ht = ov.querySelector('.ht'), hh = ov.querySelector('.hhero'), bub = ov.querySelector('.hbub'), dd = [...ov.querySelectorAll('.hdots i')];
@@ -656,7 +663,7 @@ export function playScene(ctx, hero, id, opts = {}) {
       put(HA.at(G.ph, { lx: G.lx, ly: G.ly, blink: bl }));
     }, 110);
     const show = () => {
-      k++; if (k >= ch.lines.length) return finale();
+      k++; if (k >= ch.lines.length) return opts.lines ? close(false) : finale();
       const [who, txt, g, mood] = ch.lines[k], me = who === name || who === N && hero === 'nilo';
       if ((mood || null) !== G.mood) { G.mood = mood || null; const f0 = hf._f; hf._f = null; put(f0); }
       hn.textContent = who; hn.style.color = me ? F.dark : '#A4521A'; bub.classList.toggle('npc', !me); hh.classList.toggle('hdim', !me);
