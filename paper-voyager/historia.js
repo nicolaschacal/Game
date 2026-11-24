@@ -333,7 +333,7 @@ export const STORIES = {
           [tt('hist.npc.ingrid'), tt('hist.tuk.8.l2')],
           [tt('hist.npc.solveig'), tt('hist.tuk.8.l3')],
           [TU, tt('hist.tuk.8.l4'), 'wave']],
-        back: tt('hist.tuk.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.tuk.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'honor' } },
     ],
   },
   // ── La historia de Layla: «El cometa L-18». Sigue la guía de su mamá astrónoma, que dejó de contestar, hasta el cometa que lleva su nombre ──
