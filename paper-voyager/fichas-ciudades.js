@@ -457,3 +457,63 @@ FICHAS['Salto Ángel'] = {
   composicion: { tapar: .22, tamano: .8, laterales: 1.25 },
   adornos: ['liana', 'monstera', 'farolSelva'],
 };
+
+// ── Montevideo: el Palacio Salvo sobre la plaza Independencia. Bloque ancho de oficinas, la torre que se angosta en dos
+// cuerpos y el remate con su cúpula-faro; delante la Rambla y el Río de la Plata, color dulce de leche ──
+{ const piedra = '#D6CAB2', piedra2 = '#CFC2A8';
+  FICHAS['Montevideo'] = {
+    mundo: 'RAMBLA', nombre: 'Montevideo', pais: 'Uruguay', color: '#A9C0D2', paisaje: 'costa', suelo: 'ciudad', hora: 17, clima: 'leaves', horizonte: 'city',
+    monumento: [
+      [K.torreReloj({ x: 60, w: 15, top: 0, c: luz(piedra, .04), cTecho: '#A89C86', techo: 'cupula', reloj: false })],
+      [K.fachada({ x0: 46, x1: 74, y0: 26, c: piedra2, pisos: Array.from({ length: 9 }, () => ({ tipo: 'ventanas', n: 4 })), sombra: .26 }),
+        K.torreReloj({ x: 46, w: 7, top: 18, c: piedra2, cTecho: '#A89C86', techo: 'cupula', reloj: false, ventanas: false }),
+        K.torreReloj({ x: 74, w: 7, top: 18, c: piedra2, cTecho: '#A89C86', techo: 'cupula', reloj: false, ventanas: false })],
+      [K.fachada({ x0: 28, x1: 92, y0: 66, c: piedra, pisos: [{ tipo: 'ventanas', n: 8 }, { tipo: 'ventanas', n: 8 }, { tipo: 'ventanas', n: 8 }, { tipo: 'arcos', n: 8 }], sombra: .2 }),
+        K.hastial({ x: 60, y: 64, w: 14, h: 5, c: luz(piedra, .1), marco: '#B4A88E', oro: '#C9A65A' })],
+    ],
+    cAgua: '#C2B392',
+    composicion: { tapar: .18, aguaAlto: .9 },
+    adornos: ['castano', 'quiosco', 'farolEuropeo'],
+  };
+}
+
+// ── Cartagena: la Torre del Reloj, puerta amarilla de tres arcos en la muralla con su torre de campana encima; detrás, casas
+// coloniales de colores con balcones de madera; delante la muralla de piedra coralina ──
+{ const am = '#E6BF62', casasC = ['#E2876C', '#6FA6C4', '#EEB458', '#C97CA0', '#8DBA8A'];
+  const casa = (x0, defs) => K.casas({ x0, techo: 'plano', cPersiana: '#7A5A44', farolitos: ['#E0B050', '#E0B050'], defs: defs.map(([w, h, i]) => ({ w, h, c: casasC[i], pisos: 2 })) });
+  FICHAS['Cartagena'] = {
+    mundo: 'MURALLA', nombre: 'Cartagena', pais: 'Colombia', color: '#E9C98E', paisaje: 'costa', suelo: 'pueblo', hora: 16, clima: 'bubbles',
+    monumento: [
+      [casa(0, [[20, 52, 0], [18, 46, 1]]), casa(82, [[18, 48, 2], [20, 54, 3]])],
+      [K.torreReloj({ x: 60, w: 18, top: 10, c: am, cTecho: '#D49A46', techo: 'cupula' })],
+      [K.fachada({ x0: 40, x1: 80, y0: 62, c: am, pisos: [{ tipo: 'puertas', n: 3 }], sombra: .2 }), K.hastial({ x: 60, y: 60, w: 20, h: 6, c: luz(am, .12), marco: '#C99A46', oro: '#B8463A' })],
+      [K.muro({ x0: 0, x1: 40, y: 92, c: '#C9B790', piedra: true, talud: 3, seed: 3 }), K.muro({ x0: 80, x1: 120, y: 92, c: '#C9B790', piedra: true, talud: 3, seed: 5 })],
+    ],
+    cAgua: '#98C8C4',
+    composicion: { tapar: .18 },
+    adornos: ['palmeraTropical', 'arbustoTropical', 'farolEuropeo'],
+  };
+}
+
+const machu = { pico(d, box, c, veg, verde) { // pico de laderas a plomo: roca gris arriba, manto de selva que sube por las laderas, luz a la izquierda
+  const T = K.tonos(c), [x0, y0, x1, y1] = box, yv = y1 - (y1 - y0) * verde, id = 'hp' + Math.round(x0 * 7 + y0);
+  let g = P(`M${x0 - 2} ${y1} L${x0 - 2} ${yv + 4} Q${(x0 + x1) / 2 - 8} ${yv - 8} ${(x0 + x1) / 2} ${yv - 2} Q${(x0 + x1) / 2 + 10} ${yv + 4} ${x1 + 2} ${yv - 6} L${x1 + 2} ${y1}Z`, veg)
+    + P(`M${(x0 + x1) / 2 + 4} ${y0} L${x1 + 2} ${y0} L${x1 + 2} ${y1} L${(x0 + x1) / 2 + 14} ${y1}Z`, T.som, ' opacity=".35"');
+  for (let i = 0; i < 6; i++) { const xx = x0 + (x1 - x0) * (.3 + i * .08), yy = y0 + (y1 - y0) * (.12 + (i % 3) * .1); g += Ln(`M${f1(xx)} ${f1(yy)} q1 8 -.6 ${f1(10 + i)}`, T.osc, .7, ' opacity=".4"'); }
+  for (let i = 0; i < 7; i++) { const xx = x0 + (x1 - x0) * (.18 + i * .11), yy = yv + 6 + (i % 3) * 7; g += P(`M${f1(xx)} ${f1(yy + 3)} q2.2 -5 4.6 0Z`, K.tonos(veg).luz, ' opacity=".55"'); }
+  return { f: P(d, c), d: `<clipPath id="${id}"><path d="${d}"/></clipPath><g clip-path="url(#${id})">${g}</g>`, box }; } };
+
+// ── Machu Picchu: el Huayna Picchu, pico de laderas a plomo con selva, y otro cerro pálido detrás; delante la
+// ciudadela: andenes en escalera y casitas de piedra sin techo con sus hastiales ──
+FICHAS['Machu Picchu'] = {
+  mundo: 'ANDES', nombre: 'Machu Picchu', pais: 'Perú', color: '#A8C8B0', paisaje: 'montana', hora: 9, clima: 'leaves', horizonte: 'peak',
+  monumento: [
+    [machu.pico('M60 118 C70 96 82 70 92 52 Q98 42 102 40 Q107 42 112 54 C118 72 124 96 128 118Z', [60, 40, 128, 118], '#B4C6B6', '#A2BC9E', .7)],
+    [machu.pico('M30 118 C38 98 48 70 58 44 Q62 30 66 20 Q69 12 72 13 Q75 15 78 24 Q81 34 84 44 C90 66 98 94 106 118Z', [30, 12, 106, 118], '#8E9C8A', '#6E9660', .72)],
+    [K.macizo({ x0: 0, x1: 120, alto: 40, c: '#86AA70', ondas: 4, seed: 6 })],
+    [K.andenes({ x0: 0, x1: 66, n: 5, alto: 6.4, paso: 8, c: '#BDB19C', veg: '#8DB070', seed: 2 }),
+      K.ruinas({ base: 92, defs: [{ x: 64, w: 16, h: 11, gablete: true }, { x: 82, w: 22, h: 9 }, { x: 106, w: 13, h: 12, gablete: true }], c: '#C6BAA4', seed: 3 })],
+  ],
+  composicion: { tapar: .18 },
+  adornos: ['pino', 'llama', 'farolMontana'],
+};

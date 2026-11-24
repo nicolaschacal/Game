@@ -305,12 +305,12 @@ const TABLA = [
   ['CAÑONES', 'Monument Valley', 'EE.UU.', L.monument, '#FBE6D0', '#F4C8A4', '#E8A47C', '#E0A070', '#E8B488', '#C4845C', 'dune', 'sand', 15.5, 'desierto !cactus'],
   ['MAYA', 'Chichén Itzá', 'México', L.chichen, '#F4ECC8', '#DCE0A0', '#B4C878', '#A9C070', '#C9C08A', '#A59D6A', 'dune', 'leaves', 13, 'selva'],
   ['CIUDAD', 'La Habana', 'Cuba', L.capitolio, '#DDF3F5', '#B4E0E4', '#8CCBD4', '#E6D6B0', '#B8AC9C', '#958A7A', 'city', 'bubbles', 15, 'tropical auto'],
-  ['MURALLA', 'Cartagena', 'Colombia', L.reloj, '#FBEBC8', '#F4D69A', '#E8BE74', '#E6CFA0', '#D9C7A4', '#B8A47E', 'dune', 'bubbles', 14, 'tropical'],
+  fila(FICHAS['Cartagena']), // ficha + kit (fichas-ciudades.js): la Torre del Reloj en la muralla y las casas de colores
   fila(FICHAS['Salto Ángel']), // ficha + kit (fichas-ciudades.js): el Auyán-tepui y su hilo de agua
   ['ECUADOR', 'Mitad del Mundo', 'Ecuador', L.mitad, '#E0F0F4', '#BCDDE4', '#94C4D0', '#9FBF7A', '#C9C2AE', '#A59D86', 'peak', 'leaves', 12, 'montana'],
-  ['ANDES', 'Machu Picchu', 'Perú', L.machu, '#DCEFE0', '#B8DCC0', '#8FC49C', '#7FAE6A', '#93BF78', '#5F9447', 'peak', 'leaves', 11, 'montana llama'],
+  fila(FICHAS['Machu Picchu']), // ficha + kit (fichas-ciudades.js): el Huayna Picchu, andenes y ruinas
   fila(FICHAS['Río de Janeiro']), // ficha + kit: el Pan de Azúcar y el teleférico (sin la estatua del Corcovado)
-  ['CIUDAD', 'Montevideo', 'Uruguay', L.salvo, '#E4EEF8', '#C4D6EA', '#A4BEDC', '#B8BCC4', PAV, VEREDA, 'city', 'leaves', 15, 'europa quiosco'],
+  fila(FICHAS['Montevideo']), // ficha + kit (fichas-ciudades.js): el Palacio Salvo y la Rambla
   ['CIUDAD', 'Buenos Aires', 'Argentina', L.obelisco, '#E6E0F4', '#CDC2E8', '#B4A6D8', '#B8B4BE', PAV, VEREDA, 'city', 'petals', 15, 'europa !jacaranda quiosco'],
   ['NIEVE', 'Ushuaia', 'Argentina', L.faro, '#F0F6FB', '#E4EEF6', '#BFD5E5', '#E1EBF2', '#EDF3F6', '#F3F0EA', 'peak', 'snow', 11, 'nieve'],
   ['ISLA', 'Isla de Pascua', 'Chile', L.moai, '#DDF0F6', '#B8DDEA', '#8CC6DA', '#8DBB62', '#A2CB78', '#6FA24F', 'dune', 'bubbles', 12, 'tropical moaiChico'],

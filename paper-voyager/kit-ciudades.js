@@ -742,8 +742,36 @@ export function tepui({ x0 = 0, x1 = 120, xa = 26, xb = 100, top = 30, pie = 80,
   return pieza(P(s, c), d, [x0, top - 1, x1, base]);
 }
 
+// Andenes incas: terrazas de piedra en escalera que suben hacia `lado` ('izq' = el escalón más alto a la izquierda), cada una
+// con su borde de pasto arriba, hiladas de piedra y la sombra que el pasto echa sobre el muro de abajo
+export function andenes({ x0 = 0, x1 = 80, base = 118, n = 5, alto = 7, paso = 9, lado = 'izq', c = '#B8AC98', veg = '#8DB070', seed = 1 } = {}) {
+  semilla(seed * 61 + 7); const T = tonos(c), V = tonos(veg), izq = lado === 'izq';
+  let f = '', d = '';
+  for (let k = 0; k < n; k++) { const yt = base - (k + 1) * alto, a = izq ? x0 : x0 + k * paso, b = izq ? x1 - k * paso : x1;
+    f += R(a, yt, b - a, base - yt, c);
+    d += R(a, yt + 2.2, b - a, 1.4, T.osc, ' opacity=".35"'); // sombra del pasto
+    for (let r = 0; r < 2; r++) { const yy = yt + 3.4 + r * (alto - 3.6) / 2; d += Ln(`M${f1(a + .6)} ${f1(yy)} H${f1(b - .6)}`, T.lin, .5, ' opacity=".45"');
+      for (let xx = a + 2 + rnd() * 3 + r * 2; xx < b - 1; xx += 4 + rnd() * 3) d += Ln(`M${f1(xx)} ${f1(yy)} v${f1((alto - 3.6) / 2)}`, T.lin, .45, ' opacity=".4"'); }
+    d += P(`M${f1(a - .4)} ${f1(yt + 2.4)} L${f1(a - .4)} ${f1(yt)} ` + Array.from({ length: 8 }, (_, i) => `Q${f1(a + (b - a) * (i + .5) / 8)} ${f1(yt - 1.4 - rnd())} ${f1(a + (b - a) * (i + 1) / 8)} ${f1(yt)}`).join(' ') + ` L${f1(b + .4)} ${f1(yt + 2.4)}Z`, veg)
+      + R(a, yt + .4, (b - a) * .5, .7, V.luz, ' opacity=".6"'); }
+  return pieza(f, d, [x0 - .4, base - n * alto - 2, x1 + .4, base]);
+}
+
+// Ruinas incas: casitas de piedra sin techo con los hastiales (paredes de punta) en pie, puertas y nichos trapezoidales.
+// defs = [{ x, w, h, gablete }] (h = altura del muro; gablete = punta arriba)
+export function ruinas({ base = 118, defs = [], c = '#C2B6A2', seed = 2 } = {}) {
+  semilla(seed * 67 + 3); const T = tonos(c); let f = '', d = '', top = base, xa = 999, xb = -999;
+  const trap = (x, y, w, h) => P(`M${f1(x - w / 2)} ${f1(y + h)} L${f1(x - w * .36)} ${f1(y)} L${f1(x + w * .36)} ${f1(y)} L${f1(x + w / 2)} ${f1(y + h)}Z`, T.osc);
+  defs.forEach(({ x, w, h, gablete = false }) => { const yt = base - h, g = gablete ? w * .42 : 0; top = Math.min(top, yt - g); xa = Math.min(xa, x); xb = Math.max(xb, x + w);
+    f += gablete ? P(`M${f1(x)} ${base} L${f1(x)} ${f1(yt)} L${f1(x + w / 2)} ${f1(yt - g)} L${f1(x + w)} ${f1(yt)} L${f1(x + w)} ${base}Z`, c) : R(x, yt, w, h, c) + P(`M${f1(x)} ${f1(yt)} l2 -1.6 l2.4 1 l3 -2 l2 1.4 L${f1(x + w)} ${f1(yt)}Z`, c);
+    for (let yy = yt + 3; yy < base - 1; yy += 2.8) d += Ln(`M${f1(x + .5)} ${f1(yy)} H${f1(x + w - .5)}`, T.lin, .4, ' opacity=".4"');
+    const nn = Math.max(1, Math.round(w / 9)); for (let i = 0; i < nn; i++) { const cx = x + w * (i + .5) / nn; d += i === Math.floor(nn / 2) && h > 10 ? trap(cx, base - h * .62, w / nn * .5, h * .62) : trap(cx, yt + h * .25, w / nn * .34, h * .28); }
+    d += R(x + w * .76, yt - g * .3, w * .24, h + g * .3, T.som, ' opacity=".35"'); });
+  return pieza(f, d, [xa, top, xb, base]);
+}
+
 export const PIEZAS = { puenteColgante, puenteArco, torreReloj, cupula, techoTeja, fachada, casas, farolitos, karst, chimenea, macizo, junco, globo, palmera, agua,
-  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga, baobab, acacia, jirafa, volcan, nube, duna, arbolSeco, cascada, faro, veranda, dhow, mesa, morro, teleferico, chorro, tepui };
+  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga, baobab, acacia, jirafa, volcan, nube, duna, arbolSeco, cascada, faro, veranda, dhow, mesa, morro, teleferico, chorro, tepui, andenes, ruinas };
 
 // ═════════════════════════ PALETA ═════════════════════════
 // Una semilla de color (el tono de las colinas del destino) → paleta completa. Reglas sacadas de las 65 filas de destinos.js:
