@@ -180,29 +180,32 @@ FICHAS['Phi Phi'] = {
   };
 }
 
-// ── Busan: la aldea cultural de Gamcheon. Casitas pastel de techo plano con sus azoteas de color, en hileras que suben la ladera
-// (las de atrás más pálidas), con la escalera blanca que trepa entre ellas. Delante, la ciudad baja del puerto ──
-{ const PAS = ['#D9AFAA', '#A9C9BE', '#DCC890', '#AEBCD6', '#D2B4C6', '#E2D4B8', '#B8CCA4'], TE = ['#7C9EB0', '#6E9E94', '#C48A6C', '#8E8EB4'];
-  const fila = (y, x0, x1, pal, seed, step = 10.5) => { let f = '', d = '', i = seed;
-    for (let x = x0; x < x1; x += step, i++) { const w = step - .6, top = y + ((i * 5) % 3) * 1.4 + Math.abs(x + step / 2 - 84) * .06, c = K.mix(PAS[(i * 3) % PAS.length], '#F4EEE4', pal), te = K.mix(TE[i % TE.length], '#F4EEE4', pal), Tc = K.tonos(c);
-      f += K.R(x, top, w, 118 - top, c) + K.R(x - .7, top - 2, w + 1.4, 2.4, te);
-      d += K.R(x + w * .16, top + 3.4, w * .24, 3, '#6E6E80', ' opacity=".7"') + K.R(x + w * .58, top + 3.4, w * .24, 3, '#6E6E80', ' opacity=".7"') + K.R(x + w * .16, top + 9, w * .24, 3, '#6E6E80', ' opacity=".55"')
-        + K.R(x + w * .78, top, w * .22, 118 - top, Tc.som, ' opacity=".4"') + K.R(x, top + .4, w, 1, Tc.osc, ' opacity=".3"'); }
-    return { f, d, box: [x0 - 1, y - 6, x1 + 1, 118] }; };
+// ── Busan: la aldea cultural de Gamcheon vista desde el puerto. Un cerro verde en el centro con las casitas de colores fuertes
+// trepando en hileras (techos planos de color, ventanitas, la escalera blanca en zigzag) y delante el puerto con barcos de pesca ──
+{ const PAS = ['#EE9F8C', '#7FC0D8', '#F2CF62', '#9CCB7E', '#E59AC0', '#93A6E2', '#F4B46A'], TE = ['#3F8FB0', '#2F8F86', '#D2573E', '#6C6CB8', '#E0A040'];
+  const fila = (y, x0, x1, seed, step) => { let f = '', i = seed;
+    for (let x = x0; x < x1 - 2; x += step, i++) { const w = step - .7, top = y + ((i * 5) % 3) * 1.3, c = PAS[(i * 3) % PAS.length], te = TE[i % TE.length], Tc = K.tonos(c);
+      f += K.R(x, top, w, 118 - top, c) + K.R(x - .6, top - 2.2, w + 1.2, 2.6, te)
+        + K.R(x + w * .16, top + 3.6, w * .26, 3.2, '#4E5068', ' opacity=".75"') + K.R(x + w * .58, top + 3.6, w * .26, 3.2, '#4E5068', ' opacity=".75"')
+        + K.R(x + w * .16, top + 3.6, w * .26, .8, '#FFFFFF', ' opacity=".5"') + K.R(x + w * .58, top + 3.6, w * .26, .8, '#FFFFFF', ' opacity=".5"')
+        + K.R(x + w * .78, top, w * .22, 118 - top, Tc.som, ' opacity=".45"') + K.R(x, top + .4, w, 1, Tc.osc, ' opacity=".35"'); }
+    return f; };
+  const cerro = 'M-2 118 Q6 100 18 86 Q34 66 48 48 Q56 38 62 36 Q70 35 78 42 Q94 58 106 80 Q114 96 122 118Z';
+  const pueblo = [fila(46, 50, 76, 1, 8.5), fila(58, 38, 88, 4, 9), fila(71, 26, 98, 7, 9.5), fila(85, 14, 108, 2, 10), fila(99, 2, 118, 3, 10.5)].join('')
+    + Ln('M58 118 L60 110 L66 108 L68 99 L62 96 L64 86 L70 84 L72 74 L66 71 L68 62', '#FBF4E6', 2.2);
   FICHAS['Busan'] = {
-    mundo: 'LADERA', nombre: 'Busan', pais: 'Corea del Sur', color: '#A6BCC8', paisaje: 'ciudad', hora: 15.5, clima: 'petals', horizonte: 'peak',
-    // La ladera es una MONTAÑA con cumbre (baja hasta el suelo por los dos lados, en el tono de las montañas del fondo) y las
-    // hileras de casitas siguen su forma: más cortas arriba, más largas abajo. Así se lee como un cerro con el pueblo encima y no como un bloque recortado
+    mundo: 'LADERA', nombre: 'Busan', pais: 'Corea del Sur', color: '#9CC0CE', paisaje: 'costa', suelo: 'pueblo', hora: 15.5, clima: 'petals', horizonte: 'peak',
     monumento: [
-      [{ f: P('M0 118 Q8 104 20 92 Q36 74 52 56 Q66 40 78 34 Q86 31 94 36 Q106 46 113 66 Q118 86 120 118Z', '#AFC0B2'),
-         d: P('M78 34 Q86 31 94 36 Q106 46 113 66 Q118 86 120 118 L104 118 Q104 82 96 60 Q90 46 82 38Z', '#8FA294', ' opacity=".45"')
-           + [[30, 92], [44, 76], [100, 50], [108, 74]].map(([x, y]) => P(`M${x - 5} ${y + 3} Q${x} ${y - 5} ${x + 5} ${y + 3}Z`, '#94AE90')).join(''), box: [0, 30, 120, 118] },
-       // las hileras van como DETALLE del cerro (sin borde crema propio): el borde rodea sólo la silueta del cerro y las casitas
-       // quedan pintadas encima, sin franjas crema entre hilera e hilera (con borde propio se leía como un bloque recortado)
-       { f: '', d: [fila(44, 70, 92, .45, 1, 9), fila(56, 55, 104, .32, 4, 9.5), fila(69, 45, 108, .2, 7, 10.5), fila(84, 31, 114, .08, 2, 11.5), fila(98, 17, 118, 0, 3, 12.5)].map(r => r.f + r.d).join('')
-           + Ln('M64 118 L66 110 L70 108 L72 100 L76 98 L78 90 L82 88 L84 80', '#FBF4E6', 2.2), box: [17, 40, 118, 118] }],
+      [{ f: P(cerro, '#8FB48A'), d: `<clipPath id="bscerro"><path d="${cerro}"/></clipPath><g clip-path="url(#bscerro)">${pueblo}`
+          + P('M62 36 Q70 35 78 42 Q94 58 106 80 Q114 96 122 118 L112 118 Q104 86 92 66 Q82 50 70 40Z', '#5F7E5C', ' opacity=".3"') + '</g>', box: [-2, 33, 122, 118] }],
     ],
-    composicion: { tapar: .26, tamano: .82, laterales: 1.2 },
+    cAgua: '#8FBCCB',
+    composicion: { tapar: .16, tamano: 1.05, aguaAlto: 1, enAgua: ({ y0 }) => {
+      const wl = y0 + 8, barco = (x, c, s = 1, dir = 1) => P(`M${x - 7 * s} ${f1(wl)} L${x + 7 * s} ${f1(wl)} L${x + 5 * s * dir} ${f1(wl + 2.6 * s)} L${x - 5 * s} ${f1(wl + 2.6 * s)}Z`, c)
+        + K.R(x - 2.6 * s - dir * 1.4 * s, wl - 4.2 * s, 4.6 * s, 4.2 * s, '#F2EEE6') + K.R(x - 2.2 * s - dir * 1.4 * s, wl - 3.4 * s, 1.6 * s, 1.4 * s, '#5A6A80')
+        + Ln(`M${f1(x + 3 * s)} ${f1(wl)} V${f1(wl - 8 * s)}`, '#5E5864', .6) + Ln(`M${f1(x + 3 * s)} ${f1(wl - 7.6 * s)} L${f1(x + 7.4 * s)} ${f1(wl - .6)}`, '#5E5864', .4);
+      const b = barco(34, '#D2573E', .9) + barco(84, '#3F8FB0', 1.05, -1);
+      return { bajo: `<g opacity=".22" transform="translate(0 ${f1(2 * wl + 5)}) scale(1 -1)">${b}</g>`, f: b, d: Ln(`M20 ${f1(wl + 4)} h12 M66 ${f1(wl + 5)} h10 M96 ${f1(wl + 3.6)} h12`, '#E6F2F2', 1, ' opacity=".9"') }; } },
     adornos: ['cerezo', 'pagodita', 'farolPapel'],
   };
 }
