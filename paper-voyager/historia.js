@@ -128,6 +128,20 @@ export function onArrive(V, at) {
   STORE.set('histPend', { hero, ch: ch.id });
   return ch;
 }
+// Llegaste a la ciudad del próximo capítulo pero falta algo: qué falta (para avisarlo al volver al inicio)
+export function blocked(V, at) {
+  V.syncAlbum?.(); const hero = V.heroId?.() || 'nilo', ch = nextChapter(hero);
+  if (!ch || !ch.at || IDX[ch.at] !== at) return null;
+  const miss = reqs(V, hero, ch).filter(r => r.ok === false); if (!miss.length) return null;
+  return { hero, ch: ch.id, miss: miss.map(r => r.label + (r.goal > 1 ? ` (${r.n}/${r.goal})` : '')) };
+}
+// Aviso sobre cualquier panel (el mapa se abre solo al volver): cinta roja con lo que falta; se va sola o al tocarla
+export function showHint(hh, over) {
+  css(); const el = document.createElement('div'); el.className = 'pvhh';
+  el.innerHTML = `<div class="ribbon"><small>${esc(over)}</small>${hh.miss.map(esc).join('<br>')}</div>`;
+  document.body.appendChild(el); const off = () => { el.classList.add('out'); setTimeout(() => el.remove(), 300); };
+  el.onclick = off; setTimeout(off, 4200);
+}
 export const pending = () => STORE?.get('histPend', null);
 export const clearPending = () => STORE?.set('histPend', null);
 export const chapterOf = (hero, id) => STORIES[hero]?.chapters.find(c => c.id === id) || null;
@@ -292,6 +306,8 @@ function css() {
   const s = document.createElement('style'); s.id = 'pvhCss';
   s.textContent = `
 body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
+.pvhh{position:fixed;left:0;right:0;top:calc(var(--st,0px) + 130px);z-index:96;height:0;animation:pvhTag .6s cubic-bezier(.2,1.5,.4,1) both}
+.pvhh .ribbon{top:0;white-space:normal;max-width:84vw;font-size:18px;line-height:1.15;pointer-events:auto}.pvhh.out{opacity:0;transition:opacity .3s}
 .pvh{position:fixed;inset:0;z-index:95;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;animation:pvhIn .35s}
 @keyframes pvhIn{0%{opacity:0}}
 .pvh .hbg{position:absolute;inset:0;background:linear-gradient(rgba(18,14,36,.3),rgba(18,14,36,.45) 45%,rgba(18,14,36,.9));-webkit-backdrop-filter:blur(7px) saturate(.85);backdrop-filter:blur(7px) saturate(.85)}

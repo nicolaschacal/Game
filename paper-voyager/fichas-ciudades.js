@@ -399,3 +399,18 @@ FICHAS['Sossusvlei'] = {
     adornos: ['cipres', 'columna', 'farolMediterraneo'],
   };
 }
+
+// ── Marrakech: la Kutubía al atardecer, alta y rojiza, con su linterna y el yamur dorado; a los costados palmeras y la muralla de
+// tierra de la medina con sus almenas, y detrás las sierras del fondo de la escena. Rojo de tierra apagado, no ladrillo vivo ──
+{ const tierra = '#C9906C', tierra2 = '#BC8462';
+  FICHAS['Marrakech'] = {
+    mundo: 'ZOCO', nombre: 'Marrakech', pais: 'Marruecos', color: '#D4A27C', paisaje: 'desierto', hora: 16.5, clima: 'leaves',
+    monumento: [
+      [K.palmera({ x: 24, h: 58, lean: 4, ct: '#9A7A5A', cf: '#7E9A6C' }), K.palmera({ x: 98, h: 54, lean: -5, ct: '#9A7A5A', cf: '#7E9A6C' }), K.palmera({ x: 86, h: 42, lean: 4, ct: '#9A7A5A', cf: '#86A274' })],
+      [K.alminar({ x: 58, w: 26, top: 10, c: tierra, cFriso: '#7EA294', cOro: '#D2AA58' })],
+      [K.muro({ x0: 4, x1: 116, y: 86, c: tierra2, pilastras: 6, arcos: [{ x: 30, w: 10, h: 18 }, { x: 88, w: 10, h: 18 }] })],
+    ],
+    composicion: { tapar: .2 },
+    adornos: ['palmera', 'rocaArena', 'farolDesierto'],
+  };
+}

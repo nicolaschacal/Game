@@ -112,6 +112,33 @@ export function torreReloj({ x = 60, w = 14, top = 20, base = 118, c = '#D9B27A'
   return pieza(f, d, [x0 - 1.6, top - (techo === 'aguja' ? w * 1.9 : techo === 'cupula' ? w * .5 + 6 : techo === 'pira' ? w * .8 : 0), x0 + w + 1.6, base]);
 }
 
+// Alminar magrebí (Kutubía): torre cuadrada de piedra rojiza con paños de arcos lobulados y sebka (rombos), friso de cerámica,
+// almenas dentadas, linterna con su cupulita y el yamur de tres bolas doradas
+export function alminar({ x = 60, w = 26, top = 18, base = 118, c = '#C98E6A', cFriso = '#6E9C8E', cOro = '#D9AE52' } = {}) {
+  const T = tonos(c), x0 = x - w / 2, hl = w * .62, lw = w * .5, yt = top + hl + w * .1; // yt = tope del fuste (base de las almenas)
+  let f = R(x0, yt, w, base - yt, c), d = '';
+  // almenas del fuste
+  for (let i = 0; i < 5; i++) { const mx = x0 + i * w / 5 + w / 20; f += P(`M${f1(mx)} ${f1(yt)} V${f1(yt - 3.4)} L${f1(mx + w / 20)} ${f1(yt - 5)} L${f1(mx + w / 10)} ${f1(yt - 3.4)} V${f1(yt)}Z`, c); }
+  // linterna, cupulita y yamur
+  const lx0 = x - lw / 2, ly = yt - hl * .78;
+  f += R(lx0, ly, lw, yt - ly, c) + P(`M${f1(lx0 - .8)} ${f1(ly)} Q${f1(x)} ${f1(ly - lw * .62)} ${f1(lx0 + lw + .8)} ${f1(ly)}Z`, cFriso) + R(x - .5, ly - lw * .62 - 9, 1, 9, T.osc);
+  [3.2, 2.6, 2].forEach((r, i) => { f += C(x, ly - lw * .62 - 2.6 - i * 3.4, r, cOro); });
+  for (let i = 0; i < 4; i++) { const mx = lx0 + i * lw / 4 + lw / 16; f += R(mx, ly - 2.6, lw / 8, 2.6, c); }
+  d += arco(x - lw * .18, ly + 4, lw * .36, (yt - ly) * .55, T.osc) + R(lx0 + lw * .7, ly, lw * .3, yt - ly, T.som, SOMBRA);
+  // friso de cerámica bajo las almenas y paños decorados por piso
+  d += R(x0, yt + 1.2, w, 3.2, cFriso) + R(x0, yt + 1.2, w, .8, luz(cFriso, .4));
+  const pisos = [[yt + 9, 'sebka'], [yt + 9 + (base - yt) * .27, 'arcos'], [yt + 9 + (base - yt) * .52, 'ventana']];
+  pisos.forEach(([y, tipo]) => {
+    const pw = w * .64, px = x - pw / 2, ph = (base - yt) * .2;
+    d += R(px - 1.2, y - 1.2, pw + 2.4, ph + 2.4, T.lin, ' opacity=".35"');
+    if (tipo === 'sebka') { let rr = ''; for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) { const cx = px + pw * (i + .5) / 4, cy = y + ph * (j + .5) / 3; rr += `M${f1(cx)} ${f1(cy - ph / 6)} L${f1(cx + pw / 8)} ${f1(cy)} L${f1(cx)} ${f1(cy + ph / 6)} L${f1(cx - pw / 8)} ${f1(cy)}Z `; } d += Ln(rr, T.osc, .9); }
+    else if (tipo === 'arcos') { for (let i = 0; i < 3; i++) d += arco(px + pw * (i / 3 + .06), y + ph * .1, pw * .22, ph * .86, T.osc); }
+    else d += arco(x - pw * .16, y, pw * .32, ph, T.osc) + Ln(`M${f1(x - pw * .26)} ${f1(y - 1)} Q${f1(x)} ${f1(y - ph * .5)} ${f1(x + pw * .26)} ${f1(y - 1)}`, T.luz, 1.2);
+  });
+  d += R(x0 + w * .66, yt, w * .34, base - yt, T.som, SOMBRA) + R(x0, yt, w, 1, T.luz);
+  return pieza(f, d, [x0 - .5, ly - lw * .62 - 13, x0 + w + .5, base]);
+}
+
 // Minarete otomano: fuste fino de piedra, uno o dos balcones (şerefe) con baranda y el cono largo de plomo en punta ("lápiz")
 export function minarete({ x = 60, w = 5, top = 10, base = 118, c = '#E2D6C8', cTecho = '#8E9AAA', balcones = 2 } = {}) {
   const T = tonos(c), TT = tonos(cTecho), x0 = x - w / 2, cono = w * 4.2, yc = top + cono;

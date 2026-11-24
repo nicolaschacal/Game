@@ -811,5 +811,6 @@
  "diary.replay": "VER A CENA",
  "diary.word": "DIÁRIO",
  "diary.open": "Abrir o diário",
- "diary.mapHint": "Pista do diário"
+ "diary.mapHint": "Pista do diário",
+ "diary.blockedOver": "CAPÍTULO {n} · AINDA FALTA"
 }

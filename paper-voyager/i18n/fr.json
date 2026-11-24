@@ -811,5 +811,6 @@
  "diary.replay": "REVOIR LA SCÈNE",
  "diary.word": "JOURNAL",
  "diary.open": "Ouvrir le journal",
- "diary.mapHint": "Indice du journal"
+ "diary.mapHint": "Indice du journal",
+ "diary.blockedOver": "CHAPITRE {n} · IL MANQUE ENCORE"
 }

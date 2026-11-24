@@ -811,5 +811,6 @@
  "diary.replay": "VER LA ESCENA",
  "diary.word": "DIARIO",
  "diary.open": "Abrir el diario",
- "diary.mapHint": "Pista del diario"
+ "diary.mapHint": "Pista del diario",
+ "diary.blockedOver": "CAPÍTULO {n} · TODAVÍA FALTA"
 }

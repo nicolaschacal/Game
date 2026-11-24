@@ -293,7 +293,7 @@ const TABLA = [
   ['RUINAS', 'Roma', 'Italia', L.coliseo, '#FAE6C8', '#EFCFA2', '#DDB684', '#D6C2A0', '#C9B694', '#A8956F', 'dune', 'leaves', 15.5, 'mediterraneo !pinoParasol'],
   ['PRADERA', 'Pisa', 'Italia', LANDMARKS.pisa, '#E6F4DA', '#C4E0A2', '#97C670', '#A6CC78', '#B9D88E', '#8DBF5E', 'dune', 'petals', 10, 'mediterraneo !cipres'],
   ['CIUDAD', 'Barcelona', 'España', L.sagrada, '#FBE9D2', '#F4D2A6', '#E6B880', '#DCC8A6', '#C6B8A0', '#A39479', 'city', 'petals', 14, 'mediterraneo toldo'],
-  ['ZOCO', 'Marrakech', 'Marruecos', L.kutubia, '#FBE4C8', '#F4C89A', '#E6A870', '#E3B98A', '#E0A878', '#C08A5C', 'dune', 'sand', 15.5, 'desierto'],
+  fila(FICHAS['Marrakech']), // 23 · ficha + kit (fichas-ciudades.js): la Kutubía, la medina y el Atlas
   ['COSTA', 'Lisboa', 'Portugal', L.belem, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 15, 'mediterraneo velero'],
   ['CIUDAD', 'Madrid', 'España', L.alcala, '#FBE9D2', '#F4D2A6', '#E6B880', '#C9C2B4', '#9A9690', '#787470', 'city', 'leaves', 15.5, 'europa toldo'],
   ['CIUDAD', 'París', 'Francia', L.eiffel, '#E9EEF6', '#CBD6E6', '#AEBED6', '#C2C0BC', '#9A9CA3', '#797B83', 'city', 'leaves', 15, 'europa toldo'],

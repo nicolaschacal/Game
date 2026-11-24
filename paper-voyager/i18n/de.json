@@ -811,5 +811,6 @@
  "diary.replay": "SZENE ANSEHEN",
  "diary.word": "TAGEBUCH",
  "diary.open": "Tagebuch öffnen",
- "diary.mapHint": "Hinweis aus dem Tagebuch"
+ "diary.mapHint": "Hinweis aus dem Tagebuch",
+ "diary.blockedOver": "KAPITEL {n} · ES FEHLT NOCH"
 }

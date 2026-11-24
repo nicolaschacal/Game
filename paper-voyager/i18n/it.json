@@ -811,5 +811,6 @@
  "diary.replay": "RIVEDI LA SCENA",
  "diary.word": "DIARIO",
  "diary.open": "Apri il diario",
- "diary.mapHint": "Indizio del diario"
+ "diary.mapHint": "Indizio del diario",
+ "diary.blockedOver": "CAPITOLO {n} · MANCA ANCORA"
 }

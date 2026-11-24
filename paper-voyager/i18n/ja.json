@@ -811,5 +811,6 @@
  "diary.replay": "シーンを見る",
  "diary.word": "日記",
  "diary.open": "日記を開く",
- "diary.mapHint": "日記のヒント"
+ "diary.mapHint": "日記のヒント",
+ "diary.blockedOver": "第{n}章 · あと少し"
 }

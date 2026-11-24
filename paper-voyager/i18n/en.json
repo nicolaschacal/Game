@@ -811,5 +811,6 @@
  "diary.replay": "WATCH THE SCENE",
  "diary.word": "DIARY",
  "diary.open": "Open the diary",
- "diary.mapHint": "Diary clue"
+ "diary.mapHint": "Diary clue",
+ "diary.blockedOver": "CHAPTER {n} · STILL MISSING"
 }
