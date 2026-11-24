@@ -770,8 +770,94 @@ export function ruinas({ base = 118, defs = [], c = '#C2B6A2', seed = 2 } = {}) 
   return pieza(f, d, [xa, top, xb, base]);
 }
 
+// Pared de arenisca (Petra, el Siq): peña de cumbre abombada en lóbulos ("colmenas"), estratos ondulados de colores que la cruzan
+// (la arenisca veteada de Petra), chorreaduras verticales y la cara en sombra. cara: 'izq' | 'der' → lado casi a plomo que mira al
+// centro; el otro baja en talud. estratos: colores de las vetas (por defecto, tonos del mismo color)
+export function arenisca({ x0 = 0, x1 = 120, base = 118, top = 10, c = '#C98E76', cara = 'der', lobulos = 3, caida = 0, estratos, sombra = .4, seed = 1 } = {}) {
+  semilla(seed * 71 + 11); const T = tonos(c), w = x1 - x0, h = base - top, iz = cara === 'izq';
+  // caida: cuánto baja la cumbre hacia el lado abierto (fracción de la altura): la peña sube hacia su cara, como una pared del Siq
+  const cae = t => f1(h * caida * (iz ? t : 1 - t));
+  // lado abierto en talud (pie más afuera), lado de la cara casi a plomo; nada termina en corte vertical en el borde
+  const pa = iz ? x0 + w * .02 : x0 - w * .02, pb = iz ? x1 + w * .02 : x1 - w * .02;
+  let s = `M${f1(pa)} ${base} C${f1(x0 + w * (iz ? .02 : .1))} ${f1(base - h * .45)} ${f1(x0 + w * (iz ? 0 : .06))} ${f1(top + h * .22 + cae(0))} ${f1(x0 + w * .12)} ${f1(top + h * .08 + cae(.12))} `;
+  for (let i = 0; i < lobulos; i++) { const ta = .12 + .76 * (i + .5) / lobulos, tb = .12 + .76 * (i + 1) / lobulos, xa = x0 + w * ta, xb = x0 + w * tb, ya = top - h * (.07 + rnd() * .03) + cae(ta), yb = top + h * (.1 + rnd() * .05) + cae(tb);
+    s += `Q${f1(xa)} ${f1(ya)} ${f1(xb)} ${f1(i === lobulos - 1 ? top + h * .08 + cae(.88) : yb)} `; }
+  s += `C${f1(x0 + w * (iz ? .94 : 1))} ${f1(top + h * .22 + cae(1))} ${f1(x0 + w * (iz ? .9 : .98))} ${f1(base - h * .45)} ${f1(pb)} ${base}Z`;
+  const id = 'ar' + seed + Math.round(x0 + top);
+  const vs = estratos ?? [T.som, T.luz, shade(c, .1)];
+  let g = '';
+  for (let i = 0; i < 9; i++) { const yy = top + h * (.1 + i * .1) + (rnd() - .5) * 3, a = 1.4 + rnd() * 2.2;
+    g += P(`M${f1(x0 - 4)} ${f1(yy)} Q${f1(x0 + w * .3)} ${f1(yy - a * 1.6)} ${f1(x0 + w * .55)} ${f1(yy)} T${f1(x1 + 4)} ${f1(yy - a)} L${f1(x1 + 4)} ${f1(yy + a)} Q${f1(x0 + w * .7)} ${f1(yy + a * 2.4)} ${f1(x0 + w * .45)} ${f1(yy + a)} T${f1(x0 - 4)} ${f1(yy + a * .8)}Z`, vs[i % vs.length], ' opacity=".32"'); }
+  for (let i = 0; i < Math.round(w / 6); i++) { const xx = x0 + w * (.08 + rnd() * .84), y1 = top + h * (.06 + rnd() * .2); g += Ln(`M${f1(xx)} ${f1(y1)} q${f1((rnd() - .5) * 2)} ${f1(h * .2)} ${f1((rnd() - .5) * 1.6)} ${f1(h * (.25 + rnd() * .3))}`, T.lin, .7, ' opacity=".4"'); }
+  // la cara en sombra (luz desde la izquierda: la de la derecha va más oscura)
+  if (sombra) g += iz ? P(`M${f1(x0 - 6)} ${base} V${f1(top - 4)} L${f1(x0 + w * .3)} ${f1(top - 4)} L${f1(x0 + w * .18)} ${base}Z`, T.som, ` opacity="${f1(sombra * .5)}"`)
+    : P(`M${f1(x1 + 6)} ${base} V${f1(top - 4)} L${f1(x1 - w * .32)} ${f1(top - 4)} L${f1(x1 - w * .2)} ${base}Z`, T.som, ` opacity="${sombra}"`);
+  const d = `<clipPath id="${id}"><path d="${s}"/></clipPath><g clip-path="url(#${id})">${g}</g>` + Ln(`M${f1(x0 + w * .1)} ${f1(top + h * .12)} Q${f1(x0 + w * .3)} ${f1(top - h * .02)} ${f1(x0 + w * .45)} ${f1(top + h * .03)}`, T.luz, 1.1, ' opacity=".7"');
+  return pieza(P(s, c), d, [Math.min(pa, x0), top - h * .05, Math.max(pb, x1), base]);
+}
+
+// Al-Khazneh (el Tesoro de Petra): fachada tallada de dos pisos. Abajo seis columnas con capiteles, la puerta oscura al medio y el
+// frontón sobre las cuatro del centro; arriba el ático, el tholos (templete redondo de columnas con techito cónico y la urna) entre
+// dos pabellones coronados por medios frontones partidos. Devuelve sólo la fachada: va sobre una `arenisca` (el nicho lo pinta `nicho`)
+export function tesoro({ x = 60, w = 52, top = 8, base = 118, c = '#E0B49A', cPuerta, nicho = true } = {}) {
+  const T = tonos(c), hw = w / 2, X = t => f1(x + t * hw), H = base - top, Y = t => f1(top + t * H), cp = cPuerta ?? shade(c, .5);
+  // alturas (fracciones de H desde arriba): urna, cono, tambor, ático, frontón, entablamento, columnas
+  const yU = Y(0), yCo = Y(.06), yTa = Y(.16), yPab = Y(.2), yAt = Y(.36), yAt2 = Y(.41), yFr = Y(.44), yEn = Y(.53), yCol = Y(.57);
+  let f = '', d = '';
+  // ── piso de abajo: bloque con entablamento y frontón ──
+  f += R(x - hw, yEn, w, base - yEn, c) + R(x - hw - 1.2, yEn - 1.4, w + 2.4, 2.4, c)
+    + P(`M${X(-.68)} ${yEn - 1} L${x} ${yFr} L${X(.68)} ${yEn - 1}Z`, c);
+  // ── ático y piso de arriba: pabellones laterales con medio frontón y el tholos ──
+  f += R(x - hw, yAt, w, yAt2 - yAt + 1, c);
+  [-1, 1].forEach(sg => { const xa = x + sg * hw, xb = x + sg * hw * .5;
+    f += P(`M${f1(xa)} ${yAt} L${f1(xa)} ${yPab} L${f1(xb)} ${yPab} L${f1(xb)} ${yAt}Z`, c)
+      + P(`M${f1(xa - sg * 1.2)} ${f1(+yPab + .6)} L${f1(xb)} ${f1(+yPab - H * .08)} L${f1(xb)} ${f1(+yPab + .6)}Z`, c); });
+  const rt = hw * .3; // radio del tholos
+  f += R(x - rt, yTa, rt * 2, yAt - yTa + .5, c) + P(`M${f1(x - rt - 1)} ${f1(+yTa + .6)} Q${f1(x - rt * .4)} ${f1(+yCo + 2)} ${x} ${yCo} Q${f1(x + rt * .4)} ${f1(+yCo + 2)} ${f1(x + rt + 1)} ${f1(+yTa + .6)}Z`, c)
+    + `<ellipse cx="${x}" cy="${f1(+yU + (yCo - yU) * .55)}" rx="${f1(hw * .07)}" ry="${f1((yCo - yU) * .42)}" fill="${c}"/>` + R(x - hw * .02, yU, hw * .04, yCo - yU, c);
+  // ── detalles: columnas del piso de abajo (huecos en sombra entre columnas, capiteles, luz a la izquierda de cada fuste) ──
+  const cols = [-.9, -.62, -.34, .34, .62, .9], cw = hw * .1;
+  const hueco = (xa, xb, y0, y1, o = .55) => R(xa, y0, xb - xa, y1 - y0, T.osc, ` opacity="${o}"`);
+  for (let i = 0; i < cols.length - 1; i++) { const a = x + cols[i] * hw + cw / 2, b = x + cols[i + 1] * hw - cw / 2; if (i !== 2) d += hueco(a, b, +yCol + 2, base, .55); }
+  d += hueco(x - hw * .34 + cw / 2, x + hw * .34 - cw / 2, +yCol + 2, base, .4);
+  cols.forEach(t => { const cx = x + t * hw; d += R(cx - cw / 2 - .8, yCol, cw + 1.6, 2.2, T.luz) + Ln(`M${f1(cx - cw / 2 + .5)} ${f1(+yCol + 2.4)} V${base}`, T.luz, .7, ' opacity=".8"')
+    + Ln(`M${f1(cx + cw / 2 - .4)} ${f1(+yCol + 2.4)} V${base}`, T.lin, .6, ' opacity=".5"'); });
+  // puerta: vano oscuro con marco
+  const pw = hw * .26, py = +yCol + (base - yCol) * .34;
+  d += R(x - pw / 2 - 1, py - 1.6, pw + 2, base - py + 1.6, T.luz, ' opacity=".7"') + R(x - pw / 2, py, pw, base - py, cp);
+  // entablamento con friso (bandas) y frontón: tímpano en sombra suave, luz en el faldón izquierdo
+  d += R(x - hw - 1.2, yEn - 1.4, w + 2.4, .9, T.luz) + Ln(`M${f1(x - hw)} ${f1(+yEn + 2.2)} H${f1(x + hw)}`, T.lin, .6, ' opacity=".6"')
+    + P(`M${X(-.5)} ${f1(yEn - 1.6)} L${x} ${f1(+yFr + 3)} L${X(.5)} ${f1(yEn - 1.6)}Z`, T.som, ' opacity=".38"')
+    + Ln(`M${X(-.68)} ${f1(yEn - 1)} L${x} ${yFr}`, T.luz, 1, ' opacity=".9"') + C(x, +yFr + (yEn - yFr) * .55, hw * .05, T.som, ' opacity=".6"');
+  // ático: banda con tres sombras de pilastras
+  d += R(x - hw, +yAt2 - .2, w, 1.2, T.som, ' opacity=".5"') + R(x - hw, yAt, w, .9, T.luz, ' opacity=".8"');
+  // pabellones de arriba: dos columnas con el hueco en sombra, medio frontón con luz en el faldón
+  [-1, 1].forEach(sg => { const xa = x + sg * hw, xb = x + sg * hw * .5, l = Math.min(xa, xb), r = Math.max(xa, xb), ww = r - l;
+    d += hueco(l + ww * .22, r - ww * .22, +yPab + 2.4, yAt, .55) + R(l - .4, yPab, ww + .8, 1.4, T.luz, ' opacity=".8"')
+      + Ln(`M${f1(xa - sg * 1.2)} ${f1(+yPab + .6)} L${f1(xb)} ${f1(+yPab - H * .08)}`, sg < 0 ? T.luz : T.lin, .9, ' opacity=".85"')
+      + P(`M${f1(xa - sg * ww * .3)} ${f1(+yPab - .2)} L${f1(xb)} ${f1(+yPab - H * .05)} L${f1(xb)} ${f1(+yPab - .2)}Z`, T.som, ' opacity=".35"'); });
+  // tholos: cuatro columnas con huecos, cornisa, cono con su mitad en sombra, urna
+  [-.66, -.22, .22].forEach(t => d += hueco(x + rt * t + rt * .14, x + rt * (t + .44) - rt * .14, +yTa + 2, yAt, .5));
+  d += R(x - rt - .8, yTa, rt * 2 + 1.6, 1.6, T.luz) + P(`M${x} ${yCo} Q${f1(x + rt * .4)} ${f1(+yCo + 2)} ${f1(x + rt + 1)} ${f1(+yTa + .6)} L${x} ${f1(+yTa + .6)}Z`, T.som, ' opacity=".4"')
+    + R(x + rt * .3, yTa, rt * .7, yAt - yTa, T.som, ' opacity=".3"') + `<ellipse cx="${f1(x + hw * .025)}" cy="${f1(+yU + (yCo - yU) * .55)}" rx="${f1(hw * .04)}" ry="${f1((yCo - yU) * .38)}" fill="${T.som}" opacity=".45"/>`;
+  // sombra general a la derecha (luz desde la izquierda)
+  d += R(x + hw * .62, yAt, hw * .38, base - yAt, T.som, ' opacity=".22"');
+  return pieza(f, d, [x - hw - 1.8, yU, x + hw + 1.8, base]);
+}
+
+// Nicho tallado alrededor de una fachada de roca (Petra): el corte en la arenisca, en sombra suave y de borde superior irregular,
+// sin borde crema (sólo detalles: es un hueco, no una hoja). Va en su propia capa, entre la peña y la fachada.
+export function nicho({ x = 60, w = 60, top = 4, base = 118, c = '#C98E76', o = .5, seed = 1 } = {}) {
+  semilla(seed * 29 + 3); const T = tonos(c), hw = w / 2;
+  let s = `M${f1(x - hw)} ${base} L${f1(x - hw + 1)} ${f1(top + 12)} Q${f1(x - hw + 1)} ${f1(top + 3)} ${f1(x - hw + 7)} ${f1(top + 2)} `;
+  for (let i = 1; i <= 5; i++) s += `Q${f1(x - hw + 7 + (w - 14) * (i - .5) / 5)} ${f1(top - 1.4 + rnd() * 1.4)} ${f1(x - hw + 7 + (w - 14) * i / 5)} ${f1(top + rnd() * 1.6)} `;
+  s += `Q${f1(x + hw - 1)} ${f1(top + 3)} ${f1(x + hw - 1)} ${f1(top + 12)} L${f1(x + hw)} ${base}Z`;
+  const d = P(s, T.som, ` opacity="${o}"`) + Ln(s.replace(/Z$/, ''), T.osc, .9, ' opacity=".45"') + P(`M${f1(x + hw * .45)} ${f1(top + 2)} L${f1(x + hw - 1)} ${f1(top + 2)} L${f1(x + hw)} ${base} L${f1(x + hw * .6)} ${base}Z`, T.osc, ' opacity=".22"');
+  return pieza('', d, [x - hw, top - 1.4, x + hw, base]);
+}
+
 export const PIEZAS = { puenteColgante, puenteArco, torreReloj, cupula, techoTeja, fachada, casas, farolitos, karst, chimenea, macizo, junco, globo, palmera, agua,
-  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga, baobab, acacia, jirafa, volcan, nube, duna, arbolSeco, cascada, faro, veranda, dhow, mesa, morro, teleferico, chorro, tepui, andenes, ruinas };
+  muro, pabellon, tenshu, hastial, escalinata, puenteCurvo, acantilado, colaLarga, baobab, acacia, jirafa, volcan, nube, duna, arbolSeco, cascada, faro, veranda, dhow, mesa, morro, teleferico, chorro, tepui, andenes, ruinas, arenisca, tesoro, nicho };
 
 // ═════════════════════════ PALETA ═════════════════════════
 // Una semilla de color (el tono de las colinas del destino) → paleta completa. Reglas sacadas de las 65 filas de destinos.js:

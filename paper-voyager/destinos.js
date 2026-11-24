@@ -282,7 +282,7 @@ const TABLA = [
   ['CIUDAD', 'Dubái', 'Emiratos Árabes', L.burj, '#FBEBD0', '#F2D6A8', '#E4BE88', '#D8C8A8', '#A39C92', '#827B72', 'city', 'sand', 13.5, 'moderna !palmera'],
   fila(FICHAS['Madagascar']), // 10 · ficha + kit (fichas-ciudades.js): Avenida de los Baobabs
   fila(FICHAS['Kilimanjaro']), // 11 · ficha + kit: el Kibo desde la sabana
-  ['CAÑÓN', 'Petra', 'Jordania', L.petra, '#FBE0D0', '#F2C0A4', '#E09C80', '#E0A888', '#E8B89A', '#C8906E', 'peak', 'sand', 13, 'desierto'],
+  fila(FICHAS['Petra']),
   ['DESIERTO', 'El Cairo', 'Egipto', L.piramides, '#F6E2B4', '#EDD09A', '#DDB877', '#E3C98C', '#EBD49C', '#D9BC7C', 'dune', 'sand', 13, 'desierto'],
   fila(FICHAS['Estambul']), // 14 · ficha + kit (fichas-ciudades.js): Santa Sofía y el Bósforo
   ['RUINAS', 'Atenas', 'Grecia', L.partenon, '#E2F0FA', '#C0DCF0', '#A0C6E4', '#DDD2B8', '#E9E0CA', '#C8BC9C', 'dune', 'leaves', 12.5, 'mediterraneo !olivo'],

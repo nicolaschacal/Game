@@ -613,3 +613,21 @@ FICHAS['Machu Picchu'] = {
     adornos: ['palmera', 'rocaArena', 'farolDesierto'],
   };
 }
+
+// ── Petra: Al-Khazneh (el Tesoro) tallado en la pared de arenisca rosa, visto al salir del Siq. La peña de cumbre abombada con
+// sus vetas, el nicho en sombra y, adentro, la fachada de dos pisos (columnas, puerta, frontón abajo; tholos con su urna entre
+// dos medios frontones arriba). A los costados las paredes del Siq, más oscuras y en sombra, enmarcando ──
+{ const roca = '#C48A74', fachadaC = '#E6BEA6', siq = '#A87666';
+  FICHAS['Petra'] = {
+    mundo: 'CAÑÓN', nombre: 'Petra', pais: 'Jordania', color: '#DCA488', paisaje: 'desierto', hora: 13, clima: 'sand', horizonte: 'peak',
+    monumento: [
+      [K.arenisca({ x0: 10, x1: 110, top: 8, c: roca, lobulos: 3, sombra: .25, seed: 2 })],
+      [K.nicho({ x: 60, w: 62, top: 14, c: roca, o: .55 })],
+      [K.tesoro({ x: 60, w: 52, top: 15, c: fachadaC })],
+      [K.arenisca({ x0: 0, x1: 28, top: 10, c: siq, cara: 'der', lobulos: 2, caida: .32, sombra: .45, seed: 5 }),
+        K.arenisca({ x0: 92, x1: 120, top: 16, c: shade(siq, .06), cara: 'izq', lobulos: 2, caida: .36, sombra: .3, seed: 7 })],
+    ],
+    composicion: { tapar: .2, escala: .8 },
+    adornos: ['palmera', 'rocaArena', 'farolDesierto'],
+  };
+}

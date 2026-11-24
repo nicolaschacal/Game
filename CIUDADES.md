@@ -123,6 +123,9 @@ Todas bajan hasta la base (y = 110–118, queda bajo el piso) **sin suelo propio
 | `chorro` | hilo de agua en caída libre que se abre en hebras y se deshace en bruma (sólo detalles, sin borde grueso) |
 | `andenes` | terrazas incas en escalera (`lado` = de qué lado está el escalón más alto) con borde de pasto e hiladas de piedra |
 | `ruinas` | casitas incas de piedra sin techo: hastiales en punta (`gablete`), puertas y nichos trapezoidales |
+| `arenisca` | peña de arenisca de cumbre abombada en lóbulos, con vetas onduladas de colores y chorreaduras; `cara` = lado a plomo, `caida` = cuánto baja la cumbre hacia el lado abierto (paredes del Siq) |
+| `tesoro` | fachada tallada de Al-Khazneh (Petra): dos pisos de columnas, puerta, frontón abajo y tholos con urna entre medios frontones arriba |
+| `nicho` | corte en sombra alrededor de una fachada tallada en la roca (sólo detalles, sin borde crema; va en su propia capa) |
 | `rama(x1, y1, x2, y2, w1, w2)` | ayuda: cuadrilátero ahusado para troncos y ramas |
 
 Ayudas de color: `tono(c)` (filtro de papel: saturación ≤ .55, luz .34–.84), `tonos(c)` (luz / sombra / oscuro de una pieza), `mix`, `luz`, `shade`.
@@ -186,5 +189,5 @@ Lo que el usuario rechazó. Cada rechazo nuevo se anota acá.
 
 ## Pendiente
 
-Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund, Cataratas Victoria, Estambul, Marrakech, Río de Janeiro, Salto Ángel, Montevideo, Cartagena, Machu Picchu, Busan, Reikiavik, Edimburgo, Lisboa y Amán (nueva, índice 70). El resto sigue con su fila escrita a mano en `TABLA`
+Usan ficha: San Francisco, Melbourne, Ha Long, Hoi An, Capadocia, Krabi, Phi Phi, Hanói, Osaka, Pekín, Busan, Gyeongju, Ciudad del Cabo, Madagascar, Kilimanjaro, Nairobi, Zanzíbar, Sossusvlei, Swakopmund, Cataratas Victoria, Estambul, Marrakech, Río de Janeiro, Salto Ángel, Montevideo, Cartagena, Machu Picchu, Busan, Reikiavik, Edimburgo, Lisboa, Amán (nueva, índice 70) y Petra. El resto sigue con su fila escrita a mano en `TABLA`
 (con `LM_ESCALA`, `LM_X` y `FORE`) y se puede migrar de a una con el mismo procedimiento.
