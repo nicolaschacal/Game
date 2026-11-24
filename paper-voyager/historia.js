@@ -443,7 +443,7 @@ export const STORIES = {
           [tt('hist.npc.dadi'), tt('hist.anaya.8.l2')],
           [AN, tt('hist.anaya.8.l3')],
           [tt('hist.npc.dadi'), tt('hist.anaya.8.l4')]],
-        back: tt('hist.anaya.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.anaya.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'color' } },
     ],
   },
   // ── La historia de Cal: «Las Polaroid de Eli». Sube la lista de cumbres de su compañero y encuentra Polaroids firmadas «E.» una semana antes ──

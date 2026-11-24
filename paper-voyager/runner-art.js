@@ -124,7 +124,7 @@ export const TRAIN = trainSet();
 const CAST = [
   ['nilo', 'Nilo', 0, [['nieve', 600], ['marinero', 800], ['opa', 0, 1]]], ['mora', 'Mora', 1500, [['lluvia', 700], ['montana', 800], ['remitente', 0, 1]]], ['sipho', 'Sipho', 1800, [['tormenta', 800], ['faro', 0, 1]]],
   ['minji', 'Minji', 2000, [['escenario', 900], ['duo', 0, 1]]], ['tuk', 'Tuk', 2000, [['invierno', 700], ['honor', 0, 1]]], ['layla', 'Layla', 2200, [['wadirum', 800], ['l18', 0, 1]]],
-  ['cal', 'Cal', 2200, [['nevada', 700]]], ['anaya', 'Anaya', 2500, []],
+  ['cal', 'Cal', 2200, [['nevada', 700]]], ['anaya', 'Anaya', 2500, [['color', 0, 1]]],
 ];
 export const SKINS = CAST.map(([id, name, price, sk]) => ({ id, name, tag: tt('cast.' + id + '.tag'), price, head: 'h:' + id, c: {}, skins: sk.map(([s, p, h]) => ({ id: s, name: tt('cast.skin.' + s), price: p, story: !!h })) }));
 // Precios que pagó el jugador por los viajeros y variantes anteriores (para el reembolso único de la migración)
