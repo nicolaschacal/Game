@@ -103,6 +103,8 @@ let STORE = null;
 const st = hero => { const s = STORE?.get('hist.' + hero, null) || {}; return { got: s.got || [], seen: s.seen || [] }; };
 const save = (hero, s) => STORE?.set('hist.' + hero, s);
 export function initHistoria(store) { STORE = store; }
+// ?rico (MODO PRUEBA): todas las historias de todos los personajes abiertas, secretos incluidos (se guarda en sessionStorage, no toca el progreso real)
+export function unlockAll() { for (const hero in STORIES) { const s = st(hero); s.got = [...new Set([...s.got, ...STORIES[hero].chapters.map(c => c.id)])].sort((a, b) => a - b); save(hero, s); } }
 export const hasStory = hero => !!STORIES[hero];
 export const progress = hero => { const S = STORIES[hero]; if (!S) return null; const s = st(hero); return { got: s.got, total: S.chapters.filter(c => !c.secret).length, unseen: s.got.filter(i => !s.seen.includes(i)).length }; };
 export function markSeen(hero) { const s = st(hero); s.seen = [...new Set([...s.seen, ...s.got])]; save(hero, s); }

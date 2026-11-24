@@ -741,7 +741,7 @@ const RICO=Q.has('rico')&&window.Capacitor?.isNativePlatform?.()!==true,RICO_N=9
 const store={get(k,d){try{if(RICO){if(k==='wallet')return RICO_N;const r=sessionStorage.getItem('pvr.'+k);if(r!=null)return JSON.parse(r);}const v=localStorage.getItem('pv.'+k);return v==null?d:JSON.parse(v);}catch{return d;}},set(k,v){if(PREV)return;try{if(RICO){if(k==='wallet')wallet=RICO_N;else sessionStorage.setItem('pvr.'+k,JSON.stringify(v));return;}localStorage.setItem('pv.'+k,JSON.stringify(v));}catch{}}};
 K.initCofres({store,Iap});H.initHistoria(store); // el botón de cofres de inicio se dibuja antes de armar ctx
 const fmtW=n=>RICO?'\u221E':fmt(n);
-if(RICO){const b=document.createElement('div');b.id='ricoTag';b.textContent=t('rico.label');document.body.appendChild(b);}
+if(RICO){H.unlockAll();const b=document.createElement('div');b.id='ricoTag';b.textContent=t('rico.label');document.body.appendChild(b);}
 V.setRico(RICO);V.initViaje(store);if(Q.has('demo')){if(!V.T.traveler)V.pickTraveler('nilo');V.T.passports=[...V.REGION_ORDER];store.set('trip',V.T);if(store.get('wallet',0)<5000)store.set('wallet',5000);} // ?demo: todos los pasaportes y 5000 monedas para probar
 // viaje libre: viajero, pasaportes, destino actual, álbum (migra partidas viejas sin borrar nada)
 let wallet=store.get('wallet',0),owned=store.get('owned',['nilo']),skinId=store.get('skin','nilo'),best=store.get('best',0),muted=store.get('mute',false);
