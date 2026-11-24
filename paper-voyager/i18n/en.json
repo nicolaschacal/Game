@@ -1304,5 +1304,6 @@
  "store.story": "Story",
  "store.storyNeed": "Earned with the secret postcard of {name}'s story.",
  "hist.win.title": "YOU WON A NEW OUTFIT!",
- "hist.win.skinSub": "Yours forever. Put it on in Clothes."
+ "hist.win.skinSub": "Yours forever. Put it on in Clothes.",
+ "cast.skin.remitente": "Sender"
 }

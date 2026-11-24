@@ -1304,5 +1304,6 @@
  "store.story": "Historia",
  "store.storyNeed": "Se gana con la postal secreta de la historia de {name}.",
  "hist.win.title": "¡GANASTE UN TRAJE NUEVO!",
- "hist.win.skinSub": "Es tuyo para siempre. Ponételo en Ropa."
+ "hist.win.skinSub": "Es tuyo para siempre. Ponételo en Ropa.",
+ "cast.skin.remitente": "Remitente"
 }

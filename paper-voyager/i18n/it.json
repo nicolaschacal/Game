@@ -1304,5 +1304,6 @@
  "store.story": "Storia",
  "store.storyNeed": "Si ottiene con la cartolina segreta della storia di {name}.",
  "hist.win.title": "HAI VINTO UN NUOVO COSTUME!",
- "hist.win.skinSub": "È tuo per sempre. Indossalo in Abiti."
+ "hist.win.skinSub": "È tuo per sempre. Indossalo in Abiti.",
+ "cast.skin.remitente": "Mittente"
 }

@@ -154,7 +154,7 @@ export const STORIES = {
           [MO, tt('hist.mora.8.l2'), 'up'],
           [tt('hist.npc.tomi'), tt('hist.mora.8.l3')],
           [MO, tt('hist.mora.8.l4'), 'wave']],
-        back: tt('hist.mora.8.back'), reward: { coins: 1000, chest: 'oro' } },
+        back: tt('hist.mora.8.back'), reward: { coins: 1000, chest: 'oro', skin: 'remitente' } },
     ],
   },
   // ── La historia de Sipho: «Las voces del faro». El último farero de Ciudad del Cabo busca las voces de radio del cuaderno de su papá ──
