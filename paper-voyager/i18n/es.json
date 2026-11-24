@@ -812,5 +812,6 @@
  "diary.word": "DIARIO",
  "diary.open": "Abrir el diario",
  "diary.mapHint": "Pista del diario",
- "diary.blockedOver": "CAPÍTULO {n} · TODAVÍA FALTA"
+ "diary.blockedOver": "CAPÍTULO {n} · TODAVÍA FALTA",
+ "diary.atRoute": "Llegá a {place} haciendo la {route}"
 }

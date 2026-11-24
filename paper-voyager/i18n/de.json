@@ -812,5 +812,6 @@
  "diary.word": "TAGEBUCH",
  "diary.open": "Tagebuch öffnen",
  "diary.mapHint": "Hinweis aus dem Tagebuch",
- "diary.blockedOver": "KAPITEL {n} · ES FEHLT NOCH"
+ "diary.blockedOver": "KAPITEL {n} · ES FEHLT NOCH",
+ "diary.atRoute": "Erreiche {place} auf der {route}"
 }

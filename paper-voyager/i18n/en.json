@@ -812,5 +812,6 @@
  "diary.word": "DIARY",
  "diary.open": "Open the diary",
  "diary.mapHint": "Diary clue",
- "diary.blockedOver": "CHAPTER {n} · STILL MISSING"
+ "diary.blockedOver": "CHAPTER {n} · STILL MISSING",
+ "diary.atRoute": "Reach {place} on the {route}"
 }

@@ -177,7 +177,7 @@ export function routeComplete(id) {
   return d.length;
 }
 // Sellos de rutas del personaje actual (Nilo hereda las rutas que ya estaban completadas)
-export const heroRoutes = () => store.get(akey('routeStamps'), null) || (heroId() === 'nilo' ? [...routesDone()] : []);
+export const heroRoutes = () => { const h = store.get(akey('routeStamps'), null) || []; return heroId() === 'nilo' ? [...new Set([...h, ...routesDone()])] : h; }; // Nilo también cuenta las rutas hechas antes de que hubiera sellos por personaje
 // Avanza al jugador a la siguiente ciudad de la ruta sin cobrar tarifa (la ruta ya está paga con el primer tramo).
 export function hop(i) { T.at = i; save(); store.set('world', i); }
 

@@ -812,5 +812,6 @@
  "diary.word": "日記",
  "diary.open": "日記を開く",
  "diary.mapHint": "日記のヒント",
- "diary.blockedOver": "第{n}章 · あと少し"
+ "diary.blockedOver": "第{n}章 · あと少し",
+ "diary.atRoute": "{route}の旅で{place}に到着"
 }

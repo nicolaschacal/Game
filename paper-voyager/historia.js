@@ -110,10 +110,12 @@ export function markSeen(hero) { const s = st(hero); s.seen = [...new Set([...s.
 // Requisitos del capítulo con su avance (para el diario y para decidir)
 export function reqs(V, hero, ch) {
   const stamps = (V.heroStamps ? V.heroStamps() : V.T.visits) || {}, trips = Object.values(stamps).reduce((a, n) => a + (n || 0), 0), out = [];
-  if (ch.at) out.push({ label: tt('diary.nextAt', { place: placeOf(ch.at), name: heroName(hero) }), kind: 'at' });
+  if (ch.req.route) { // llegar a la ciudad DENTRO de la ruta especial (en curso o ya completada con este viajero)
+    const R = V.ROUTES.find(x => x.id === ch.req.route), act = STORE?.get('route', null), ok = (V.heroRoutes ? V.heroRoutes() : []).includes(ch.req.route) || act?.id === ch.req.route;
+    out.push({ label: tt('diary.atRoute', { place: placeOf(ch.at), route: R ? tt(R.name) : '' }), sub: R ? R.cities.map(i => DESTINOS[i]?.place).join(' → ') : '', kind: 'at', ok });
+  } else if (ch.at) out.push({ label: tt('diary.nextAt', { place: placeOf(ch.at), name: heroName(hero) }), kind: 'at' });
   if (ch.req.trips) out.push({ label: tt('diary.trips', { n: ch.req.trips, name: heroName(hero) }), n: Math.min(trips, ch.req.trips), goal: ch.req.trips, ok: trips >= ch.req.trips });
   if (ch.req.stamps) { const { r, n } = ch.req.stamps, have = Object.keys(stamps).filter(i => stamps[i] > 0 && V.regionOf(+i) === r).length; out.push({ label: tt('diary.stamps', { n, region: V.REGIONS[r].name }), n: Math.min(have, n), goal: n, ok: have >= n }); }
-  if (ch.req.route) { const R = V.ROUTES.find(x => x.id === ch.req.route), ok = (V.heroRoutes ? V.heroRoutes() : []).includes(ch.req.route); out.push({ label: tt('diary.route', { route: R ? tt(R.name) : '' }), ok, n: ok ? 1 : 0, goal: 1 }); }
   return out;
 }
 export const nextChapter = hero => { const S = STORIES[hero]; if (!S) return null; const s = st(hero); return S.chapters.find(c => !s.got.includes(c.id)) || null; };
@@ -271,7 +273,7 @@ export function openDiary(ctx, hero, onClose, opts = {}) {
   function draw() {
     const s = st(hero), got = s.got, total = S ? S.chapters.filter(c => !c.secret).length : 0, next = S ? nextChapter(hero) : null, done7 = S && S.chapters.filter(c => !c.secret).every(c => got.includes(c.id));
     const dream = F.dream ? (done7 ? `<b class="L">${esc(placeOf(F.dream))}</b>` : `<b class="L">${tt('diary.inked')}</b><small>«${esc(F.dreamHint)}»</small>`) : `<b class="L">${tt('diary.untold')}</b>`;
-    const nextHTML = next ? `<div class="dnx"><div class="dnxh"><b>${next.secret ? tt('diary.secretPostal') : tt('diary.chOf', { n: next.id, total })}</b><span>«${esc(next.hint)}»</span></div>${reqs(V, hero, next).map(r => `<div class="drq${r.ok ? ' ok' : ''}"><i>${r.ok ? '✓' : ''}</i><span>${esc(r.label)}</span>${r.goal ? `<em>${r.n}/${r.goal}</em>` : ''}</div>`).join('')}</div>` : '';
+    const nextHTML = next ? `<div class="dnx"><div class="dnxh"><b>${next.secret ? tt('diary.secretPostal') : tt('diary.chOf', { n: next.id, total })}</b><span>«${esc(next.hint)}»</span></div>${reqs(V, hero, next).map(r => `<div class="drq${r.ok ? ' ok' : ''}${r.kind === 'at' && r.ok == null ? ' at' : ''}"><i>${r.ok ? '✓' : ''}</i><span>${esc(r.label)}${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</span>${r.goal ? `<em>${r.n}/${r.goal}</em>` : ''}</div>`).join('')}</div>` : '';
     const cards = S ? S.chapters.filter(c => !c.secret || got.includes(c.id) || done7).map(c => {
       const ok = got.includes(c.id), nu = ok && !s.seen.includes(c.id);
       if (ok) return `<button class="dpc${nu ? ' nu' : ''}${c.secret ? ' sec' : ''}" data-ch="${c.id}"><div class="dpi">${postalFront(c, 150)}</div><small>${c.id} · ${esc(placeOf(c.place || c.at).toUpperCase())}</small><b>${esc(c.title)}</b>${nu ? `<u>${tt('diary.new')}</u>` : ''}</button>`;
@@ -369,6 +371,7 @@ body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 .pvdia .dnx{margin:12px 14px 0;padding:10px 12px;border-radius:14px;background:#1F2757;color:#F6EBD0}
 .pvdia .dnxh b{display:block;font:400 15px 'Lilita One',sans-serif;color:#F2BC3E}.pvdia .dnxh span{display:block;font:italic 800 13px/1.3 Nunito;margin:2px 0 6px}
 .pvdia .drq{display:flex;align-items:center;gap:8px;font:800 12px Nunito;padding:3px 0}.pvdia .drq i{flex:none;width:16px;height:16px;border-radius:5px;border:2px solid #8C93C4;font:400 12px/14px 'Lilita One';text-align:center;font-style:normal;color:#1F2757}
+.pvdia .drq.at i{border-radius:50% 50% 50% 0;transform:rotate(-45deg);border-color:#F2BC3E;background:#F2BC3E}.pvdia .drq span small{display:block;font:700 10.5px Nunito;color:#B9BEDA;margin-top:1px}
 .pvdia .drq.ok i{background:#76B85A;border-color:#76B85A;color:#fff}.pvdia .drq span{flex:1}.pvdia .drq em{font:400 13px 'Lilita One';font-style:normal;color:#F2BC3E}
 .pvdia .dgr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;padding:14px 16px 0}
 .pvdia .dpc{position:relative;border:0;padding:6px 6px 8px;background:#FFFDF6;text-align:left;color:#3A2A12;box-shadow:0 1.5px 1.5px rgba(40,24,10,.3),0 6px 9px rgba(27,23,48,.22);font-family:inherit}
