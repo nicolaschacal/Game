@@ -631,3 +631,31 @@ FICHAS['Machu Picchu'] = {
     adornos: ['palmera', 'rocaArena', 'farolDesierto'],
   };
 }
+
+// ── Jaipur: el Hawa Mahal, el «palacio de los vientos». Fachada rosa de arenisca en pirámide escalonada de cinco pisos,
+// llena de balconcitos (jharokhas) con cúpulas chiquitas y celosías; ribetes blancos. Delante, la calle de la ciudad rosa ──
+{ const rosa = '#E09A82', blanco = '#F6E4D4', T = K.tonos(rosa);
+  const hawa = (() => { const cx = 60, base = 118; let s = '', d = '';
+    const pisos = [[48, 82], [42, 66], [34, 50], [24, 36], [14, 24]]; // [semiancho, y del techo]
+    pisos.forEach(([hw, y], i) => { const yb = i === 0 ? base : pisos[i - 1][1]; s += ` M${cx - hw} ${yb} L${cx - hw} ${y} L${cx + hw} ${y} L${cx + hw} ${yb}Z`;
+      d += R(cx - hw - 1, y - 1.6, hw * 2 + 2, 2.2, blanco); // cornisa blanca de cada piso
+      const n = Math.max(2, Math.round(hw / 6)), cw = hw * 2 / n;
+      for (let k = 0; k < n; k++) { const bx = cx - hw + k * cw + cw * .14, bw = cw * .72, top = y + 3, h = (yb - y) - 6;
+        // balconcito saliente: cuerpo rosa claro con ventanita en arco, techito-cúpula arriba y ribete blanco
+        d += R(bx, top + 3, bw, h - 3, K.mix(rosa, blanco, .22)) + P(`M${f1(bx - .6)} ${f1(top + 3.4)} Q${f1(bx + bw / 2)} ${f1(top - 1.6)} ${f1(bx + bw + .6)} ${f1(top + 3.4)}Z`, K.mix(rosa, '#C77A64', .3))
+          + `<circle cx="${f1(bx + bw / 2)}" cy="${f1(top - 1.4)}" r=".7" fill="${blanco}"/>`
+          + P(`M${f1(bx + bw * .25)} ${f1(top + h - 1)} L${f1(bx + bw * .25)} ${f1(top + 7)} Q${f1(bx + bw / 2)} ${f1(top + 4.4)} ${f1(bx + bw * .75)} ${f1(top + 7)} L${f1(bx + bw * .75)} ${f1(top + h - 1)}Z`, T.osc, ' opacity=".75"')
+          + Ln(`M${f1(bx + bw / 2)} ${f1(top + 6)} V${f1(top + h - 1)}`, blanco, .4, ' opacity=".6"')
+          + Ln(`M${f1(bx)} ${f1(top + 3)} V${f1(top + h)} M${f1(bx + bw)} ${f1(top + 3)} V${f1(top + h)}`, blanco, .6); } });
+    // remate: tres cupulitas arriba y la punta central
+    [[cx - 9, 24], [cx + 9, 24], [cx, 18]].forEach(([x, y], i) => { s += ` M${x - 3.4} ${y} Q${x} ${y - 7} ${x + 3.4} ${y}Z`; d += Ln(`M${x} ${y - 6} v-2.4`, blanco, .7); });
+    s += ` M${cx - 4} 24 L${cx - 4} 18 L${cx + 4} 18 L${cx + 4} 24Z`;
+    d += R(cx + 10, 24, 38, 94, T.som, ' opacity=".2"');
+    return { f: P(s, rosa), d, box: [cx - 49, 9, cx + 49, base] }; })();
+  FICHAS['Jaipur'] = {
+    mundo: 'CIUDAD ROSA', nombre: 'Jaipur', pais: 'India', color: '#E2A890', paisaje: 'ciudad', suelo: 'pueblo', hora: 16, clima: 'petals', horizonte: 'dune',
+    monumento: [[hawa]],
+    composicion: { tapar: .2, tamano: .95, edificios: false },
+    adornos: ['palmera', 'anfora', 'farolDesierto'],
+  };
+}

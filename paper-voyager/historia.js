@@ -27,12 +27,12 @@ export const FICHAS = {
   tuk: { home: tt('ficha.tuk.home'), why: tt('ficha.tuk.why'), quote: tt('ficha.tuk.quote'), likes: tt('ficha.tuk.likes'), fears: tt('ficha.tuk.fears'), dream: 'Ushuaia', dreamHint: tt('ficha.tuk.dreamHint'), color: '#2F8C8A', dark: '#1F5E5C' },
   layla: { home: tt('ficha.layla.home'), why: tt('ficha.layla.why'), quote: tt('ficha.layla.quote'), likes: tt('ficha.layla.likes'), fears: tt('ficha.layla.fears'), dream: 'Sossusvlei', dreamHint: tt('ficha.layla.dreamHint'), color: '#B8673A', dark: '#7A4024' },
   cal: { home: tt('ficha.cal.home'), why: tt('ficha.cal.why'), quote: tt('ficha.cal.quote'), color: '#3F6E9E', dark: '#24486E' },
-  anaya: { home: tt('ficha.anaya.home'), why: tt('ficha.anaya.why'), quote: tt('ficha.anaya.quote'), color: '#D9507E', dark: '#9E2F57' },
+  anaya: { home: tt('ficha.anaya.home'), why: tt('ficha.anaya.why'), quote: tt('ficha.anaya.quote'), likes: tt('ficha.anaya.likes'), fears: tt('ficha.anaya.fears'), dream: 'Agra', dreamHint: tt('ficha.anaya.dreamHint'), color: '#D9507E', dark: '#9E2F57' },
 };
 
 // ── La historia de Nilo: «El cuaderno de Opa» (7 postales + 1 secreta) ──
 // req: at = ciudad donde termina el viaje · trips = viajes con Nilo · stamps = {r, n} sellos distintos de una región · route = ruta especial completada con Nilo
-const N = 'Nilo', MO = 'Mora', SI = 'Sipho', MI = 'Minji', TU = 'Tuk', LA = 'Layla';
+const N = 'Nilo', MO = 'Mora', SI = 'Sipho', MI = 'Minji', TU = 'Tuk', LA = 'Layla', AN = 'Anaya';
 // ── La historia de Mora: «Las postales de Tomi» (7 postales + 1 secreta). Mora nunca salió de Buenos Aires: sigue las postales sin remitente de su hermano y termina viajando por ella. Cada postal cierra con una pregunta que empuja a la siguiente ──
 export const STORIES = {
   nilo: {
@@ -387,6 +387,63 @@ export const STORIES = {
           [LA, tt('hist.layla.8.l3'), 'look'],
           [LA, tt('hist.layla.8.l4'), 'wave']],
         back: tt('hist.layla.8.back'), reward: { coins: 1000, chest: 'oro' } },
+    ],
+  },
+  // ── La historia de Anaya: «El color perdido». Sigue de mano en mano el pañuelo de un color que su abuela vio hace sesenta años ──
+  anaya: {
+    title: tt('hist.anaya.title'),
+    chapters: [
+      { id: 1, at: 'Jaipur', title: tt('hist.anaya.1.title'), hint: tt('hist.anaya.1.hint'), req: {},
+        lines: [[AN, tt('hist.anaya.1.l1')],
+          [AN, tt('hist.anaya.1.l2')],
+          [AN, tt('hist.anaya.1.l3'), 'look'],
+          [AN, tt('hist.anaya.1.l4')],
+          [AN, tt('hist.anaya.1.l5'), 'up']],
+        back: tt('hist.anaya.1.back'), reward: { coins: 150 } },
+      { id: 2, at: 'Marrakech', title: tt('hist.anaya.2.title'), hint: tt('hist.anaya.2.hint'), req: {},
+        lines: [[AN, tt('hist.anaya.2.l1')],
+          [tt('hist.npc.yusra'), tt('hist.anaya.2.l2')],
+          [AN, tt('hist.anaya.2.l3'), 'look'],
+          [tt('hist.npc.yusra'), tt('hist.anaya.2.l4')]],
+        back: tt('hist.anaya.2.back'), reward: { coins: 200 } },
+      { id: 3, at: 'Estambul', title: tt('hist.anaya.3.title'), hint: tt('hist.anaya.3.hint'), req: { trips: 6 },
+        lines: [[AN, tt('hist.anaya.3.l1')],
+          [tt('hist.npc.murat'), tt('hist.anaya.3.l2')],
+          [AN, tt('hist.anaya.3.l3'), 'look'],
+          [tt('hist.npc.murat'), tt('hist.anaya.3.l4')]],
+        back: tt('hist.anaya.3.back'), reward: { coins: 250 } },
+      { id: 4, at: 'Venecia', title: tt('hist.anaya.4.title'), hint: tt('hist.anaya.4.hint'), req: { stamps: { r: 'eu', n: 4 } },
+        lines: [[AN, tt('hist.anaya.4.l1')],
+          [tt('hist.npc.paolo'), tt('hist.anaya.4.l2')],
+          [AN, tt('hist.anaya.4.l3'), 'look'],
+          [tt('hist.npc.paolo'), tt('hist.anaya.4.l4')]],
+        back: tt('hist.anaya.4.back'), reward: { coins: 300, chest: 'plata' } },
+      { id: 5, at: 'La Habana', title: tt('hist.anaya.5.title'), hint: tt('hist.anaya.5.hint'), req: { trips: 14 },
+        lines: [[AN, tt('hist.anaya.5.l1')],
+          [tt('hist.npc.chela'), tt('hist.anaya.5.l2')],
+          [tt('hist.npc.chela'), tt('hist.anaya.5.l3')],
+          [tt('hist.npc.chela'), tt('hist.anaya.5.l4')]],
+        back: tt('hist.anaya.5.back'), reward: { coins: 350 } },
+      { id: 6, at: 'Ciudad de México', title: tt('hist.anaya.6.title'), hint: tt('hist.anaya.6.hint'), req: { stamps: { r: 'am', n: 4 }, trips: 20 },
+        lines: [[AN, tt('hist.anaya.6.l1')],
+          [tt('hist.npc.lupe'), tt('hist.anaya.6.l2')],
+          [tt('hist.npc.lupe'), tt('hist.anaya.6.l3')],
+          [AN, tt('hist.anaya.6.l4'), 'look'],
+          [AN, tt('hist.anaya.6.l5'), 'up']],
+        back: tt('hist.anaya.6.back'), reward: { coins: 400 } },
+      { id: 7, at: 'Jaipur', title: tt('hist.anaya.7.title'), hint: tt('hist.anaya.7.hint'), req: { trips: 28 },
+        lines: [[AN, tt('hist.anaya.7.l1')],
+          [AN, tt('hist.anaya.7.l2')],
+          [tt('hist.npc.dadi'), tt('hist.anaya.7.l3')],
+          [tt('hist.npc.dadi'), tt('hist.anaya.7.l4')],
+          [AN, tt('hist.anaya.7.l5'), 'wave']],
+        back: tt('hist.anaya.7.back'), reward: { coins: 600, chest: 'oro' } },
+      { id: 8, at: 'Agra', title: tt('hist.anaya.8.title'), hint: tt('hist.anaya.8.hint'), secret: true, req: {},
+        lines: [[AN, tt('hist.anaya.8.l1'), 'up'],
+          [tt('hist.npc.dadi'), tt('hist.anaya.8.l2')],
+          [AN, tt('hist.anaya.8.l3')],
+          [tt('hist.npc.dadi'), tt('hist.anaya.8.l4')]],
+        back: tt('hist.anaya.8.back'), reward: { coins: 1000, chest: 'oro' } },
     ],
   },
 };
