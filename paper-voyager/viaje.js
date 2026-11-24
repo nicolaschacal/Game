@@ -140,13 +140,12 @@ export const ROUTES = [
   { id: 'classic', name: 'route.classic', cities: ['Londres', 'París', 'Roma'] },
   { id: 'thai', name: 'route.thai', cities: ['Bangkok', 'Krabi', 'Phi Phi'] },
   // Una ciudad puede estar en varias rutas. Las que tienen alguna ciudad que todavía no existe en DESTINOS quedan inactivas solas.
-  { id: 'indochina', name: 'route.indochina', cities: ['Bangkok', 'Chiang Mai', 'Siem Reap', 'Hanói'] },
+  { id: 'indochina', name: 'route.indochina', cities: ['Chiang Mai', 'Bangkok', 'Siem Reap', 'Hanói'] },
   { id: 'vietnam', name: 'route.vietnam', cities: ['Hanói', 'Ha Long', 'Hoi An', 'Ho Chi Minh'] },
   { id: 'malaca', name: 'route.malaca', cities: ['Singapur', 'Kuala Lumpur', 'Bali'] },
   { id: 'china', name: 'route.china', cities: ['Pekín', "Xi'an", 'Guilin', 'Shanghái', 'Hong Kong'] },
   { id: 'corea', name: 'route.corea', cities: ['Seúl', 'Gyeongju', 'Busan', 'Tokio'] },
   { id: 'india', name: 'route.india', cities: ['Delhi', 'Agra', 'Jaipur'] },
-  { id: 'seda', name: 'route.seda', cities: ['Estambul', 'Capadocia', 'Samarcanda'] },
   { id: 'transiberiano', name: 'route.transiberiano', cities: ['Moscú', 'San Petersburgo', 'Lago Baikal', 'Vladivostok'] },
   { id: 'australia', name: 'route.australia', cities: ['Sídney', 'Melbourne', 'Uluru'] },
   { id: 'nz', name: 'route.nz', cities: ['Sídney', 'Auckland', 'Queenstown'] },
@@ -158,7 +157,6 @@ export const ROUTES = [
   { id: 'marruecos', name: 'route.marruecos', cities: ['Marrakech', 'Fez', 'Chefchaouen', 'Merzouga'] },
   { id: 'oeste', name: 'route.oeste', cities: ['San Francisco', 'Los Ángeles', 'Las Vegas', 'Gran Cañón', 'Monument Valley'] },
   { id: 'este', name: 'route.este', cities: ['Nueva York', 'Washington', 'Niágara'] },
-  { id: 'mexico', name: 'route.mexico', cities: ['Ciudad de México', 'Chichén Itzá', 'La Habana'] },
   { id: 'benelux', name: 'route.benelux', cities: ['París', 'Bruselas', 'Ámsterdam'] },
 ].map(r => ({ ...r, cities: r.cities.map(n => IDX[n]) })).filter(r => r.cities.every(c => c != null));
 // PROVISORIO: el premio de cada ruta son monedas: 150 por ciudad. El dueño definirá trajes/souvenirs exclusivos después (agregar acá, p. ej. { coins, suit, souvenir }).
