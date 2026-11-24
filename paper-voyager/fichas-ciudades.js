@@ -520,3 +520,67 @@ FICHAS['Machu Picchu'] = {
   composicion: { tapar: .18 },
   adornos: ['pino', 'llama', 'farolMontana'],
 };
+
+// ── Reikiavik: la Hallgrímskirkja, iglesia de hormigón que imita columnas de basalto bajando en escalera a los dos lados de
+// la torre; delante, casitas de chapa de colores con techos a dos aguas; nieve y frío ──
+{ const hormigon = '#C9C6BE', T = K.tonos(hormigon);
+  const iglesia = (() => { const cx = 60, base = 118, cols = [[4, 34], [4, 42], [4, 52], [4, 62], [4, 72]];
+    let s = `M${cx - 7} ${base} L${cx - 7} 26 L${cx - 2} 10 L${cx} 2 L${cx + 2} 10 L${cx + 7} 26 L${cx + 7} ${base}Z`, d = '';
+    [-1, 1].forEach(sg => { let x = cx + sg * 7; cols.forEach(([w, top]) => { const x2 = x + sg * w; s += ` M${f1(Math.min(x, x2))} ${base} L${f1(Math.min(x, x2))} ${top} L${f1(Math.max(x, x2))} ${top} L${f1(Math.max(x, x2))} ${base}Z`;
+      d += Ln(`M${f1(x2)} ${top + 1} V${base}`, T.osc, .7, ' opacity=".45"') + R(Math.min(x, x2), top, w, 1.2, T.luz, ' opacity=".8"'); x = x2; }); });
+    d += R(cx + 1, 10, 6, 108, T.som, ' opacity=".35"') + R(cx + 7, 34, 20, 84, T.som, ' opacity=".18"')
+      + `<circle cx="${cx}" cy="32" r="3" fill="${T.osc}"/><circle cx="${cx}" cy="32" r="2.2" fill="#F2EFE8"/>` + Ln(`M${cx} 32 v-1.6 M${cx} 32 h1.2`, '#4E4A52', .5)
+      + [44, 54, 64].map(y => R(cx - 2, y, 4, 6, T.osc, ' opacity=".7"')).join('') + P(`M${cx - 4} 118 L${cx - 4} 104 Q${cx} 98 ${cx + 4} 104 L${cx + 4} 118Z`, T.osc, ' opacity=".7"')
+      + Ln(`M${cx} 2 V-3 M${cx - 1.6} -1.4 H${cx + 1.6}`, '#8A8680', .7);
+    return { f: P(s, hormigon), d, box: [cx - 27, -3, cx + 27, base] }; })();
+  const casa = (x0, defs) => K.casas({ x0, techo: 'gablete', cPersiana: '#F2EEE6', farolitos: ['#F2D07A', '#F2D07A'], defs: defs.map(([w, h, c, ct]) => ({ w, h, c, cTecho: ct, pisos: 1 })) });
+  FICHAS['Reikiavik'] = {
+    mundo: 'HIELO', nombre: 'Reikiavik', pais: 'Islandia', color: '#B4CAD8', paisaje: 'nieve', hora: 11, clima: 'snow', horizonte: 'peak',
+    monumento: [
+      [iglesia],
+      [casa(2, [[16, 28, '#C9503C', '#4E5A66'], [14, 22, '#E6B84A', '#4E5A66']]), casa(88, [[14, 24, '#5E8FB4', '#3E4650'], [16, 30, '#7FAE8A', '#4E5A66']])],
+    ],
+    composicion: { tapar: .25, tamano: .9 },
+    adornos: ['pinoNevado', 'rocaLava', 'farolNieve'],
+  };
+}
+
+// ── Edimburgo: el castillo sobre su peñón de basalto. Roca oscura de paredes a plomo a la izquierda y ladera verde a la
+// derecha; arriba, la muralla de sillares con talud, la torre del homenaje y las casas de piedra con techos de pizarra ──
+{ const piedra = '#B4AEA2', piz = '#5E6470';
+  const penon = (() => { const s = 'M2 118 C6 104 10 92 14 80 Q18 72 26 70 L96 68 Q104 70 110 80 C114 92 118 106 120 118Z', T = K.tonos('#6E7A70');
+    const d = P('M60 69 L96 68 Q104 70 110 80 C114 92 118 106 120 118 L70 118 Q66 92 60 69Z', '#7E9A6E', ' opacity=".85"')
+      + [[16, 84], [22, 96], [30, 80], [40, 92], [50, 76]].map(([x, y]) => Ln(`M${x} ${y} l2 14`, T.osc, .8, ' opacity=".5"')).join('')
+      + Ln('M14 80 Q18 72 26 70', T.luz, 1.2, ' opacity=".7"');
+    return { f: P(s, '#6E7A70'), d, box: [2, 68, 120, 118] }; })();
+  FICHAS['Edimburgo'] = {
+    mundo: 'CASTILLO', nombre: 'Edimburgo', pais: 'Escocia', color: '#A8BCB2', paisaje: 'montana', hora: 13, clima: 'leaves', horizonte: 'peak',
+    monumento: [
+      [K.casas({ x0: 30, techo: 'gablete', cTecho: piz, cPersiana: '#5E6470', farolitos: ['#E0C070', '#E0C070'], defs: [{ w: 18, h: 30, c: piedra, pisos: 2, farol: false }, { w: 22, h: 24, c: K.mix(piedra, '#8E887C', .3), pisos: 2, farol: false }, { w: 16, h: 32, c: piedra, pisos: 2, farol: false }], base: 72, puertas: false }),
+        K.torreReloj({ x: 96, w: 13, top: 22, base: 72, c: K.mix(piedra, '#8E887C', .2), techo: 'plano', reloj: false })],
+      [penon],
+      [K.muro({ x0: 18, x1: 104, y: 60, base: 74, c: piedra, piedra: true, talud: 2, seed: 6 })],
+    ],
+    composicion: { tapar: .18, tamano: .92 },
+    adornos: ['pino', 'rocaGris', 'farolEuropeo'],
+  };
+}
+
+// ── Lisboa: la Torre de Belém sobre el Tajo. Baluarte bajo con arcos y almenas, la torre manuelina de piedra clara con sus
+// balcones y garitas de cúpula en las esquinas; delante el agua del río con un velero ──
+{ const piedra = '#E6D9BE', cup = '#CFC2A4';
+  FICHAS['Lisboa'] = {
+    mundo: 'COSTA', nombre: 'Lisboa', pais: 'Portugal', color: '#9CC6DA', paisaje: 'costa', hora: 15, clima: 'bubbles',
+    monumento: [
+      [K.fachada({ x0: 44, x1: 76, y0: 26, c: piedra, pisos: [{ tipo: 'arcos', n: 2 }, { tipo: 'ventanas', n: 3 }, { tipo: 'arcos', n: 3 }, { tipo: 'ventanas', n: 3 }, { tipo: 'ventanas', n: 3 }], sombra: .24 }),
+        K.torreReloj({ x: 44, w: 6, top: 14, base: 30, c: piedra, cTecho: cup, techo: 'cupula', reloj: false, ventanas: false }),
+        K.torreReloj({ x: 76, w: 6, top: 14, base: 30, c: piedra, cTecho: cup, techo: 'cupula', reloj: false, ventanas: false })],
+      [K.fachada({ x0: 24, x1: 96, y0: 80, c: luz(piedra, .04), pisos: [{ tipo: 'arcos', n: 9 }], sombra: .2 }),
+        K.torreReloj({ x: 24, w: 7, top: 68, base: 84, c: piedra, cTecho: cup, techo: 'cupula', reloj: false, ventanas: false }),
+        K.torreReloj({ x: 96, w: 7, top: 68, base: 84, c: piedra, cTecho: cup, techo: 'cupula', reloj: false, ventanas: false })],
+    ],
+    cAgua: '#8FBFD2',
+    composicion: { tapar: .22, tamano: .92 },
+    adornos: ['pinoParasol', 'velero', 'farolMediterraneo'],
+  };
+}

@@ -294,13 +294,13 @@ const TABLA = [
   ['PRADERA', 'Pisa', 'Italia', LANDMARKS.pisa, '#E6F4DA', '#C4E0A2', '#97C670', '#A6CC78', '#B9D88E', '#8DBF5E', 'dune', 'petals', 10, 'mediterraneo !cipres'],
   ['CIUDAD', 'Barcelona', 'España', L.sagrada, '#FBE9D2', '#F4D2A6', '#E6B880', '#DCC8A6', '#C6B8A0', '#A39479', 'city', 'petals', 14, 'mediterraneo toldo'],
   fila(FICHAS['Marrakech']), // 23 · ficha + kit (fichas-ciudades.js): la Kutubía, la medina y el Atlas
-  ['COSTA', 'Lisboa', 'Portugal', L.belem, '#DDF1FA', '#B4DCEF', '#8CC7E4', '#E8DDB8', '#EFE6C6', '#DCCDA0', 'dune', 'bubbles', 15, 'mediterraneo velero'],
+  fila(FICHAS['Lisboa']), // ficha + kit (fichas-ciudades.js): la Torre de Belém sobre el Tajo
   ['CIUDAD', 'Madrid', 'España', L.alcala, '#FBE9D2', '#F4D2A6', '#E6B880', '#C9C2B4', '#9A9690', '#787470', 'city', 'leaves', 15.5, 'europa toldo'],
   ['CIUDAD', 'París', 'Francia', L.eiffel, '#E9EEF6', '#CBD6E6', '#AEBED6', '#C2C0BC', '#9A9CA3', '#797B83', 'city', 'leaves', 15, 'europa toldo'],
   ['CIUDAD', 'Bruselas', 'Bélgica', L.atomium, '#E6ECF2', '#C8D2DE', '#A8B8CA', '#B4B8BE', PAV, VEREDA, 'city', 'leaves', 13, 'europa morris'],
   ['CIUDAD', 'Londres', 'Reino Unido', L.bigben, '#E4E8EC', '#C2CAD2', '#A3AEBA', '#B2B5BA', '#84888F', '#666A72', 'city', 'leaves', 14, 'europa cabina'],
-  ['CASTILLO', 'Edimburgo', 'Escocia', L.edimburgo, '#E4ECE6', '#C6D6CC', '#A4BEB0', '#8FB07A', '#A4C08E', '#6F9460', 'peak', 'leaves', 13, 'montana'],
-  ['HIELO', 'Reikiavik', 'Islandia', LANDMARKS.iglesia, '#EAF2F6', '#D6E4EC', '#B4CAD8', '#DCE6EC', '#E6EDF2', '#C3CDD8', 'peak', 'snow', 11, 'nieve rocaLava'],
+  fila(FICHAS['Edimburgo']), // ficha + kit (fichas-ciudades.js): el castillo sobre su peñón
+  fila(FICHAS['Reikiavik']), // ficha + kit (fichas-ciudades.js): la Hallgrímskirkja y las casitas de colores
   ['CIUDAD', 'Nueva York', 'EE.UU.', L.liberty, '#DCEBF5', '#B9CDE0', '#9DB5CE', '#B4BAC4', PAV, VEREDA, 'city', 'leaves', 12, 'moderna taxi'],
   ['CAÑONES', 'Monument Valley', 'EE.UU.', L.monument, '#FBE6D0', '#F4C8A4', '#E8A47C', '#E0A070', '#E8B488', '#C4845C', 'dune', 'sand', 15.5, 'desierto !cactus'],
   ['MAYA', 'Chichén Itzá', 'México', L.chichen, '#F4ECC8', '#DCE0A0', '#B4C878', '#A9C070', '#C9C08A', '#A59D6A', 'dune', 'leaves', 13, 'selva'],
