@@ -9,7 +9,8 @@ import {heroFor} from './paper-voyager/elenco.js';
 import * as P from './paper-voyager/paper.js';
 const q=new URLSearchParams(location.search), mode=q.get('m'), S=+q.get('s')||1024;
 const c=document.getElementById('c'); c.style.width=c.style.height=S+'px';
-const H=heroFor('nilo','base'), wave=H.wave[3];
+const H=heroFor('nilo','base'), wave=H.wave[3], look=H.at(0,{lx:1,ly:0,blink:0});
+const POSE=q.get('pose')==='look'?look:wave;
 let cloud=''; try{cloud=P.artThumb('nube');}catch(e){}
 const BALL=`<svg viewBox="0 0 160 250" role="img" aria-label="Paper Voyager"><path d="M62 142 L46 190 M98 142 L114 190 M74 144 L66 190 M86 144 L94 190" stroke="#704332" stroke-width="2.6" stroke-linecap="round"/><g transform="translate(-16 0) scale(1.6)"><g stroke="#FFF4DC" stroke-width="5" stroke-linejoin="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/></g><g class="inl" transform="translate(11 106) scale(1.1)"></g><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/></g><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/><path d="M56 202 L58 240 M68 202 L69 242 M80 202 V243 M92 202 L91 242 M104 202 L102 240" stroke="#7A5334" stroke-width="2.4" stroke-linecap="round"/><path d="M47 228 Q80 236 113 228 L111 240 Q80 247 49 240Z" fill="#6B4A2E"/><path d="M46 214 Q80 221 114 214" stroke="#7A5334" stroke-width="2.4" fill="none"/></svg>`;
 const balloon=(nilo,w)=>{const d=document.createElement('div');d.innerHTML=BALL;const sv=d.firstElementChild;sv.setAttribute('width',w);sv.setAttribute('height',w*250/160);
@@ -20,11 +21,13 @@ const k=S/1024, img=(u,x,y,w,op=1)=>u?`<img src="${u}" style="position:absolute;
 const nilo=(x,y,w,rot,f)=>`<div style="position:absolute;left:${x*k}px;top:${y*k}px;width:${w*k}px;height:${w*k}px;transform:rotate(${rot}deg)">${f.replace('<svg',`<svg width="${w*k}" height="${w*k}" overflow="visible"`)}</div>`;
 const bal=(x,y,w,rot,f)=>`<div style="position:absolute;left:${x*k}px;top:${y*k}px;transform:rotate(${rot}deg);transform-origin:50% 0">${balloon(f,w*k)}</div>`;
 const L=JSON.parse(q.get('L')||'{}'); // ajustes de posición sin tocar el archivo
-const NX=L.nx??-150, NY=L.ny??150, NW=L.nw??1060, BX=L.bx??610, BY=L.by??30, BW=L.bw??330;
+const NX=L.nx??-270, NY=L.ny??0, NW=L.nw??1170, BX=L.bx??680, BY=L.by??25, BW=L.bw??270;
+// nubes de papel rojizas, como en el ícono original
+const clouds=(y,col,hi)=>{const C=[[-40,70],[120,95],[300,80],[470,100],[640,78],[820,96],[990,80]];return `<svg viewBox="0 0 1024 1024" width="${S}" height="${S}" style="position:absolute;inset:0"><g transform="translate(0 ${y})">${C.map(([x,r])=>`<circle cx="${x}" cy="${r*.2}" r="${r*1.25}" fill="${col}"/>`).join('')}<rect x="-50" y="30" width="1124" height="400" fill="${col}"/>${C.map(([x,r])=>`<path d="M${x-r} ${r*.2-r*.3} A${r*1.25} ${r*1.25} 0 0 1 ${x+r*.6} ${r*.2-r*1.1}" stroke="${hi}" stroke-width="10" fill="none" stroke-linecap="round" opacity=".7"/>`).join('')}</g></svg>`;};
 let h='';
 if(mode!=='fg') h+=BG;
-if(mode==='icon'){ h+=bal(BX,BY,BW,10,''); h+=nilo(NX,NY,NW,-9,wave); h+=img(cloud,-160,820,600,1)+img(cloud,480,860,700,1);}
-if(mode==='bg'){ h+=img(cloud,-100,760,600,1)+img(cloud,520,800,640,1);} // Android adaptativo: las nubes van en el fondo
-if(mode==='fg'){ h+=bal(580,170,220,10,''); h+=nilo(90,230,700,-9,wave);}
+if(mode==='icon'){ h+=bal(BX,BY,BW,10,''); h+=nilo(NX,NY,NW,L.rot??-6,POSE); h+=clouds(905,'#C93A2B','#E55A45')+clouds(950,'#E04A36','#F07A60');}
+ // Android adaptativo: las nubes van en el fondo
+if(mode==='fg'){ h+=bal(650,175,165,10,''); h+=nilo(70,215,830,-6,POSE); h+=clouds(850,'#C93A2B','#E55A45')+clouds(890,'#E04A36','#F07A60');} // Android adaptativo: todo dentro del círculo seguro
 c.innerHTML=h; document.title='ok';
 </script></body></html>
