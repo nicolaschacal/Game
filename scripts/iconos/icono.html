@@ -12,7 +12,7 @@ const c=document.getElementById('c'); c.style.width=c.style.height=S+'px';
 const H=heroFor('nilo','base');
 // pose del ícono: 'saludo' = brazo derecho arriba y afuera, bufanda cayendo por detrás; 'juego' = Nilo quieto como en los diálogos
 const pose=(s,P)=>s.replace(/<g data-j="(\w+)"([^>]*?)transform="([^"]*)"/g,(m,j,a,t)=>P[j]!=null?`<g data-j="${j}"${a}transform="${P[j]}"`:m);
-const SALUDO=pose(H.wave[3],{aU:'translate(79.2 59.97) rotate(-145)',aUf:'translate(0 10.6) rotate(10)',ht1:'translate(71 60.2) rotate(35)',ht2:'translate(14.6 0) rotate(15)'});
+const SALUDO=pose(H.wave[3],{aU:'translate(79.2 59.97) rotate(-72)',aUf:'translate(0 10.6) rotate(-78)',ht1:'translate(71 60.2) rotate(55)',ht2:'translate(14.6 0) rotate(10)'});
 const JUEGO=H.idle[0];
 const POSE=(q.get('pose')||'saludo')==='juego'?JUEGO:SALUDO;
 let cloud=''; try{cloud=P.artThumb('nube');}catch(e){}
@@ -30,8 +30,8 @@ const NX=L.nx??-150, NY=L.ny??150, NW=L.nw??1060, BX=L.bx??610, BY=L.by??30, BW=
 const clouds=(y,col,hi)=>{const C=[[-40,70],[120,95],[300,80],[470,100],[640,78],[820,96],[990,80]];return `<svg viewBox="0 0 1024 1024" width="${S}" height="${S}" style="position:absolute;inset:0"><g transform="translate(0 ${y})">${C.map(([x,r])=>`<circle cx="${x}" cy="${r*.2}" r="${r*1.25}" fill="${col}"/>`).join('')}<rect x="-50" y="30" width="1124" height="400" fill="${col}"/>${C.map(([x,r])=>`<path d="M${x-r} ${r*.2-r*.3} A${r*1.25} ${r*1.25} 0 0 1 ${x+r*.6} ${r*.2-r*1.1}" stroke="${hi}" stroke-width="10" fill="none" stroke-linecap="round" opacity=".7"/>`).join('')}</g></svg>`;};
 let h='';
 if(mode!=='fg') h+=BG;
-if(mode==='icon'){ h+=bal(BX,BY,BW,10,''); h+=nilo(NX,NY,NW,L.rot??-9,POSE); h+=img(cloud,-160,820,600,1)+img(cloud,480,860,700,1);}
+if(mode==='icon'){ h+=bal(BX,BY,BW,10,''); h+=nilo(NX,NY,NW,L.rot??-9,POSE); h+=clouds(950,'#C93A2B','#E55A45')+clouds(990,'#E04A36','#F07A60');}
  // Android adaptativo: las nubes van en el fondo
-if(mode==='fg'){ h+=bal(610,165,200,10,''); h+=nilo(90,210,780,-9,POSE); h+=img(cloud,-40,720,540,1)+img(cloud,460,750,580,1);} // Android adaptativo: todo dentro del círculo seguro
+if(mode==='fg'){ h+=bal(610,165,200,10,''); h+=nilo(90,210,780,-9,POSE); h+=clouds(865,'#C93A2B','#E55A45')+clouds(900,'#E04A36','#F07A60');} // Android adaptativo: todo dentro del círculo seguro
 c.innerHTML=h; document.title='ok';
 </script></body></html>
