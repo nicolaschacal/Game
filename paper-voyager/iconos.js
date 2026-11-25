@@ -34,7 +34,7 @@ const P = {
     x: '<path d="M12 7.5q0-1.8 4-1.8t4 1.8" stroke="#1C2352" stroke-width="1.8" fill="none"/><path d="M6 13.5q10 3 20 0v4q-10 3-20 0z" fill="#F2BC3E"/><rect x="10" y="20" width="12" height="5.5" rx="1.5" fill="#1C2352" opacity=".55"/><rect x="14.6" y="15.2" width="2.8" height="3.4" rx=".8" fill="#8C5A12"/>',
   },
   avion: { // avión de papel: ala de arriba clara, ala de abajo en sombra y la quilla doblada
-    d: 'M2.5 15.5L29.5 4 23 28 17.2 22.6 12.6 28.2 12.8 19.8z', c: '#D3C39E', l: 'M2.5 15.5L29.5 4 12.8 19.8z', lc: '#FFF8E8',
+    d: 'M2.5 15.5L29.5 4 23 28 17.2 22.6 12.6 28.2 12.8 19.8z', o: '1.2 1.6', c: '#D3C39E', l: 'M2.5 15.5L29.5 4 12.8 19.8z', lc: '#FFF8E8',
     x: '<path d="M12.8 19.8L17.2 22.6 12.6 28.2z" fill="#A8977A"/>',
   },
   luna: {
@@ -65,14 +65,14 @@ const P = {
 export function ico(name, size = 24, cls = '') {
   const p = P[name]; if (!p) return '';
   // El grano va en un <g> adentro del SVG: en Safari un filter CSS sobre el <svg> raíz lo corre de lugar.
-  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" aria-hidden="true"><g filter="url(#pvGrainL)">` +
+  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" style="width:${typeof size === 'number' ? size + 'px' : size};height:${typeof size === 'number' ? size + 'px' : size}" aria-hidden="true"><g filter="url(#pvGrainL)"${p.o ? ` transform="translate(${p.o})"` : ''}>` +
     `<path d="${p.d}" transform="translate(0 1.4)" fill="${RIM_C}" stroke="${RIM_C}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${RIM}" stroke="${RIM}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${p.c}"/>` + (p.l ? `<path d="${p.l}" fill="${p.lc}"/>` : '') + (p.x || '') + '</g></svg>';
 }
 // Para insertar en botones/etiquetas: ícono + texto alineados
 export const icoTxt = (name, txt, size = 18) => `<span class="pvit">${ico(name, size)}<span>${txt}</span></span>`;
-export const ICO_CSS = `.pvi{display:inline-block;vertical-align:middle;flex:none;overflow:visible;margin:0}.pvit{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}.pvg{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin:0 .06em}`;
+export const ICO_CSS = `.pvi{display:inline-block;vertical-align:middle;flex:none;overflow:visible;margin:0}.pvit{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}.pvg{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.12em;margin:0 .06em;line-height:0}.pvg .pvi{display:block}`;
 
 // ── Símbolos viejos en los textos (◉ ★ ✓ ♥ ❄ ▶ ✈) → íconos de papel ──
 // Un observador reemplaza esos caracteres en cualquier texto que aparezca en pantalla (toasts, mapa, récords, etc.).
