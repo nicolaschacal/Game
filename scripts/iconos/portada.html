@@ -34,8 +34,8 @@ const gores=[[-170,'#E8452C'],[-40,'#FBF1DC'],[95,'#E8452C'],[230,'#FBF1DC'],[36
 // Globo de iOS dibujado COMPLETO (esfera arriba que se angosta hasta el aro) y después recortado por el ícono.
 // Centro de la esfera (590,-260), radio 700; los gajos son meridianos curvos que nacen en el aro y se abren hacia arriba.
 const BALL_D='M296 352 C140 300 -110 150 -110 -260 A700 700 0 0 1 1290 -260 C1290 150 1040 300 884 352 Z';
-const meridian=j=>{const a=590+j*42, t=590+j*175, c=590+j*150; return [a,c,t];};
-let goresFull='';for(let j=-8;j<8;j++){const [a0,c0,t0]=meridian(j),[a1,c1,t1]=meridian(j+1);goresFull+=`<path d="M${a0} 352 Q${c0} 0 ${t0} -980 L${t1} -980 Q${c1} 0 ${a1} 352Z" fill="${(j%2+2)%2?'#FBF1DC':'#E8452C'}"/>`;}
+const meridian=j=>{const a=590+j*66, t=590+j*290, c=590+j*245; return [a,c,t];};
+let goresFull='';for(let j=-6;j<6;j++){const [a0,c0,t0]=meridian(j),[a1,c1,t1]=meridian(j+1);goresFull+=`<path d="M${a0} 352 Q${c0} 0 ${t0} -980 L${t1} -980 Q${c1} 0 ${a1} 352Z" fill="${(j%2+2)%2?'#FBF1DC':'#E8452C'}"/>`;}
 const envFull=`<g ${sh}><path d="${BALL_D}" fill="${CR}" stroke="${CR}" stroke-width="30" stroke-linejoin="round"/>
  <clipPath id="envF"><path d="${BALL_D}"/></clipPath>
  <g clip-path="url(#envF)">${goresFull}
@@ -47,7 +47,7 @@ const envOld=`<g ${sh}>
   <path d="M95 -40 L320 -40 Q200 120 300 352 L95 352Z" fill="#000" opacity=".10"/><path d="M820 -40 L1010 -40 L1010 352 L860 352 Q930 140 820 -40Z" fill="#000" opacity=".14"/>
   <path d="M180 300 Q590 380 1000 290 L1010 360 L95 360Z" fill="#000" opacity=".12"/></g>
 </g>`;
-const env=(mode==='icon'?envFull:envOld)+`
+const env=(mode!=='bg'?envFull:envOld)+`
 <g ${sh}><ellipse cx="590" cy="352" rx="300" ry="34" fill="none" stroke="${CR}" stroke-width="40"/><ellipse cx="590" cy="352" rx="300" ry="34" fill="none" stroke="#E9B43C" stroke-width="22"/><ellipse cx="590" cy="347" rx="300" ry="34" fill="none" stroke="#F7D46E" stroke-width="7" stroke-dasharray="900 2000"/></g>`;
 // cuerdas
 const rope=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${CR}" stroke-width="18" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#D9A653" stroke-width="10" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#B98232" stroke-width="10" stroke-dasharray="6 12" stroke-linecap="round"/>`;
