@@ -514,7 +514,7 @@ export function selfieReveal(ctx, i, res) {
 // ═══════════════════════════════════════════════════════════════════════════
 const BAG_CSS = `
 .pvb-t{--th:max(430px,calc(100dvh - var(--st) - var(--navH,66px) - 118px));position:relative;isolation:isolate;max-width:100%;height:var(--th);overflow:hidden;touch-action:pan-y}
-.pvb-alb{position:absolute;left:4%;top:2%;width:min(54%,calc(var(--th) * .395));transform:rotate(-5deg);transform-origin:50% 50%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
+.pvb-alb{position:absolute;left:4%;top:2%;width:min(54%,calc(var(--th) * .355));transform:rotate(-5deg);transform-origin:50% 50%;perspective:900px;border:0;background:none;padding:0;display:block;-webkit-tap-highlight-color:transparent}
 .pvb-alb .pg{position:absolute;left:3%;right:3%;top:3%;bottom:3%;border-radius:2px 8px 8px 2px;background:#FBF4E0;box-shadow:inset 0 0 0 1px #E3D3AE;transform:translateX(3px)}
 .pvb-alb .pg:before{content:"";position:absolute;inset:14% 12% 14% 20%;background:repeating-linear-gradient(180deg,#0000 0 11px,#C9B88F55 11px 12px)}
 .pvb-alb .cv{position:relative;transform-origin:5% 50%;filter:drop-shadow(0 2px 2px rgba(40,24,10,.3)) drop-shadow(0 8px 9px rgba(27,23,48,.35))}
@@ -662,7 +662,7 @@ export function openBag(ctx) {
  <button class="pvb-alb" data-alb aria-label="${tt('bag.openAlbum')}"><div class="pg"></div><div class="cv">${cover}</div><span class="pvb-tag">${tt('album.word')} · <b>${V.selfieCount()}</b>/${V.selfieTotal()}</span></button>
  <div class="pvb-dec" style="left:6%;top:50.5%;width:32%;transform:rotate(-4deg)">${pencilSVG()}</div>
  <button class="pvb-dia" data-dia aria-label="${tt('diary.open')}">${diaryNow()}</button>
- <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:36%;width:30%">${clothPile(ctx)}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
+ <button class="pvb-rop" data-rop aria-label="${tt('bag.openCloth')}" style="right:6%;top:33.5%;width:min(30%,calc(var(--th) * .21))">${clothPile(ctx)}<span class="pvb-tag">${tt('bag.cloth')}</span></button>
  <button class="pvb-pas" data-pas aria-label="${tt('bag.openPassports')}">${fan}${eq ? `<span class="pvb-eqm">✓ ${tt('pass.equipped')} · ${esc(V.REGIONS[eq].name)}</span>` : ''}<span class="pvb-tag">${tt('pass.plural')} · <b>${m}</b>/${nReg}</span></button>
  <div class="pvb-sv">${stage}${sv.length ? '' : ''}</div>
 </div>`;
