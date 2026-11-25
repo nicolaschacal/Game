@@ -17,3 +17,7 @@ async def main():
       Image.open('/tmp/'+out).convert(m).save(OUT+out); await pg.close()
     await b.close()
 asyncio.run(main())
+
+# ícono web de «Agregar a inicio» = el de la app
+if OUT=='assets/':
+  im=Image.open('assets/icon.png').convert('RGB'); im.resize((180,180),Image.LANCZOS).save('paper-voyager/apple-touch-icon.png'); im.resize((512,512),Image.LANCZOS).save('paper-voyager/app-icon-512.png')
