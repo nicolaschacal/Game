@@ -1322,5 +1322,11 @@
  "welcome.6": "Siehst du eine Kamera auf der Strecke, schnapp sie dir: Das ist ein Selfie für das Album im Rucksack.",
  "welcome.7": "Und jeder Reisende hat seine Geschichte. Meine beginnt auf dem Dachboden meiner Oma, mit Opas Notizbuch…",
  "welcome.8": "Truhen und Missionen bringen Extra-Belohnungen. Im Laden findest du Outfits und weitere Reisende.",
- "welcome.9": "Aber zuerst das Wichtigste: Wo fangen wir an? Ich komme aus Berlin, deshalb habe ich es dir auf der Karte markiert… aber du entscheidest!"
+ "welcome.9": "Aber zuerst das Wichtigste: Wo fangen wir an? Ich komme aus Berlin, deshalb habe ich es dir auf der Karte markiert… aber du entscheidest!",
+ "store.tab.pro": "PRO",
+ "store.sub.power": "Power-ups",
+ "store.sub.sou": "Souvenirs",
+ "store.sub.album": "Album",
+ "store.outfits": "Outfits",
+ "store.charTap": "Tippe auf einen Reisenden für Geschichte und Outfits."
 }

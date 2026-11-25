@@ -1322,5 +1322,11 @@
  "welcome.6": "If you see a camera on the track, grab it: it's a selfie for the album in your backpack.",
  "welcome.7": "And every traveler has a story. Mine starts in my grandma's attic, with Opa's notebook…",
  "welcome.8": "Chests and missions give extra rewards. In the shop you'll find outfits and more travelers.",
- "welcome.9": "But first, the big question: where do we start? I'm from Berlin, so I've marked it on the map for you… but it's your call!"
+ "welcome.9": "But first, the big question: where do we start? I'm from Berlin, so I've marked it on the map for you… but it's your call!",
+ "store.tab.pro": "PRO",
+ "store.sub.power": "Power-ups",
+ "store.sub.sou": "Souvenirs",
+ "store.sub.album": "Album",
+ "store.outfits": "Outfits",
+ "store.charTap": "Tap a traveler to see their story and outfits."
 }

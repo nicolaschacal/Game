@@ -1322,5 +1322,11 @@
  "welcome.6": "Si tu vois un appareil photo sur la piste, attrape-le : c'est un selfie pour l'album du sac à dos.",
  "welcome.7": "Et chaque voyageur a son histoire. La mienne commence dans le grenier de ma grand-mère, avec le carnet d'Opa…",
  "welcome.8": "Les coffres et les missions donnent des bonus. Dans la boutique, tu trouveras des tenues et d’autres voyageurs.",
- "welcome.9": "Mais d'abord, le plus important : on part d'où ? Moi, je suis de Berlin, alors je l'ai marquée sur la carte… mais c'est toi qui décides !"
+ "welcome.9": "Mais d'abord, le plus important : on part d'où ? Moi, je suis de Berlin, alors je l'ai marquée sur la carte… mais c'est toi qui décides !",
+ "store.tab.pro": "PRO",
+ "store.sub.power": "Bonus",
+ "store.sub.sou": "Souvenirs",
+ "store.sub.album": "Album",
+ "store.outfits": "Tenues",
+ "store.charTap": "Touche un voyageur pour voir son histoire et ses tenues."
 }

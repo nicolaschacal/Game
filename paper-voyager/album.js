@@ -671,7 +671,7 @@ export function openBag(ctx) {
     q('[data-rop]').onclick = e => flyCloth(e.currentTarget);
     q('[data-pas]').onclick = e => flyPass(e.currentTarget);
     q('[data-dia]').onclick = e => flyDiary(e.currentTarget);
-    q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos'); });
+    q('[data-shop]')?.addEventListener('click', () => { close(); openShopTab(ctx, 'objetos:sou'); });
     if (sv.length) souvenirs(sv);
     warmCloth();
   }

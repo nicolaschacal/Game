@@ -1,16 +1,18 @@
-// Tienda de 5 secciones dentro del panel #shop: Viajeros · Pasaportes · Fotografía · Objetos.
-// Uso: openShop(ctx, 'viajeros'|'pasaportes'|'foto'|'objetos'). Reemplaza el contenido de #shop salvo el .head.
+// Tienda dentro del panel #shop: Viajeros · Pasaportes · Objetos (submenú: potenciadores, souvenirs, álbum) · PRO.
+// Uso: openShop(ctx, 'viajeros'|'pasaportes'|'objetos'|'objetos:sou'|'foto'|'pro'). Reemplaza el contenido de #shop salvo el .head.
+// En Viajeros sólo van los personajes; al tocar uno se abre su ficha (bio + trajes).
 import { photoPreview } from './album.js';
 import { t as tt } from './i18n.js';
 
 const TABS = [
-  ['viajeros', 'viajero', tt('store.tab.travelers')], ['pasaportes', 'pasaporte', tt('store.tab.passports')], ['foto', 'foto', tt('store.tab.photos')], ['objetos', 'objeto', tt('store.tab.objects')],
+  ['viajeros', 'viajero', tt('store.tab.travelers')], ['pasaportes', 'pasaporte', tt('store.tab.passports')], ['objetos', 'objeto', tt('store.tab.objects')], ['pro', 'pro', tt('store.tab.pro')],
 ];
 const SV = (d) => `<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const TAB_ICO = {
   viajero: SV('<path d="M8.5 7.5a3.5 3.5 0 0 1 7 0"/><path d="M7 8h10"/><circle cx="12" cy="10.5" r="2.5"/><path d="M8 21v-5a4 4 0 0 1 8 0v5"/><path d="M16.5 14.5h2.5v5.5h-2.5"/>'),
   pasaporte: SV('<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 17h6"/>'),
   foto: SV('<rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2.5h5L16 6"/>'),
+  pro: SV('<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>'),
   objeto: SV('<path d="M3.5 8.5L12 4l8.5 4.5v7L12 20l-8.5-4.5z"/><path d="M3.5 8.5L12 13l8.5-4.5M12 13v7"/>'),
 };
 const RARITY = { nilo: [tt('rarity.common'), '#8a8069', '#DCE9F7'], kami: [tt('rarity.common'), '#8a8069', '#DCE9F7'], sakura: [tt('rarity.rare'), '#3E8FD9', '#FBD9E3'], kitsu: [tt('rarity.epic'), '#8E5CD9', '#FFE1D6'], shinobi: [tt('rarity.epic'), '#8E5CD9', '#DAD5F2'], oro: [tt('rarity.legendary'), '#D98A1E', '#FFF0B8'] };
@@ -35,7 +37,8 @@ const GLYPH = { // motivo del escudo de cada región
   oc: '<path d="M40 52q5-7 10 0t10 0t10 0t10 0M40 63q5-7 10 0t10 0t10 0t10 0" fill="none" stroke="#7a4d0b" stroke-width="4" stroke-linecap="round"/>',
 };
 
-let CSS_DONE = false, tab = 'viajeros', fresh = null, lastCtx = null;
+let CSS_DONE = false, tab = 'viajeros', sub = 'power', modal = null, fresh = null, lastCtx = null;
+const SUBS = [['power', 'store.sub.power'], ['sou', 'store.sub.sou'], ['album', 'store.sub.album']];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const coin = n => '◉ ' + n;
 
@@ -75,6 +78,19 @@ function injectCSS() {
 .vpro .it{grid-column:1/3}
 .vg .it i,.vpro .it i{display:flex;align-items:center;justify-content:center;line-height:1;padding:0;font:400 20px 'Lilita One',sans-serif;color:#fff}.vg .it i svg{display:block;margin:auto;color:#fff;fill:#fff}
 .it.pk.best::after{content:none!important}
+.vsub{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto;scrollbar-width:none}.vsub::-webkit-scrollbar{display:none}
+.vsub button{flex:1 0 auto;height:34px;padding:0 12px;border-radius:99px;border:2.5px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 13px 'Lilita One',sans-serif}.vsub .on{background:var(--gold);color:var(--ink)}
+.vmod{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(27,23,48,.55);animation:vmIn .2s both}
+@keyframes vmIn{from{opacity:0}}@keyframes vmUp{from{transform:translateY(40px);opacity:0}}
+.vmod .vmc{position:relative;width:min(100%,460px);max-height:88vh;overflow-y:auto;background:var(--cream);border:3.5px solid var(--ink);border-bottom:0;border-radius:24px 24px 0 0;padding:14px 14px calc(var(--sb,0px) + 18px);color:var(--ink);animation:vmUp .28s cubic-bezier(.2,1.2,.4,1) both}
+.vmod .vmx{position:absolute;right:12px;top:12px;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:#EADBB8;font:400 18px 'Lilita One',sans-serif;color:var(--ink)}
+.vmod .vmh{display:flex;gap:12px;align-items:flex-end;padding-right:40px}
+.vmod .vma{width:132px;height:132px;flex:none;border-radius:18px;border:3px solid var(--ink);background:var(--rc,#3E5BA9);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}.vmod .vma svg{width:146px;height:146px;flex:none;margin-bottom:-8px}
+.vmod .vmh b{display:block;font:400 28px/1 'Lilita One',sans-serif}.vmod .vmh small{display:block;font:900 10px Nunito;letter-spacing:1.2px;color:var(--mute);margin:4px 0 8px}
+.vmod .vmq{font:italic 700 13px/1.35 Nunito;color:#5d5546;margin:12px 2px 4px}.vmod .vmw{font:700 12.5px/1.4 Nunito;color:#5d5546;margin:0 2px 10px}
+.vmod .vmb{width:100%;height:50px;font-size:19px;margin:4px 0 6px}
+.vmod .vms{font:400 19px 'Lilita One',sans-serif;margin:10px 2px 0}
+.vmod .vg{padding:8px 0}
 .it.pk.best b::after{content:'MEJOR VALOR';display:inline-block;margin-left:8px;vertical-align:2px;background:var(--gold);color:var(--ink);border-radius:99px;padding:2px 8px 1px;font:900 8.5px/1.3 Nunito;letter-spacing:.8px}
 `;
   document.head.appendChild(s);
@@ -87,16 +103,26 @@ const FEM = ['mora', 'minji', 'layla', 'anaya'], TH = new Map();
 const thumb = (c, id, sk) => { const k = id + '|' + sk; if (!TH.has(k)) TH.set(k, c.thumbOf(id, sk)); return TH.get(k); };
 function viajeros(c) {
   const tid = c.V.T && c.V.T.traveler;
-  const rows = c.SKINS.map(k => {
-    const has = c.owned.includes(k.id), on = k.id === c.skinId, rc = CH_COL[k.id] || '#3E5BA9', worn = c.wornOf(k.id);
-    const ch = `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="sk" data-id="${k.id}" style="--rc:${rc};--bg:#DCE9F7">${tid === k.id ? `<span class="ribbon2">${tt('store.yourTraveler')}</span>` : ''}<div class="art">${thumb(c, k.id, 'base')}</div><b>${esc(k.name)}</b><small>${esc(k.tag.toUpperCase())}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(k.price)}</span></button>`;
-    const sks = k.skins.map(w => {
-      const hv = c.ownedV.includes(k.id + ':' + w.id), wearing = has && hv && worn === w.id;
-      return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${k.id}" data-s="${w.id}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, k.id, w.id)}</div><b>${esc(w.name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : w.story ? 'story' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : w.story ? '📖 ' + tt('store.story') : coin(w.price)}</span></button>`;
-    }).join('');
-    return `<div class="vg vg3">${ch}${sks}</div>`;
+  const cards = c.SKINS.map(k => {
+    const has = c.owned.includes(k.id), on = k.id === c.skinId, rc = CH_COL[k.id] || '#3E5BA9', n = k.skins.length;
+    return `<button class="sk${on ? ' on' : ''}${has ? '' : ' locked'}" data-v="ch" data-id="${k.id}" style="--rc:${rc};--bg:#DCE9F7">${tid === k.id ? `<span class="ribbon2">${tt('store.yourTraveler')}</span>` : ''}<div class="art">${thumb(c, k.id, c.wornOf(k.id) || 'base')}</div><b>${esc(k.name)}</b><small>${esc(k.tag.toUpperCase())}${n ? ' · ' + n + ' ' + tt('store.outfits').toUpperCase() : ''}</small><span class="price ${on ? 'use' : has ? 'own' : ''}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(k.price)}</span></button>`;
   }).join('');
-  return `<div class="vsec">${tt('store.yourTravelers')}<small>${tt('store.yourTravelers.sub')}</small></div>${rows}`;
+  return `<div class="vsec">${tt('store.yourTravelers')}<small>${tt('store.charTap')}</small></div><div class="vg vg3">${cards}</div>`;
+}
+// Ficha del personaje: retrato, de dónde es, su frase, por qué viaja y sus trajes
+function chModal(c, id) {
+  const k = c.SKINS.find(s => s.id === id); if (!k) return '';
+  const has = c.owned.includes(id), on = id === c.skinId, rc = CH_COL[id] || '#3E5BA9', worn = c.wornOf(id) || 'base';
+  const f = key => { const v = tt('ficha.' + id + '.' + key); return v && v !== 'ficha.' + id + '.' + key ? v : ''; };
+  const skin = (sid, name, price, story) => {
+    const base = sid === 'base', hv = base || c.ownedV.includes(id + ':' + sid), wearing = has && worn === sid;
+    return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${id}" data-s="${sid}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, id, sid)}</div><b>${esc(name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : story ? 'story' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : story ? '📖 ' + tt('store.story') : coin(price)}</span></button>`;
+  };
+  return `<div class="vmod" data-v="closeM"><div class="vmc" style="--rc:${rc}"><button class="vmx" data-v="closeM">✕</button>
+<div class="vmh"><div class="vma">${thumb(c, id, worn)}</div><div><b>${esc(k.name)}</b><small>${esc((f('home') || k.tag).toUpperCase())}</small></div></div>
+${f('quote') ? `<div class="vmq">«${esc(f('quote'))}»</div>` : ''}${f('why') ? `<div class="vmw">${esc(f('why'))}</div>` : ''}
+<button class="btn ${on ? '' : 'green'} vmb" data-v="sk" data-id="${id}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(k.price)}</button>
+<div class="vms">${tt('store.outfits')}</div><div class="vg vg3">${skin('base', tt('cloth.base'), 0, false)}${k.skins.map(w => skin(w.id, w.name, w.price, w.story)).join('')}</div></div></div>`;
 }
 
 function booklet(R, own, isNew) {
@@ -140,18 +166,26 @@ function foto(c) {
 }
 
 function objetos(c) {
-  const V = c.V, I = c.Iap;
+  const V = c.V;
+  const bar = `<div class="vsub">${SUBS.map(([k, t]) => `<button class="${sub === k ? 'on' : ''}" data-v="sub" data-id="${k}">${tt(t)}</button>`).join('')}</div>`;
+  if (sub === 'album') return bar + foto(c);
+  if (sub === 'sou') {
+    const sou = V.SOUVENIRS.map(s => {
+      const R = V.REGIONS[s.region], pass = V.hasPass(s.region) || V.isRico(), has = V.PHOTO.owned.includes(s.id);
+      return `<button class="ph${pass || has ? '' : ' lock'}" data-v="sou" data-id="${s.id}"><div class="pv">${photoPreview(s.id)}</div><b>${esc(s.name)}</b>` +
+        (has ? `<span class="price tk">${tt('store.have')}</span>` : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">🔒 ${tt('store.needPass', { pass: esc(R.pass) })}</div>`) + '</button>';
+    }).join('');
+    return bar + `<div class="vsec">${tt('shop.secSou')}<small>${tt('shop.secSouNote')}</small></div><div class="vg">${sou}</div>`;
+  }
   const items = c.ITEMS.map(k => `<button class="it" data-v="item" data-id="${k.id}"><i style="background:${ITEM_COL[k.id] || '#3E5BA9'};color:#fff">${itemIco(k)}</i><div><b>${esc(k.name)}${c.stock[k.id] ? `<u>x${c.stock[k.id]}</u>` : ''}</b><small>${esc(k.tag)}</small></div><span class="price">${coin(k.price)}</span></button>`).join('');
-  const sou = V.SOUVENIRS.map(s => {
-    const R = V.REGIONS[s.region], pass = V.hasPass(s.region) || V.isRico(), has = V.PHOTO.owned.includes(s.id);
-    return `<button class="ph${pass || has ? '' : ' lock'}" data-v="sou" data-id="${s.id}"><div class="pv">${photoPreview(s.id)}</div><b>${esc(s.name)}</b>` +
-      (has ? `<span class="price tk">${tt('store.have')}</span>` : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">🔒 ${tt('store.needPass', { pass: esc(R.pass) })}</div>`) + '</button>';
-  }).join('');
-  const pro = !I ? '' : `<div class="vsec">★ PRO</div><div class="vnote">${tt(I.pro ? 'shop.proOwn' : 'shop.proInfo')}</div>
+  return bar + `<div class="vsec">${tt('shop.secPower')}<small>${tt('shop.secPowerNote')}</small></div><div class="vg">${items}</div>`;
+}
+function pro(c) {
+  const I = c.Iap;
+  if (!I) return `<div class="vnote hd">${tt('shop.proInfo')}</div>`;
+  return `<div class="vsec">★ PRO</div><div class="vnote">${tt(I.pro ? 'shop.proOwn' : 'shop.proInfo')}</div>
 <div class="vg vpro">${I.pro ? '' : '<button class="btn green" data-v="paywall" style="grid-column:1/3;height:52px;font-size:19px">' + tt('shop.getPro') + '</button>'}${I.paquetes.map(p => `<button class="it pk${p.destacado ? ' best' : ''}${I.pro ? ' own' : ''}" data-v="pk" data-id="${p.id}"><i>${p.icono}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.pro ? tt('shop.active') : I.precio(p.id)}</span></button>`).join('')}
 <button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>`;
-  return `<div class="vsec">${tt('shop.secPower')}<small>${tt('shop.secPowerNote')}</small></div><div class="vg">${items}</div>
-<div class="vsec">${tt('shop.secSou')}<small>${tt('shop.secSouNote')}</small></div><div class="vg">${sou}</div>${pro}`;
 }
 
 // ── Estructura y render ──
@@ -169,8 +203,10 @@ function render() {
   const w = panel.querySelector('#sWallet'); if (w) w.textContent = c.walletTxt ?? c.wallet;
   panel.querySelectorAll('#vTabs button').forEach(b => { const on = b.dataset.t === tab; b.classList.toggle('on', on); if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
   const body = panel.querySelector('#vBody'), st = panel.scrollTop;
-  body.innerHTML = { viajeros, pasaportes, foto, objetos }[tab](c);
+  body.innerHTML = { viajeros, pasaportes, objetos, pro }[tab](c);
   panel.scrollTop = st;
+  document.getElementById('vModal')?.remove();
+  if (modal) { const m = document.createElement('div'); m.id = 'vModal'; m.innerHTML = chModal(c, modal); m.addEventListener('click', onClick); document.body.appendChild(m); }
 }
 function bad(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
 function done(c, el) { c.refresh(); render(); }
@@ -181,6 +217,9 @@ async function onClick(e) {
   if (tb) { c.SFX.tap(); tab = tb.dataset.t; fresh = null; document.getElementById('shop').scrollTop = 0; render(); return; }
   const el = e.target.closest('[data-v]'); if (!el) return;
   const kind = el.dataset.v, id = el.dataset.id, V = c.V;
+  if (kind === 'closeM') { if (e.target !== el && !e.target.closest('.vmx')) return; c.SFX.tap(); modal = null; return render(); }
+  if (kind === 'ch') { c.SFX.tap(); modal = id; return render(); }
+  if (kind === 'sub') { c.SFX.tap(); sub = id; document.getElementById('shop').scrollTop = 0; return render(); }
   if (kind === 'sk') {
     const k = c.SKINS.find(s => s.id === id), price = k.price, name = k.name;
     if (!c.owned.includes(id)) {
@@ -189,8 +228,10 @@ async function onClick(e) {
     } else { c.SFX.tap(); c.setSkin(id); }
     done(c);
   } else if (kind === 'wear') {
-    const k = c.SKINS.find(s => s.id === id), w = k.skins.find(x => x.id === el.dataset.s), key = id + ':' + w.id;
+    const k = c.SKINS.find(s => s.id === id);
     if (!c.owned.includes(id)) { c.SFX.nope(); c.toast(tt('store.skinNeed', { name: k.name.toUpperCase() })); return bad(el); }
+    if (el.dataset.s === 'base') { c.SFX.tap(); c.setWear(id, 'base'); if (id !== c.skinId) c.setSkin(id); return done(c); }
+    const w = k.skins.find(x => x.id === el.dataset.s), key = id + ':' + w.id;
     if (!c.ownedV.includes(key) && w.story) { c.SFX.nope(); c.toast(tt('store.storyNeed', { name: k.name })); return bad(el); }
     if (!c.ownedV.includes(key)) {
       if (!c.buy(w.price, w.name)) return bad(el);
@@ -248,7 +289,10 @@ async function proFlow(c, kind, id) {
 export function openShop(ctx, t = 'viajeros') {
   const panel = document.getElementById('shop'); if (!panel) return;
   injectCSS(); shell(panel);
-  lastCtx = ctx; tab = TABS.some(x => x[0] === t) ? t : 'viajeros'; fresh = null;
+  lastCtx = ctx; fresh = null; modal = null;
+  if (t === 'foto') t = 'objetos:album';
+  const [tb, sb] = String(t || 'viajeros').split(':');
+  tab = TABS.some(x => x[0] === tb) ? tb : 'viajeros'; if (tab === 'objetos') sub = SUBS.some(x => x[0] === sb) ? sb : 'power';
   panel.style.display = 'block'; panel.scrollTop = 0;
   render();
 }

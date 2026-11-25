@@ -1322,5 +1322,11 @@
  "welcome.6": "Si ves una cámara en la pista, agarrala: es una selfie para el álbum de la mochila.",
  "welcome.7": "Y cada viajero tiene su historia. La mía empieza en el ático de mi abuela, con el cuaderno de Opa…",
  "welcome.8": "Los cofres y las misiones dan premios extra. En la tienda vas a encontrar ropa y más viajeros.",
- "welcome.9": "Pero primero, lo importante: ¿desde dónde arrancamos? Yo soy de Berlín, así que te la dejé marcada en el mapa… ¡pero vos decidís!"
+ "welcome.9": "Pero primero, lo importante: ¿desde dónde arrancamos? Yo soy de Berlín, así que te la dejé marcada en el mapa… ¡pero vos decidís!",
+ "store.tab.pro": "PRO",
+ "store.sub.power": "Potenciadores",
+ "store.sub.sou": "Souvenirs",
+ "store.sub.album": "Álbum",
+ "store.outfits": "Trajes",
+ "store.charTap": "Tocá un viajero para ver su historia y sus trajes."
 }
