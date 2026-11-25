@@ -3,8 +3,9 @@
 import asyncio,sys,shutil,json
 from playwright.async_api import async_playwright
 from PIL import Image
-L=sys.argv[1] if len(sys.argv)>1 else '{}'
-POSE=sys.argv[2] if len(sys.argv)>2 else 'saludo'  # saludo | juego
+# ícono oficial: Nilo en el globo, de cerca, sobre cielo con nubes de papel
+L=sys.argv[1] if len(sys.argv)>1 else '{"gx":92,"gy":-60,"gw":840,"tilt":-6,"cielo":"nubes"}'
+POSE=sys.argv[2] if len(sys.argv)>2 else 'globo'  # saludo | juego
 OUT=sys.argv[3] if len(sys.argv)>3 else 'assets/'
 async def main():
   shutil.copy('scripts/iconos/icono.html','www/_icono.html')
