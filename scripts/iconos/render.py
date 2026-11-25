@@ -12,7 +12,7 @@ async def main():
     b=await p.chromium.launch()
     for mode,out,tr,m in [('icon','icon.png',False,'RGB'),('fg','icon-foreground.png',True,'RGBA'),('bg','icon-background.png',False,'RGB')]:
       pg=await b.new_page(viewport={'width':1024,'height':1024})
-      await pg.goto('http://localhost:8765/_icono.html?m=%s&s=1024&L=%s&pose=%s'%(mode,L,POSE)); await pg.wait_for_timeout(2500)
+      await pg.goto('http://localhost:8765/_icono.html?m=%s&s=1024&L=%s&pose=%s'%(mode,__import__('urllib.parse').parse.quote(L),POSE)); await pg.wait_for_timeout(2500)
       await pg.screenshot(path='/tmp/'+out,omit_background=tr,clip={'x':0,'y':0,'width':1024,'height':1024})
       Image.open('/tmp/'+out).convert(m).save(OUT+out); await pg.close()
     await b.close()
