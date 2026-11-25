@@ -264,7 +264,7 @@
  "error.webgl": "Questo dispositivo non è riuscito ad avviare WebGL.",
  "go.again": "ANCORA",
  "go.coins": "MONETE",
- "go.coinsNote": "Le monete si incassano arrivando all’aeroporto.",
+ "go.coinsNote": "Senza arrivare tieni metà delle monete.",
  "go.double": "MONETE x2",
  "go.home": "HOME",
  "go.nudgeCan": "Ora puoi sbloccare {name}!",
@@ -1361,5 +1361,16 @@
  "legal.terms": "Termini d’uso",
  "legal.privacy": "Privacy",
  "legal.adsPrivacy": "Privacy annunci",
- "lives.reviveHint": "Se ti arrendi, perdi questa vita (restano {n} ♥)"
+ "lives.reviveHint": "Se ti arrendi, perdi questa vita (restano {n} ♥)",
+ "pack.starter": "Pacchetto iniziale",
+ "pack.starter.desc": "Solo una volta, miglior prezzo",
+ "starter.once": "OFFERTA UNICA",
+ "starter.coins": "1000 monete",
+ "starter.lives": "72 ore di vite illimitate",
+ "starter.revives": "3 rinascite",
+ "toast.starter": "PACCHETTO INIZIALE!",
+ "vf.weekly": "FORZIERE D’ORO SETTIMANALE!",
+ "vf.perk.chest": "Un forziere d’oro ogni settimana",
+ "lives.graceTrips": "Vite illimitate nei primi viaggi (ne restano {n}).",
+ "lives.graceTime": "Vite illimitate del pacchetto: restano {t}."
 }

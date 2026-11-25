@@ -28,9 +28,11 @@ export const CONFIG = {
     // Clave de prueba (Test Store). Para producción: una clave pública por plataforma (goog_… / appl_…) desde el panel de RevenueCat.
     apiKey: { test: 'test_PGIWIvBmdBFGIAlJEzBdlmjrEZW', android: 'goog_XXXXXXXXXXXXXXXXXXXXXXXX', ios: 'appl_XXXXXXXXXXXXXXXXXXXXXXXX' },
     usarClaveDePrueba: true,       // true mientras se prueba con el Test Store; false al publicar
-    entNoAds: 'sin_anuncios', entVF: 'viajero_frecuente',
+    entNoAds: 'sin_anuncios', entVF: 'viajero_frecuente', entStarter: 'pack_inicio',
     // Identificadores de los paquetes dentro de la offering "default" (se arman en el panel de RevenueCat). El precio es orientativo (web).
     paquetes: [
+      // Pack de inicio: compra única (no consumible, paquete personalizado «starter», entitlement pack_inicio). Se entrega una sola vez por dispositivo.
+      { id: 'starter', tipo: 'starter', nombre: tt('pack.starter'), desc: tt('pack.starter.desc'), precio: 'US$ 1,99' },
       { id: '$rc_lifetime', tipo: 'noads', nombre: tt('pack.noads'), desc: tt('pack.noads.desc'), precio: 'US$ 3,99' },
       { id: '$rc_monthly', tipo: 'vf', nombre: tt('pack.monthly'), desc: tt('pack.vf.monthly.desc'), precio: 'US$ 2,99' },
       { id: '$rc_annual', tipo: 'vf', nombre: tt('pack.annual'), desc: tt('pack.vf.annual.desc'), precio: 'US$ 19,99', destacado: true },
@@ -51,8 +53,8 @@ const KEY = 'pv.noads', KEY_VF = 'pv.vf';
 const nativo = () => !!(window.Capacitor?.isNativePlatform?.());
 const plugin = n => window.Capacitor?.Plugins?.[n];
 const plataforma = () => window.Capacitor?.getPlatform?.() === 'ios' ? 'ios' : 'android';
-let noAds = localStorage.getItem(KEY) === '1' || localStorage.getItem('pv.pro') === '1', vf = localStorage.getItem(KEY_VF) === '1';
-if (Q.has('gratis')) { noAds = vf = false; localStorage.removeItem(KEY); localStorage.removeItem(KEY_VF); localStorage.removeItem('pv.pro'); } // ?gratis: vuelve a la versión gratis (pruebas)
+let noAds = localStorage.getItem(KEY) === '1' || localStorage.getItem('pv.pro') === '1', vf = localStorage.getItem(KEY_VF) === '1', starter = localStorage.getItem('pv.starter') === '1';
+if (Q.has('gratis')) { noAds = vf = starter = false; localStorage.removeItem('pv.starter'); localStorage.removeItem(KEY); localStorage.removeItem(KEY_VF); localStorage.removeItem('pv.pro'); } // ?gratis: vuelve a la versión gratis (pruebas)
 let pro = noAds || vf; // pro = sin anuncios (por compra única o por la suscripción)
 let partidas = 0, ultimoInter = 0, adsListo = false, consentOpts = false;
 const avisar = new Set(); // callbacks cuando cambia el estado PRO
@@ -122,10 +124,10 @@ export const Ads = {
 };
 
 // ── RevenueCat ──
-function setEstado(na, v) { const antes = noAds + '|' + vf; noAds = !!na; vf = !!v; pro = noAds || vf;
+function setEstado(na, v, st = starter) { const antes = noAds + '|' + vf + '|' + starter; noAds = !!na; vf = !!v; starter = !!st; pro = noAds || vf; localStorage.setItem('pv.starter', starter ? '1' : '0');
   localStorage.setItem(KEY, noAds ? '1' : '0'); localStorage.setItem(KEY_VF, vf ? '1' : '0'); localStorage.removeItem('pv.pro');
-  if (pro) document.getElementById('adBanner')?.classList.remove('on'); if (antes !== noAds + '|' + vf) avisar.forEach(f => f(pro)); }
-const setDesde = info => { const a = info?.entitlements?.active || {}; setEstado(!!a[CONFIG.revenuecat.entNoAds], !!a[CONFIG.revenuecat.entVF]); };
+  if (pro) document.getElementById('adBanner')?.classList.remove('on'); if (antes !== noAds + '|' + vf + '|' + starter) avisar.forEach(f => f(pro)); }
+const setDesde = info => { const a = info?.entitlements?.active || {}; setEstado(!!a[CONFIG.revenuecat.entNoAds], !!a[CONFIG.revenuecat.entVF], !!a[CONFIG.revenuecat.entStarter] || starter); };
 let offering = null; // offering actual (con precios reales de la tienda)
 
 export const Iap = {
@@ -133,7 +135,8 @@ export const Iap = {
   get pro() { return pro; },          // sin anuncios (compra única o suscripción)
   get sinAnuncios() { return noAds; }, // compró el pago único
   get frecuente() { return vf; },      // viajero frecuente: vidas ilimitadas y +25% de monedas
-  tiene(id) { const p = CONFIG.revenuecat.paquetes.find(x => x.id === id); return p?.tipo === 'vf' ? vf : pro; },
+  get starter() { return starter; },   // compró el pack de inicio
+  tiene(id) { const p = CONFIG.revenuecat.paquetes.find(x => x.id === id); return p?.tipo === 'vf' ? vf : p?.tipo === 'starter' ? starter : noAds; },
   onCambio(f) { avisar.add(f); },
   // Configura el SDK una sola vez al abrir la app y escucha cambios del cliente (renovaciones, reembolsos, otro dispositivo).
   async init() {
@@ -178,7 +181,7 @@ export const Iap = {
     }
     if (!Q.has('debug')) return 'solo-app'; // web: sólo en modo prueba se concede, para revisar el flujo
     const pk = CONFIG.revenuecat.paquetes.find(x => x.id === id);
-    if (pk?.tipo === 'vf') setEstado(noAds, true); else setEstado(true, vf); return 'ok';
+    if (pk?.tipo === 'vf') setEstado(noAds, true); else if (pk?.tipo === 'starter') setEstado(noAds, vf, true); else setEstado(true, vf); return 'ok';
   },
   // Paywall de RevenueCat (purchases-capacitor-ui). Si no está el plugin, la tienda del juego hace de paywall.
   async paywall() {

@@ -264,7 +264,7 @@
  "error.webgl": "Este dispositivo não conseguiu iniciar o WebGL.",
  "go.again": "DE NOVO",
  "go.coins": "MOEDAS",
- "go.coinsNote": "As moedas só são recebidas ao chegar ao aeroporto.",
+ "go.coinsNote": "Sem chegar, você fica com metade das moedas.",
  "go.double": "MOEDAS x2",
  "go.home": "INÍCIO",
  "go.nudgeCan": "Você já pode desbloquear {name}!",
@@ -1361,5 +1361,16 @@
  "legal.terms": "Termos de uso",
  "legal.privacy": "Privacidade",
  "legal.adsPrivacy": "Privacidade de anúncios",
- "lives.reviveHint": "Se desistir, perde esta vida (restam {n} ♥)"
+ "lives.reviveHint": "Se desistir, perde esta vida (restam {n} ♥)",
+ "pack.starter": "Pacote inicial",
+ "pack.starter.desc": "Só uma vez, melhor preço",
+ "starter.once": "OFERTA ÚNICA",
+ "starter.coins": "1000 moedas",
+ "starter.lives": "72 horas de vidas ilimitadas",
+ "starter.revives": "3 reviver",
+ "toast.starter": "PACOTE INICIAL!",
+ "vf.weekly": "BAÚ DE OURO SEMANAL!",
+ "vf.perk.chest": "Um baú de ouro por semana",
+ "lives.graceTrips": "Vidas ilimitadas nas primeiras viagens (restam {n}).",
+ "lives.graceTime": "Vidas ilimitadas do pacote: restam {t}."
 }

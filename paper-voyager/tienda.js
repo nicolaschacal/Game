@@ -94,6 +94,7 @@ function injectCSS() {
 .vfc .ok{font:400 17px 'Lilita One',sans-serif;color:#356F2E;text-align:center;margin:4px 0}
 .vfc .it{margin-top:8px;width:100%}
 .vleg{font:700 10.5px/1.4 Nunito;color:#7c7460;margin:10px 2px 0}.vleg a{color:#34437F;text-decoration:underline}
+.vfc.st{position:relative;margin-top:22px}.vfc .stb{position:absolute;right:14px;top:-11px;z-index:2;background:#E8452C;color:#FFF6E0;border-radius:99px;padding:3px 11px 2px;font:900 10px/1.3 Nunito;letter-spacing:1px;box-shadow:0 2px 0 rgba(27,23,48,.35)}
 .vfc.na h3{font-size:21px}.vfc.na p{font:700 12.5px/1.35 Nunito;color:#5d5546;margin:6px 0 10px}
 
 .vsub{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto;scrollbar-width:none}.vsub::-webkit-scrollbar{display:none}
@@ -206,7 +207,7 @@ function objetos(c) {
 }
 // Bloque de vidas (lo usan la pestaña PRO y el aviso «sin vidas»)
 export function livesHTML(c, modal) {
-  if (Vidas.infinito) return `<div class="card vlv"><div class="hs">${HEART(1)}</div><b class="t">${tt('lives.inf')}</b><small>${tt('lives.infSub')}</small></div>`;
+  if (Vidas.infinito) return `<div class="card vlv"><div class="hs">${HEART(1)}</div><b class="t">${tt('lives.inf')}</b><small>${Vidas.gracia ? (c.graceLeft?.() ? tt('lives.graceTime', { t: reloj(c.graceLeft()) }) : tt('lives.graceTrips', { n: c.graceTrips?.() ?? 0 })) : tt('lives.infSub')}</small></div>`;
   const n = Vidas.n, full = n >= Vidas.MAX, nx = Vidas.proxima();
   const hs = Array.from({ length: Vidas.MAX }, (_, i) => HEART(i < n)).join('');
   const sub = full ? tt('lives.full') : tt('lives.next', { t: `<span class="lvT">${reloj(nx)}</span>` }) + ' · ' + tt('lives.fullIn', { t: reloj(Vidas.llenasEn()) });
@@ -224,9 +225,14 @@ function legalHTML(c) {
 }
 function vfCard(c) {
   const I = c.Iap, own = I?.frecuente, pk = (I?.paquetes || []).filter(p => p.tipo === 'vf');
-  const perks = [['<b style="color:#E8452C;font-size:18px">♥</b>', 'vf.perk.lives'], ['🚫', 'vf.perk.ads'], ['<b style="color:#D9961E;font-size:17px">◉</b>', 'vf.perk.coins']].map(([i, k]) => `<li><i>${i}</i>${tt(k)}</li>`).join('');
+  const perks = [['<b style="color:#E8452C;font-size:18px">♥</b>', 'vf.perk.lives'], ['🚫', 'vf.perk.ads'], ['<b style="color:#D9961E;font-size:17px">◉</b>', 'vf.perk.coins'], ['🎁', 'vf.perk.chest']].map(([i, k]) => `<li><i>${i}</i>${tt(k)}</li>`).join('');
   return `<div class="card vfc"><h3>${PLANE_I}${tt('vf.title')}</h3><ul>${perks}</ul>` +
     (own ? `<div class="ok">✓ ${tt('vf.active')}</div>` : pk.map(p => `<button class="it pk${p.destacado ? ' best' : ''}" data-v="pk" data-id="${p.id}"><i>${p.id === '$rc_annual' ? '☀' : '☾'}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`).join('') + legalHTML(c)) + '</div>';
+}
+function starterCard(c) {
+  const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'starter'); if (!p || I.starter) return '';
+  const items = [['◉', 'starter.coins'], ['♥', 'starter.lives'], ['✚', 'starter.revives']].map(([i, k]) => `<li><i>${i === '◉' ? '<b style="color:#D9961E;font-size:17px">◉</b>' : i === '♥' ? '<b style="color:#E8452C;font-size:18px">♥</b>' : '<b style="color:#356F2E;font-size:16px">✚</b>'}</i>${tt(k)}</li>`).join('');
+  return `<div class="card vfc st"><span class="stb">${tt('starter.once')}</span><h3>🎒 ${tt('pack.starter')}</h3><ul>${items}</ul><button class="it pk" data-v="pk" data-id="${p.id}"><i>✈</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button></div>`;
 }
 function naCard(c) {
   const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'noads'); if (!p) return '';
@@ -236,7 +242,7 @@ function naCard(c) {
 }
 function pro(c) {
   const I = c.Iap;
-  return livesHTML(c) + (I ? vfCard(c) + naCard(c) + `<div class="vg vpro"><button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>` : '');
+  return livesHTML(c) + (I ? starterCard(c) + vfCard(c) + naCard(c) + `<div class="vg vpro"><button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>` : '');
 }
 // Aviso «sin vidas» al tocar JUGAR o REINTENTAR con 0 vidas. onReady() se llama si el jugador recupera una vida.
 let noLivesCb = null;
@@ -244,7 +250,7 @@ export function noLives(ctx, onReady) {
   injectCSS(); lastCtx = ctx; noLivesCb = onReady || null;
   document.getElementById('vNoLives')?.remove();
   const m = document.createElement('div'); m.id = 'vNoLives';
-  const draw = () => { m.innerHTML = `<div class="vmod" data-v="closeNL"><div class="card vmc" style="padding:14px 4px 10px"><button class="round vmx" data-v="closeNL" aria-label="${tt('common.close')}">✕</button><div class="vmi">${livesHTML(ctx, true)}${ctx.Iap && !ctx.Iap.frecuente ? vfCard(ctx) : ''}</div></div></div>`; };
+  const draw = () => { m.innerHTML = `<div class="vmod" data-v="closeNL"><div class="card vmc" style="padding:14px 4px 10px"><button class="round vmx" data-v="closeNL" aria-label="${tt('common.close')}">✕</button><div class="vmi">${livesHTML(ctx, true)}${ctx.Iap && !ctx.Iap.frecuente ? starterCard(ctx) + vfCard(ctx) : ''}</div></div></div>`; };
   m._draw = draw; draw(); m.addEventListener('click', onClick); document.body.appendChild(m);
   tickLives();
 }
@@ -361,7 +367,7 @@ async function livesBuy(c, kind, el) {
   redraw();
 }
 async function proFlow(c, kind, id) {
-  const I = c.Iap, ok = () => { document.getElementById('vNoLives')?.remove(); if (noLivesCb && Vidas.puede()) { const f = noLivesCb; noLivesCb = null; setTimeout(f, 600); } c.pop(tt(I.frecuente ? 'toast.vf' : 'toast.pro'), 'big'); c.SFX.buy(); c.confetti(); document.body.classList.remove('ads'); c.refresh(); render(); };
+  const I = c.Iap, ok = () => { document.getElementById('vNoLives')?.remove(); if (noLivesCb && Vidas.puede()) { const f = noLivesCb; noLivesCb = null; setTimeout(f, 600); } c.pop(tt(id === 'starter' ? 'toast.starter' : I.frecuente ? 'toast.vf' : 'toast.pro'), 'big'); c.SFX.buy(); c.confetti(); document.body.classList.remove('ads'); c.refresh(); render(); };
   c.SFX.tap();
   if (kind === 'paywall') {
     const r = await I.paywall();

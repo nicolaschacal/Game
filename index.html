@@ -153,9 +153,9 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #mCol>*{pointer-events:auto}
 #mTop{position:relative;display:flex;align-items:center;gap:8px;flex:none}
 #menu .chip,#menu .arrow,#menu .ribbon{position:static;transform:none}
-#climaChip{flex:1;min-width:0;height:44px;padding:0 8px 0 10px;border-radius:22px;border:3px solid var(--ink);background:#FFF6E0;box-shadow:inset 0 -4px 0 #EAD9B5,0 3px 0 var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:6px;font:900 11px/1 Nunito;letter-spacing:.2px;cursor:pointer}
+#climaChip{flex:none;min-width:0;height:44px;padding:0 8px 0 10px;border-radius:22px;border:3px solid var(--ink);background:#FFF6E0;box-shadow:inset 0 -4px 0 #EAD9B5,0 3px 0 var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:6px;font:900 11px/1 Nunito;letter-spacing:.2px;cursor:pointer}
 #climaChip.on{background:#DCEFF9}
-#climaChip .cl{display:flex;align-items:center;gap:4px;min-width:0}#climaChip .cl svg{position:static;width:18px;height:18px;flex:none}#climaChip .ct{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#climaChip .cl{display:flex;align-items:center;gap:4px;min-width:0}#climaChip .cl svg{position:static;width:18px;height:18px;flex:none}#climaChip .ct{display:none}
 #climaChip .sw{flex:none;width:42px;height:24px;border-radius:12px;border:2px solid var(--ink);box-sizing:border-box;background:#CFC6AE;display:flex;align-items:center;justify-content:flex-start;padding:1px;transition:background .2s}
 #climaChip .sw i{width:18px;height:18px;border-radius:9px;background:var(--ink);transition:transform .2s}
 #climaChip.on .sw{background:var(--green)}#climaChip.on .sw i{transform:translateX(18px);background:#FFF6E0}
@@ -163,8 +163,8 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #walletChip{flex:none;height:44px;display:flex;align-items:center;gap:6px;padding:0 5px 0 6px;border:3px solid var(--ink);border-radius:22px;background:var(--ink);color:#FFF6E0;box-shadow:0 3px 0 #1B173059}
 #walletChip svg.ico{width:28px;height:28px}#walletChip b{font:400 20px/1 'Lilita One',sans-serif;padding:0 2px;min-width:24px;text-align:center}
 #livesChip{flex:none;height:44px;display:flex;align-items:center;gap:4px;padding:0 10px 0 6px;border:3px solid var(--ink);border-radius:22px;background:#B3321D;color:#FFF6E0;box-shadow:0 3px 0 #1B173059;position:relative}
-#livesChip svg{width:28px;height:26px;flex:none}#livesChip b{font:400 20px/1 'Lilita One',sans-serif;min-width:12px;text-align:center}
-#livesChip small{font:900 11px/1 Nunito;opacity:.9}#livesChip small:empty{display:none}
+#livesChip svg{width:28px;height:26px;flex:none}#livesChip b{font:400 22px/1 'Lilita One',sans-serif;min-width:14px;text-align:center}
+#livesChip small{font:400 17px/1 'Lilita One',sans-serif;opacity:.95;min-width:46px;text-align:left;font-variant-numeric:tabular-nums}
 #livesChip.low{animation:shake .5s 1}
 #rvLife{font:800 12px/1.3 Nunito;color:#B3321D;margin:2px 0 6px}#rvLife:empty{display:none}
 body.gpapel #livesChip{border:0;box-shadow:none;padding:0 11px 3px 6px;clip-path:var(--pill-c);background-color:#7E2115}
@@ -1181,11 +1181,12 @@ let ended=false;
 renderPolicy(()=>document.body.classList.contains('pnlopen')?0:(menuOpen||paused)?30:60);
 function endGame(title,reason){if(ended)return;ended=true;if(lifeTaken){lifeTaken=false;reason+=' · '+t(Vidas.n>0?'lives.lost':'lives.lostLast',{n:Vidas.n});}
  if(route){route=null;RT=null;store.set('route',null);drawRouteBar();reason+=' · '+t('route.lostToast');} // perder una partida cancela la ruta (sin premio de ruta)
- runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked; // sin llegar no se cobran las monedas; los cofres ya quedaron guardados
+ runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked,keep=Math.floor(lost/2); // sin llegar te quedás con la mitad de las monedas; los cofres ya quedaron guardados
+ if(keep>0){wallet+=Math.round(keep*(Iap.frecuente?1.25:1));banked+=keep;store.set('wallet',wallet);}
  const record=score>best&&score>0;if(record){best=score;store.set('best',best);}
  tops.push({s:score,w:stage+1,t:Date.now()});tops.sort((a,b)=>b.s-a.s);tops.length=Math.min(tops.length,5);store.set('tops',tops);
  $('goTitle').textContent=title;$('gameReason').textContent=reason;$('goRec').style.display=record?'inline-block':'none';
- $('goScore').textContent=fmt(score);$('goCoins').innerHTML=lost>0?'<s style="opacity:.55">'+lost+'</s>':'0';if(lost>0)reason+=' · '+t('go.coinsNote');$('gameReason').textContent=reason;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
+ $('goScore').textContent=fmt(score);$('goCoins').innerHTML=lost>0?'+'+keep+' <s style="opacity:.5;font-size:.7em">'+lost+'</s>':'0';if(lost>0)reason+=' · '+t('go.coinsNote');$('gameReason').textContent=reason;$('goStreak').textContent='x'+maxMult;$('goWorlds').textContent=stage+1;
  const next=SKINS.filter(k=>!owned.includes(k.id)).sort((a,b)=>a.price-b.price)[0],nd=$('goNudge');
  if(next){nd.style.display='block';nd.innerHTML=thumbOf(next.id).replace(/viewBox="[^"]*"/,'viewBox="-12 -22 144 144"')+(wallet>=next.price?t('go.nudgeCan',{name:next.name.toUpperCase()}):t('go.nudgeNeed',{n:next.price-wallet,name:next.name.toUpperCase()}))+'<div class="bar"><i style="width:'+Math.min(100,wallet/next.price*100)+'%"></i></div>';}
  SFX.lose();buzz(120);if(record)confetti();setTimeout(()=>gameover.style.display='flex',350);
@@ -1796,7 +1797,16 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
 ctx.Ads=Ads;ctx.Vidas=Vidas;K.initCofres(ctx);
 // Vidas: chip en el inicio (corazón + cuántas quedan + cuánto falta para la próxima); viajero frecuente = ∞
 Vidas.setInfinito(()=>Iap.frecuente);
-function drawLives(){const n=$('livesN');if(!n)return;const inf=Vidas.infinito,v=Vidas.n,nx=Vidas.proxima();n.textContent=inf?'∞':v;$('livesT').textContent=!inf&&nx>0?reloj(nx):'';$('livesChip').classList.toggle('low',!inf&&v===0);}
+// Gracia: vidas ilimitadas en los primeros GRACE_TRIPS viajes completos (que el primer día no choque contra el muro) o mientras dure el pack de inicio
+const GRACE_TRIPS=5,graceUntil=()=>+store.get('graceUntil',0)||0;
+ctx.graceTrips=()=>Math.max(0,GRACE_TRIPS-(V.T.trips||0));ctx.graceLeft=()=>Math.max(0,graceUntil()-Date.now());
+Vidas.setGracia(()=>graceUntil()>Date.now()||(!Q.has('vidas')&&(V.T.trips||0)<GRACE_TRIPS)); // ?vidas=N prueba sin la gracia de los primeros viajes
+// Pack de inicio (compra única): +1000 monedas, 3 revivir y 72 h de vidas ilimitadas. Se entrega una vez por dispositivo.
+function grantStarter(){if(!Iap.starter||store.get('starterGot',0))return;store.set('starterGot',1);wallet+=1000;store.set('wallet',wallet);stock.revive=(stock.revive||0)+3;store.set('items',stock);store.set('graceUntil',Math.max(graceUntil(),Date.now())+72*3600e3);confetti();SFX.prize?.();drawHome();}
+// Viajero frecuente: un cofre de oro por semana (al abrir el juego)
+function weeklyChest(){if(!Iap.frecuente)return;const wk=Math.floor(Date.now()/(7*864e5));if(store.get('vfWeek',-1)===wk)return;store.set('vfWeek',wk);K.addChest('oro');setTimeout(()=>{pop(t('vf.weekly'),'big');drawHome();},1500);}
+grantStarter();weeklyChest();Iap.onCambio(()=>{grantStarter();weeklyChest();});
+function drawLives(){const n=$('livesN');if(!n)return;const inf=Vidas.infinito,v=Vidas.n,nx=Vidas.proxima();n.textContent=inf?'∞':v;$('livesT').textContent=reloj(!inf&&nx>0?nx:0);$('livesChip').classList.toggle('low',!inf&&v===0);}
 drawLives();setInterval(()=>{if(menuOpen||ended)drawLives();},1000);Vidas.onCambio(drawLives);Iap.onCambio(drawLives);
 $('livesChip').addEventListener('click',()=>{if(Vidas.infinito||Vidas.n>=Vidas.MAX)openStore('pro');else{audio();SFX.tap();import('./paper-voyager/tienda.js').then(m=>m.noLives(ctx));}});
 // Historia del viajero: si se abrió un capítulo en el último viaje, su escena se cuenta al volver al inicio. ?historia=N la muestra para probar.

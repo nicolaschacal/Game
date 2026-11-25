@@ -264,7 +264,7 @@
  "error.webgl": "Este dispositivo no pudo iniciar WebGL.",
  "go.again": "OTRA VEZ",
  "go.coins": "MONEDAS",
- "go.coinsNote": "Las monedas se cobran al llegar al aeropuerto.",
+ "go.coinsNote": "Sin llegar te quedás con la mitad de las monedas.",
  "go.double": "MONEDAS x2",
  "go.home": "INICIO",
  "go.nudgeCan": "¡Ya podés desbloquear a {name}!",
@@ -1361,5 +1361,16 @@
  "legal.terms": "Términos de uso",
  "legal.privacy": "Privacidad",
  "legal.adsPrivacy": "Privacidad de anuncios",
- "lives.reviveHint": "Si no seguís, perdés esta vida (te quedan {n} ♥)"
+ "lives.reviveHint": "Si no seguís, perdés esta vida (te quedan {n} ♥)",
+ "pack.starter": "Pack de inicio",
+ "pack.starter.desc": "Solo una vez, el mejor precio",
+ "starter.once": "OFERTA ÚNICA",
+ "starter.coins": "1000 monedas",
+ "starter.lives": "72 horas de vidas ilimitadas",
+ "starter.revives": "3 revivir",
+ "toast.starter": "¡PACK DE INICIO!",
+ "vf.weekly": "¡COFRE DE ORO SEMANAL!",
+ "vf.perk.chest": "Un cofre de oro cada semana",
+ "lives.graceTrips": "Vidas ilimitadas en tus primeros viajes (quedan {n}).",
+ "lives.graceTime": "Vidas ilimitadas del pack: quedan {t}."
 }

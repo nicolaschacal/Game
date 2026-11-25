@@ -264,7 +264,7 @@
  "error.webgl": "この端末ではWebGLを起動できませんでした。",
  "go.again": "もう一度",
  "go.coins": "コイン",
- "go.coinsNote": "コインは空港に着いたときに受け取れます。",
+ "go.coinsNote": "到着できなくてもコインの半分はもらえるよ。",
  "go.double": "コイン x2",
  "go.home": "ホーム",
  "go.nudgeCan": "{name} を解放できます！",
@@ -1361,5 +1361,16 @@
  "legal.terms": "利用規約",
  "legal.privacy": "プライバシー",
  "legal.adsPrivacy": "広告のプライバシー",
- "lives.reviveHint": "あきらめるとこのライフを失うよ（残り {n} ♥）"
+ "lives.reviveHint": "あきらめるとこのライフを失うよ（残り {n} ♥）",
+ "pack.starter": "スターターパック",
+ "pack.starter.desc": "一度きりの特別価格",
+ "starter.once": "一度きり",
+ "starter.coins": "コイン1000枚",
+ "starter.lives": "72時間ライフ無制限",
+ "starter.revives": "復活×3",
+ "toast.starter": "スターターパック！",
+ "vf.weekly": "毎週の金の宝箱！",
+ "vf.perk.chest": "毎週金の宝箱",
+ "lives.graceTrips": "最初の旅はライフ無制限（あと{n}回）。",
+ "lives.graceTime": "パックのライフ無制限：残り{t}。"
 }

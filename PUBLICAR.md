@@ -116,7 +116,7 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 ## 8. Checklist de aprobación (revisado nov. 2026)
 - [ ] `CONFIG.admob.testing = false` e IDs reales de AdMob (también `GADApplicationIdentifier` en Info.plist y `APPLICATION_ID` en AndroidManifest).
 - [ ] `CONFIG.revenuecat.usarClaveDePrueba = false` y claves `appl_…` / `goog_…`.
-- [ ] RevenueCat: entitlements `sin_anuncios` (producto no consumible, paquete `$rc_lifetime`) y `viajero_frecuente` (suscripciones `$rc_monthly` y `$rc_annual`, mismo grupo de suscripción en App Store Connect).
+- [ ] RevenueCat: entitlement `pack_inicio` (no consumible, paquete personalizado `starter`) y entitlements `sin_anuncios` (producto no consumible, paquete `$rc_lifetime`) y `viajero_frecuente` (suscripciones `$rc_monthly` y `$rc_annual`, mismo grupo de suscripción en App Store Connect).
 - [ ] `privacidad.html` y `terminos.html`: completar nombre y correo, publicarlas en el dominio propio y actualizar `CONFIG.legal`.
 - [ ] App Store Connect: URL de privacidad, enlace al EULA estándar de Apple en la descripción (o EULA propio), capturas del paywall para la revisión de las compras.
 - [ ] Clima real: Open-Meteo gratis es sólo para uso NO comercial; con anuncios/suscripción hace falta su plan comercial o cambiar de proveedor.

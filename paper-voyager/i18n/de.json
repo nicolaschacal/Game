@@ -264,7 +264,7 @@
  "error.webgl": "Dieses Gerät konnte WebGL nicht starten.",
  "go.again": "NOCH MAL",
  "go.coins": "MÜNZEN",
- "go.coinsNote": "Münzen gibt es erst bei der Ankunft am Flughafen.",
+ "go.coinsNote": "Ohne Ankunft behältst du die Hälfte der Münzen.",
  "go.double": "MÜNZEN x2",
  "go.home": "START",
  "go.nudgeCan": "Du kannst {name} jetzt freischalten!",
@@ -1361,5 +1361,16 @@
  "legal.terms": "Nutzungsbedingungen",
  "legal.privacy": "Datenschutz",
  "legal.adsPrivacy": "Werbe-Datenschutz",
- "lives.reviveHint": "Gibst du auf, ist dieses Leben weg (noch {n} ♥)"
+ "lives.reviveHint": "Gibst du auf, ist dieses Leben weg (noch {n} ♥)",
+ "pack.starter": "Starterpaket",
+ "pack.starter.desc": "Nur einmal, bester Preis",
+ "starter.once": "EINMALIGES ANGEBOT",
+ "starter.coins": "1000 Münzen",
+ "starter.lives": "72 Stunden unbegrenzte Leben",
+ "starter.revives": "3× Wiederbeleben",
+ "toast.starter": "STARTERPAKET!",
+ "vf.weekly": "WÖCHENTLICHE GOLDTRUHE!",
+ "vf.perk.chest": "Jede Woche eine Goldtruhe",
+ "lives.graceTrips": "Unbegrenzte Leben auf deinen ersten Reisen (noch {n}).",
+ "lives.graceTime": "Unbegrenzte Leben aus dem Paket: noch {t}."
 }

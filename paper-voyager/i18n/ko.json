@@ -275,7 +275,7 @@
  "error.webgl": "이 기기에서 WebGL을 시작할 수 없어요.",
  "go.again": "다시",
  "go.coins": "동전",
- "go.coinsNote": "동전은 공항에 도착하면 저금돼요.",
+ "go.coinsNote": "도착하지 못해도 코인의 절반은 챙겨요.",
  "go.double": "동전 x2",
  "go.home": "홈",
  "go.nudgeCan": "지금 {name}을(를) 잠금 해제할 수 있어요!",
@@ -1361,5 +1361,16 @@
  "legal.terms": "이용약관",
  "legal.privacy": "개인정보 처리방침",
  "legal.adsPrivacy": "광고 개인정보",
- "lives.reviveHint": "포기하면 이 라이프를 잃어요 (남은 라이프 {n} ♥)"
+ "lives.reviveHint": "포기하면 이 라이프를 잃어요 (남은 라이프 {n} ♥)",
+ "pack.starter": "스타터 팩",
+ "pack.starter.desc": "단 한 번, 최저가",
+ "starter.once": "1회 한정",
+ "starter.coins": "코인 1000개",
+ "starter.lives": "72시간 라이프 무제한",
+ "starter.revives": "부활 3회",
+ "toast.starter": "스타터 팩!",
+ "vf.weekly": "주간 황금 상자!",
+ "vf.perk.chest": "매주 황금 상자",
+ "lives.graceTrips": "첫 여행은 라이프 무제한 (남은 여행 {n}).",
+ "lives.graceTime": "팩 라이프 무제한: {t} 남음."
 }

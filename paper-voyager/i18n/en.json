@@ -264,7 +264,7 @@
  "error.webgl": "This device could not start WebGL.",
  "go.again": "AGAIN",
  "go.coins": "COINS",
- "go.coinsNote": "Coins are banked when you reach the airport.",
+ "go.coinsNote": "You keep half your coins if you don’t arrive.",
  "go.double": "COINS x2",
  "go.home": "HOME",
  "go.nudgeCan": "You can unlock {name} now!",
@@ -1361,5 +1361,16 @@
  "legal.terms": "Terms of Use",
  "legal.privacy": "Privacy Policy",
  "legal.adsPrivacy": "Ad privacy",
- "lives.reviveHint": "If you give up, you lose this life ({n} ♥ left)"
+ "lives.reviveHint": "If you give up, you lose this life ({n} ♥ left)",
+ "pack.starter": "Starter Pack",
+ "pack.starter.desc": "One time only, best price",
+ "starter.once": "ONE-TIME OFFER",
+ "starter.coins": "1000 coins",
+ "starter.lives": "72 hours of unlimited lives",
+ "starter.revives": "3 revives",
+ "toast.starter": "STARTER PACK!",
+ "vf.weekly": "WEEKLY GOLD CHEST!",
+ "vf.perk.chest": "A gold chest every week",
+ "lives.graceTrips": "Unlimited lives on your first trips ({n} left).",
+ "lives.graceTime": "Starter Pack unlimited lives: {t} left."
 }

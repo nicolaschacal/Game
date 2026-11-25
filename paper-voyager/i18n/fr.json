@@ -264,7 +264,7 @@
  "error.webgl": "Cet appareil n’a pas pu démarrer WebGL.",
  "go.again": "REJOUER",
  "go.coins": "PIÈCES",
- "go.coinsNote": "Les pièces sont encaissées à l’arrivée à l’aéroport.",
+ "go.coinsNote": "Sans arriver, tu gardes la moitié des pièces.",
  "go.double": "PIÈCES x2",
  "go.home": "ACCUEIL",
  "go.nudgeCan": "Tu peux débloquer {name} !",
@@ -1361,5 +1361,16 @@
  "legal.terms": "Conditions d’utilisation",
  "legal.privacy": "Confidentialité",
  "legal.adsPrivacy": "Confidentialité des pubs",
- "lives.reviveHint": "Si tu abandonnes, tu perds cette vie (il reste {n} ♥)"
+ "lives.reviveHint": "Si tu abandonnes, tu perds cette vie (il reste {n} ♥)",
+ "pack.starter": "Pack de départ",
+ "pack.starter.desc": "Une seule fois, meilleur prix",
+ "starter.once": "OFFRE UNIQUE",
+ "starter.coins": "1000 pièces",
+ "starter.lives": "72 heures de vies illimitées",
+ "starter.revives": "3 réanimations",
+ "toast.starter": "PACK DE DÉPART !",
+ "vf.weekly": "COFFRE D’OR HEBDO !",
+ "vf.perk.chest": "Un coffre d’or chaque semaine",
+ "lives.graceTrips": "Vies illimitées pour tes premiers voyages (encore {n}).",
+ "lives.graceTime": "Vies illimitées du pack : encore {t}."
 }
