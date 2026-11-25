@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 ライフ！",
  "lives.inf": "ライフ無制限",
  "lives.infSub": "常連トラベラーだから、好きなだけ遊べるよ。",
- "lives.lost": "−1 ♥（残り {n}）",
- "lives.lostLast": "−1 ♥（ライフなし）",
+ "lives.lost": "残りライフ {n}",
+ "lives.lostLast": "ライフがなくなった",
  "vf.title": "常連トラベラー",
  "vf.perk.lives": "ライフ無制限",
  "vf.perk.ads": "広告なし",
@@ -1361,7 +1361,7 @@
  "legal.terms": "利用規約",
  "legal.privacy": "プライバシー",
  "legal.adsPrivacy": "広告のプライバシー",
- "lives.reviveHint": "あきらめるとこのライフを失うよ（残り {n} ♥）",
+ "lives.reviveHint": "あきらめるとこのライフを失うよ（残り{n}）",
  "pack.starter": "スターターパック",
  "pack.starter.desc": "一度きりの特別価格",
  "starter.once": "一度きり",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "毎週の金の宝箱！",
  "vf.perk.chest": "毎週金の宝箱",
  "lives.graceTrips": "最初の旅はライフ無制限（あと{n}回）。",
- "lives.graceTime": "パックのライフ無制限：残り{t}。"
+ "lives.graceTime": "パックのライフ無制限：残り{t}。",
+ "lives.lostOne": "残りライフ 1"
 }

@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 LEBEN!",
  "lives.inf": "Unbegrenzte Leben",
  "lives.infSub": "Du bist Vielreisender: spiel, so viel du willst.",
- "lives.lost": "−1 ♥ (noch {n})",
- "lives.lostLast": "−1 ♥ (keine Leben mehr)",
+ "lives.lost": "Noch {n} Leben",
+ "lives.lostLast": "Keine Leben mehr",
  "vf.title": "Vielreisender",
  "vf.perk.lives": "Unbegrenzte Leben",
  "vf.perk.ads": "Keine Werbung",
@@ -1361,7 +1361,7 @@
  "legal.terms": "Nutzungsbedingungen",
  "legal.privacy": "Datenschutz",
  "legal.adsPrivacy": "Werbe-Datenschutz",
- "lives.reviveHint": "Gibst du auf, ist dieses Leben weg (noch {n} ♥)",
+ "lives.reviveHint": "Gibst du auf, ist dieses Leben weg (noch {n})",
  "pack.starter": "Starterpaket",
  "pack.starter.desc": "Nur einmal, bester Preis",
  "starter.once": "EINMALIGES ANGEBOT",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "WÖCHENTLICHE GOLDTRUHE!",
  "vf.perk.chest": "Jede Woche eine Goldtruhe",
  "lives.graceTrips": "Unbegrenzte Leben auf deinen ersten Reisen (noch {n}).",
- "lives.graceTime": "Unbegrenzte Leben aus dem Paket: noch {t}."
+ "lives.graceTime": "Unbegrenzte Leben aus dem Paket: noch {t}.",
+ "lives.lostOne": "Noch 1 Leben"
 }

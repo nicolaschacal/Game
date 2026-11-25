@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 VIE !",
  "lives.inf": "Vies illimitées",
  "lives.infSub": "Tu es voyageur fréquent : joue autant que tu veux.",
- "lives.lost": "−1 ♥ (il en reste {n})",
- "lives.lostLast": "−1 ♥ (plus de vies)",
+ "lives.lost": "Il reste {n} vies",
+ "lives.lostLast": "Plus de vies",
  "vf.title": "Voyageur fréquent",
  "vf.perk.lives": "Vies illimitées",
  "vf.perk.ads": "Sans publicité",
@@ -1361,7 +1361,7 @@
  "legal.terms": "Conditions d’utilisation",
  "legal.privacy": "Confidentialité",
  "legal.adsPrivacy": "Confidentialité des pubs",
- "lives.reviveHint": "Si tu abandonnes, tu perds cette vie (il reste {n} ♥)",
+ "lives.reviveHint": "Si tu abandonnes, tu perds cette vie (il en reste {n})",
  "pack.starter": "Pack de départ",
  "pack.starter.desc": "Une seule fois, meilleur prix",
  "starter.once": "OFFRE UNIQUE",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "COFFRE D’OR HEBDO !",
  "vf.perk.chest": "Un coffre d’or chaque semaine",
  "lives.graceTrips": "Vies illimitées pour tes premiers voyages (encore {n}).",
- "lives.graceTime": "Vies illimitées du pack : encore {t}."
+ "lives.graceTime": "Vies illimitées du pack : encore {t}.",
+ "lives.lostOne": "Il reste 1 vie"
 }

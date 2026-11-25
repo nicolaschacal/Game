@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 VIDA!",
  "lives.inf": "Vidas ilimitadas",
  "lives.infSub": "Você é viajante frequente: jogue à vontade.",
- "lives.lost": "−1 ♥ (restam {n})",
- "lives.lostLast": "−1 ♥ (sem vidas)",
+ "lives.lost": "Restam {n} vidas",
+ "lives.lostLast": "Você ficou sem vidas",
  "vf.title": "Viajante frequente",
  "vf.perk.lives": "Vidas ilimitadas",
  "vf.perk.ads": "Sem anúncios",
@@ -1361,7 +1361,7 @@
  "legal.terms": "Termos de uso",
  "legal.privacy": "Privacidade",
  "legal.adsPrivacy": "Privacidade de anúncios",
- "lives.reviveHint": "Se desistir, perde esta vida (restam {n} ♥)",
+ "lives.reviveHint": "Se desistir, perde esta vida (restam {n})",
  "pack.starter": "Pacote inicial",
  "pack.starter.desc": "Só uma vez, melhor preço",
  "starter.once": "OFERTA ÚNICA",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "BAÚ DE OURO SEMANAL!",
  "vf.perk.chest": "Um baú de ouro por semana",
  "lives.graceTrips": "Vidas ilimitadas nas primeiras viagens (restam {n}).",
- "lives.graceTime": "Vidas ilimitadas do pacote: restam {t}."
+ "lives.graceTime": "Vidas ilimitadas do pacote: restam {t}.",
+ "lives.lostOne": "Resta 1 vida"
 }

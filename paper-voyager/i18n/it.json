@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 VITA!",
  "lives.inf": "Vite illimitate",
  "lives.infSub": "Sei un viaggiatore frequente: gioca quanto vuoi.",
- "lives.lost": "−1 ♥ (ne restano {n})",
- "lives.lostLast": "−1 ♥ (vite finite)",
+ "lives.lost": "Restano {n} vite",
+ "lives.lostLast": "Vite finite",
  "vf.title": "Viaggiatore frequente",
  "vf.perk.lives": "Vite illimitate",
  "vf.perk.ads": "Senza pubblicità",
@@ -1361,7 +1361,7 @@
  "legal.terms": "Termini d’uso",
  "legal.privacy": "Privacy",
  "legal.adsPrivacy": "Privacy annunci",
- "lives.reviveHint": "Se ti arrendi, perdi questa vita (restano {n} ♥)",
+ "lives.reviveHint": "Se ti arrendi, perdi questa vita (ne restano {n})",
  "pack.starter": "Pacchetto iniziale",
  "pack.starter.desc": "Solo una volta, miglior prezzo",
  "starter.once": "OFFERTA UNICA",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "FORZIERE D’ORO SETTIMANALE!",
  "vf.perk.chest": "Un forziere d’oro ogni settimana",
  "lives.graceTrips": "Vite illimitate nei primi viaggi (ne restano {n}).",
- "lives.graceTime": "Vite illimitate del pacchetto: restano {t}."
+ "lives.graceTime": "Vite illimitate del pacchetto: restano {t}.",
+ "lives.lostOne": "Resta 1 vita"
 }

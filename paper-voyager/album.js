@@ -2,6 +2,7 @@
 // panel ÁLBUM a pantalla completa (por región, con tapa, souvenirs y adornos) y la animación de la cámara en la partida.
 // Contrato: ver PLAN-viajes.md (ctx). Todo el arte es SVG con borde crema grueso; el CSS se inyecta una sola vez.
 import { DESTINOS } from './destinos.js';
+import { icoTxt } from './iconos.js';
 import { t as tt } from './i18n.js';
 import * as VV from './viaje.js';
 import { PLANE } from './runner-art.js';
@@ -932,7 +933,7 @@ export function openCloth(ctx, onClose, opts = {}) {
       + `<div class="pvc-grid">${list.map(k => {
         const on = k.id === cur;
         return `<div class="pvc-sk${on ? ' on' : ''}${k.owned ? '' : ' lock'}" data-id="${esc(k.id)}"><div class="art">${art(k.id)}</div><b>${esc(k.name)}</b>`
-          + (k.owned ? `<button class="pvc-b${on ? ' on' : ''}" data-eq="${esc(k.id)}"${on ? ' disabled' : ''}>${on ? tt('cloth.equipped') : tt('cloth.equip')}</button>` : (k.story ? `<span class="pvc-pr">📖 ${tt('store.story')}</span><small class="pvc-st">${esc(tt('store.storyNeed', { name: nm }))}</small>` : `<span class="pvc-pr">◉ ${k.price}</span><button class="pvc-b shop" data-shop>${tt('nav.shop')}</button>`)) + `</div>`;
+          + (k.owned ? `<button class="pvc-b${on ? ' on' : ''}" data-eq="${esc(k.id)}"${on ? ' disabled' : ''}>${on ? tt('cloth.equipped') : tt('cloth.equip')}</button>` : (k.story ? `<span class="pvc-pr">${icoTxt('libro', tt('store.story'), 15)}</span><small class="pvc-st">${esc(tt('store.storyNeed', { name: nm }))}</small>` : `<span class="pvc-pr">◉ ${k.price}</span><button class="pvc-b shop" data-shop>${tt('nav.shop')}</button>`)) + `</div>`;
       }).join('')}</div>`;
     root.querySelector('[data-x]').onclick = close;
     root.querySelectorAll('[data-eq]').forEach(b => b.onclick = () => { sfx('tap'); equipSkin(ctx, hero, b.dataset.eq); draw(); });

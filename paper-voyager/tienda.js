@@ -5,6 +5,7 @@ import { photoPreview } from './album.js';
 import { t as tt } from './i18n.js';
 import { Vidas, reloj } from './vidas.js';
 import { esIOS } from './monetizacion.js';
+import { ico, icoTxt, ICO_CSS } from './iconos.js';
 
 const TABS = [
   ['viajeros', 'viajero', tt('store.tab.travelers')], ['pasaportes', 'pasaporte', tt('store.tab.passports')], ['objetos', 'objeto', tt('store.tab.objects')], ['pro', 'pro', tt('store.tab.pro')],
@@ -28,7 +29,7 @@ const IT_SVG = {
   compass: '<circle cx="12" cy="12" r="8.500" fill="none" stroke="currentColor" stroke-width="2.200"/><path d="M12 6l2.600 6h-5.200z" fill="currentColor"/><path d="M12 18l2.600-6H9.400z" fill="currentColor" opacity=".45"/>',
   freeze: '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="M9.5 4.5L12 6.5l2.5-2M9.5 19.5L12 17.5l2.5 2" fill="none" stroke-width="1.8"/></g>',
 };
-const HEART = on => `<svg class="hrt${on ? '' : ' off'}" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9.5-5.7-9.5-12.6A5.4 5.4 0 0 1 12 5.3a5.4 5.4 0 0 1 9.5 3.1C21.5 15.3 12 21 12 21z" fill="#E8452C" stroke="#FFF4DC" stroke-width="2.2" stroke-linejoin="round"/><path d="M6.6 8.6a2.6 2.6 0 0 1 2.4-1.9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".7"/></svg>`;
+const HEART = on => ico(on ? 'corazon' : 'vacio', 32, 'hrt');
 const itemIco = k => IT_SVG[k.id] ? `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">${IT_SVG[k.id]}</svg>` : esc(k.icon);
 const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9', anchor: '#2F7FA8', ballast: '#7A6AA8', needle: '#D9961E', compass: '#C23B2A' };
 const PHOTO_GROUPS = [['frame', tt('store.photo.frames')], ['cover', tt('store.photo.covers')], ['filter', tt('store.photo.filters')], ['deco', tt('store.photo.decos')]];
@@ -43,13 +44,13 @@ const GLYPH = { // motivo del escudo de cada región
 let CSS_DONE = false, livesTick = 0, tab = 'viajeros', sub = 'power', modal = null, fresh = null, lastCtx = null;
 const SUBS = [['power', 'store.sub.power'], ['sou', 'store.sub.sou'], ['album', 'store.sub.album']];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const coin = n => '◉ ' + n;
+const coin = n => icoTxt('moneda', n, 17);
 
 function injectCSS() {
   if (CSS_DONE || document.getElementById('tiendaCSS')) { CSS_DONE = true; return; }
   CSS_DONE = true;
   const s = document.createElement('style'); s.id = 'tiendaCSS';
-  s.textContent = `
+  s.textContent = ICO_CSS + `
 .vtabs{display:flex;gap:4px;padding:12px 8px 4px;overflow-x:auto;scrollbar-width:none}.vtabs::-webkit-scrollbar{display:none}
 .vtabs button{flex:1 1 0;min-width:0;height:52px;padding:0 5px;border-radius:14px;border:3px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 11px/1 'Lilita One',sans-serif;letter-spacing:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .vtabs button i{font-style:normal;line-height:0;display:block}.vtabs button i svg{display:block}.vtabs .on{background:var(--ink);color:var(--cream)}
@@ -81,7 +82,7 @@ function injectCSS() {
 .vpro .it{grid-column:1/3}
 .vg .it i,.vpro .it i{display:flex;align-items:center;justify-content:center;line-height:1;padding:0;font:400 20px 'Lilita One',sans-serif;color:#fff}.vg .it i svg{display:block;margin:auto;color:#fff;fill:#fff}
 .it.pk.best::after{content:none!important}
-.hrt{display:inline-block;width:30px;height:28px;vertical-align:middle}.hrt.off{opacity:.28;filter:grayscale(1)}
+.hrt{width:34px;height:34px}
 .vlv.card,.vfc.card{width:auto;animation:none}.vfc.card{text-align:left}
 .vlv{margin:12px 14px 4px;padding:14px 14px 16px;text-align:center}
 .vlv .hs{display:flex;justify-content:center;gap:4px;margin:2px 0 6px}
@@ -90,7 +91,7 @@ function injectCSS() {
 .vlv .row .btn[disabled]{opacity:.5;filter:grayscale(.6)}
 .vfc{margin:14px 14px 4px;padding:16px 14px 16px}
 .vfc h3{margin:0;font:400 24px/1 'Lilita One',sans-serif;display:flex;align-items:center;gap:8px}.vfc h3 svg{width:30px;height:30px;flex:none}
-.vfc ul{list-style:none;margin:10px 0 12px;padding:0;text-align:left}.vfc li{font:800 13px/1.3 Nunito;margin:6px 0;display:flex;gap:8px;align-items:center}.vfc li i{font-style:normal;width:22px;text-align:center;flex:none}
+.vfc ul{list-style:none;margin:10px 0 12px;padding:0;text-align:left}.vfc li{font:800 13px/1.3 Nunito;margin:6px 0;display:flex;gap:8px;align-items:center}.vfc li i{font-style:normal;width:24px;display:flex;justify-content:center;flex:none}.vfc .ok{display:flex;justify-content:center}.it.pk i svg{display:block}
 .vfc .ok{font:400 17px 'Lilita One',sans-serif;color:#356F2E;text-align:center;margin:4px 0}
 .vfc .it{margin-top:8px;width:100%}
 .vleg{font:700 10.5px/1.4 Nunito;color:#7c7460;margin:10px 2px 0}.vleg a{color:#34437F;text-decoration:underline}
@@ -141,7 +142,7 @@ function chModal(c, id) {
   const f = key => { const v = tt('ficha.' + id + '.' + key); return v && v !== 'ficha.' + id + '.' + key ? v : ''; };
   const skin = (sid, name, price, story) => {
     const base = sid === 'base', hv = base || c.ownedV.includes(id + ':' + sid), wearing = has && worn === sid;
-    return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${id}" data-s="${sid}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, id, sid)}</div><b>${esc(name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : story ? 'story' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : story ? '📖 ' + tt('store.story') : coin(price)}</span></button>`;
+    return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${id}" data-s="${sid}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, id, sid)}</div><b>${esc(name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : story ? 'story' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : story ? icoTxt('libro', tt('store.story'), 16) : coin(price)}</span></button>`;
   };
   return `<div class="vmod" data-v="closeM"><div class="card vmc" style="--rc:${rc}"><button class="round vmx" data-v="closeM" aria-label="${tt('common.close')}">✕</button><div class="vmi">
 <div class="vmh"><div class="vma">${thumb(c, id, worn)}</div><div><b>${esc(k.name)}</b><small>${esc((f('home') || k.tag).toUpperCase())}</small></div></div>
@@ -170,7 +171,7 @@ function pasaportes(c) {
     const solo = i === a.length - 1 && a.length % 2 === 1;
     return `<button class="pp${own ? ' own' : ''}${solo ? ' solo' : ''}${fresh === r ? ' pulse' : ''}" data-v="pass" data-id="${r}" style="--rl:${R.light};--rd:${R.dark}"><span class="bk">${booklet(R, own, fresh === r)}</span>
 <div><b>${esc(R.name)}</b><small>${tt(ds.length === 1 ? 'store.dest.one' : 'store.dest.many', { n: ds.length })}</small><div class="ds">${esc(names)}</div><div class="pm">${tt('store.permanent')}</div>
-<span class="price ${own ? 'use' : ''}">${own ? '✓ ' + tt('passport.owned') : coin(p)}</span></div></button>`;
+<span class="price ${own ? 'use' : ''}">${own ? icoTxt('check', tt('passport.owned'), 16) : coin(p)}</span></div></button>`;
   }).join('');
   return `<div class="vnote hd">${tt('store.passNote')}</div><div class="vg">${cards}</div>`;
 }
@@ -198,7 +199,7 @@ function objetos(c) {
     const sou = V.SOUVENIRS.map(s => {
       const R = V.REGIONS[s.region], pass = V.hasPass(s.region) || V.isRico(), has = V.PHOTO.owned.includes(s.id);
       return `<button class="ph${pass || has ? '' : ' lock'}" data-v="sou" data-id="${s.id}"><div class="pv">${photoPreview(s.id)}</div><b>${esc(s.name)}</b>` +
-        (has ? `<span class="price tk">${tt('store.have')}</span>` : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">🔒 ${tt('store.needPass', { pass: esc(R.pass) })}</div>`) + '</button>';
+        (has ? `<span class="price tk">${tt('store.have')}</span>` : pass ? `<span class="price">${coin(s.price)}</span>` : `<div class="lk">${icoTxt('candado', tt('store.needPass', { pass: esc(R.pass) }), 15)}</div>`) + '</button>';
     }).join('');
     return bar + `<div class="vsec">${tt('shop.secSou')}<small>${tt('shop.secSouNote')}</small></div><div class="vg">${sou}</div>`;
   }
@@ -213,10 +214,9 @@ export function livesHTML(c, modal) {
   const sub = full ? tt('lives.full') : tt('lives.next', { t: `<span class="lvT">${reloj(nx)}</span>` }) + ' · ' + tt('lives.fullIn', { t: reloj(Vidas.llenasEn()) });
   const vid = Vidas.puedeVideo();
   return `<div class="card vlv">${modal ? `<b class="t">${tt('lives.none')}</b>` : `<b class="t">${tt('lives.title')}</b>`}<div class="hs">${hs}</div><small>${sub}</small>
-<div class="row"><button class="btn" data-v="lvAd"${full || !vid ? ' disabled' : ''}>▶ ${tt('lives.video')}</button><button class="btn green" data-v="lvFill"${full ? ' disabled' : ''}>${tt('lives.fill')} · ${coin(Vidas.PRECIO_LLENAR)}</button></div>
+<div class="row"><button class="btn" data-v="lvAd"${full || !vid ? ' disabled' : ''}>${icoTxt('play', tt('lives.video'), 18)}</button><button class="btn green" data-v="lvFill"${full ? ' disabled' : ''}>${tt('lives.fill')} · ${coin(Vidas.PRECIO_LLENAR)}</button></div>
 ${!full && !vid && Vidas.videosHoy() >= Vidas.VIDEOS_DIA ? `<small style="margin:8px 0 0">${tt('lives.videoLimit')}</small>` : ''}</div>`;
 }
-const PLANE_I = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#34437F"/><path d="M5 13.2l4.6-.6 3.5-5.2h1.8l-1.6 5 3.9-.5 1.3-1.7h1.2l-.8 2.6.8 2.6h-1.2l-1.3-1.7-3.9-.5 1.6 5h-1.8l-3.5-5.2L5 15z" fill="#F2BC3E"/></svg>';
 // Letra chica obligatoria de la suscripción (Apple 3.1.2 / Google Play): renovación automática, cómo cancelar y enlaces a Términos y Privacidad
 function legalHTML(c) {
   const L = c.Iap?.legal; if (!L) return '';
@@ -225,20 +225,20 @@ function legalHTML(c) {
 }
 function vfCard(c) {
   const I = c.Iap, own = I?.frecuente, pk = (I?.paquetes || []).filter(p => p.tipo === 'vf');
-  const perks = [['<b style="color:#E8452C;font-size:18px">♥</b>', 'vf.perk.lives'], ['🚫', 'vf.perk.ads'], ['<b style="color:#D9961E;font-size:17px">◉</b>', 'vf.perk.coins'], ['🎁', 'vf.perk.chest']].map(([i, k]) => `<li><i>${i}</i>${tt(k)}</li>`).join('');
-  return `<div class="card vfc"><h3>${PLANE_I}${tt('vf.title')}</h3><ul>${perks}</ul>` +
-    (own ? `<div class="ok">✓ ${tt('vf.active')}</div>` : pk.map(p => `<button class="it pk${p.destacado ? ' best' : ''}" data-v="pk" data-id="${p.id}"><i>${p.id === '$rc_annual' ? '☀' : '☾'}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`).join('') + legalHTML(c)) + '</div>';
+  const perks = [['corazon', 'vf.perk.lives'], ['sinads', 'vf.perk.ads'], ['moneda', 'vf.perk.coins'], ['cofre', 'vf.perk.chest']].map(([i, k]) => `<li><i>${ico(i, 22)}</i>${tt(k)}</li>`).join('');
+  return `<div class="card vfc"><h3>${ico('avion', 32)}${tt('vf.title')}</h3><ul>${perks}</ul>` +
+    (own ? `<div class="ok">${icoTxt('check', tt('vf.active'), 20)}</div>` : pk.map(p => `<button class="it pk${p.destacado ? ' best' : ''}" data-v="pk" data-id="${p.id}"><i>${ico(p.id === '$rc_annual' ? 'sol' : 'luna', 30)}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`).join('') + legalHTML(c)) + '</div>';
 }
 function starterCard(c) {
   const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'starter'); if (!p || I.starter) return '';
-  const items = [['◉', 'starter.coins'], ['♥', 'starter.lives'], ['✚', 'starter.revives']].map(([i, k]) => `<li><i>${i === '◉' ? '<b style="color:#D9961E;font-size:17px">◉</b>' : i === '♥' ? '<b style="color:#E8452C;font-size:18px">♥</b>' : '<b style="color:#356F2E;font-size:16px">✚</b>'}</i>${tt(k)}</li>`).join('');
-  return `<div class="card vfc st"><span class="stb">${tt('starter.once')}</span><h3>🎒 ${tt('pack.starter')}</h3><ul>${items}</ul><button class="it pk" data-v="pk" data-id="${p.id}"><i>✈</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button></div>`;
+  const items = [['moneda', 'starter.coins'], ['corazon', 'starter.lives'], ['revivir', 'starter.revives']].map(([i, k]) => `<li><i>${ico(i, 22)}</i>${tt(k)}</li>`).join('');
+  return `<div class="card vfc st"><span class="stb">${tt('starter.once')}</span><h3>${ico('mochila', 32)}${tt('pack.starter')}</h3><ul>${items}</ul><button class="it pk" data-v="pk" data-id="${p.id}"><i>${ico('avion', 30)}</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button></div>`;
 }
 function naCard(c) {
   const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'noads'); if (!p) return '';
   if (I.frecuente && !I.sinAnuncios) return '';
-  return `<div class="card vfc na"><h3>🚫 ${tt('pack.noads')}</h3><p>${tt('pack.noads.long')}</p>` +
-    (I.sinAnuncios ? `<div class="ok">✓ ${tt('shop.active')}</div>` : `<button class="it pk" data-v="pk" data-id="${p.id}"><i>✈</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`) + '</div>';
+  return `<div class="card vfc na"><h3>${ico('sinads', 32)}${tt('pack.noads')}</h3><p>${tt('pack.noads.long')}</p>` +
+    (I.sinAnuncios ? `<div class="ok">${icoTxt('check', tt('shop.active'), 20)}</div>` : `<button class="it pk" data-v="pk" data-id="${p.id}"><i>${ico('sinads', 30)}</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`) + '</div>';
 }
 function pro(c) {
   const I = c.Iap;

@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 라이프!",
  "lives.inf": "라이프 무제한",
  "lives.infSub": "단골 여행자라 마음껏 플레이할 수 있어요.",
- "lives.lost": "−1 ♥ (남은 라이프 {n})",
- "lives.lostLast": "−1 ♥ (라이프 없음)",
+ "lives.lost": "남은 라이프 {n}",
+ "lives.lostLast": "라이프가 없어요",
  "vf.title": "단골 여행자",
  "vf.perk.lives": "라이프 무제한",
  "vf.perk.ads": "광고 없음",
@@ -1361,7 +1361,7 @@
  "legal.terms": "이용약관",
  "legal.privacy": "개인정보 처리방침",
  "legal.adsPrivacy": "광고 개인정보",
- "lives.reviveHint": "포기하면 이 라이프를 잃어요 (남은 라이프 {n} ♥)",
+ "lives.reviveHint": "포기하면 이 라이프를 잃어요 (남은 라이프 {n})",
  "pack.starter": "스타터 팩",
  "pack.starter.desc": "단 한 번, 최저가",
  "starter.once": "1회 한정",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "주간 황금 상자!",
  "vf.perk.chest": "매주 황금 상자",
  "lives.graceTrips": "첫 여행은 라이프 무제한 (남은 여행 {n}).",
- "lives.graceTime": "팩 라이프 무제한: {t} 남음."
+ "lives.graceTime": "팩 라이프 무제한: {t} 남음.",
+ "lives.lostOne": "남은 라이프 1"
 }

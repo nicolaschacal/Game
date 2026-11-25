@@ -1,0 +1,70 @@
+// Íconos de papel recortado (sin emojis): cada pieza tiene borde crema cortado con su canto, el color de la pieza,
+// una mitad «doblada» un poco más clara y detalles. Usar: ico('corazon', 28). El grano lo pone el CSS (.pvi).
+const RIM = '#F7ECD3', RIM_C = '#A88A5C';
+// pieza: d = silueta, c = color, l = mitad clara (path opcional), x = detalles encima
+const P = {
+  corazon: {
+    d: 'M16 27.5C9 22.6 3 17.8 3 10.9 3 6.9 6.1 4 9.8 4c2.6 0 4.8 1.4 6.2 3.6C17.4 5.4 19.6 4 22.2 4 25.9 4 29 6.9 29 10.9c0 6.9-6 11.7-13 16.6z',
+    c: '#C8382A', l: 'M16 7.6C14.6 5.4 12.4 4 9.8 4 6.1 4 3 6.9 3 10.9c0 6.9 6 11.7 13 16.6z', lc: '#E4513A',
+    x: '<path d="M7.2 9.6c.4-1.6 1.6-2.6 3.1-2.8" stroke="#FFF4DC" stroke-width="2" stroke-linecap="round" fill="none" opacity=".75"/>',
+  },
+  vacio: { // corazón apagado
+    d: 'M16 27.5C9 22.6 3 17.8 3 10.9 3 6.9 6.1 4 9.8 4c2.6 0 4.8 1.4 6.2 3.6C17.4 5.4 19.6 4 22.2 4 25.9 4 29 6.9 29 10.9c0 6.9-6 11.7-13 16.6z',
+    c: '#C9BC9E', l: 'M16 7.6C14.6 5.4 12.4 4 9.8 4 6.1 4 3 6.9 3 10.9c0 6.9 6 11.7 13 16.6z', lc: '#D8CDB2',
+  },
+  revivir: { // corazón con cruz
+    d: 'M16 27.5C9 22.6 3 17.8 3 10.9 3 6.9 6.1 4 9.8 4c2.6 0 4.8 1.4 6.2 3.6C17.4 5.4 19.6 4 22.2 4 25.9 4 29 6.9 29 10.9c0 6.9-6 11.7-13 16.6z',
+    c: '#C8382A', l: 'M16 7.6C14.6 5.4 12.4 4 9.8 4 6.1 4 3 6.9 3 10.9c0 6.9 6 11.7 13 16.6z', lc: '#E4513A',
+    x: '<path d="M16 9.5v10M11 14.5h10" stroke="#FFF4DC" stroke-width="3.4" stroke-linecap="round"/>',
+  },
+  moneda: {
+    d: 'M16 3.5a12.5 12.5 0 1 1 0 25 12.5 12.5 0 0 1 0-25z', c: '#D9961E', l: 'M16 3.5a12.5 12.5 0 0 0 0 25z', lc: '#F2BC3E',
+    x: '<circle cx="16" cy="16" r="8" fill="none" stroke="#A86B12" stroke-width="1.6" opacity=".7"/><rect x="13" y="13" width="6" height="6" rx="1" fill="#8C5A12"/>',
+  },
+  cofre: {
+    d: 'M5 14q0-8 11-8t11 8v12.5H5z', c: '#A65E22', l: 'M5 14q0-8 11-8v20.5H5z', lc: '#C47634',
+    x: '<path d="M5 14.5h22" stroke="#6E3A12" stroke-width="1.8"/><path d="M5 11h22v5H5z" fill="#F2BC3E" opacity=".95"/><rect x="13.2" y="13" width="5.6" height="7" rx="1.2" fill="#F2BC3E" stroke="#8C5A12" stroke-width="1.2"/><circle cx="16" cy="16.6" r="1.1" fill="#6E3A12"/>',
+  },
+  sinads: {
+    d: 'M16 3.5a12.5 12.5 0 1 1 0 25 12.5 12.5 0 0 1 0-25z', c: '#C8382A', l: 'M16 3.5a12.5 12.5 0 0 0 0 25z', lc: '#E4513A',
+    x: '<circle cx="16" cy="16" r="8.6" fill="#FFF4DC"/><text x="16" y="19.6" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="9.5" fill="#34437F">AD</text><path d="M9.9 9.9l12.2 12.2" stroke="#C8382A" stroke-width="3" stroke-linecap="round"/>',
+  },
+  mochila: {
+    d: 'M9 8.5q0-4.5 7-4.5t7 4.5q4 1 4 5.5V26q0 2-2 2H7q-2 0-2-2V14q0-4.5 4-5.5z', c: '#2E3F80', l: 'M9 8.5q0-4.5 7-4.5V28H7q-2 0-2-2V14q0-4.5 4-5.5z', lc: '#3E5BA9',
+    x: '<path d="M12 7.5q0-1.8 4-1.8t4 1.8" stroke="#1C2352" stroke-width="1.8" fill="none"/><path d="M6 13.5q10 3 20 0v4q-10 3-20 0z" fill="#F2BC3E"/><rect x="10" y="20" width="12" height="5.5" rx="1.5" fill="#1C2352" opacity=".55"/><rect x="14.6" y="15.2" width="2.8" height="3.4" rx=".8" fill="#8C5A12"/>',
+  },
+  avion: { // avión de papel
+    d: 'M3.5 15.5L28.5 5 22 27l-6.2-6.6L12 26v-7.4z', c: '#D8CBB0', l: 'M3.5 15.5L28.5 5 12 18.6z', lc: '#FFF8E8',
+    x: '<path d="M12 18.6L28.5 5 15.8 20.4z" fill="#B9A986"/>',
+  },
+  luna: {
+    d: 'M20.5 4.2A12 12 0 1 0 27.8 21 9.6 9.6 0 1 1 20.5 4.2z', c: '#D9961E', l: 'M20.5 4.2A12 12 0 0 0 16 27.6 9.6 9.6 0 0 1 20.5 4.2z', lc: '#F2BC3E',
+  },
+  sol: {
+    d: 'M16 2.5l2.4 4.3 4.6-1.6.4 4.9 4.9.4-1.6 4.6 4.3 2.4-4.3 2.4 1.6 4.6-4.9.4-.4 4.9-4.6-1.6L16 29.5l-2.4-4.3-4.6 1.6-.4-4.9-4.9-.4 1.6-4.6L1 16l4.3-2.4-1.6-4.6 4.9-.4.4-4.9 4.6 1.6z', c: '#E0A12A',
+    x: '<circle cx="16" cy="16" r="7.4" fill="#F2BC3E"/><path d="M16 8.6a7.4 7.4 0 0 0 0 14.8z" fill="#FFD866"/>',
+  },
+  play: { d: 'M9 5.5L26 16 9 26.5z', c: '#2E3F80', l: 'M9 5.5L26 16H9z', lc: '#3E5BA9' },
+  check: { d: 'M4.5 16.5l4-4 5 5L24 7l4 4-14.5 14.5z', c: '#3F8F36', l: 'M4.5 16.5l4-4 5 5L24 7l2 2-12.5 12.5z', lc: '#5DB84F' },
+  libro: {
+    d: 'M3.5 7.5q6-2.5 12.5 1.2Q22.5 5 28.5 7.5V26q-6-2.5-12.5 1.2Q9.5 23.5 3.5 26z', c: '#2E3F80', l: 'M3.5 7.5q6-2.5 12.5 1.2v18.5Q9.5 23.5 3.5 26z', lc: '#3E5BA9',
+    x: '<path d="M7 11.5q4-1 7 .8M7 15.5q4-1 7 .8M18 12.3q3-1.8 7-.8M18 16.3q3-1.8 7-.8" stroke="#FFF4DC" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".8"/>',
+  },
+  candado: {
+    d: 'M10 13.5V10a6 6 0 0 1 12 0v3.5h1.5q2 0 2 2V26q0 2-2 2h-15q-2 0-2-2V15.5q0-2 2-2zm3.5 0h5V10a2.5 2.5 0 0 0-5 0z', c: '#8C7A5C', l: 'M10 13.5V10a6 6 0 0 1 6-6v3.5a2.5 2.5 0 0 0-2.5 2.5v3.5H16V28H8.5q-2 0-2-2V15.5q0-2 2-2z', lc: '#A8977A',
+    x: '<circle cx="16" cy="19.6" r="2" fill="#3B3226"/><path d="M16 20.5v3.4" stroke="#3B3226" stroke-width="2" stroke-linecap="round"/>',
+  },
+  estrella: {
+    d: 'M16 3l3.9 8 8.8 1.2-6.4 6.1 1.6 8.7L16 22.8 8.1 27l1.6-8.7-6.4-6.1 8.8-1.2z', c: '#D9961E', l: 'M16 3v19.8L8.1 27l1.6-8.7-6.4-6.1 8.8-1.2z', lc: '#F2BC3E',
+  },
+};
+export function ico(name, size = 24, cls = '') {
+  const p = P[name]; if (!p) return '';
+  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" aria-hidden="true">` +
+    `<path d="${p.d}" transform="translate(0 1.4)" fill="${RIM_C}" stroke="${RIM_C}" stroke-width="4.2" stroke-linejoin="round"/>` +
+    `<path d="${p.d}" fill="${RIM}" stroke="${RIM}" stroke-width="4.2" stroke-linejoin="round"/>` +
+    `<path d="${p.d}" fill="${p.c}"/>` + (p.l ? `<path d="${p.l}" fill="${p.lc}"/>` : '') + (p.x || '') + '</svg>';
+}
+// Para insertar en botones/etiquetas: ícono + texto alineados
+export const icoTxt = (name, txt, size = 18) => `<span class="pvit">${ico(name, size)}<span>${txt}</span></span>`;
+export const ICO_CSS = `.pvi{display:inline-block;vertical-align:middle;flex:none;overflow:visible;filter:url(#pvGrainL)}.pvit{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}`;

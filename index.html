@@ -163,7 +163,7 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #walletChip{flex:none;height:44px;display:flex;align-items:center;gap:6px;padding:0 5px 0 6px;border:3px solid var(--ink);border-radius:22px;background:var(--ink);color:#FFF6E0;box-shadow:0 3px 0 #1B173059}
 #walletChip svg.ico{width:28px;height:28px}#walletChip b{font:400 20px/1 'Lilita One',sans-serif;padding:0 2px;min-width:24px;text-align:center}
 #livesChip{flex:none;height:44px;display:flex;align-items:center;gap:4px;padding:0 10px 0 6px;border:3px solid var(--ink);border-radius:22px;background:#B3321D;color:#FFF6E0;box-shadow:0 3px 0 #1B173059;position:relative}
-#livesChip svg{width:28px;height:26px;flex:none}#livesChip b{font:400 22px/1 'Lilita One',sans-serif;min-width:14px;text-align:center}
+#livesChip svg{width:32px;height:32px;flex:none}#livesChip b{font:400 22px/1 'Lilita One',sans-serif;min-width:14px;text-align:center}
 #livesChip small{font:400 17px/1 'Lilita One',sans-serif;opacity:.95;min-width:46px;text-align:left;font-variant-numeric:tabular-nums}
 #livesChip.low{animation:shake .5s 1}
 #rvLife{font:800 12px/1.3 Nunito;color:#B3321D;margin:2px 0 6px}#rvLife:empty{display:none}
@@ -765,6 +765,7 @@ import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, thumbOf, LEGACY_PRICES, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { Vidas, reloj } from './paper-voyager/vidas.js';
+import { ico as pIco, ICO_CSS } from './paper-voyager/iconos.js';
 import { DESTINOS, IDX } from './paper-voyager/destinos.js';
 import * as V from './paper-voyager/viaje.js';
 import * as K from './paper-voyager/cofres.js';
@@ -1179,7 +1180,7 @@ function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize||c?.side)re
 let ended=false;
 // el 3D no se dibuja tras un panel opaco y va a 30 fps en inicio y pausa (menos GPU = menos calor)
 renderPolicy(()=>document.body.classList.contains('pnlopen')?0:(menuOpen||paused)?30:60);
-function endGame(title,reason){if(ended)return;ended=true;if(lifeTaken){lifeTaken=false;reason+=' · '+t(Vidas.n>0?'lives.lost':'lives.lostLast',{n:Vidas.n});}
+function endGame(title,reason){if(ended)return;ended=true;if(lifeTaken){lifeTaken=false;reason+=' · '+t(Vidas.n>1?'lives.lost':Vidas.n===1?'lives.lostOne':'lives.lostLast',{n:Vidas.n});}
  if(route){route=null;RT=null;store.set('route',null);drawRouteBar();reason+=' · '+t('route.lostToast');} // perder una partida cancela la ruta (sin premio de ruta)
  runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked,keep=Math.floor(lost/2); // sin llegar te quedás con la mitad de las monedas; los cofres ya quedaron guardados
  if(keep>0){wallet+=Math.round(keep*(Iap.frecuente?1.25:1));banked+=keep;store.set('wallet',wallet);}
@@ -1261,7 +1262,7 @@ function onGameOver(){
  const [title,reason]=deathText();host.classList.remove('quake');void host.offsetWidth;host.classList.add('quake');$('speed').style.opacity=0;$('speed').classList.remove('on');
  if(boost.shield){boost.shield=false;rescue();pop(t('toast.shield'),'big');return;}
  if(revives<2){
-  const own=stock.revive>0,pay=own||wallet>=revivePrice();$('rvBtn').style.display=pay?'block':'none';$('rvSub').style.display=pay?'block':'none';$('rvTitle').textContent=title;$('rvBtn').innerHTML='♥ '+t('revive.btn')+'<div class="ring"><span id="rvN">5</span></div>';$('rvSub').textContent=own?t('revive.have',{n:stock.revive}):t('revive.cost',{cost:revivePrice(),wallet});
+  const own=stock.revive>0,pay=own||wallet>=revivePrice();$('rvBtn').style.display=pay?'block':'none';$('rvSub').style.display=pay?'block':'none';$('rvTitle').textContent=title;$('rvBtn').innerHTML='<span class="pvit">'+pIco('revivir',24)+'<span>'+t('revive.btn')+'</span></span>'+'<div class="ring"><span id="rvN">5</span></div>';$('rvSub').textContent=own?t('revive.have',{n:stock.revive}):t('revive.cost',{cost:revivePrice(),wallet});
   $('rvLife').textContent=lifeTaken?t('lives.reviveHint',{n:Vidas.n}):'';
   $('revive').style.display='flex';SFX.nope();clearTimeout(reviveTimer);let left=5;const tickR=()=>{left--;if($('rvN'))$('rvN').textContent=Math.max(1,left);if(left<=0){$('revive').style.display='none';endGame(title,reason);}else reviveTimer=setTimeout(tickR,1000);};reviveTimer=setTimeout(tickR,1000);
   $('rvBtn').onclick=()=>{clearTimeout(reviveTimer);$('revive').style.display='none';if(own)stock.revive--;else{wallet-=revivePrice();store.set('wallet',wallet);}store.set('items',stock);revives++;rescue();pop(t('toast.back'),'big');};
@@ -1797,6 +1798,7 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
 ctx.Ads=Ads;ctx.Vidas=Vidas;K.initCofres(ctx);
 // Vidas: chip en el inicio (corazón + cuántas quedan + cuánto falta para la próxima); viajero frecuente = ∞
 Vidas.setInfinito(()=>Iap.frecuente);
+{const st=document.createElement('style');st.textContent=ICO_CSS;document.head.appendChild(st);$('livesChip').querySelector('svg').outerHTML=pIco('corazon',32);}
 // Gracia: vidas ilimitadas en los primeros GRACE_TRIPS viajes completos (que el primer día no choque contra el muro) o mientras dure el pack de inicio
 const GRACE_TRIPS=5,graceUntil=()=>+store.get('graceUntil',0)||0;
 ctx.graceTrips=()=>Math.max(0,GRACE_TRIPS-(V.T.trips||0));ctx.graceLeft=()=>Math.max(0,graceUntil()-Date.now());

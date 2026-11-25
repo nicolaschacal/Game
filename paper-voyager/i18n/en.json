@@ -1342,8 +1342,8 @@
  "lives.plusOne": "+1 LIFE!",
  "lives.inf": "Unlimited lives",
  "lives.infSub": "You’re a frequent traveler: play as much as you like.",
- "lives.lost": "−1 ♥ ({n} left)",
- "lives.lostLast": "−1 ♥ (no lives left)",
+ "lives.lost": "{n} lives left",
+ "lives.lostLast": "No lives left",
  "vf.title": "Frequent Traveler",
  "vf.perk.lives": "Unlimited lives",
  "vf.perk.ads": "No ads",
@@ -1361,7 +1361,7 @@
  "legal.terms": "Terms of Use",
  "legal.privacy": "Privacy Policy",
  "legal.adsPrivacy": "Ad privacy",
- "lives.reviveHint": "If you give up, you lose this life ({n} ♥ left)",
+ "lives.reviveHint": "If you give up, you lose this life ({n} left)",
  "pack.starter": "Starter Pack",
  "pack.starter.desc": "One time only, best price",
  "starter.once": "ONE-TIME OFFER",
@@ -1372,5 +1372,6 @@
  "vf.weekly": "WEEKLY GOLD CHEST!",
  "vf.perk.chest": "A gold chest every week",
  "lives.graceTrips": "Unlimited lives on your first trips ({n} left).",
- "lives.graceTime": "Starter Pack unlimited lives: {t} left."
+ "lives.graceTime": "Starter Pack unlimited lives: {t} left.",
+ "lives.lostOne": "1 life left"
 }
