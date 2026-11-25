@@ -9,8 +9,12 @@
 //  · BANNER       → abajo de la pantalla de inicio.
 //  · INTERSTICIAL → al perder, cada 3 partidas (nunca antes de 90 s de la anterior).
 //  · RECOMPENSADO → revivir gratis, duplicar monedas al perder, abrir un cofre extra.
-// Compras (RevenueCat): entitlement "paper_voyager_pro" = PRO: sin banner ni intersticiales (los recompensados
-// quedan porque los elige el jugador) y +25% de monedas. Se vende como mensual, anual o de por vida.
+// Compras (RevenueCat), dos entitlements:
+//  · "sin_anuncios"      → pago único (producto no consumible, paquete $rc_lifetime): sin banner ni intersticiales.
+//  · "viajero_frecuente" → suscripción mensual ($rc_monthly) o anual ($rc_annual): vidas ilimitadas, sin anuncios
+//                          y +25% de monedas («millas»). Los videos con recompensa quedan siempre, porque los elige el jugador.
+// En el panel de RevenueCat conviene darle a los productos de la suscripción también "sin_anuncios"; igual el código
+// trata a viajero frecuente como sin anuncios por su cuenta.
 
 import { t as tt } from './i18n.js';
 export const CONFIG = {
@@ -24,23 +28,25 @@ export const CONFIG = {
     // Clave de prueba (Test Store). Para producción: una clave pública por plataforma (goog_… / appl_…) desde el panel de RevenueCat.
     apiKey: { test: 'test_PGIWIvBmdBFGIAlJEzBdlmjrEZW', android: 'goog_XXXXXXXXXXXXXXXXXXXXXXXX', ios: 'appl_XXXXXXXXXXXXXXXXXXXXXXXX' },
     usarClaveDePrueba: true,       // true mientras se prueba con el Test Store; false al publicar
-    entitlement: 'paper_voyager_pro',
-    // Identificadores de los paquetes dentro de la offering "default" (se arman en el panel de RevenueCat)
+    entNoAds: 'sin_anuncios', entVF: 'viajero_frecuente',
+    // Identificadores de los paquetes dentro de la offering "default" (se arman en el panel de RevenueCat). El precio es orientativo (web).
     paquetes: [
-      { id: '$rc_monthly', nombre: tt('pack.monthly'), desc: tt('pack.monthly.desc'), icono: '☾', precio: tt('pack.monthly.price') },
-      { id: '$rc_annual', nombre: tt('pack.annual'), desc: tt('pack.annual.desc'), icono: '☀', precio: tt('pack.annual.price'), destacado: true },
-      { id: '$rc_lifetime', nombre: tt('pack.lifetime'), desc: tt('pack.lifetime.desc'), icono: '✈', precio: tt('pack.lifetime.price') },
+      { id: '$rc_lifetime', tipo: 'noads', nombre: tt('pack.noads'), desc: tt('pack.noads.desc'), precio: 'US$ 3,99' },
+      { id: '$rc_monthly', tipo: 'vf', nombre: tt('pack.monthly'), desc: tt('pack.vf.monthly.desc'), precio: 'US$ 2,99' },
+      { id: '$rc_annual', tipo: 'vf', nombre: tt('pack.annual'), desc: tt('pack.vf.annual.desc'), precio: 'US$ 19,99', destacado: true },
     ],
   },
   intersticialCada: 3, intersticialMinSeg: 90,
 };
 
 const Q = new URLSearchParams(location.search);
-const KEY = 'pv.pro';
+const KEY = 'pv.noads', KEY_VF = 'pv.vf';
 const nativo = () => !!(window.Capacitor?.isNativePlatform?.());
 const plugin = n => window.Capacitor?.Plugins?.[n];
 const plataforma = () => window.Capacitor?.getPlatform?.() === 'ios' ? 'ios' : 'android';
-let pro = localStorage.getItem(KEY) === '1';
+let noAds = localStorage.getItem(KEY) === '1' || localStorage.getItem('pv.pro') === '1', vf = localStorage.getItem(KEY_VF) === '1';
+if (Q.has('gratis')) { noAds = vf = false; localStorage.removeItem(KEY); localStorage.removeItem(KEY_VF); localStorage.removeItem('pv.pro'); } // ?gratis: vuelve a la versión gratis (pruebas)
+let pro = noAds || vf; // pro = sin anuncios (por compra única o por la suscripción)
 let partidas = 0, ultimoInter = 0, adsListo = false;
 const avisar = new Set(); // callbacks cuando cambia el estado PRO
 
@@ -102,13 +108,18 @@ export const Ads = {
 };
 
 // ── RevenueCat ──
-function setPro(v) { const antes = pro; pro = !!v; localStorage.setItem(KEY, pro ? '1' : '0'); if (pro) document.getElementById('adBanner')?.classList.remove('on'); if (antes !== pro) avisar.forEach(f => f(pro)); }
-const tieneEntitlement = info => !!info?.entitlements?.active?.[CONFIG.revenuecat.entitlement];
+function setEstado(na, v) { const antes = noAds + '|' + vf; noAds = !!na; vf = !!v; pro = noAds || vf;
+  localStorage.setItem(KEY, noAds ? '1' : '0'); localStorage.setItem(KEY_VF, vf ? '1' : '0'); localStorage.removeItem('pv.pro');
+  if (pro) document.getElementById('adBanner')?.classList.remove('on'); if (antes !== noAds + '|' + vf) avisar.forEach(f => f(pro)); }
+const setDesde = info => { const a = info?.entitlements?.active || {}; setEstado(!!a[CONFIG.revenuecat.entNoAds], !!a[CONFIG.revenuecat.entVF]); };
 let offering = null; // offering actual (con precios reales de la tienda)
 
 export const Iap = {
   paquetes: CONFIG.revenuecat.paquetes,
-  get pro() { return pro; },
+  get pro() { return pro; },          // sin anuncios (compra única o suscripción)
+  get sinAnuncios() { return noAds; }, // compró el pago único
+  get frecuente() { return vf; },      // viajero frecuente: vidas ilimitadas y +25% de monedas
+  tiene(id) { const p = CONFIG.revenuecat.paquetes.find(x => x.id === id); return p?.tipo === 'vf' ? vf : pro; },
   onCambio(f) { avisar.add(f); },
   // Configura el SDK una sola vez al abrir la app y escucha cambios del cliente (renovaciones, reembolsos, otro dispositivo).
   async init() {
@@ -117,8 +128,8 @@ export const Iap = {
       const rc = CONFIG.revenuecat, apiKey = rc.usarClaveDePrueba ? rc.apiKey.test : rc.apiKey[plataforma()];
       await P.setLogLevel({ level: rc.usarClaveDePrueba ? 'DEBUG' : 'WARN' });
       await P.configure({ apiKey }); // sin appUserID: RevenueCat genera un id anónimo y lo guarda en el dispositivo
-      await P.addCustomerInfoUpdateListener(({ customerInfo }) => setPro(tieneEntitlement(customerInfo)));
-      const { customerInfo } = await P.getCustomerInfo(); setPro(tieneEntitlement(customerInfo));
+      await P.addCustomerInfoUpdateListener(({ customerInfo }) => setDesde(customerInfo));
+      const { customerInfo } = await P.getCustomerInfo(); setDesde(customerInfo);
       await Iap.cargarOfertas();
     } catch (e) { console.warn('RevenueCat init', e); }
   },
@@ -141,33 +152,34 @@ export const Iap = {
         const pk = offering?.availablePackages?.find(p => p.identifier === id);
         if (!pk) return 'error';
         const { customerInfo } = await P.purchasePackage({ aPackage: pk });
-        setPro(tieneEntitlement(customerInfo));
-        return pro ? 'ok' : 'error';
+        setDesde(customerInfo);
+        return Iap.tiene(id) ? 'ok' : 'error';
       } catch (e) {
         if (e?.userCancelled || e?.code === '1' || /cancel/i.test(e?.message || '')) return 'cancelado';
         console.warn('compra', e); return 'error';
       }
     }
     if (!Q.has('debug')) return 'solo-app'; // web: sólo en modo prueba se concede, para revisar el flujo
-    setPro(true); return 'ok';
+    const pk = CONFIG.revenuecat.paquetes.find(x => x.id === id);
+    if (pk?.tipo === 'vf') setEstado(noAds, true); else setEstado(true, vf); return 'ok';
   },
   // Paywall de RevenueCat (purchases-capacitor-ui). Si no está el plugin, la tienda del juego hace de paywall.
   async paywall() {
     const UI = plugin('RevenueCatUI'); if (!nativo() || !UI) return 'sin-ui';
     try {
-      const { result } = await UI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: CONFIG.revenuecat.entitlement });
-      const P = plugin('Purchases'); const { customerInfo } = await P.getCustomerInfo(); setPro(tieneEntitlement(customerInfo));
+      const { result } = await UI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: CONFIG.revenuecat.entVF });
+      const P = plugin('Purchases'); const { customerInfo } = await P.getCustomerInfo(); setDesde(customerInfo);
       return result; // 'PURCHASED' | 'RESTORED' | 'CANCELLED' | 'NOT_PRESENTED' | 'ERROR'
     } catch (e) { console.warn('paywall', e); return 'ERROR'; }
   },
   // Customer Center: gestionar o cancelar la suscripción, pedir reembolso, restaurar. Sólo tiene sentido si el jugador es PRO.
   async centroCliente() {
     const UI = plugin('RevenueCatUI'); if (!nativo() || !UI) return false;
-    try { await UI.presentCustomerCenter(); const P = plugin('Purchases'); const { customerInfo } = await P.getCustomerInfo(); setPro(tieneEntitlement(customerInfo)); return true; }
+    try { await UI.presentCustomerCenter(); const P = plugin('Purchases'); const { customerInfo } = await P.getCustomerInfo(); setDesde(customerInfo); return true; }
     catch (e) { console.warn('customer center', e); return false; }
   },
   async restaurar() {
     const P = plugin('Purchases'); if (!nativo() || !P) return false;
-    try { const { customerInfo } = await P.restorePurchases(); setPro(tieneEntitlement(customerInfo)); return pro; } catch (e) { console.warn('restore', e); return false; }
+    try { const { customerInfo } = await P.restorePurchases(); setDesde(customerInfo); return pro; } catch (e) { console.warn('restore', e); return false; }
   },
 };

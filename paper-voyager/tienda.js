@@ -3,6 +3,7 @@
 // En Viajeros sólo van los personajes; al tocar uno se abre su ficha (bio + trajes).
 import { photoPreview } from './album.js';
 import { t as tt } from './i18n.js';
+import { Vidas, reloj } from './vidas.js';
 
 const TABS = [
   ['viajeros', 'viajero', tt('store.tab.travelers')], ['pasaportes', 'pasaporte', tt('store.tab.passports')], ['objetos', 'objeto', tt('store.tab.objects')], ['pro', 'pro', tt('store.tab.pro')],
@@ -26,6 +27,7 @@ const IT_SVG = {
   compass: '<circle cx="12" cy="12" r="8.500" fill="none" stroke="currentColor" stroke-width="2.200"/><path d="M12 6l2.600 6h-5.200z" fill="currentColor"/><path d="M12 18l2.600-6H9.400z" fill="currentColor" opacity=".45"/>',
   freeze: '<g stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="M9.5 4.5L12 6.5l2.5-2M9.5 19.5L12 17.5l2.5 2" fill="none" stroke-width="1.8"/></g>',
 };
+const HEART = on => `<svg class="hrt${on ? '' : ' off'}" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9.5-5.7-9.5-12.6A5.4 5.4 0 0 1 12 5.3a5.4 5.4 0 0 1 9.5 3.1C21.5 15.3 12 21 12 21z" fill="#E8452C" stroke="#FFF4DC" stroke-width="2.2" stroke-linejoin="round"/><path d="M6.6 8.6a2.6 2.6 0 0 1 2.4-1.9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".7"/></svg>`;
 const itemIco = k => IT_SVG[k.id] ? `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">${IT_SVG[k.id]}</svg>` : esc(k.icon);
 const ITEM_COL = { revive: '#E8452C', shield: '#3E5BA9', double: '#5DB84F', freeze: '#4FB3D9', magnet: '#8E5CD9', anchor: '#2F7FA8', ballast: '#7A6AA8', needle: '#D9961E', compass: '#C23B2A' };
 const PHOTO_GROUPS = [['frame', tt('store.photo.frames')], ['cover', tt('store.photo.covers')], ['filter', tt('store.photo.filters')], ['deco', tt('store.photo.decos')]];
@@ -37,7 +39,7 @@ const GLYPH = { // motivo del escudo de cada región
   oc: '<path d="M40 52q5-7 10 0t10 0t10 0t10 0M40 63q5-7 10 0t10 0t10 0t10 0" fill="none" stroke="#7a4d0b" stroke-width="4" stroke-linecap="round"/>',
 };
 
-let CSS_DONE = false, tab = 'viajeros', sub = 'power', modal = null, fresh = null, lastCtx = null;
+let CSS_DONE = false, livesTick = 0, tab = 'viajeros', sub = 'power', modal = null, fresh = null, lastCtx = null;
 const SUBS = [['power', 'store.sub.power'], ['sou', 'store.sub.sou'], ['album', 'store.sub.album']];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const coin = n => '◉ ' + n;
@@ -78,6 +80,20 @@ function injectCSS() {
 .vpro .it{grid-column:1/3}
 .vg .it i,.vpro .it i{display:flex;align-items:center;justify-content:center;line-height:1;padding:0;font:400 20px 'Lilita One',sans-serif;color:#fff}.vg .it i svg{display:block;margin:auto;color:#fff;fill:#fff}
 .it.pk.best::after{content:none!important}
+.hrt{display:inline-block;width:30px;height:28px;vertical-align:middle}.hrt.off{opacity:.28;filter:grayscale(1)}
+.vlv.card,.vfc.card{width:auto;animation:none}.vfc.card{text-align:left}
+.vlv{margin:12px 14px 4px;padding:14px 14px 16px;text-align:center}
+.vlv .hs{display:flex;justify-content:center;gap:4px;margin:2px 0 6px}
+.vlv b.t{display:block;font:400 20px 'Lilita One',sans-serif}.vlv small{display:block;font:700 12px/1.35 Nunito;color:#5d5546;margin:2px 0 10px}
+.vlv .row{display:flex;gap:8px}.vlv .row .btn{flex:1;height:48px;font-size:15px;padding:0 6px}
+.vlv .row .btn[disabled]{opacity:.5;filter:grayscale(.6)}
+.vfc{margin:14px 14px 4px;padding:16px 14px 16px}
+.vfc h3{margin:0;font:400 24px/1 'Lilita One',sans-serif;display:flex;align-items:center;gap:8px}.vfc h3 svg{width:30px;height:30px;flex:none}
+.vfc ul{list-style:none;margin:10px 0 12px;padding:0;text-align:left}.vfc li{font:800 13px/1.3 Nunito;margin:6px 0;display:flex;gap:8px;align-items:center}.vfc li i{font-style:normal;width:22px;text-align:center;flex:none}
+.vfc .ok{font:400 17px 'Lilita One',sans-serif;color:#356F2E;text-align:center;margin:4px 0}
+.vfc .it{margin-top:8px;width:100%}
+.vfc.na h3{font-size:21px}.vfc.na p{font:700 12.5px/1.35 Nunito;color:#5d5546;margin:6px 0 10px}
+
 .vsub{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto;scrollbar-width:none}.vsub::-webkit-scrollbar{display:none}
 .vsub button{flex:1 0 auto;height:34px;padding:0 12px;border-radius:99px;border:2.5px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 13px 'Lilita One',sans-serif}.vsub .on{background:var(--gold);color:var(--ink)}
 .vmod{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:calc(var(--st,0px) + 20px) 0 20px;background:rgba(27,23,48,.6);animation:vmIn .2s both}
@@ -186,12 +202,55 @@ function objetos(c) {
   const items = c.ITEMS.map(k => `<button class="it" data-v="item" data-id="${k.id}"><i style="background:${ITEM_COL[k.id] || '#3E5BA9'};color:#fff">${itemIco(k)}</i><div><b>${esc(k.name)}${c.stock[k.id] ? `<u>x${c.stock[k.id]}</u>` : ''}</b><small>${esc(k.tag)}</small></div><span class="price">${coin(k.price)}</span></button>`).join('');
   return bar + `<div class="vsec">${tt('shop.secPower')}<small>${tt('shop.secPowerNote')}</small></div><div class="vg">${items}</div>`;
 }
+// Bloque de vidas (lo usan la pestaña PRO y el aviso «sin vidas»)
+export function livesHTML(c, modal) {
+  if (Vidas.infinito) return `<div class="card vlv"><div class="hs">${HEART(1)}</div><b class="t">${tt('lives.inf')}</b><small>${tt('lives.infSub')}</small></div>`;
+  const n = Vidas.n, full = n >= Vidas.MAX, nx = Vidas.proxima();
+  const hs = Array.from({ length: Vidas.MAX }, (_, i) => HEART(i < n)).join('');
+  const sub = full ? tt('lives.full') : tt('lives.next', { t: `<span class="lvT">${reloj(nx)}</span>` }) + ' · ' + tt('lives.fullIn', { t: reloj(Vidas.llenasEn()) });
+  const vid = Vidas.puedeVideo();
+  return `<div class="card vlv">${modal ? `<b class="t">${tt('lives.none')}</b>` : `<b class="t">${tt('lives.title')}</b>`}<div class="hs">${hs}</div><small>${sub}</small>
+<div class="row"><button class="btn" data-v="lvAd"${full || !vid ? ' disabled' : ''}>▶ ${tt('lives.video')}</button><button class="btn green" data-v="lvFill"${full ? ' disabled' : ''}>${tt('lives.fill')} · ${coin(Vidas.PRECIO_LLENAR)}</button></div>
+${!full && !vid && Vidas.videosHoy() >= Vidas.VIDEOS_DIA ? `<small style="margin:8px 0 0">${tt('lives.videoLimit')}</small>` : ''}</div>`;
+}
+const PLANE_I = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#34437F"/><path d="M5 13.2l4.6-.6 3.5-5.2h1.8l-1.6 5 3.9-.5 1.3-1.7h1.2l-.8 2.6.8 2.6h-1.2l-1.3-1.7-3.9-.5 1.6 5h-1.8l-3.5-5.2L5 15z" fill="#F2BC3E"/></svg>';
+function vfCard(c) {
+  const I = c.Iap, own = I?.frecuente, pk = (I?.paquetes || []).filter(p => p.tipo === 'vf');
+  const perks = [['<b style="color:#E8452C;font-size:18px">♥</b>', 'vf.perk.lives'], ['🚫', 'vf.perk.ads'], ['<b style="color:#D9961E;font-size:17px">◉</b>', 'vf.perk.coins']].map(([i, k]) => `<li><i>${i}</i>${tt(k)}</li>`).join('');
+  return `<div class="card vfc"><h3>${PLANE_I}${tt('vf.title')}</h3><ul>${perks}</ul>` +
+    (own ? `<div class="ok">✓ ${tt('vf.active')}</div>` : pk.map(p => `<button class="it pk${p.destacado ? ' best' : ''}" data-v="pk" data-id="${p.id}"><i>${p.id === '$rc_annual' ? '☀' : '☾'}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`).join('')) + '</div>';
+}
+function naCard(c) {
+  const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'noads'); if (!p) return '';
+  if (I.frecuente && !I.sinAnuncios) return '';
+  return `<div class="card vfc na"><h3>🚫 ${tt('pack.noads')}</h3><p>${tt('pack.noads.long')}</p>` +
+    (I.sinAnuncios ? `<div class="ok">✓ ${tt('shop.active')}</div>` : `<button class="it pk" data-v="pk" data-id="${p.id}"><i>✈</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`) + '</div>';
+}
 function pro(c) {
   const I = c.Iap;
-  if (!I) return `<div class="vnote hd">${tt('shop.proInfo')}</div>`;
-  return `<div class="vsec">★ PRO</div><div class="vnote">${tt(I.pro ? 'shop.proOwn' : 'shop.proInfo')}</div>
-<div class="vg vpro">${I.pro ? '' : '<button class="btn green" data-v="paywall" style="grid-column:1/3;height:52px;font-size:19px">' + tt('shop.getPro') + '</button>'}${I.paquetes.map(p => `<button class="it pk${p.destacado ? ' best' : ''}${I.pro ? ' own' : ''}" data-v="pk" data-id="${p.id}"><i>${p.icono}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.pro ? tt('shop.active') : I.precio(p.id)}</span></button>`).join('')}
-<button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>`;
+  return livesHTML(c) + (I ? vfCard(c) + naCard(c) + `<div class="vg vpro"><button class="link" data-v="restore" style="grid-column:1/3">${tt(I.pro ? 'shop.manage' : 'shop.restore')}</button></div>` : '');
+}
+// Aviso «sin vidas» al tocar JUGAR o REINTENTAR con 0 vidas. onReady() se llama si el jugador recupera una vida.
+let noLivesCb = null;
+export function noLives(ctx, onReady) {
+  injectCSS(); lastCtx = ctx; noLivesCb = onReady || null;
+  document.getElementById('vNoLives')?.remove();
+  const m = document.createElement('div'); m.id = 'vNoLives';
+  const draw = () => { m.innerHTML = `<div class="vmod" data-v="closeNL"><div class="card vmc" style="padding:14px 4px 10px"><button class="round vmx" data-v="closeNL" aria-label="${tt('common.close')}">✕</button><div class="vmi">${livesHTML(ctx, true)}${ctx.Iap && !ctx.Iap.frecuente ? vfCard(ctx) : ''}</div></div></div>`; };
+  m._draw = draw; draw(); m.addEventListener('click', onClick); document.body.appendChild(m);
+  tickLives();
+}
+function tickLives() {
+  clearInterval(livesTick);
+  livesTick = setInterval(() => {
+    const open = document.getElementById('vNoLives') || (document.getElementById('shop')?.style.display === 'block' && tab === 'pro');
+    if (!open) { clearInterval(livesTick); return; }
+    const nl = document.getElementById('vNoLives');
+    if (nl && Vidas.puede() && noLivesCb) { const f = noLivesCb; noLivesCb = null; nl.remove(); f(); return; }
+    const el = document.querySelectorAll('.lvT'); if (!el.length) return;
+    const nx = Vidas.proxima(); if (nx <= 0) { nl ? nl._draw() : render(); return; }
+    el.forEach(e => e.textContent = reloj(nx));
+  }, 1000);
 }
 
 // ── Estructura y render ──
@@ -208,8 +267,9 @@ function render() {
   if (!c || !panel) return;
   const w = panel.querySelector('#sWallet'); if (w) w.textContent = c.walletTxt ?? c.wallet;
   panel.querySelectorAll('#vTabs button').forEach(b => { const on = b.dataset.t === tab; b.classList.toggle('on', on); if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); });
-  const body = panel.querySelector('#vBody'), st = panel.scrollTop;
+  const body = panel.querySelector('#vBody'), st = panel.scrollTop; if (!body) return;
   body.innerHTML = { viajeros, pasaportes, objetos, pro }[tab](c);
+  if (tab === 'pro') tickLives();
   panel.scrollTop = st;
   document.getElementById('vModal')?.remove();
   if (modal) { const m = document.createElement('div'); m.id = 'vModal'; m.innerHTML = chModal(c, modal); m.addEventListener('click', onClick); document.body.appendChild(m); }
@@ -224,6 +284,8 @@ async function onClick(e) {
   const el = e.target.closest('[data-v]'); if (!el) return;
   const kind = el.dataset.v, id = el.dataset.id, V = c.V;
   if (kind === 'closeM') { if (e.target !== el && !e.target.closest('.vmx')) return; c.SFX.tap(); modal = null; return render(); }
+  if (kind === 'closeNL') { if (e.target !== el && !e.target.closest('.vmx')) return; c.SFX.tap(); noLivesCb = null; document.getElementById('vNoLives')?.remove(); return; }
+  if (kind === 'lvAd' || kind === 'lvFill') return livesBuy(c, kind, el);
   if (kind === 'ch') { c.SFX.tap(); modal = id; return render(); }
   if (kind === 'sub') { c.SFX.tap(); sub = id; document.getElementById('shop').scrollTop = 0; return render(); }
   if (kind === 'sk') {
@@ -278,14 +340,25 @@ async function onClick(e) {
   } else if (kind === 'paywall' || kind === 'pk' || kind === 'restore') proFlow(c, kind, id);
 }
 
+async function livesBuy(c, kind, el) {
+  const redraw = () => { const nl = document.getElementById('vNoLives'); if (nl) { if (Vidas.puede() && noLivesCb) { const f = noLivesCb; noLivesCb = null; nl.remove(); c.refresh(); return f(); } nl._draw(); } c.refresh(); render(); };
+  if (kind === 'lvFill') {
+    if (!c.buy(Vidas.PRECIO_LLENAR, tt('lives.fill'))) return bad(el);
+    Vidas.llenar(); c.SFX.buy(); c.pop(tt('lives.filled'), 'big'); return redraw();
+  }
+  if (!Vidas.puedeVideo()) return c.SFX.nope();
+  c.SFX.tap();
+  if (await c.Ads.recompensa('life')) { Vidas.contarVideo(); Vidas.sumar(1); c.SFX.prize?.(); c.pop(tt('lives.plusOne'), 'big'); }
+  redraw();
+}
 async function proFlow(c, kind, id) {
-  const I = c.Iap, ok = () => { c.pop(tt('toast.pro'), 'big'); c.SFX.buy(); c.confetti(); document.body.classList.remove('ads'); c.refresh(); render(); };
+  const I = c.Iap, ok = () => { document.getElementById('vNoLives')?.remove(); if (noLivesCb && Vidas.puede()) { const f = noLivesCb; noLivesCb = null; setTimeout(f, 600); } c.pop(tt(I.frecuente ? 'toast.vf' : 'toast.pro'), 'big'); c.SFX.buy(); c.confetti(); document.body.classList.remove('ads'); c.refresh(); render(); };
   c.SFX.tap();
   if (kind === 'paywall') {
     const r = await I.paywall();
     if (r === 'PURCHASED' || r === 'RESTORED') ok(); else if (r === 'sin-ui') c.toast(tt('toast.pickPlan'));
   } else if (kind === 'pk') {
-    if (I.pro) return c.toast(tt('toast.alreadyPro'));
+    if (I.tiene(id)) return c.toast(tt('toast.alreadyPro'));
     const r = await I.comprar(id);
     if (r === 'ok') ok(); else if (r === 'solo-app') c.toast(tt('toast.storeOnly')); else if (r === 'error') c.toast(tt('toast.purchaseError'));
   } else if (I.pro) { if (!await I.centroCliente()) c.toast(tt('toast.manageInApp')); }
