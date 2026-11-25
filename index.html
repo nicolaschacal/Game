@@ -23,7 +23,7 @@
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
 <style>
 /* grano de papel en todo lo dibujado a mano: personajes (svg del elenco, en inicio, diálogos, tienda, ropa, intro), logo y barra de carga */
-svg[viewBox="-4 -8 128 128"],.lgsvg,#splash .load,#intro .ib svg{filter:url(#pvGrain)}
+svg[viewBox="-4 -8 128 128"],#intro .lgsvg,#intro .ib svg{filter:url(#pvGrain)} /* la pantalla de carga (logo y barra) queda sin grano */
 /* mochila: álbum, pasaportes, diario, ropa, souvenirs y adornos (sólo el svg/img de afuera, para no duplicar el grano) */
 .pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
 /* coreano: cortar líneas entre palabras, no dentro de ellas */
