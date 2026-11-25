@@ -27,7 +27,8 @@ svg[viewBox="-4 -8 128 128"],#intro .lgsvg,#intro .ib svg{filter:url(#pvGrain)} 
 /* mochila: álbum, pasaportes, diario, ropa, souvenirs y adornos (sólo el svg/img de afuera, para no duplicar el grano) */
 .pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
 /* selfies del álbum (fotos polaroid) */
-svg.pvsf{filter:url(#pvGrain)}
+svg.pvsf,.pvs-big svg.pvsf{filter:url(#pvGrainL)!important}
+.pva-slot svg.pvsf{filter:url(#pvGrainL) drop-shadow(0 3px 0 rgba(27,23,48,.28))!important} /* grilla del álbum: grano leve + su sombra */
 /* resto de los objetos dibujados: tienda, cofres, misiones, mapa, pasaportes, álbum, HUD */
 .art svg:not(svg svg),.th svg:not(svg svg),.chestRow svg:not(svg svg),.dph svg:not(svg svg),.dpi svg:not(svg svg),.pic svg:not(svg svg),.pvb-fly svg:not(svg svg),.pvc-hero svg:not(svg svg),.pvc-sk svg:not(svg svg),.pvc-ic svg:not(svg svg),.pvs-big svg:not(svg svg),.pvs-i svg:not(svg svg),.pw svg:not(svg svg),.seal svg:not(svg svg),.st svg:not(svg svg),.mrow svg:not(svg svg),.nudge svg:not(svg svg),#coinPill svg:not(svg svg),.hwa svg:not(svg svg),.pvp-sg svg:not(svg svg),.fr svg:not(svg svg),.gu svg:not(svg svg),.cl svg:not(svg svg),.bk svg:not(svg svg){filter:url(#pvGrain)}
 /* coreano: cortar líneas entre palabras, no dentro de ellas */
@@ -655,6 +656,12 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
  <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".34" intercept=".8"/><feFuncG type="linear" slope=".34" intercept=".8"/><feFuncB type="linear" slope=".34" intercept=".8"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
+ <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
+ <feComposite in="m" in2="SourceAlpha" operator="in"/>
+</filter><filter id="pvGrainL" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
+ <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
+ <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".18" intercept=".9"/><feFuncG type="linear" slope=".18" intercept=".9"/><feFuncB type="linear" slope=".18" intercept=".9"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter></svg>
