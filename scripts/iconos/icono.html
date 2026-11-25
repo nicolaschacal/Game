@@ -48,9 +48,16 @@ const OJOS=q.get('pose')==='ojos', FONDO=L.fondo||'rojo';
 const ojosScene=()=>{const K=L.k??18;let o='';if(L.globo) o+=bal(L.gx??690,L.gy??70,L.gw??130,8,'');return o+`<div style="position:absolute;inset:0;transform:rotate(${L.tilt??0}deg);transform-origin:50% 115%">`+nilo(512-60*K+(L.dx??0),(L.top??140)-3*K,120*K,0,JUEGO)+'</div>';};
 // Android adaptativo: la misma escena achicada al 66 % visible; la cabeza sigue hacia abajo y la máscara la corta
 if(OJOS&&mode==='fg'){ h=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${ojosScene()}</div>`; }
-if(OJOS&&mode==='icon'){ if(FONDO!=='rojo') h=`<div style="position:absolute;inset:0;background:${FONDO==='cielo'?'radial-gradient(circle at 40% 30%,#8FD0EE,#4E9CCB)':'radial-gradient(circle at 40% 30%,#FBF1DC,#E9D7B4)'}"></div>`; const K=L.k??18; if(L.globo) h+=bal(L.gx??690,L.gy??70,L.gw??130,8,''); h+=`<div style="position:absolute;inset:0;transform:rotate(${L.tilt??0}deg);transform-origin:50% 115%">`+nilo(512-60*K+(L.dx??0), (L.top??140)-3*K, 120*K, 0, JUEGO)+'</div>'; }
+// variante «globo»: Nilo saludando en la canasta, sobre cielo celeste liso (L.gw ancho, L.gx/L.gy posición)
+const GLOBO=q.get('pose')==='globo';
+const globoScene=()=>`<div style="position:absolute;left:${(L.gx??212)*k}px;top:${(L.gy??60)*k}px;transform:rotate(${L.tilt??-4}deg)">${balloon(SALUDO,(L.gw??600)*k)}</div>`;
+if(GLOBO&&(mode==='icon'||mode==='bg')) h=`<div style="position:absolute;inset:0;background:radial-gradient(circle at 40% 28%,#9BD8F2,#4E9CCB)"></div>`;
+if(GLOBO&&mode==='icon') h+=globoScene();
+if(GLOBO&&mode==='fg') h=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${globoScene()}</div>`;
+if(GLOBO){}
+else if(OJOS&&mode==='icon'){ if(FONDO!=='rojo') h=`<div style="position:absolute;inset:0;background:${FONDO==='cielo'?'radial-gradient(circle at 40% 30%,#8FD0EE,#4E9CCB)':'radial-gradient(circle at 40% 30%,#FBF1DC,#E9D7B4)'}"></div>`; const K=L.k??18; if(L.globo) h+=bal(L.gx??690,L.gy??70,L.gw??130,8,''); h+=`<div style="position:absolute;inset:0;transform:rotate(${L.tilt??0}deg);transform-origin:50% 115%">`+nilo(512-60*K+(L.dx??0), (L.top??140)-3*K, 120*K, 0, JUEGO)+'</div>'; }
 else if(mode==='icon'){ h+= CABEZA ? bal(L.bx??700,L.by??60,L.bw??240,10,'')+nilo(L.nx??-138,L.ny??130,L.nw??1300,L.rot??-4,HEAD)+[[-240,0],[90,30],[400,0],[720,30]].map(([x,y])=>img(cloud,x,y+(L.cy??700),640,1)).join('')+[[-120,100],[300,120],[660,100]].map(([x,y])=>img(cloud,x,y+(L.cy??700),660,1)).join('') : scene(); }
  // Android adaptativo: las nubes van en el fondo
-if(mode==='fg'&&!OJOS){ h+=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${scene()}</div>`; h+=[[-60,800],[340,815],[700,800]].map(([x,y])=>img(cloud,x,y,560,1)).join(''); }
+if(mode==='fg'&&!OJOS&&!GLOBO){ h+=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${scene()}</div>`; h+=[[-60,800],[340,815],[700,800]].map(([x,y])=>img(cloud,x,y,560,1)).join(''); }
 c.innerHTML=h; document.title='ok';
 </script></body></html>
