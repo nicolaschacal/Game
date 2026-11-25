@@ -20,6 +20,10 @@ const collar=s=>{let n=0;return s.replace(/<g data-j="hwf"/g,m=>{n++;return (n%2
 const SALUDO=collar(pose(H.wave[3],{aU:'translate(79.2 59.97) rotate(-64)',aUf:'translate(0 10.6) rotate(-80)',ht1:'translate(71 60.2) rotate(55)',ht2:'translate(14.6 0) rotate(10)'}));
 const JUEGO=H.idle[0];
 const POSE=(q.get('pose')||'saludo')==='juego'?JUEGO:SALUDO;
+const CABEZA=q.get('pose')==='cabeza'||q.get('pose')==='cabeza2';
+// cara de saludo (boca abierta) sin el brazo levantado: el brazo queda abajo, tapado por las nubes
+const CARA=H.wave[3].replace(/<g data-j="aU"([^>]*?)>/g,'<g data-j="aU"$1 style="display:none">');
+const HEAD=q.get('pose')==='cabeza2'?CARA:JUEGO; // variante: sólo la cabeza asomándose entre las nubes
 let cloud=''; try{cloud=P.artThumb('nube');}catch(e){}
 const BALL=`<svg viewBox="0 0 160 250" role="img" aria-label="Paper Voyager"><path d="M62 142 L46 190 M98 142 L114 190 M74 144 L66 190 M86 144 L94 190" stroke="#704332" stroke-width="2.6" stroke-linecap="round"/><g transform="translate(-16 0) scale(1.6)"><g stroke="#FFF4DC" stroke-width="5" stroke-linejoin="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/></g><g class="inl" transform="translate(11 106) scale(1.1)"></g><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round"><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/></g><path d="M43 196 H117 L111 240 Q80 247 49 240Z" fill="#A9794D"/><rect x="38" y="188" width="84" height="12" rx="6" fill="#E2B987"/><path d="M56 202 L58 240 M68 202 L69 242 M80 202 V243 M92 202 L91 242 M104 202 L102 240" stroke="#7A5334" stroke-width="2.4" stroke-linecap="round"/><path d="M47 228 Q80 236 113 228 L111 240 Q80 247 49 240Z" fill="#6B4A2E"/><path d="M46 214 Q80 221 114 214" stroke="#7A5334" stroke-width="2.4" fill="none"/></svg>`;
 const balloon=(nilo,w)=>{const d=document.createElement('div');d.innerHTML=BALL;const sv=d.firstElementChild;sv.setAttribute('width',w);sv.setAttribute('height',w*250/160);
@@ -37,7 +41,7 @@ let h='';
 if(mode!=='fg') h+=BG;
 // la misma escena para iOS y para el frente del ícono adaptativo de Android (ahí va achicada al 66 %, que es lo que se ve en el círculo)
 const scene=()=>bal(BX,BY,BW,10,'')+nilo(NX,NY,NW,L.rot??-9,POSE)+[[-240,870],[90,895],[400,870],[720,895]].map(([x,y])=>img(cloud,x,y,620,1)).join('')+[[-120,950],[300,960],[660,950]].map(([x,y])=>img(cloud,x,y,640,1)).join('');
-if(mode==='icon'){ h+=scene(); }
+if(mode==='icon'){ h+= CABEZA ? bal(L.bx??700,L.by??60,L.bw??240,10,'')+nilo(L.nx??-138,L.ny??130,L.nw??1300,L.rot??-4,HEAD)+[[-240,0],[90,30],[400,0],[720,30]].map(([x,y])=>img(cloud,x,y+(L.cy??700),640,1)).join('')+[[-120,100],[300,120],[660,100]].map(([x,y])=>img(cloud,x,y+(L.cy??700),660,1)).join('') : scene(); }
  // Android adaptativo: las nubes van en el fondo
 if(mode==='fg'){ h+=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${scene()}</div>`; h+=[[-60,800],[340,815],[700,800]].map(([x,y])=>img(cloud,x,y,560,1)).join(''); }
 c.innerHTML=h; document.title='ok';
