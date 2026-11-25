@@ -26,6 +26,8 @@
 svg[viewBox="-4 -8 128 128"],#intro .lgsvg,#intro .ib svg{filter:url(#pvGrain)} /* la pantalla de carga (logo y barra) queda sin grano */
 /* mochila: álbum, pasaportes, diario, ropa, souvenirs y adornos (sólo el svg/img de afuera, para no duplicar el grano) */
 .pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
+/* selfies del álbum (fotos polaroid) */
+svg.pvsf{filter:url(#pvGrain)}
 /* resto de los objetos dibujados: tienda, cofres, misiones, mapa, pasaportes, álbum, HUD */
 .art svg:not(svg svg),.th svg:not(svg svg),.chestRow svg:not(svg svg),.dph svg:not(svg svg),.dpi svg:not(svg svg),.pic svg:not(svg svg),.pvb-fly svg:not(svg svg),.pvc-hero svg:not(svg svg),.pvc-sk svg:not(svg svg),.pvc-ic svg:not(svg svg),.pvs-big svg:not(svg svg),.pvs-i svg:not(svg svg),.pw svg:not(svg svg),.seal svg:not(svg svg),.st svg:not(svg svg),.mrow svg:not(svg svg),.nudge svg:not(svg svg),#coinPill svg:not(svg svg),.hwa svg:not(svg svg),.pvp-sg svg:not(svg svg),.fr svg:not(svg svg),.gu svg:not(svg svg),.cl svg:not(svg svg),.bk svg:not(svg svg){filter:url(#pvGrain)}
 /* coreano: cortar líneas entre palabras, no dentro de ellas */
