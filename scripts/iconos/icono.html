@@ -30,13 +30,15 @@ const k=S/1024, img=(u,x,y,w,op=1)=>u?`<img src="${u}" style="position:absolute;
 const nilo=(x,y,w,rot,f)=>`<div style="position:absolute;left:${x*k}px;top:${y*k}px;width:${w*k}px;height:${w*k}px;transform:rotate(${rot}deg)">${f.replace('<svg',`<svg width="${w*k}" height="${w*k}" overflow="visible"`)}</div>`;
 const bal=(x,y,w,rot,f)=>`<div style="position:absolute;left:${x*k}px;top:${y*k}px;transform:rotate(${rot}deg);transform-origin:50% 0">${balloon(f,w*k)}</div>`;
 const L=JSON.parse(q.get('L')||'{}'); // ajustes de posición sin tocar el archivo
-const NX=L.nx??-150, NY=L.ny??150, NW=L.nw??1060, BX=L.bx??610, BY=L.by??30, BW=L.bw??330;
+const NX=L.nx??-230, NY=L.ny??150, NW=L.nw??1160, BX=L.bx??610, BY=L.by??30, BW=L.bw??330;
 // nubes de papel rojizas, como en el ícono original
 const clouds=(y,col,hi)=>{const C=[[-40,70],[120,95],[300,80],[470,100],[640,78],[820,96],[990,80]];return `<svg viewBox="0 0 1024 1024" width="${S}" height="${S}" style="position:absolute;inset:0"><g transform="translate(0 ${y})">${C.map(([x,r])=>`<circle cx="${x}" cy="${r*.2}" r="${r*1.25}" fill="${col}"/>`).join('')}<rect x="-50" y="30" width="1124" height="400" fill="${col}"/>${C.map(([x,r])=>`<path d="M${x-r} ${r*.2-r*.3} A${r*1.25} ${r*1.25} 0 0 1 ${x+r*.6} ${r*.2-r*1.1}" stroke="${hi}" stroke-width="10" fill="none" stroke-linecap="round" opacity=".7"/>`).join('')}</g></svg>`;};
 let h='';
 if(mode!=='fg') h+=BG;
-if(mode==='icon'){ h+=bal(BX,BY,BW,10,''); h+=nilo(NX,NY,NW,L.rot??-9,POSE); h+=img(cloud,-160,820,600,1)+img(cloud,480,860,700,1);}
+// la misma escena para iOS y para el frente del ícono adaptativo de Android (ahí va achicada al 66 %, que es lo que se ve en el círculo)
+const scene=()=>bal(BX,BY,BW,10,'')+nilo(NX,NY,NW,L.rot??-9,POSE)+[[-240,870],[90,895],[400,870],[720,895]].map(([x,y])=>img(cloud,x,y,620,1)).join('')+[[-120,950],[300,960],[660,950]].map(([x,y])=>img(cloud,x,y,640,1)).join('');
+if(mode==='icon'){ h+=scene(); }
  // Android adaptativo: las nubes van en el fondo
-if(mode==='fg'){ h+=bal(610,165,200,10,''); h+=nilo(90,210,780,-9,POSE); h+=img(cloud,-40,740,540,1)+img(cloud,460,770,580,1);} // Android adaptativo: todo dentro del círculo seguro
+if(mode==='fg'){ h+=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${scene()}</div>`; h+=[[-60,800],[340,815],[700,800]].map(([x,y])=>img(cloud,x,y,560,1)).join(''); }
 c.innerHTML=h; document.title='ok';
 </script></body></html>

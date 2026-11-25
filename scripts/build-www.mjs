@@ -7,6 +7,9 @@ cpSync('paper-voyager', out + '/paper-voyager', { recursive: true, filter: s => 
 cpSync('node_modules/three/build/three.module.js', out + '/vendor/three.module.js');
 // Vercel sirve www/ tal cual: va la política de privacidad (los prototipos viejos ya no entran en la app)
 for (const f of ['privacidad.html']) if (existsSync(f)) cpSync(f, out + '/' + f);
+// íconos web en la raíz: iOS pide /apple-touch-icon.png al agregar el sitio a inicio
+cpSync('paper-voyager/apple-touch-icon.png', out + '/apple-touch-icon.png');
+if (existsSync('favicon.ico')) cpSync('favicon.ico', out + '/favicon.ico');
 // Fuentes (Lilita One, Nunito, Yuji Syuku recortada a los 2 caracteres del nobori de Kioto) locales: la app funciona sin internet
 cpSync('assets/fonts', out + '/fonts', { recursive: true });
 let html = readFileSync('index.html', 'utf8');
