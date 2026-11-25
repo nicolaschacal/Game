@@ -1354,6 +1354,12 @@
  "pack.noads.long": "Entfernt Banner und Werbung zwischen den Runden. Belohnungsvideos bleiben – nur wenn du willst.",
  "pack.once": "Einmalig",
  "pack.vf.monthly.desc": "Monatlich, jederzeit kündbar",
- "pack.vf.annual.desc": "Ein ganzes Jahr · 2 Monate gratis",
- "toast.vf": "VIELREISENDER!"
+ "pack.vf.annual.desc": "Ein ganzes Jahr · über 40 % gespart",
+ "toast.vf": "VIELREISENDER!",
+ "legal.subs.ios": "Das Abo wird über deine Apple‑ID abgerechnet und verlängert sich automatisch zum gleichen Preis, außer du kündigst mindestens 24 Std. vor Ende des Zeitraums. Verwalten oder kündigen unter Einstellungen › Apple‑ID › Abonnements.",
+ "legal.subs.android": "Das Abo wird über dein Google‑Play‑Konto abgerechnet und verlängert sich automatisch zum gleichen Preis, außer du kündigst vor Ende des Zeitraums. Verwalten oder kündigen unter Google Play › Zahlungen & Abos.",
+ "legal.terms": "Nutzungsbedingungen",
+ "legal.privacy": "Datenschutz",
+ "legal.adsPrivacy": "Werbe-Datenschutz",
+ "lives.reviveHint": "Gibst du auf, ist dieses Leben weg (noch {n} ♥)"
 }

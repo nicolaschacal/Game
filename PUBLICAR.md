@@ -112,3 +112,16 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 - **IDs reales** de AdMob y RevenueCat (puntos 2 y 3).
 - **Probar en teléfonos reales**: sonido, vibración (en iOS va por Haptics), rendimiento del WebGL en gama baja, y los flujos de compra con cuentas de prueba (License testers en Play, Sandbox testers en App Store Connect).
 - **Capturas y textos de las fichas**.
+
+## 8. Checklist de aprobación (revisado nov. 2026)
+- [ ] `CONFIG.admob.testing = false` e IDs reales de AdMob (también `GADApplicationIdentifier` en Info.plist y `APPLICATION_ID` en AndroidManifest).
+- [ ] `CONFIG.revenuecat.usarClaveDePrueba = false` y claves `appl_…` / `goog_…`.
+- [ ] RevenueCat: entitlements `sin_anuncios` (producto no consumible, paquete `$rc_lifetime`) y `viajero_frecuente` (suscripciones `$rc_monthly` y `$rc_annual`, mismo grupo de suscripción en App Store Connect).
+- [ ] `privacidad.html` y `terminos.html`: completar nombre y correo, publicarlas en el dominio propio y actualizar `CONFIG.legal`.
+- [ ] App Store Connect: URL de privacidad, enlace al EULA estándar de Apple en la descripción (o EULA propio), capturas del paywall para la revisión de las compras.
+- [ ] Clima real: Open-Meteo gratis es sólo para uso NO comercial; con anuncios/suscripción hace falta su plan comercial o cambiar de proveedor.
+- [ ] AdMob: activar el mensaje de consentimiento (UMP/GDPR) y el de ATT en la consola de AdMob → «Privacidad y mensajes». El código ya los pide al iniciar.
+- [ ] Lista completa de `SKAdNetworkItems` de Google en Info.plist (hoy hay una sola).
+- [ ] Público objetivo: declarar 13+ (no «Familias»/«Kids»), o pasar AdMob a anuncios para niños.
+- [ ] Google Play (cuenta personal nueva): prueba cerrada con 12+ testers durante 14 días seguidos antes de pedir producción.
+- [ ] DSA (Unión Europea): declarar estado de «comerciante» en ambas tiendas.

@@ -37,7 +37,14 @@ export const CONFIG = {
     ],
   },
   intersticialCada: 3, intersticialMinSeg: 90,
+  // Páginas legales (obligatorias para suscripciones: Apple 3.1.2 y Google Play). Cambiar al dominio propio al publicar.
+  legal: {
+    privacidad: 'https://game-orcin-ten-70.vercel.app/privacidad.html',
+    terminos: 'https://game-orcin-ten-70.vercel.app/terminos.html',
+    eulaApple: 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
+  },
 };
+export const esIOS = () => window.Capacitor?.getPlatform?.() === 'ios';
 
 const Q = new URLSearchParams(location.search);
 const KEY = 'pv.noads', KEY_VF = 'pv.vf';
@@ -47,7 +54,7 @@ const plataforma = () => window.Capacitor?.getPlatform?.() === 'ios' ? 'ios' : '
 let noAds = localStorage.getItem(KEY) === '1' || localStorage.getItem('pv.pro') === '1', vf = localStorage.getItem(KEY_VF) === '1';
 if (Q.has('gratis')) { noAds = vf = false; localStorage.removeItem(KEY); localStorage.removeItem(KEY_VF); localStorage.removeItem('pv.pro'); } // ?gratis: vuelve a la versión gratis (pruebas)
 let pro = noAds || vf; // pro = sin anuncios (por compra única o por la suscripción)
-let partidas = 0, ultimoInter = 0, adsListo = false;
+let partidas = 0, ultimoInter = 0, adsListo = false, consentOpts = false;
 const avisar = new Set(); // callbacks cuando cambia el estado PRO
 
 // ── Anuncio simulado (web): cartel a pantalla completa con cuenta regresiva ──
@@ -64,9 +71,16 @@ function simulado(tipo, seg) {
 
 export const Ads = {
   get enabled() { return !pro; },
+  // Punto de entrada a «opciones de privacidad» que pide Google cuando hay formulario de consentimiento (UMP).
+  get privacidadAds() { return nativo() && consentOpts; },
+  async opcionesPrivacidad() { const A = plugin('AdMob'); try { await A?.showPrivacyOptionsForm?.(); } catch (e) { console.warn('privacy options', e); } },
   async init() {
     if (adsListo) return; adsListo = true;
     const A = plugin('AdMob'); if (!nativo() || !A) return;
+    // 1) Consentimiento (UMP de Google: obligatorio para mostrar anuncios en el EEE, Reino Unido y Suiza).
+    try { const c = await A.requestConsentInfo(); consentOpts = !!c?.isConsentFormAvailable; if (c?.isConsentFormAvailable && c.status === 'REQUIRED') await A.showConsentForm(); } catch (e) { console.warn('UMP', e); }
+    // 2) iOS: permiso de seguimiento (ATT). Si no se pide y el SDK usa el IDFA, Apple rechaza (5.1.2). Sin permiso, los anuncios salen igual (no personalizados).
+    if (esIOS()) try { const s = await A.trackingAuthorizationStatus(); if (s?.status === 'notDetermined') await A.requestTrackingAuthorization(); } catch (e) { console.warn('ATT', e); }
     try { await A.initialize({ initializeForTesting: CONFIG.admob.testing, testingDevices: [] }); } catch (e) { console.warn('AdMob init', e); }
   },
   // Banner abajo del inicio. En la web se muestra un marco de ejemplo (#adBanner) para ver el espacio.
@@ -141,8 +155,11 @@ export const Iap = {
   // Precio del paquete tal como lo muestra la tienda (si la offering cargó); si no, el precio orientativo del CONFIG.
   precio(id) {
     const pk = offering?.availablePackages?.find(p => p.identifier === id);
-    return pk?.product?.priceString || CONFIG.revenuecat.paquetes.find(p => p.id === id)?.precio || '';
+    if (pk?.product?.priceString) return pk.product.priceString;
+    // En la app nunca se muestra un precio inventado: si la tienda no respondió, va «…» (Apple/Google exigen el precio real de cada país)
+    return nativo() ? '…' : CONFIG.revenuecat.paquetes.find(p => p.id === id)?.precio || '';
   },
+  get legal() { return CONFIG.legal; },
   // Compra un paquete. Devuelve 'ok' | 'cancelado' | 'error' | 'solo-app'.
   async comprar(id) {
     const P = plugin('Purchases');

@@ -1354,6 +1354,12 @@
  "pack.noads.long": "Toglie il banner e la pubblicità tra le partite. I video con premio restano, solo se vuoi.",
  "pack.once": "Pagamento unico",
  "pack.vf.monthly.desc": "Si rinnova ogni mese, annulli quando vuoi",
- "pack.vf.annual.desc": "Un anno intero · 2 mesi in regalo",
- "toast.vf": "VIAGGIATORE FREQUENTE!"
+ "pack.vf.annual.desc": "Un anno intero · risparmi oltre il 40%",
+ "toast.vf": "VIAGGIATORE FREQUENTE!",
+ "legal.subs.ios": "L’abbonamento viene addebitato sul tuo ID Apple e si rinnova automaticamente allo stesso prezzo, salvo disdetta almeno 24 ore prima della fine del periodo. Gestiscilo o annullalo in Impostazioni › ID Apple › Abbonamenti.",
+ "legal.subs.android": "L’abbonamento viene addebitato sul tuo account Google Play e si rinnova automaticamente allo stesso prezzo, salvo disdetta prima della fine del periodo. Gestiscilo o annullalo in Google Play › Pagamenti e abbonamenti.",
+ "legal.terms": "Termini d’uso",
+ "legal.privacy": "Privacy",
+ "legal.adsPrivacy": "Privacy annunci",
+ "lives.reviveHint": "Se ti arrendi, perdi questa vita (restano {n} ♥)"
 }

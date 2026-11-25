@@ -1354,6 +1354,12 @@
  "pack.noads.long": "バナーとプレイ間の広告を消すよ。ごほうび動画は見たいときだけ。",
  "pack.once": "買い切り",
  "pack.vf.monthly.desc": "毎月更新・いつでも解約OK",
- "pack.vf.annual.desc": "1年間・2か月分おトク",
- "toast.vf": "常連トラベラー！"
+ "pack.vf.annual.desc": "1年間・40%以上おトク",
+ "toast.vf": "常連トラベラー！",
+ "legal.subs.ios": "料金はApple IDに請求され、期間終了の24時間前までに解約しない限り同じ価格で自動更新されます。管理・解約は「設定 › Apple ID › サブスクリプション」から。",
+ "legal.subs.android": "料金はGoogle Playアカウントに請求され、期間終了前に解約しない限り同じ価格で自動更新されます。管理・解約は「Google Play › お支払いと定期購入」から。",
+ "legal.terms": "利用規約",
+ "legal.privacy": "プライバシー",
+ "legal.adsPrivacy": "広告のプライバシー",
+ "lives.reviveHint": "あきらめるとこのライフを失うよ（残り {n} ♥）"
 }

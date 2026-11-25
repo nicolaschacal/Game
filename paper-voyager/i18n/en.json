@@ -1354,6 +1354,12 @@
  "pack.noads.long": "Removes the banner and ads between runs. Reward videos stay, only if you want them.",
  "pack.once": "One-time",
  "pack.vf.monthly.desc": "Renews monthly, cancel anytime",
- "pack.vf.annual.desc": "A whole year · 2 months free",
- "toast.vf": "FREQUENT TRAVELER!"
+ "pack.vf.annual.desc": "A whole year · save over 40%",
+ "toast.vf": "FREQUENT TRAVELER!",
+ "legal.subs.ios": "Payment is charged to your Apple ID. The subscription renews automatically at the same price unless canceled at least 24 hours before the end of the period. Manage or cancel it in Settings › Apple ID › Subscriptions.",
+ "legal.subs.android": "Payment is charged to your Google Play account. The subscription renews automatically at the same price unless canceled before the end of the period. Manage or cancel it in Google Play › Payments & subscriptions.",
+ "legal.terms": "Terms of Use",
+ "legal.privacy": "Privacy Policy",
+ "legal.adsPrivacy": "Ad privacy",
+ "lives.reviveHint": "If you give up, you lose this life ({n} ♥ left)"
 }

@@ -1354,6 +1354,12 @@
  "pack.noads.long": "Retire la bannière et les pubs entre les parties. Les vidéos récompensées restent, seulement si tu veux.",
  "pack.once": "Paiement unique",
  "pack.vf.monthly.desc": "Renouvelé chaque mois, annulable à tout moment",
- "pack.vf.annual.desc": "Une année entière · 2 mois offerts",
- "toast.vf": "VOYAGEUR FRÉQUENT !"
+ "pack.vf.annual.desc": "Une année entière · plus de 40 % d’économie",
+ "toast.vf": "VOYAGEUR FRÉQUENT !",
+ "legal.subs.ios": "L’abonnement est facturé sur ton identifiant Apple et se renouvelle automatiquement au même prix, sauf résiliation au moins 24 h avant la fin de la période. Gère-le ou résilie-le dans Réglages › identifiant Apple › Abonnements.",
+ "legal.subs.android": "L’abonnement est facturé sur ton compte Google Play et se renouvelle automatiquement au même prix, sauf résiliation avant la fin de la période. Gère-le ou résilie-le dans Google Play › Paiements et abonnements.",
+ "legal.terms": "Conditions d’utilisation",
+ "legal.privacy": "Confidentialité",
+ "legal.adsPrivacy": "Confidentialité des pubs",
+ "lives.reviveHint": "Si tu abandonnes, tu perds cette vie (il reste {n} ♥)"
 }

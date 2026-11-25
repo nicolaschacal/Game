@@ -4,6 +4,7 @@
 import { photoPreview } from './album.js';
 import { t as tt } from './i18n.js';
 import { Vidas, reloj } from './vidas.js';
+import { esIOS } from './monetizacion.js';
 
 const TABS = [
   ['viajeros', 'viajero', tt('store.tab.travelers')], ['pasaportes', 'pasaporte', tt('store.tab.passports')], ['objetos', 'objeto', tt('store.tab.objects')], ['pro', 'pro', tt('store.tab.pro')],
@@ -92,6 +93,7 @@ function injectCSS() {
 .vfc ul{list-style:none;margin:10px 0 12px;padding:0;text-align:left}.vfc li{font:800 13px/1.3 Nunito;margin:6px 0;display:flex;gap:8px;align-items:center}.vfc li i{font-style:normal;width:22px;text-align:center;flex:none}
 .vfc .ok{font:400 17px 'Lilita One',sans-serif;color:#356F2E;text-align:center;margin:4px 0}
 .vfc .it{margin-top:8px;width:100%}
+.vleg{font:700 10.5px/1.4 Nunito;color:#7c7460;margin:10px 2px 0}.vleg a{color:#34437F;text-decoration:underline}
 .vfc.na h3{font-size:21px}.vfc.na p{font:700 12.5px/1.35 Nunito;color:#5d5546;margin:6px 0 10px}
 
 .vsub{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto;scrollbar-width:none}.vsub::-webkit-scrollbar{display:none}
@@ -214,11 +216,17 @@ export function livesHTML(c, modal) {
 ${!full && !vid && Vidas.videosHoy() >= Vidas.VIDEOS_DIA ? `<small style="margin:8px 0 0">${tt('lives.videoLimit')}</small>` : ''}</div>`;
 }
 const PLANE_I = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#34437F"/><path d="M5 13.2l4.6-.6 3.5-5.2h1.8l-1.6 5 3.9-.5 1.3-1.7h1.2l-.8 2.6.8 2.6h-1.2l-1.3-1.7-3.9-.5 1.6 5h-1.8l-3.5-5.2L5 15z" fill="#F2BC3E"/></svg>';
+// Letra chica obligatoria de la suscripción (Apple 3.1.2 / Google Play): renovación automática, cómo cancelar y enlaces a Términos y Privacidad
+function legalHTML(c) {
+  const L = c.Iap?.legal; if (!L) return '';
+  const a = (u, k) => `<a href="${u}" target="_blank" rel="noopener">${tt(k)}</a>`;
+  return `<div class="vleg">${tt(esIOS() ? 'legal.subs.ios' : 'legal.subs.android')}<br>${a(esIOS() ? L.eulaApple : L.terminos, 'legal.terms')} · ${a(L.privacidad, 'legal.privacy')}${c.Ads?.privacidadAds ? ` · <a href="#" data-v="adsPriv">${tt('legal.adsPrivacy')}</a>` : ''}</div>`;
+}
 function vfCard(c) {
   const I = c.Iap, own = I?.frecuente, pk = (I?.paquetes || []).filter(p => p.tipo === 'vf');
   const perks = [['<b style="color:#E8452C;font-size:18px">♥</b>', 'vf.perk.lives'], ['🚫', 'vf.perk.ads'], ['<b style="color:#D9961E;font-size:17px">◉</b>', 'vf.perk.coins']].map(([i, k]) => `<li><i>${i}</i>${tt(k)}</li>`).join('');
   return `<div class="card vfc"><h3>${PLANE_I}${tt('vf.title')}</h3><ul>${perks}</ul>` +
-    (own ? `<div class="ok">✓ ${tt('vf.active')}</div>` : pk.map(p => `<button class="it pk${p.destacado ? ' best' : ''}" data-v="pk" data-id="${p.id}"><i>${p.id === '$rc_annual' ? '☀' : '☾'}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`).join('')) + '</div>';
+    (own ? `<div class="ok">✓ ${tt('vf.active')}</div>` : pk.map(p => `<button class="it pk${p.destacado ? ' best' : ''}" data-v="pk" data-id="${p.id}"><i>${p.id === '$rc_annual' ? '☀' : '☾'}</i><div><b>${esc(p.nombre)}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button>`).join('') + legalHTML(c)) + '</div>';
 }
 function naCard(c) {
   const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'noads'); if (!p) return '';
@@ -286,6 +294,7 @@ async function onClick(e) {
   if (kind === 'closeM') { if (e.target !== el && !e.target.closest('.vmx')) return; c.SFX.tap(); modal = null; return render(); }
   if (kind === 'closeNL') { if (e.target !== el && !e.target.closest('.vmx')) return; c.SFX.tap(); noLivesCb = null; document.getElementById('vNoLives')?.remove(); return; }
   if (kind === 'lvAd' || kind === 'lvFill') return livesBuy(c, kind, el);
+  if (kind === 'adsPriv') { e.preventDefault(); return c.Ads?.opcionesPrivacidad(); }
   if (kind === 'ch') { c.SFX.tap(); modal = id; return render(); }
   if (kind === 'sub') { c.SFX.tap(); sub = id; document.getElementById('shop').scrollTop = 0; return render(); }
   if (kind === 'sk') {

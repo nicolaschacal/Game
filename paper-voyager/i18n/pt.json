@@ -1354,6 +1354,12 @@
  "pack.noads.long": "Remove o banner e os anúncios entre partidas. Os vídeos com prêmio continuam, só se você quiser.",
  "pack.once": "Pagamento único",
  "pack.vf.monthly.desc": "Renova todo mês, cancele quando quiser",
- "pack.vf.annual.desc": "Um ano inteiro · 2 meses grátis",
- "toast.vf": "VIAJANTE FREQUENTE!"
+ "pack.vf.annual.desc": "Um ano inteiro · economize mais de 40%",
+ "toast.vf": "VIAJANTE FREQUENTE!",
+ "legal.subs.ios": "A assinatura é cobrada no seu ID Apple e renova sozinha pelo mesmo preço, a menos que você cancele pelo menos 24 h antes do fim do período. Gerencie ou cancele em Ajustes › ID Apple › Assinaturas.",
+ "legal.subs.android": "A assinatura é cobrada na sua conta do Google Play e renova sozinha pelo mesmo preço, a menos que você cancele antes do fim do período. Gerencie ou cancele em Google Play › Pagamentos e assinaturas.",
+ "legal.terms": "Termos de uso",
+ "legal.privacy": "Privacidade",
+ "legal.adsPrivacy": "Privacidade de anúncios",
+ "lives.reviveHint": "Se desistir, perde esta vida (restam {n} ♥)"
 }
