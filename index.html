@@ -1674,7 +1674,7 @@ async function buildMap(){
 }
 async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
  await buildMap();mapZoomInit();$('mapWallet').textContent=fmtW(wallet);mapZ=1;applyZoom();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;v.scrollTop=0;
- mPick=WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2;
+ mPick=startPick?18:WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2; // primer arranque: Berlín (la ciudad de Nilo) ya viene marcada
  v.onscroll=()=>{const c=M.W*mapSc*mapZ;if(v.scrollLeft<c*.5)v.scrollLeft+=c;else if(v.scrollLeft>c*1.5)v.scrollLeft-=c;};}
 // prearma el mapa cuando el navegador está libre, así abre al instante
 (window.requestIdleCallback||(f=>setTimeout(f,1500)))(()=>setTimeout(()=>buildMap().catch(()=>{}),2500));
@@ -1733,13 +1733,16 @@ async function firstRunIntro(){introOn=true;const it=$('intro'),sp=$('splash');
   +mt(ri('peak',1,.62,'#C3D6E6',3,true),'24%',560,.3)+mt(ri('peak',1,.5,'#9DBBD3',7,true),'21%',620,.4)
   +mt(ri('dune',1,.42,'#B7D78E',11,false),'13%',640,.5).replace('class="imt"','class="imt" data-x="-150"')+mt(ri('dune',1,.4,'#B1D387',12,false),'12%',600,.55).replace('class="imt"','class="imt h2"')
   +mt(ri('dune',1,.36,'#98C46F',21,false),'5%',600,.65).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.34,'#93C06A',22,false),'4%',560,.7).replace('class="imt"','class="imt h2"')
-  +mt(ri('dune',1,.3,'#7DB65C',31,false),'-1%',560,.8).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.3,'#78B157',32,false),'-1%',520,.85).replace('class="imt"','class="imt h2"')+'<div class="igr"></div>'
+  +mt(ri('dune',1,.3,'#7DB65C',31,false),'-1%',560,.8).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.3,'#78B157',32,false),'-1%',520,.85).replace('class="imt"','class="imt h2"')
+  +mt(ri('dune',1,.3,'#6FA74F',41,false),'-9%',600,.9).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.28,'#6AA14B',42,false),'-10%',560,.95).replace('class="imt"','class="imt h2"')+'<div class="igr"></div>'
 +'<div class="ilogo">'+sp.querySelector('.logo').outerHTML+'</div><div class="ibw"><div class="ib">'+ball+'</div></div><div class="itap">'+t('intro.tap')+'</div>';
  const slot=it.querySelector('.inl');let fi=1;const put=()=>{slot.innerHTML=uniqIds(NIL[fi%NIL.length]).replace('<svg','<svg x="0" y="0" width="120" height="120" overflow="visible"');};put();
  const wv=setInterval(()=>{if(!it.isConnected){clearInterval(wv);return;}fi++;put();},130);
  it.style.display='block';document.body.classList.add('pickstart');let done=false;
  const go=()=>{if(done)return;done=true;try{audio();SFX.tap();}catch(e){}it.classList.add('out');setTimeout(()=>{it.remove();},380);
-  setTimeout(()=>{sp.style.opacity=0;setTimeout(()=>sp.remove(),520);startPick=true;introOn=false;openMap();},1100);};
+  setTimeout(()=>{sp.style.opacity=0;setTimeout(()=>sp.remove(),520);startPick=true;introOn=false;
+   // Nilo da la bienvenida y explica el juego; termina pidiendo elegir el punto de partida (Berlín ya viene marcado)
+   store.set('welcome',1);H.playWelcome(ctx).catch(()=>{}).then(()=>openMap());},1100);};
  it.addEventListener('click',go);}
 // ── Puente para los módulos de pantallas (tienda.js, album.js, seleccion.js) ──
 const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},get walletTxt(){return fmtW(wallet)},buy,addCoins(n){wallet+=n;store.set('wallet',wallet);},
@@ -1749,9 +1752,8 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
 ctx.Ads=Ads;K.initCofres(ctx);
 // Historia del viajero: si se abrió un capítulo en el último viaje, su escena se cuenta al volver al inicio. ?historia=N la muestra para probar.
 {const hh=store.get('histHint',null);if(hh){store.set('histHint',null);setTimeout(()=>H.showHint(hh,t('diary.blockedOver',{n:hh.ch})),1400);} // llegaste a la ciudad del capítulo pero falta un requisito: se avisa qué
- // Bienvenida de Nilo: la primera vez que se llega al inicio después de elegir la ciudad de partida (?bienvenida la repite)
- if(menuOpen&&!V.needsPick()&&(Q.has('bienvenida')||(!RICO&&!store.get('welcome',0)&&!(V.T.trips>0)))){store.set('welcome',1);setTimeout(()=>H.playWelcome(ctx).then(()=>drawHome()),1300);}
- else if(!store.get('welcome',0))store.set('welcome',1);
+ // Bienvenida de Nilo: sale en el primer arranque, después de «Tocá para jugar» y antes de elegir la ciudad (ver firstRunIntro). ?bienvenida la repite
+ if(menuOpen&&!V.needsPick()&&Q.has('bienvenida'))setTimeout(()=>H.playWelcome(ctx).then(()=>drawHome()),1300);
  const hp=H.pending(),qh=+Q.get('historia');if(hp||qh){if(hp)H.clearPending();setTimeout(()=>H.playScene(ctx,hp?.hero||V.heroId?.()||'nilo',hp?.ch||qh,{replay:!hp}).then(()=>drawHome()),1300);}}
 Ads.init();Iap.init();
 if(menuOpen){drawHome();drawShop();$('menu').style.display='block';heroLayout();heroFrame();}
