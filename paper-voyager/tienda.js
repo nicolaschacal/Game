@@ -80,17 +80,23 @@ function injectCSS() {
 .it.pk.best::after{content:none!important}
 .vsub{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto;scrollbar-width:none}.vsub::-webkit-scrollbar{display:none}
 .vsub button{flex:1 0 auto;height:34px;padding:0 12px;border-radius:99px;border:2.5px solid var(--ink);background:#EADBB8;color:#7c7460;font:400 13px 'Lilita One',sans-serif}.vsub .on{background:var(--gold);color:var(--ink)}
-.vmod{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(27,23,48,.55);animation:vmIn .2s both}
-@keyframes vmIn{from{opacity:0}}@keyframes vmUp{from{transform:translateY(40px);opacity:0}}
-.vmod .vmc{position:relative;width:min(100%,460px);max-height:88vh;overflow-y:auto;background:var(--cream);border:3.5px solid var(--ink);border-bottom:0;border-radius:24px 24px 0 0;padding:14px 14px calc(var(--sb,0px) + 18px);color:var(--ink);animation:vmUp .28s cubic-bezier(.2,1.2,.4,1) both}
-.vmod .vmx{position:absolute;right:12px;top:12px;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:#EADBB8;font:400 18px 'Lilita One',sans-serif;color:var(--ink)}
-.vmod .vmh{display:flex;gap:12px;align-items:flex-end;padding-right:40px}
-.vmod .vma{width:132px;height:132px;flex:none;border-radius:18px;border:3px solid var(--ink);background:var(--rc,#3E5BA9);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}.vmod .vma svg{width:146px;height:146px;flex:none;margin-bottom:-8px}
-.vmod .vmh b{display:block;font:400 28px/1 'Lilita One',sans-serif}.vmod .vmh small{display:block;font:900 10px Nunito;letter-spacing:1.2px;color:var(--mute);margin:4px 0 8px}
-.vmod .vmq{font:italic 700 13px/1.35 Nunito;color:#5d5546;margin:12px 2px 4px}.vmod .vmw{font:700 12.5px/1.4 Nunito;color:#5d5546;margin:0 2px 10px}
-.vmod .vmb{width:100%;height:50px;font-size:19px;margin:4px 0 6px}
-.vmod .vms{font:400 19px 'Lilita One',sans-serif;margin:10px 2px 0}
-.vmod .vg{padding:8px 0}
+.vmod{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:calc(var(--st,0px) + 20px) 0 20px;background:rgba(27,23,48,.6);animation:vmIn .2s both}
+@keyframes vmIn{from{opacity:0}}
+.vmod .card.vmc{width:min(92%,400px);padding:18px 14px 20px;text-align:left}
+.vmod .vmi{position:relative;max-height:calc(100vh - var(--st,0px) - 90px);overflow-y:auto;scrollbar-width:none}.vmod .vmi::-webkit-scrollbar{display:none}
+.vmod .vmx{right:-8px;top:-12px;z-index:2}
+.vmod .vmh{display:flex;gap:12px;align-items:center;padding-right:30px}
+.vmod .vma{position:relative;width:120px;height:120px;flex:none;border-radius:18px;border:3px solid var(--ink);background:radial-gradient(circle at 50% 60%,#fff 0,#DCE9F7 70%);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}.vmod .vma svg{width:132px;height:132px;flex:none;margin-bottom:-6px}
+.vmod .vmh b{display:block;font:400 28px/1 'Lilita One',sans-serif}.vmod .vmh small{display:block;font:900 10px Nunito;letter-spacing:1.2px;color:var(--mute);margin-top:5px}
+.vmod .vmq{font:italic 700 13px/1.35 Nunito;color:#5d5546;margin:12px 2px 4px}.vmod .vmw{font:700 12.5px/1.4 Nunito;color:#5d5546;margin:0 2px 12px}
+.vmod .vmb{display:block;width:100%;height:50px;font-size:19px;margin:4px 0 6px}
+.vmod .vms{font:400 21px 'Lilita One',sans-serif;margin:12px 2px 0}
+.vmod .vg{padding:10px 0 4px;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+body.gpapel .vsub{filter:var(--sh)}
+body.gpapel .vsub button,body.gpapel .vmod .vma{clip-path:var(--P);background-color:var(--bot);background-image:var(--nz),linear-gradient(var(--top),var(--top));background-size:160px,100% calc(100% - var(--cant));background-repeat:repeat,no-repeat;background-blend-mode:multiply,normal;border:0;box-shadow:none}
+body.gpapel .vsub button{--top:#EBDDB9;--bot:#B39463;--cant:4px;--P:var(--pill-a);color:#6c6450;height:38px;padding-bottom:3px}
+body.gpapel .vsub .on{--top:#34437F;--bot:#1C2352;color:#F6EBD0}
+body.gpapel .vmod .vma{--top:#DCE9F7;--bot:#9DB4CF;--cant:4px;--P:var(--tab-a);background-image:var(--nz),radial-gradient(circle at 50% 60%,#fff 0,var(--top) 70%);background-size:160px,100% calc(100% - var(--cant));filter:drop-shadow(0 2px 2px rgba(40,24,10,.3))}
 .it.pk.best b::after{content:'MEJOR VALOR';display:inline-block;margin-left:8px;vertical-align:2px;background:var(--gold);color:var(--ink);border-radius:99px;padding:2px 8px 1px;font:900 8.5px/1.3 Nunito;letter-spacing:.8px}
 `;
   document.head.appendChild(s);
@@ -118,11 +124,11 @@ function chModal(c, id) {
     const base = sid === 'base', hv = base || c.ownedV.includes(id + ':' + sid), wearing = has && worn === sid;
     return `<button class="sk${wearing ? ' on' : ''}${has ? '' : ' locked'}" data-v="wear" data-id="${id}" data-s="${sid}" style="--rc:${rc};--bg:#FFF1D6"><div class="art">${thumb(c, id, sid)}</div><b>${esc(name)}</b><small>${tt('store.skinTag')}</small><span class="price ${wearing ? 'use' : hv ? 'own' : story ? 'story' : ''}">${wearing ? tt('shop.inUse') : hv ? tt('shop.use') : story ? '📖 ' + tt('store.story') : coin(price)}</span></button>`;
   };
-  return `<div class="vmod" data-v="closeM"><div class="vmc" style="--rc:${rc}"><button class="vmx" data-v="closeM">✕</button>
+  return `<div class="vmod" data-v="closeM"><div class="card vmc" style="--rc:${rc}"><button class="round vmx" data-v="closeM" aria-label="${tt('common.close')}">✕</button><div class="vmi">
 <div class="vmh"><div class="vma">${thumb(c, id, worn)}</div><div><b>${esc(k.name)}</b><small>${esc((f('home') || k.tag).toUpperCase())}</small></div></div>
 ${f('quote') ? `<div class="vmq">«${esc(f('quote'))}»</div>` : ''}${f('why') ? `<div class="vmw">${esc(f('why'))}</div>` : ''}
 <button class="btn ${on ? '' : 'green'} vmb" data-v="sk" data-id="${id}">${on ? tt('shop.inUse') : has ? tt('shop.use') : coin(k.price)}</button>
-<div class="vms">${tt('store.outfits')}</div><div class="vg vg3">${skin('base', tt('cloth.base'), 0, false)}${k.skins.map(w => skin(w.id, w.name, w.price, w.story)).join('')}</div></div></div>`;
+<div class="vms">${tt('store.outfits')}</div><div class="vg vg3">${skin('base', tt('cloth.base'), 0, false)}${k.skins.map(w => skin(w.id, w.name, w.price, w.story)).join('')}</div></div></div></div>`;
 }
 
 function booklet(R, own, isNew) {
