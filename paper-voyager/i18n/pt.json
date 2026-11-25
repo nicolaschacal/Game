@@ -1373,5 +1373,8 @@
  "vf.perk.chest": "Um baú de ouro por semana",
  "lives.graceTrips": "Vidas ilimitadas nas primeiras viagens (restam {n}).",
  "lives.graceTime": "Vidas ilimitadas do pacote: restam {t}.",
- "lives.lostOne": "Resta 1 vida"
+ "lives.lostOne": "Resta 1 vida",
+ "map.travelL": "VIAJAR",
+ "map.seePassL": "PASSAPORTE",
+ "map.moreCoinsL": "FALTAM MOEDAS"
 }

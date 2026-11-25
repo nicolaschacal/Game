@@ -1373,5 +1373,8 @@
  "vf.perk.chest": "매주 황금 상자",
  "lives.graceTrips": "첫 여행은 라이프 무제한 (남은 여행 {n}).",
  "lives.graceTime": "팩 라이프 무제한: {t} 남음.",
- "lives.lostOne": "남은 라이프 1"
+ "lives.lostOne": "남은 라이프 1",
+ "map.travelL": "여행",
+ "map.seePassL": "여권",
+ "map.moreCoinsL": "코인이 부족해요"
 }

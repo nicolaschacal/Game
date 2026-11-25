@@ -1373,5 +1373,8 @@
  "vf.perk.chest": "Jede Woche eine Goldtruhe",
  "lives.graceTrips": "Unbegrenzte Leben auf deinen ersten Reisen (noch {n}).",
  "lives.graceTime": "Unbegrenzte Leben aus dem Paket: noch {t}.",
- "lives.lostOne": "Noch 1 Leben"
+ "lives.lostOne": "Noch 1 Leben",
+ "map.travelL": "REISEN",
+ "map.seePassL": "PASS",
+ "map.moreCoinsL": "MEHR MÜNZEN NÖTIG"
 }

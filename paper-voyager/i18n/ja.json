@@ -1373,5 +1373,8 @@
  "vf.perk.chest": "毎週金の宝箱",
  "lives.graceTrips": "最初の旅はライフ無制限（あと{n}回）。",
  "lives.graceTime": "パックのライフ無制限：残り{t}。",
- "lives.lostOne": "残りライフ 1"
+ "lives.lostOne": "残りライフ 1",
+ "map.travelL": "移動",
+ "map.seePassL": "パスポート",
+ "map.moreCoinsL": "コインが足りない"
 }

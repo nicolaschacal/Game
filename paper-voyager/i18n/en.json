@@ -1373,5 +1373,8 @@
  "vf.perk.chest": "A gold chest every week",
  "lives.graceTrips": "Unlimited lives on your first trips ({n} left).",
  "lives.graceTime": "Starter Pack unlimited lives: {t} left.",
- "lives.lostOne": "1 life left"
+ "lives.lostOne": "1 life left",
+ "map.travelL": "TRAVEL",
+ "map.seePassL": "PASSPORT",
+ "map.moreCoinsL": "NEED MORE COINS"
 }

@@ -166,6 +166,9 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #livesChip svg{width:32px;height:32px;flex:none}#livesChip b{font:400 22px/1 'Lilita One',sans-serif;min-width:14px;text-align:center}
 #livesChip small{font:400 17px/1 'Lilita One',sans-serif;opacity:.95;min-width:46px;text-align:left;font-variant-numeric:tabular-nums}
 #livesChip.low{animation:shake .5s 1}
+.goTrip{display:flex!important;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap;padding-left:14px!important;padding-right:8px!important;font-size:clamp(14px,4.4vw,19px)!important;line-height:1}
+.goTrip .gtL{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis}.goTrip .gtL span{overflow:hidden;text-overflow:ellipsis}.goTrip .gtL svg{flex:none}
+.goTrip .gtP{flex:none;display:flex;align-items:center;gap:4px;padding:4px 9px 4px 5px;border-radius:99px;background:rgba(27,23,48,.12)}.goTrip .gtP b{font:inherit}
 #rvLife{font:800 12px/1.3 Nunito;color:#B3321D;margin:2px 0 6px}#rvLife:empty{display:none}
 body.gpapel #livesChip{border:0;box-shadow:none;padding:0 11px 3px 6px;clip-path:var(--pill-c);background-color:#7E2115}
 body.gpapel #livesChip:after{content:"";position:absolute;z-index:-1;inset:0 3px 4px 0;clip-path:var(--pill-d);background-color:#C2412B;background-image:var(--nz);background-size:160px;background-blend-mode:multiply}
@@ -1613,7 +1616,9 @@ const dSlide=i=>{V.syncAlbum?.();const th=THEMES[i],s=pinState(i),R=V.REGIONS[s.
  const rts=!startPick&&mechOn('routes')?V.routesOf(i):[],rtHtml=rts.length?`<div class="rts${rts.length>2?' many':''}">`+rts.map(rt=>{const rtHave=rt.cities.every(c=>V.hasPass(V.regionOf(c))),rtName=t(rt.name).toUpperCase();
   return rtHave?`<button class="btn green rt goRoute" data-route="${rt.id}" data-start="${i}" aria-label="${t('route.offer',{name:rtName,n:rt.cities.length})}">${rtName}<span class="stp">${rt.cities.map((c,k)=>'<i>'+(k+1)+'</i>').join('')}</span></button>`:`<div class="rtn">${t('route.needPass',{name:rtName,pass:V.routeRegions(rt).filter(r=>!V.hasPass(r)).map(r=>V.REGIONS[r].pass.toUpperCase()).join(' + ')})}</div>`;}).join('')+'</div>':'';
  return `<div class="dsl" data-i="${i}"><div class="th" style="background:${th.ground}">${th.art||''}</div><div class="k" style="color:${R.dark}">${i+1} · ${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${th.place}</b><div class="c">${th.country} · ${vis?t(vis>1?'map.visits':'map.visit',{n:vis}):t('map.unvisited')} · ${t('map.selfies',{n:sel})}</div>${cu}`+
-  `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${startPick?t('map.startHere'):s.st==='cur'?t('map.playHere'):s.st==='ok'?t('map.travel',{n:s.cost}):s.st==='nopass'?passMini(s.r,14)+' '+t('map.seePass',{n:V.passPrice(s.r)}):t('map.moreCoins',{n:s.cost})}</button>${rtHtml}</div>`;};
+  `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${startPick?t('map.startHere'):s.st==='cur'?t('map.playHere'):gtBtn(s.st==='ok'?t('map.travelL'):s.st==='nopass'?passMini(s.r,16)+'<span>'+t('map.seePassL')+'</span>':t('map.moreCoinsL'),s.st==='nopass'?V.passPrice(s.r):s.cost)}</button>${rtHtml}</div>`;};
+// Botón de la ficha del mapa: texto a la izquierda y precio en su propia pastilla, siempre en una sola línea
+function gtBtn(label,n){return '<span class="gtL">'+label+'</span><span class="gtP">'+pIco('moneda',18)+'<b>'+n+'</b></span>';}
 function goTrip(b){const i=+b.dataset.i,s=pinState(i);
  if(startPick){SFX.whoosh();b.textContent='✈ '+t('map.fly');V.pickStart(i);setTimeout(()=>location.reload(),650);return;}
  if(s.st==='cur'){SFX.tap();$('mapPanel').style.display='none';$('play').click();return;}

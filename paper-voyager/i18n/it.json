@@ -1373,5 +1373,8 @@
  "vf.perk.chest": "Un forziere d’oro ogni settimana",
  "lives.graceTrips": "Vite illimitate nei primi viaggi (ne restano {n}).",
  "lives.graceTime": "Vite illimitate del pacchetto: restano {t}.",
- "lives.lostOne": "Resta 1 vita"
+ "lives.lostOne": "Resta 1 vita",
+ "map.travelL": "VIAGGIA",
+ "map.seePassL": "PASSAPORTO",
+ "map.moreCoinsL": "SERVONO MONETE"
 }
