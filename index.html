@@ -24,6 +24,8 @@
 <style>
 /* grano de papel en todo lo dibujado a mano: personajes (svg del elenco, en inicio, diálogos, tienda, ropa, intro), logo y barra de carga */
 svg[viewBox="-4 -8 128 128"],.lgsvg,#splash .load,#intro .ib svg{filter:url(#pvGrain)}
+/* mochila: álbum, pasaportes, diario, ropa, souvenirs y adornos (sólo el svg/img de afuera, para no duplicar el grano) */
+.pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
 /* coreano: cortar líneas entre palabras, no dentro de ellas */
 html:lang(ko) body{word-break:keep-all;overflow-wrap:anywhere}
 /* GUI de papel recortado: piezas crema, borde de tinta grueso, sombra dura, botones con volumen */
@@ -564,7 +566,7 @@ body.gpapel #splash{background-color:#222B63;background-image:var(--nz),radial-g
 body.gpapel #splash .logo{transform:rotate(-1.5deg);animation:none}
 body.gpapel .logo .slogan{border:0;box-shadow:none;border-radius:0;background:#F6EBD0;color:#2B2236;clip-path:var(--pk);padding:5px 16px 6px}
 body.gpapel .logo .seal{border:0;box-shadow:none;border-radius:0;background:#E14E34;clip-path:var(--sq-a);transform:rotate(1.5deg)}
-body.gpapel #splash .load{border:0;height:14px;border-radius:8px 9px 7px 9px;background:#171C47}
+body.gpapel #splash .load{border:0;height:12px;border-radius:0;background:#171C47;clip-path:var(--pill-a)}
 body.gpapel #splash .load i{background:#F2BC3E}
 body.gpapel #mapView{background-color:#5E9BB8;background-image:var(--nz),radial-gradient(circle at 50% 40%,#8CC3D8,#4F8CAB);background-size:160px,auto;background-blend-mode:multiply,normal}
 body.gpapel .mpin .fare{color:#2B2236}

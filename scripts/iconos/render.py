@@ -22,3 +22,15 @@ asyncio.run(main())
 # ícono web de «Agregar a inicio» = el de la app
 if OUT=='assets/':
   im=Image.open('assets/icon.png').convert('RGB'); im.resize((180,180),Image.LANCZOS).save('paper-voyager/apple-touch-icon.png'); im.resize((512,512),Image.LANCZOS).save('paper-voyager/app-icon-512.png')
+
+# grano de cartulina suave (como #pvGrain del juego) sobre el ícono: ruido gris claro multiplicado
+def grano(path, alpha_only=False):
+  import random
+  im=Image.open(path); mode=im.mode; im=im.convert('RGBA'); W,H=im.size
+  random.seed(7); n=Image.new('L',(W//2,H//2)); n.putdata([random.randint(222,255) for _ in range((W//2)*(H//2))]); n=n.resize((W,H),Image.NEAREST)
+  from PIL import ImageChops
+  rgb=ImageChops.multiply(im.convert('RGB'),Image.merge('RGB',(n,n,n)))
+  out=Image.merge('RGBA',(*rgb.split(),im.split()[3])); out.convert(mode).save(path)
+for f in ['icon.png','icon-foreground.png','icon-background.png']: grano(OUT+f)
+if OUT=='assets/':
+  im=Image.open('assets/icon.png').convert('RGB'); im.resize((180,180),Image.LANCZOS).save('paper-voyager/apple-touch-icon.png'); im.resize((512,512),Image.LANCZOS).save('paper-voyager/app-icon-512.png')
