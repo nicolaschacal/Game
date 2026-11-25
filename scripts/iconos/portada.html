@@ -18,7 +18,7 @@ const sky=`<defs>
  <radialGradient id="sky" cx=".35" cy=".25" r=".9"><stop offset="0" stop-color="#A6E0F7"/><stop offset=".6" stop-color="#5DB0E0"/><stop offset="1" stop-color="#3E8FC8"/></radialGradient>
  <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#173a5c" flood-opacity=".28"/></filter>
  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
- <clipPath id="env"><path d="M170 230 C150 40 340 -120 590 -120 C840 -120 1030 40 1010 230 C995 300 880 345 770 358 L410 358 C300 345 185 300 170 230Z"/></clipPath>
+ <clipPath id="env"><path d="M95 -40 L1010 -40 L1010 250 Q960 330 860 352 L320 352 Q180 330 95 240Z"/></clipPath>
 </defs><rect width="1024" height="1024" fill="url(#sky)"/>`;
 // isla lejana con faro (a lo lejos, abajo a la derecha)
 const island=`<g transform="translate(${L.ix??-820} ${L.iy??-40})">
@@ -31,10 +31,10 @@ const island=`<g transform="translate(${L.ix??-820} ${L.iy??-40})">
 // globo (sobre, recortado arriba) con gajos rojos y crema, aro dorado
 const gores=[[95,'#E8452C'],[230,'#FBF1DC'],[360,'#E8452C'],[490,'#FBF1DC'],[620,'#E8452C'],[750,'#FBF1DC'],[880,'#E8452C']];
 const env=`<g ${sh}>
- <path d="M170 230 C150 40 340 -120 590 -120 C840 -120 1030 40 1010 230 C995 300 880 345 770 358 L410 358 C300 345 185 300 170 230Z" fill="${CR}" stroke="${CR}" stroke-width="30" stroke-linejoin="round"/>
+ <path d="M95 -40 L1010 -40 L1010 250 Q960 330 860 352 L320 352 Q180 330 95 240Z" fill="${CR}" stroke="${CR}" stroke-width="16" stroke-linejoin="round"/>
  <g clip-path="url(#env)">${gores.map(([x,f],i)=>`<path d="M${x-40} -60 Q${x+20} 150 ${x+(590-x)*.45} 360 L${x+130+(590-x-130)*.45} 360 Q${x+150} 150 ${x+90} -60Z" fill="${f}"/>`).join('')}
-  <path d="M160 -60 L360 -60 Q250 120 380 360 L160 360Z" fill="#000" opacity=".10"/><path d="M820 -40 L1010 -40 L1010 352 L860 352 Q930 140 820 -40Z" fill="#000" opacity=".14"/>
-  <path d="M200 260 Q590 360 990 260 L1020 370 L160 370Z" fill="#000" opacity=".12"/></g>
+  <path d="M95 -40 L320 -40 Q200 120 300 352 L95 352Z" fill="#000" opacity=".10"/><path d="M820 -40 L1010 -40 L1010 352 L860 352 Q930 140 820 -40Z" fill="#000" opacity=".14"/>
+  <path d="M180 300 Q590 380 1000 290 L1010 360 L95 360Z" fill="#000" opacity=".12"/></g>
 </g>
 <g ${sh}><ellipse cx="590" cy="352" rx="300" ry="34" fill="none" stroke="${CR}" stroke-width="40"/><ellipse cx="590" cy="352" rx="300" ry="34" fill="none" stroke="#E9B43C" stroke-width="22"/><ellipse cx="590" cy="347" rx="300" ry="34" fill="none" stroke="#F7D46E" stroke-width="7" stroke-dasharray="900 2000"/></g>`;
 // cuerdas
@@ -47,14 +47,14 @@ const scarf=`<g ${sh}>${cut('M470 690 Q360 640 250 650 Q170 655 90 610 L120 668 
 // canasta de mimbre
 const bx0=170,bx1=900,ry0=820,ry1=860;
 let weave='';for(let r=0;r<6;r++)for(let k=0;k<10;k++){const x=bx0+30+k*72,y=ry1+30+r*48;weave+=`<rect x="${x}" y="${y}" width="66" height="42" rx="6" fill="${(r+k)%2?'#C98A4B':'#B37538'}"/>`;}
-const basket=(()=>{const L0=bx0,R0=bx1,T0=ry0,T1=ry1,rad=34;
- const body=`M${L0+6} ${T0+10} L${R0-6} ${T1} L${R0-34} 1060 Q${R0-38} 1100 ${R0-80} 1100 L${L0+86} 1100 Q${L0+44} 1100 ${L0+40} 1060Z`;
- const rim=`M${L0-20+rad} ${T0-30} Q${(L0+R0)/2} ${T0-10} ${R0+20-rad} ${T1-22} Q${R0+24} ${T1-20} ${R0+24} ${T1+8} Q${R0+24} ${T1+36} ${R0+20-rad} ${T1+36} Q${(L0+R0)/2} ${T0+48} ${L0-20+rad} ${T0+30} Q${L0-24} ${T0+28} ${L0-24} ${T0} Q${L0-24} ${T0-30} ${L0-20+rad} ${T0-30}Z`;
- const rimHi=`M${L0-20+rad} ${T0-30} Q${(L0+R0)/2} ${T0-10} ${R0+20-rad} ${T1-22} Q${R0+22} ${T1-20} ${R0+23} ${T1-4} Q${(L0+R0)/2} ${T0+10} ${L0-22} ${T0-8} Q${L0-22} ${T0-30} ${L0-20+rad} ${T0-30}Z`;
- return `<g ${sh}><path d="${body}" fill="${CR}" stroke="${CR}" stroke-width="30" stroke-linejoin="round"/>
- <clipPath id="bk"><path d="${body}"/></clipPath>
- <g clip-path="url(#bk)" transform="rotate(3.2 ${L0} ${T0})"><rect x="0" y="${T0}" width="1100" height="400" fill="#A86B33"/>${weave}</g></g>
- <g ${sh}><path d="${rim}" fill="${CR}" stroke="${CR}" stroke-width="26" stroke-linejoin="round"/><path d="${rim}" fill="#D99A55"/><path d="${rimHi}" fill="#EDB873"/></g>`;})();
+const basket=`<g ${sh}>
+ <path d="M${bx0} ${ry0+10} L${bx1} ${ry1} L${bx1-30} 1100 L${bx0+40} 1100Z" fill="${CR}" stroke="${CR}" stroke-width="16" stroke-linejoin="round"/>
+ <clipPath id="bk"><path d="M${bx0} ${ry0+10} L${bx1} ${ry1} L${bx1-30} 1100 L${bx0+40} 1100Z"/></clipPath>
+ <g clip-path="url(#bk)" transform="rotate(3.2 ${bx0} ${ry0})"><rect x="0" y="${ry0}" width="1100" height="400" fill="#A86B33"/>${weave}</g>
+</g>
+<g ${sh}><path d="M${bx0-20} ${ry0-30} Q${(bx0+bx1)/2} ${ry0-10} ${bx1+20} ${ry1-20} L${bx1+22} ${ry1+36} Q${(bx0+bx1)/2} ${ry0+48} ${bx0-22} ${ry0+30}Z" fill="${CR}" stroke="${CR}" stroke-width="14" stroke-linejoin="round"/>
+ <path d="M${bx0-20} ${ry0-30} Q${(bx0+bx1)/2} ${ry0-10} ${bx1+20} ${ry1-20} L${bx1+22} ${ry1+36} Q${(bx0+bx1)/2} ${ry0+48} ${bx0-22} ${ry0+30}Z" fill="#D99A55"/>
+ <path d="M${bx0-20} ${ry0-30} Q${(bx0+bx1)/2} ${ry0-10} ${bx1+20} ${ry1-20} L${bx1+21} ${ry1-2} Q${(bx0+bx1)/2} ${ry0+10} ${bx0-21} ${ry0-10}Z" fill="#EDB873"/></g>`;
 // manos sobre el borde
 const hand=(x,y,r)=>`<g transform="translate(${x} ${y}) rotate(${r})" ${sh}>${cut('M-46 10 Q-50 -34 -8 -40 Q44 -44 50 -6 Q54 28 30 34 L-30 34 Q-46 32 -46 10Z','#F1C9A0',14)}
  <path d="M-20 -30 L-20 14 M2 -34 L2 14 M24 -30 L24 14" stroke="#D9A57A" stroke-width="6" stroke-linecap="round"/></g>`;
@@ -66,8 +66,8 @@ const cloudImgs=a=>a.map(([x,y,w])=>`<image href="${cloud}" x="${x}" y="${y}" wi
 let svg='';
 if(mode!=='fg') svg+=sky;
 if(mode!=='bg'){
- svg+=`<g>${cloudImgs(clouds.slice(0,2))}${island}${env}${ropesBack}${nilo}${ropesFront}${basket}${hand(440,830,-4)}${hand(735,852,6)}${cloudImgs(clouds.slice(2))}</g>`;
+ svg+=`<g>${cloudImgs(clouds.slice(0,2))}${island}${mode==='icon'?`<defs><clipPath id="cO"><circle cx="512" cy="512" r="508"/></clipPath><clipPath id="cI"><circle cx="512" cy="512" r="492"/></clipPath></defs><g clip-path="url(#cO)"><path d="M95 -40 L1010 -40 L1010 250 Q960 330 860 352 L320 352 Q180 330 95 240Z" fill="${CR}" stroke="${CR}" stroke-width="16" stroke-linejoin="round"/></g><g clip-path="url(#cI)">${env}</g>`:env}${ropesBack}${nilo}${ropesFront}${basket}${hand(440,830,-4)}${hand(735,852,6)}${cloudImgs(clouds.slice(2))}</g>`;
 }
-const wrap=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="${S}" height="${S}">${mode==='fg'?sky.replace(/<rect[^>]*\/>/,''):''}${mode==='fg'?`<g transform="translate(512 512) scale(.667) translate(-512 -512)">${svg}</g>`:svg}<rect width="1024" height="1024" filter="url(#grain)" opacity="${mode==='fg'?0:1}"/></svg>`;
+const wrap=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="${S}" height="${S}">${mode==='fg'?sky.replace(/<rect[^>]*\/>/,''):''}${mode==='fg'?`<g transform="translate(512 512) scale(.667) translate(-512 -512)">${svg}</g>`:svg}</svg>`;
 c.innerHTML=wrap; document.title='ok';
 </script></body></html>

@@ -18,7 +18,7 @@ import random
 from PIL import ImageChops
 def grano(path):  # grano de cartulina suave, como el resto del juego
   im=Image.open(path); mode=im.mode; im=im.convert('RGBA'); W,H=im.size
-  random.seed(7); n=Image.new('L',(W//2,H//2)); n.putdata([random.randint(222,255) for _ in range((W//2)*(H//2))]); n=n.resize((W,H),Image.NEAREST)
+  random.seed(7); n=Image.new('L',(W//2,H//2)); n.putdata([random.randint(234,255) for _ in range((W//2)*(H//2))]); n=n.resize((W,H),Image.NEAREST)
   rgb=ImageChops.multiply(im.convert('RGB'),Image.merge('RGB',(n,n,n)))
   Image.merge('RGBA',(*rgb.split(),im.split()[3])).convert(mode).save(path)
 for f in ['icon.png','icon-foreground.png','icon-background.png']: grano(OUT+f)
