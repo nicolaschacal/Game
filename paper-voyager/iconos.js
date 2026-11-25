@@ -65,7 +65,7 @@ const P = {
 export function ico(name, size = 24, cls = '') {
   const p = P[name]; if (!p) return '';
   // El grano va en un <g> adentro del SVG: en Safari un filter CSS sobre el <svg> raíz lo corre de lugar.
-  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" style="width:${typeof size === 'number' ? size + 'px' : size};height:${typeof size === 'number' ? size + 'px' : size}" aria-hidden="true"><g filter="url(#pvGrainL)"${p.o ? ` transform="translate(${p.o})"` : ''}>` +
+  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" style="width:${typeof size === 'number' ? size + 'px' : size}!important;height:${typeof size === 'number' ? size + 'px' : size}!important;position:static!important;transform:none!important;margin:0!important;max-width:none!important" aria-hidden="true"><g filter="url(#pvGrainL)"${p.o ? ` transform="translate(${p.o})"` : ''}>` +
     `<path d="${p.d}" transform="translate(0 1.4)" fill="${RIM_C}" stroke="${RIM_C}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${RIM}" stroke="${RIM}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${p.c}"/>` + (p.l ? `<path d="${p.l}" fill="${p.lc}"/>` : '') + (p.x || '') + '</g></svg>';
@@ -76,6 +76,8 @@ export const ICO_CSS = `.pvi{display:inline-block;vertical-align:middle;flex:non
 
 // ── Símbolos viejos en los textos (◉ ★ ✓ ♥ ❄ ▶ ✈) → íconos de papel ──
 // Un observador reemplaza esos caracteres en cualquier texto que aparezca en pantalla (toasts, mapa, récords, etc.).
+const G_BOX = 'display:inline-block!important;width:1.12em!important;height:1.12em!important;min-width:0!important;max-width:none!important;vertical-align:-.14em!important;margin:0 .08em!important;padding:0!important;position:static!important;inset:auto!important;transform:none!important;line-height:0!important;flex:none!important;background:none!important;border:0!important;box-shadow:none!important;filter:none!important;animation:none!important;opacity:1!important';
+const G_SVG = 'display:block!important;width:100%!important;height:100%!important;min-width:0!important;max-width:none!important;position:static!important;inset:auto!important;margin:0!important;padding:0!important;transform:none!important;filter:none!important;animation:none!important';
 const GLYPH = { '◉': 'moneda', '★': 'estrella', '✓': 'check', '♥': 'corazon', '❄': 'copo', '▶': 'play', '✈': 'avion' };
 const RX = /[◉★✓♥❄▶✈]/;
 const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'TITLE', 'OPTION']);
@@ -85,7 +87,11 @@ function fixText(n) {
   const f = document.createDocumentFragment();
   for (const part of t.split(/([◉★✓♥❄▶✈])/)) {
     if (!part) continue;
-    if (GLYPH[part]) { const s = document.createElement('span'); s.className = 'pvg'; s.setAttribute('aria-hidden', 'true'); s.innerHTML = ico(GLYPH[part], '100%'); f.appendChild(s); }
+    if (GLYPH[part]) {
+      // Etiqueta propia + estilos en línea con !important: así ningún CSS del juego (svg absolutos, anchos al 100%, etc.) la agranda ni la mueve
+      const s = document.createElement('pv-g'); s.setAttribute('aria-hidden', 'true'); s.style.cssText = G_BOX; s.innerHTML = ico(GLYPH[part], 16);
+      s.firstChild.style.cssText = G_SVG; f.appendChild(s);
+    }
     else f.appendChild(document.createTextNode(part.replace(/^ (?=$)/, ' ')));
   }
   p.replaceChild(f, n);
