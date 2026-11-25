@@ -51,7 +51,13 @@ if(OJOS&&mode==='fg'){ h=`<div style="position:absolute;inset:0;transform:scale(
 // variante «globo»: Nilo saludando en la canasta, sobre cielo celeste liso (L.gw ancho, L.gx/L.gy posición)
 const GLOBO=q.get('pose')==='globo';
 const globoScene=()=>`<div style="position:absolute;left:${(L.gx??212)*k}px;top:${(L.gy??60)*k}px;transform:rotate(${L.tilt??-4}deg)">${balloon(SALUDO,(L.gw??600)*k)}</div>`;
-if(GLOBO&&(mode==='icon'||mode==='bg')) h=`<div style="position:absolute;inset:0;background:radial-gradient(circle at 40% 28%,#9BD8F2,#4E9CCB)"></div>`;
+// fondo del globo: cielo + (L.cielo) 'rayos' suaves, 'nubes' de papel o 'ambos'; 'liso' = sólo degradé
+const SKY=(L.cielo||'liso');
+const skyBG=()=>{let o=`<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,#A9E0F6,#5AA8D6 70%,#3F8DC2)"></div>`;
+ if(SKY==='rayos'||SKY==='ambos') o+=`<svg viewBox="0 0 1024 1024" width="${S}" height="${S}" style="position:absolute;inset:0"><g opacity=".16">${rays(512,330,20,'#FFFFFF')}</g></svg>`;
+ if(SKY==='nubes'||SKY==='ambos') o+=img(cloud,-170,560,440,.95)+img(cloud,760,470,400,.95)+img(cloud,-120,860,560,1)+img(cloud,620,880,560,1);
+ return o;};
+if(GLOBO&&(mode==='icon'||mode==='bg')) h=skyBG();
 if(GLOBO&&mode==='icon') h+=globoScene();
 if(GLOBO&&mode==='fg') h=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${globoScene()}</div>`;
 if(GLOBO){}
