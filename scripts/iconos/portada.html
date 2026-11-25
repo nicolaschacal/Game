@@ -40,7 +40,7 @@ const env=`<g ${sh}>
 // cuerdas
 const rope=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${CR}" stroke-width="18" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#D9A653" stroke-width="10" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#B98232" stroke-width="10" stroke-dasharray="6 12" stroke-linecap="round"/>`;
 const ropesBack=rope(380,372,330,820)+rope(880,372,880,840);
-const ropesFront=rope(760,385,790,850);
+const ropesFront='';
 // bufanda al viento (detrás de Nilo, hacia la izquierda)
 const scarf=`<g ${sh}>${cut('M470 690 Q360 640 250 650 Q170 655 90 610 L120 668 L60 690 Q160 735 250 728 Q350 722 460 760Z','#E8452C',16)}
  <path d="M440 712 Q340 688 250 694 Q170 698 110 670" fill="none" stroke="#B8341F" stroke-width="8" opacity=".55"/></g>`;
