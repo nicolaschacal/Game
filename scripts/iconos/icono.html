@@ -41,7 +41,10 @@ let h='';
 if(mode!=='fg') h+=BG;
 // la misma escena para iOS y para el frente del ícono adaptativo de Android (ahí va achicada al 66 %, que es lo que se ve en el círculo)
 const scene=()=>bal(BX,BY,BW,10,'')+nilo(NX,NY,NW,L.rot??-9,POSE)+[[-240,870],[90,895],[400,870],[720,895]].map(([x,y])=>img(cloud,x,y,620,1)).join('')+[[-120,950],[300,960],[660,950]].map(([x,y])=>img(cloud,x,y,640,1)).join('');
-if(mode==='icon'){ h+= CABEZA ? bal(L.bx??700,L.by??60,L.bw??240,10,'')+nilo(L.nx??-138,L.ny??130,L.nw??1300,L.rot??-4,HEAD)+[[-240,0],[90,30],[400,0],[720,30]].map(([x,y])=>img(cloud,x,y+(L.cy??700),640,1)).join('')+[[-120,100],[300,120],[660,100]].map(([x,y])=>img(cloud,x,y+(L.cy??700),660,1)).join('') : scene(); }
+// variante mínima: sólo el gorro, las antiparras y los ojos de Nilo, con aire arriba (fondo: rayos rojos, cielo o papel)
+const OJOS=q.get('pose')==='ojos', FONDO=L.fondo||'rojo';
+if(OJOS&&mode==='icon'){ if(FONDO!=='rojo') h=`<div style="position:absolute;inset:0;background:${FONDO==='cielo'?'radial-gradient(circle at 40% 30%,#8FD0EE,#4E9CCB)':'radial-gradient(circle at 40% 30%,#FBF1DC,#E9D7B4)'}"></div>`; const K=L.k??18; h+=nilo(512-60*K, (L.top??140)-3*K, 120*K, L.rot??0, JUEGO); }
+else if(mode==='icon'){ h+= CABEZA ? bal(L.bx??700,L.by??60,L.bw??240,10,'')+nilo(L.nx??-138,L.ny??130,L.nw??1300,L.rot??-4,HEAD)+[[-240,0],[90,30],[400,0],[720,30]].map(([x,y])=>img(cloud,x,y+(L.cy??700),640,1)).join('')+[[-120,100],[300,120],[660,100]].map(([x,y])=>img(cloud,x,y+(L.cy??700),660,1)).join('') : scene(); }
  // Android adaptativo: las nubes van en el fondo
 if(mode==='fg'){ h+=`<div style="position:absolute;inset:0;transform:scale(.667);transform-origin:50% 50%">${scene()}</div>`; h+=[[-60,800],[340,815],[700,800]].map(([x,y])=>img(cloud,x,y,560,1)).join(''); }
 c.innerHTML=h; document.title='ok';
