@@ -30,7 +30,7 @@ const island=`<g transform="translate(${L.ix??-820} ${L.iy??-40})">
  <path d="M940 672 L968 672 L964 658 L944 658Z" fill="#3A3F4B"/><circle cx="954" cy="664" r="5" fill="#FFE48A"/>
 </g>`;
 // globo (sobre, recortado arriba) con gajos rojos y crema, aro dorado
-const gores=[[-170,'#FBF1DC'],[-40,'#E8452C'],[95,'#E8452C'],[230,'#FBF1DC'],[360,'#E8452C'],[490,'#FBF1DC'],[620,'#E8452C'],[750,'#FBF1DC'],[880,'#E8452C'],[1010,'#FBF1DC'],[1140,'#E8452C']];
+const gores=[[-170,'#E8452C'],[-40,'#FBF1DC'],[95,'#E8452C'],[230,'#FBF1DC'],[360,'#E8452C'],[490,'#FBF1DC'],[620,'#E8452C'],[750,'#FBF1DC'],[880,'#E8452C'],[1010,'#FBF1DC'],[1140,'#E8452C']];
 const env=`<g ${sh}>
  <path d="${ENVD}" fill="${CR}" stroke="${CR}" stroke-width="30" stroke-linejoin="round"/>
  <g clip-path="url(#env)">${gores.map(([x,f],i)=>`<path d="M${x-40} -60 Q${x+20} 150 ${x+(590-x)*.45} 360 L${x+130+(590-x-130)*.45} 360 Q${x+150} 150 ${x+90} -60Z" fill="${f}"/>`).join('')}
