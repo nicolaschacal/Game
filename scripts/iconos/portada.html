@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8"><script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+<style>html,body{margin:0;background:transparent}#c{position:relative;overflow:hidden}</style></head><body><div id="c"></div>
+<script type="module">
+// Portada / ícono «Nilo en el globo» en papercut: cielo, nubes e isla de papel, globo recortado arriba, Nilo grande en la canasta.
+// ?m=icon (1024 con todo) | bg (sólo cielo, para Android) | fg (resto achicado al área visible de Android) ; &L={...} ajustes
+import {heroFor} from './paper-voyager/elenco.js';
+import * as P from './paper-voyager/paper.js';
+const q=new URLSearchParams(location.search), mode=q.get('m')||'icon', S=+q.get('s')||1024, L=JSON.parse(q.get('L')||'{}');
+const c=document.getElementById('c'); c.style.width=c.style.height=S+'px';
+const H=heroFor('nilo','base');
+const FACE=H.wave[3].replace(/<g data-j="aU"([^>]*?)>/g,'<g data-j="aU"$1 style="display:none">').replace(/<g data-j="aL"([^>]*?)>/g,'<g data-j="aL"$1 style="display:none">');
+let cloud=''; try{cloud=P.artThumb('nube');}catch(e){}
+const CR='#FFF4DC';                       // borde de recorte
+const cut=(d,fill,w=14,extra='')=>`<path d="${d}" fill="${CR}" stroke="${CR}" stroke-width="${w}" stroke-linejoin="round" ${extra}/><path d="${d}" fill="${fill}" ${extra}/>`;
+const sh='filter="url(#sh)"';
+// ── cielo ──
+const sky=`<defs>
+ <radialGradient id="sky" cx=".35" cy=".25" r=".9"><stop offset="0" stop-color="#A6E0F7"/><stop offset=".6" stop-color="#5DB0E0"/><stop offset="1" stop-color="#3E8FC8"/></radialGradient>
+ <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#173a5c" flood-opacity=".28"/></filter>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+ <clipPath id="env"><path d="M95 -40 L1010 -40 L1010 250 Q960 330 860 352 L320 352 Q180 330 95 240Z"/></clipPath>
+</defs><rect width="1024" height="1024" fill="url(#sky)"/>`;
+// isla lejana con faro (a lo lejos, abajo a la derecha)
+const island=`<g transform="translate(${L.ix??-820} ${L.iy??-40})">
+ <path d="M-400 800 Q840 785 1900 790 L1900 1024 L-400 1024Z" fill="#83C6E8"/>
+ <path d="M800 795 Q840 735 900 742 Q950 712 1010 735 L1060 760 L1060 805 L800 805Z" fill="${CR}" stroke="${CR}" stroke-width="12" stroke-linejoin="round" ${sh}/><path d="M800 795 Q840 735 900 742 Q950 712 1010 735 L1060 760 L1060 805 L800 805Z" fill="#6FB25A"/>
+ <path d="M808 800 L1060 800 L1060 818 L815 818Z" fill="#C9A878"/>
+ <path d="M940 738 L946 672 L962 672 L968 738Z" fill="#F4EEDF"/><path d="M943 705 L965 705 L966 717 L942 717Z M945 684 L963 684 L964 693 L944 693Z" fill="#D9452C"/>
+ <path d="M940 672 L968 672 L964 658 L944 658Z" fill="#3A3F4B"/><circle cx="954" cy="664" r="5" fill="#FFE48A"/>
+</g>`;
+// globo (sobre, recortado arriba) con gajos rojos y crema, aro dorado
+const gores=[[95,'#E8452C'],[230,'#FBF1DC'],[360,'#E8452C'],[490,'#FBF1DC'],[620,'#E8452C'],[750,'#FBF1DC'],[880,'#E8452C']];
+const env=`<g ${sh}>
+ <path d="M95 -40 L1010 -40 L1010 250 Q960 330 860 352 L320 352 Q180 330 95 240Z" fill="${CR}" stroke="${CR}" stroke-width="16" stroke-linejoin="round"/>
+ <g clip-path="url(#env)">${gores.map(([x,f],i)=>`<path d="M${x-40} -60 Q${x+20} 150 ${x+(590-x)*.45} 360 L${x+130+(590-x-130)*.45} 360 Q${x+150} 150 ${x+90} -60Z" fill="${f}"/>`).join('')}
+  <path d="M95 -40 L320 -40 Q200 120 300 352 L95 352Z" fill="#000" opacity=".10"/><path d="M820 -40 L1010 -40 L1010 352 L860 352 Q930 140 820 -40Z" fill="#000" opacity=".14"/>
+  <path d="M180 300 Q590 380 1000 290 L1010 360 L95 360Z" fill="#000" opacity=".12"/></g>
+</g>
+<g ${sh}><ellipse cx="590" cy="352" rx="300" ry="34" fill="none" stroke="${CR}" stroke-width="40"/><ellipse cx="590" cy="352" rx="300" ry="34" fill="none" stroke="#E9B43C" stroke-width="22"/><ellipse cx="590" cy="347" rx="300" ry="34" fill="none" stroke="#F7D46E" stroke-width="7" stroke-dasharray="900 2000"/></g>`;
+// cuerdas
+const rope=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${CR}" stroke-width="18" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#D9A653" stroke-width="10" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="#B98232" stroke-width="10" stroke-dasharray="6 12" stroke-linecap="round"/>`;
+const ropesBack=rope(380,372,330,820)+rope(880,372,880,840);
+const ropesFront=rope(300,360,230,830)+rope(760,385,790,850);
+// bufanda al viento (detrás de Nilo, hacia la izquierda)
+const scarf=`<g ${sh}>${cut('M470 690 Q360 640 250 650 Q170 655 90 610 L120 668 L60 690 Q160 735 250 728 Q350 722 460 760Z','#E8452C',16)}
+ <path d="M440 712 Q340 688 250 694 Q170 698 110 670" fill="none" stroke="#B8341F" stroke-width="8" opacity=".55"/></g>`;
+// canasta de mimbre
+const bx0=170,bx1=900,ry0=820,ry1=860;
+let weave='';for(let r=0;r<6;r++)for(let k=0;k<10;k++){const x=bx0+30+k*72,y=ry1+30+r*48;weave+=`<rect x="${x}" y="${y}" width="66" height="42" rx="6" fill="${(r+k)%2?'#C98A4B':'#B37538'}"/>`;}
+const basket=`<g ${sh}>
+ <path d="M${bx0} ${ry0+10} L${bx1} ${ry1} L${bx1-30} 1100 L${bx0+40} 1100Z" fill="${CR}" stroke="${CR}" stroke-width="16" stroke-linejoin="round"/>
+ <clipPath id="bk"><path d="M${bx0} ${ry0+10} L${bx1} ${ry1} L${bx1-30} 1100 L${bx0+40} 1100Z"/></clipPath>
+ <g clip-path="url(#bk)" transform="rotate(3.2 ${bx0} ${ry0})"><rect x="0" y="${ry0}" width="1100" height="400" fill="#A86B33"/>${weave}</g>
+</g>
+<g ${sh}><path d="M${bx0-20} ${ry0-30} Q${(bx0+bx1)/2} ${ry0-10} ${bx1+20} ${ry1-20} L${bx1+22} ${ry1+36} Q${(bx0+bx1)/2} ${ry0+48} ${bx0-22} ${ry0+30}Z" fill="${CR}" stroke="${CR}" stroke-width="14" stroke-linejoin="round"/>
+ <path d="M${bx0-20} ${ry0-30} Q${(bx0+bx1)/2} ${ry0-10} ${bx1+20} ${ry1-20} L${bx1+22} ${ry1+36} Q${(bx0+bx1)/2} ${ry0+48} ${bx0-22} ${ry0+30}Z" fill="#D99A55"/>
+ <path d="M${bx0-20} ${ry0-30} Q${(bx0+bx1)/2} ${ry0-10} ${bx1+20} ${ry1-20} L${bx1+21} ${ry1-2} Q${(bx0+bx1)/2} ${ry0+10} ${bx0-21} ${ry0-10}Z" fill="#EDB873"/></g>`;
+// manos sobre el borde
+const hand=(x,y,r)=>`<g transform="translate(${x} ${y}) rotate(${r})" ${sh}>${cut('M-46 10 Q-50 -34 -8 -40 Q44 -44 50 -6 Q54 28 30 34 L-30 34 Q-46 32 -46 10Z','#F1C9A0',14)}
+ <path d="M-20 -30 L-20 14 M2 -34 L2 14 M24 -30 L24 14" stroke="#D9A57A" stroke-width="6" stroke-linecap="round"/></g>`;
+// Nilo
+const NW=L.nw??1080, NX=L.nx??(600-NW/2), NY=L.ny??110;
+const nilo=`<foreignObject x="0" y="0" width="1024" height="1024"><div xmlns="http://www.w3.org/1999/xhtml" style="position:absolute;left:${NX}px;top:${NY}px;width:${NW}px;height:${NW}px;transform:rotate(${L.rot??-6}deg)">${FACE.replace('<svg',`<svg width="${NW}" height="${NW}" overflow="visible"`)}</div></foreignObject>`;
+const clouds=[[-150,300,420],[760,420,380],[-60,860,520],[520,930,560]];
+const cloudImgs=a=>a.map(([x,y,w])=>`<image href="${cloud}" x="${x}" y="${y}" width="${w}" height="${w*.62}"/>`).join('');
+let svg='';
+if(mode!=='fg') svg+=sky;
+if(mode!=='bg'){
+ svg+=`<g>${cloudImgs(clouds.slice(0,2))}${island}${env}${ropesBack}${nilo}${ropesFront}${basket}${hand(440,830,-4)}${hand(735,852,6)}${cloudImgs(clouds.slice(2))}</g>`;
+}
+const wrap=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="${S}" height="${S}">${mode==='fg'?sky.replace(/<rect[^>]*\/>/,''):''}${mode==='fg'?`<g transform="translate(512 512) scale(.667) translate(-512 -512)">${svg}</g>`:svg}<rect width="1024" height="1024" filter="url(#grain)" opacity="${mode==='fg'?0:1}"/></svg>`;
+c.innerHTML=wrap; document.title='ok';
+</script></body></html>
