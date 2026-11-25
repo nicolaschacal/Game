@@ -54,7 +54,7 @@ function dotMask(t) {
   x.putImageData(d, 0, 0); return tex(c);
 }
 let _sn = null; // ruido gris claro (≈ 0.86–1): textura de papel para las figuras recortadas
-function spriteNoise() { if (_sn) return _sn; _sn = canvas(96); const x = _sn.getContext('2d'), d = x.createImageData(96, 96); for (let i = 0; i < d.data.length; i += 4) { const v = 222 + Math.random() * 33 | 0; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); return _sn; }
+function spriteNoise() { if (_sn) return _sn; _sn = canvas(96); const x = _sn.getContext('2d'), d = x.createImageData(96, 96); for (let i = 0; i < d.data.length; i += 4) { const v = 236 + Math.random() * 20 | 0; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); return _sn; }
 function paperTexture(svg) {
   if (texCache.has(svg)) return texCache.get(svg);
   const S = 256, M = 12, c = canvas(S), t = tex(c);
@@ -73,6 +73,11 @@ function paperTexture(svg) {
       const gr = canvas(S), gx = gr.getContext('2d'); gx.fillStyle = gx.createPattern(spriteNoise(), 'repeat'); gx.fillRect(0, 0, S, S);
       gx.globalCompositeOperation = 'destination-in'; gx.drawImage(c, 0, 0);
       o.globalCompositeOperation = 'multiply'; o.drawImage(gr, 0, 0); o.globalCompositeOperation = 'source-over';
+      // como el ícono: un poco más de saturación y brillo para que el grano no apague los colores
+      const id = o.getImageData(0, 0, S, S), d = id.data;
+      for (let i = 0; i < d.length; i += 4) { if (!d[i + 3]) continue; const r = d[i], g = d[i + 1], bl = d[i + 2], L = .299 * r + .587 * g + .114 * bl;
+        d[i] = Math.min(255, (L + (r - L) * 1.14) * 1.05); d[i + 1] = Math.min(255, (L + (g - L) * 1.14) * 1.05); d[i + 2] = Math.min(255, (L + (bl - L) * 1.14) * 1.05); }
+      o.putImageData(id, 0, 0);
     }
     t.needsUpdate = true; t.userData.ok = true;
   };

@@ -23,7 +23,7 @@
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
 <style>
 /* grano de papel en todo lo dibujado a mano: personajes (svg del elenco, en inicio, diálogos, tienda, ropa, intro), logo y barra de carga */
-svg[viewBox="-4 -8 128 128"],#intro .lgsvg,#intro .ib svg{filter:url(#pvGrain)} /* la pantalla de carga (logo y barra) queda sin grano */
+svg[viewBox="-4 -8 128 128"],#intro .ib svg{filter:url(#pvGrainP)}#intro .lgsvg{filter:url(#pvGrain)} /* la pantalla de carga (logo y barra) queda sin grano */
 /* mochila: álbum, pasaportes, diario, ropa, souvenirs y adornos (sólo el svg/img de afuera, para no duplicar el grano) */
 .pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
 /* selfies del álbum (fotos polaroid) */
@@ -663,6 +663,14 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".18" intercept=".9"/><feFuncG type="linear" slope=".18" intercept=".9"/><feFuncB type="linear" slope=".18" intercept=".9"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
+ <feComposite in="m" in2="SourceAlpha" operator="in"/>
+</filter><filter id="pvGrainP" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
+ <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
+ <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".2" intercept=".88"/><feFuncG type="linear" slope=".2" intercept=".88"/><feFuncB type="linear" slope=".2" intercept=".88"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
+ <feColorMatrix in="SourceGraphic" type="saturate" values="1.14" result="s"/>
+ <feComponentTransfer in="s" result="b"><feFuncR type="linear" slope="1.05"/><feFuncG type="linear" slope="1.05"/><feFuncB type="linear" slope="1.05"/></feComponentTransfer>
+ <feBlend in="b" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter></svg>
 <div id="stage"><div class="stage-ov"></div></div>
