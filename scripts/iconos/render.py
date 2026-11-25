@@ -27,9 +27,11 @@ if OUT=='assets/':
 def grano(path, alpha_only=False):
   import random
   im=Image.open(path); mode=im.mode; im=im.convert('RGBA'); W,H=im.size
-  random.seed(7); n=Image.new('L',(W//2,H//2)); n.putdata([random.randint(222,255) for _ in range((W//2)*(H//2))]); n=n.resize((W,H),Image.NEAREST)
+  random.seed(7); n=Image.new('L',(W//2,H//2)); n.putdata([random.randint(240,255) for _ in range((W//2)*(H//2))]); n=n.resize((W,H),Image.NEAREST)
   from PIL import ImageChops
   rgb=ImageChops.multiply(im.convert('RGB'),Image.merge('RGB',(n,n,n)))
+  from PIL import ImageEnhance
+  rgb=ImageEnhance.Color(rgb).enhance(1.12); rgb=ImageEnhance.Brightness(rgb).enhance(1.04)  # que no quede apagado
   out=Image.merge('RGBA',(*rgb.split(),im.split()[3])); out.convert(mode).save(path)
 for f in ['icon.png','icon-foreground.png','icon-background.png']: grano(OUT+f)
 if OUT=='assets/':

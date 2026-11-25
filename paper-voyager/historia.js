@@ -635,7 +635,7 @@ export function playScene(ctx, hero, id, opts = {}) {
     ov.style.setProperty('--htop', topY);
     ov.innerHTML = `<div class="hbg"></div><div class="htop"><div class="hdots">${dots}</div><button class="hskip">${tt('diary.skip')}</button></div>
 <div class="htag"><div class="ribbon">${opts.lines ? `<small>${esc(opts.kicker || '')}</small>${esc(ch.title)}` : `<small>${esc(S.title.toUpperCase())}</small>${tt('diary.chapter', { n: ch.id })}${ch.secret ? ' · ' + tt('diary.secretCh') : ''} · ${esc(ch.title)}`}</div></div>
-<div class="hhero"><div class="hhf">${art}</div></div><div class="hbub"><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
+<div class="hhero"><div class="hhf">${art}</div></div><div class="hbub"><i class="htail"></i><b class="hn"></b><p class="ht"></p><i class="hnext"></i></div>`;
     document.body.appendChild(ov); document.body.classList.add('pvh-on');
     const hn = ov.querySelector('.hn'), ht = ov.querySelector('.ht'), hh = ov.querySelector('.hhero'), bub = ov.querySelector('.hbub'), dd = [...ov.querySelectorAll('.hdots i')];
     let k = -1, typing = null, full = '';
@@ -775,10 +775,14 @@ body.pvh-on #menu>*:not(#mNav),body.pvh-on #mNav{visibility:hidden}
 @keyframes pvhTalk{to{transform:translateY(-3px) scale(1.012,.99)}}
 .pvh .hhero.hdim{filter:brightness(.55) drop-shadow(0 10px 14px rgba(0,0,0,.4));transform:translateX(-14px) scale(.96)}
 @keyframes pvhHero{0%{transform:translateX(-60%)}}
-.pvh .hbub{position:absolute;left:14px;right:14px;bottom:calc(var(--sb,0px) + 24px);min-height:132px;box-sizing:border-box;padding:14px 18px 22px;background:#F6EBD0;border-radius:6px;box-shadow:0 12px 26px rgba(0,0,0,.45);animation:pvhBub .4s .25s cubic-bezier(.2,1.4,.4,1) both}
+.pvh .hbub{position:absolute;left:14px;right:14px;bottom:calc(var(--sb,0px) + 24px);min-height:132px;box-sizing:border-box;padding:14px 18px 22px;isolation:isolate;filter:drop-shadow(0 1.5px 1.5px rgba(40,24,10,.30)) drop-shadow(0 10px 14px rgba(0,0,0,.4));animation:pvhBub .4s .25s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes pvhBub{0%{transform:translateY(40px);opacity:0}}
-.pvh .hbub:before{content:"";position:absolute;left:44px;top:-15px;width:28px;height:18px;background:#F6EBD0;clip-path:polygon(0 100%,30% 0,100% 100%);transition:left .25s}
-.pvh .hbub.npc:before{left:auto;right:44px;clip-path:polygon(0 100%,70% 0,100% 100%)}
+/* globo de diálogo de cartulina recortada (como la ficha del mapa): capa de abajo, capa de arriba con grano y piquito hacia quien habla */
+.pvh .hbub:before,.pvh .hbub:after,.pvh .htail{content:"";position:absolute;z-index:-1;pointer-events:none;background-image:var(--nz),linear-gradient(180deg,#fff0 55%,#6a3f1620);background-size:160px,auto;background-blend-mode:multiply,normal}
+.pvh .hbub:before{inset:3px -1.5px -3px 1.5px;clip-path:var(--card-b);background-color:#B39463}
+.pvh .hbub:after{inset:0;clip-path:var(--card-a);background-color:#F7ECD3}
+.pvh .htail{left:72%;top:-21px;width:40px;height:24px;background-color:#F7ECD3;clip-path:polygon(0 100%,0 90%,6% 2px,10% 0,100% 90%,100% 100%);transition:left .25s,right .25s}
+.pvh .hbub.npc .htail{left:auto;right:42px;clip-path:polygon(0 90%,90% 0,94% 2px,100% 90%,100% 100%,0 100%)}
 .pvh .hn{display:block;font:400 21px 'Lilita One',sans-serif}
 .pvh .ht{margin:4px 0 0;font:800 15.5px/1.4 Nunito,sans-serif;color:#3A2A12;min-height:44px}
 .pvh .hnext{position:absolute;right:16px;bottom:10px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #6B4E26;opacity:0}
