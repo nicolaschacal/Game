@@ -765,7 +765,7 @@ import { lluviaAhora, climaEstado, alternarClima, refrescarSiHaceFalta, horaFija
 import { BOAT, BALLOON, TRAIN, ROCK, STUMP, REEF, FIN, BARREL, COIN, PEARL, AIRPORT, JET, PLANE, PEAK, CLOUD, STORM, STAR, BARRIER, CRATE, GEM, CART, SKINS, thumbOf, LEGACY_PRICES, LANDMARKS, artFor, DOUBLE, SHIELD, CHEST, ANCHOR, BALLAST, NEEDLEKEY, COMPASS } from './paper-voyager/runner-art.js';
 import { Ads, Iap } from './paper-voyager/monetizacion.js';
 import { Vidas, reloj } from './paper-voyager/vidas.js';
-import { ico as pIco, ICO_CSS } from './paper-voyager/iconos.js';
+import { ico as pIco, ICO_CSS, autoGlyphs } from './paper-voyager/iconos.js';
 import { DESTINOS, IDX } from './paper-voyager/destinos.js';
 import * as V from './paper-voyager/viaje.js';
 import * as K from './paper-voyager/cofres.js';
@@ -1799,6 +1799,7 @@ ctx.Ads=Ads;ctx.Vidas=Vidas;K.initCofres(ctx);
 // Vidas: chip en el inicio (corazón + cuántas quedan + cuánto falta para la próxima); viajero frecuente = ∞
 Vidas.setInfinito(()=>Iap.frecuente);
 {const st=document.createElement('style');st.textContent=ICO_CSS;document.head.appendChild(st);$('livesChip').querySelector('svg').outerHTML=pIco('corazon',32);}
+autoGlyphs();
 // Gracia: vidas ilimitadas en los primeros GRACE_TRIPS viajes completos (que el primer día no choque contra el muro) o mientras dure el pack de inicio
 const GRACE_TRIPS=5,graceUntil=()=>+store.get('graceUntil',0)||0;
 ctx.graceTrips=()=>Math.max(0,GRACE_TRIPS-(V.T.trips||0));ctx.graceLeft=()=>Math.max(0,graceUntil()-Date.now());

@@ -91,7 +91,7 @@ function injectCSS() {
 .vlv .row .btn[disabled]{opacity:.5;filter:grayscale(.6)}
 .vfc{margin:14px 14px 4px;padding:16px 14px 16px}
 .vfc h3{margin:0;font:400 24px/1 'Lilita One',sans-serif;display:flex;align-items:center;gap:8px}.vfc h3 svg{width:30px;height:30px;flex:none}
-.vfc ul{list-style:none;margin:10px 0 12px;padding:0;text-align:left}.vfc li{font:800 13px/1.3 Nunito;margin:6px 0;display:flex;gap:8px;align-items:center}.vfc li i{font-style:normal;width:24px;display:flex;justify-content:center;flex:none}.vfc .ok{display:flex;justify-content:center}.it.pk i svg{display:block}
+.vfc ul{list-style:none;margin:10px 0 12px;padding:0;text-align:left}.vfc li{font:800 13px/1.3 Nunito;margin:6px 0;display:flex;gap:8px;align-items:center}.vfc li i{font-style:normal;width:24px;display:flex;justify-content:center;flex:none}.vfc .ok{display:flex;justify-content:center}.it.pk i{display:flex!important;align-items:center;justify-content:center;padding:0!important;line-height:0!important;text-indent:0}.it.pk i svg{display:block;margin:0 auto}
 .vfc .ok{font:400 17px 'Lilita One',sans-serif;color:#356F2E;text-align:center;margin:4px 0}
 .vfc .it{margin-top:8px;width:100%}
 .vleg{font:700 10.5px/1.4 Nunito;color:#7c7460;margin:10px 2px 0}.vleg a{color:#34437F;text-decoration:underline}

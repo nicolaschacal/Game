@@ -27,7 +27,7 @@ const P = {
   },
   sinads: {
     d: 'M16 3.5a12.5 12.5 0 1 1 0 25 12.5 12.5 0 0 1 0-25z', c: '#C8382A', l: 'M16 3.5a12.5 12.5 0 0 0 0 25z', lc: '#E4513A',
-    x: '<circle cx="16" cy="16" r="8.6" fill="#FFF4DC"/><text x="16" y="19.6" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="9.5" fill="#34437F">AD</text><path d="M9.9 9.9l12.2 12.2" stroke="#C8382A" stroke-width="3" stroke-linecap="round"/>',
+    x: '<circle cx="16" cy="16" r="8.6" fill="#FFF4DC"/><rect x="10" y="11.6" width="12" height="8.8" rx="1.8" fill="#34437F"/><path d="M14.6 13.6l3.6 2.4-3.6 2.4z" fill="#FFF4DC"/><path d="M9.9 9.9l12.2 12.2" stroke="#C8382A" stroke-width="3" stroke-linecap="round"/>',
   },
   mochila: {
     d: 'M9 8.5q0-4.5 7-4.5t7 4.5q4 1 4 5.5V26q0 2-2 2H7q-2 0-2-2V14q0-4.5 4-5.5z', c: '#2E3F80', l: 'M9 8.5q0-4.5 7-4.5V28H7q-2 0-2-2V14q0-4.5 4-5.5z', lc: '#3E5BA9',
@@ -54,17 +54,51 @@ const P = {
     d: 'M10 13.5V10a6 6 0 0 1 12 0v3.5h1.5q2 0 2 2V26q0 2-2 2h-15q-2 0-2-2V15.5q0-2 2-2zm3.5 0h5V10a2.5 2.5 0 0 0-5 0z', c: '#8C7A5C', l: 'M10 13.5V10a6 6 0 0 1 6-6v3.5a2.5 2.5 0 0 0-2.5 2.5v3.5H16V28H8.5q-2 0-2-2V15.5q0-2 2-2z', lc: '#A8977A',
     x: '<circle cx="16" cy="19.6" r="2" fill="#3B3226"/><path d="M16 20.5v3.4" stroke="#3B3226" stroke-width="2" stroke-linecap="round"/>',
   },
+  copo: {
+    d: 'M16 2.5l2.2 5.2 5.4-1.8-1.8 5.4 5.2 2.2-3.9 2.5 3.9 2.5-5.2 2.2 1.8 5.4-5.4-1.8L16 29.5l-2.2-5.2-5.4 1.8 1.8-5.4-5.2-2.2 3.9-2.5-3.9-2.5 5.2-2.2-1.8-5.4 5.4 1.8z', c: '#3E9CC8', l: 'M16 2.5l-2.2 5.2-5.4-1.8 1.8 5.4-5.2 2.2 3.9 2.5-3.9 2.5 5.2 2.2-1.8 5.4 5.4-1.8L16 29.5z', lc: '#6CC3E6',
+    x: '<path d="M16 9v14M10 12.5l12 7M22 12.5l-12 7" stroke="#FFF4DC" stroke-width="1.8" stroke-linecap="round"/>',
+  },
   estrella: {
     d: 'M16 3l3.9 8 8.8 1.2-6.4 6.1 1.6 8.7L16 22.8 8.1 27l1.6-8.7-6.4-6.1 8.8-1.2z', c: '#D9961E', l: 'M16 3v19.8L8.1 27l1.6-8.7-6.4-6.1 8.8-1.2z', lc: '#F2BC3E',
   },
 };
 export function ico(name, size = 24, cls = '') {
   const p = P[name]; if (!p) return '';
-  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" aria-hidden="true">` +
+  // El grano va en un <g> adentro del SVG: en Safari un filter CSS sobre el <svg> raíz lo corre de lugar.
+  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" aria-hidden="true"><g filter="url(#pvGrainL)">` +
     `<path d="${p.d}" transform="translate(0 1.4)" fill="${RIM_C}" stroke="${RIM_C}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${RIM}" stroke="${RIM}" stroke-width="4.2" stroke-linejoin="round"/>` +
-    `<path d="${p.d}" fill="${p.c}"/>` + (p.l ? `<path d="${p.l}" fill="${p.lc}"/>` : '') + (p.x || '') + '</svg>';
+    `<path d="${p.d}" fill="${p.c}"/>` + (p.l ? `<path d="${p.l}" fill="${p.lc}"/>` : '') + (p.x || '') + '</g></svg>';
 }
 // Para insertar en botones/etiquetas: ícono + texto alineados
 export const icoTxt = (name, txt, size = 18) => `<span class="pvit">${ico(name, size)}<span>${txt}</span></span>`;
-export const ICO_CSS = `.pvi{display:inline-block;vertical-align:middle;flex:none;overflow:visible;filter:url(#pvGrainL)}.pvit{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}`;
+export const ICO_CSS = `.pvi{display:inline-block;vertical-align:middle;flex:none;overflow:visible;margin:0}.pvit{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}.pvg{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin:0 .06em}`;
+
+// ── Símbolos viejos en los textos (◉ ★ ✓ ♥ ❄ ▶ ✈) → íconos de papel ──
+// Un observador reemplaza esos caracteres en cualquier texto que aparezca en pantalla (toasts, mapa, récords, etc.).
+const GLYPH = { '◉': 'moneda', '★': 'estrella', '✓': 'check', '♥': 'corazon', '❄': 'copo', '▶': 'play', '✈': 'avion' };
+const RX = /[◉★✓♥❄▶✈]/;
+const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'TITLE', 'OPTION']);
+function fixText(n) {
+  const t = n.nodeValue; if (!t || !RX.test(t)) return;
+  const p = n.parentNode; if (!p || SKIP.has(p.nodeName) || p.closest?.('svg,[data-noglyph]')) return;
+  const f = document.createDocumentFragment();
+  for (const part of t.split(/([◉★✓♥❄▶✈])/)) {
+    if (!part) continue;
+    if (GLYPH[part]) { const s = document.createElement('span'); s.className = 'pvg'; s.setAttribute('aria-hidden', 'true'); s.innerHTML = ico(GLYPH[part], '100%'); f.appendChild(s); }
+    else f.appendChild(document.createTextNode(part.replace(/^ (?=$)/, ' ')));
+  }
+  p.replaceChild(f, n);
+}
+function walk(el) {
+  if (el.nodeType === 3) return fixText(el);
+  if (el.nodeType !== 1 || SKIP.has(el.nodeName) || el.nodeName === 'svg') return;
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const list = [];
+  while (w.nextNode()) if (RX.test(w.currentNode.nodeValue)) list.push(w.currentNode);
+  list.forEach(fixText);
+}
+export function autoGlyphs(root = document.body) {
+  walk(root);
+  new MutationObserver(ms => { for (const m of ms) { if (m.type === 'characterData') fixText(m.target); else m.addedNodes.forEach(walk); } })
+    .observe(root, { childList: true, subtree: true, characterData: true });
+}
