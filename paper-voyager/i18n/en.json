@@ -1381,5 +1381,7 @@
  "starter.skin": "Sailor Nilo",
  "starter.items": "Power-ups: 3 revives, 2 shields, 2 doubles and 2 freezes",
  "legal.subs": "Payment is charged to your App Store or Google Play account. The subscription renews automatically at the same price unless canceled at least 24 hours before the end of the period. Manage or cancel it anytime in your account’s subscription settings.",
- "vf.chestOdds": "The gold chest always contains 300–500 coins and 2 random power-ups, with a 40% chance of a souvenir."
+ "vf.chestOdds": "The gold chest always contains 300–500 coins and 2 random power-ups, with a 40% chance of a souvenir.",
+ "menu.support": "Support",
+ "menu.terms": "Terms"
 }

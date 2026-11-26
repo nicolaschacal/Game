@@ -1381,5 +1381,7 @@
  "starter.skin": "Nilo Marin",
  "starter.items": "Bonus : 3 réanimations, 2 boucliers, 2 doubles et 2 gels",
  "legal.subs": "Le paiement est facturé sur ton compte App Store ou Google Play. L’abonnement se renouvelle automatiquement au même prix, sauf résiliation au moins 24 h avant la fin de la période. Gère-le ou résilie-le à tout moment dans les réglages d’abonnements de ton compte.",
- "vf.chestOdds": "Le coffre d’or contient toujours 300 à 500 pièces et 2 bonus au hasard, avec 40 % de chances d’un souvenir."
+ "vf.chestOdds": "Le coffre d’or contient toujours 300 à 500 pièces et 2 bonus au hasard, avec 40 % de chances d’un souvenir.",
+ "menu.support": "Assistance",
+ "menu.terms": "Conditions"
 }

@@ -43,6 +43,7 @@ export const CONFIG = {
   legal: {
     privacidad: 'https://game-orcin-ten-70.vercel.app/privacidad.html',
     terminos: 'https://game-orcin-ten-70.vercel.app/terminos.html',
+    soporte: 'https://game-orcin-ten-70.vercel.app/soporte.html',
     eulaApple: 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
   },
 };

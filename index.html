@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script>/* App nativa: sin modos de prueba por URL (Apple 2.5.19) */try{if(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()&&location.search)history.replaceState(null,'',location.pathname+location.hash);}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#1B1730">
@@ -170,6 +171,7 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 .goTrip .gtL{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;text-overflow:ellipsis}.goTrip .gtL span{overflow:hidden;text-overflow:ellipsis}.goTrip .gtL svg{flex:none}
 .goTrip .gtP{flex:none;display:flex;align-items:center;gap:4px;padding:4px 9px 4px 5px;border-radius:99px;background:rgba(27,23,48,.12)}.goTrip .gtP b{font:inherit}
 @media (max-width:400px){#mTop{gap:5px}#livesChip{padding:0 8px 3px 4px!important;gap:3px}#livesChip svg{width:27px!important;height:27px!important}#livesChip b{font-size:19px}#livesChip small{font-size:15px;min-width:40px}#walletChip{gap:3px}#walletChip b{min-width:18px;font-size:18px}#mGear{width:42px!important;height:42px!important}#climaChip{padding:0 6px 0 7px!important}}
+#mSet .lk3{display:flex;justify-content:space-around;gap:6px;padding:9px 4px 2px;border-top:2px dashed #C9B48C55;margin-top:4px}#mSet .lk3 a{font:800 12px Nunito;color:#34437F;text-decoration:underline;white-space:nowrap}
 #rvLife{font:800 12px/1.3 Nunito;color:#B3321D;margin:2px 0 6px}#rvLife:empty{display:none}
 body.gpapel #livesChip{border:0;box-shadow:none;padding:0 11px 3px 6px;clip-path:var(--pill-c);background-color:#7E2115}
 body.gpapel #livesChip:after{content:"";position:absolute;z-index:-1;inset:0 3px 4px 0;clip-path:var(--pill-d);background-color:#C2412B;background-image:var(--nz);background-size:160px;background-blend-mode:multiply}
@@ -713,7 +715,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
    <button id="livesChip" data-i18n-aria="lives.aria" aria-label="Vidas"><svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9.5-5.7-9.5-12.6A5.4 5.4 0 0 1 12 5.3a5.4 5.4 0 0 1 9.5 3.1C21.5 15.3 12 21 12 21z" fill="#E8452C" stroke="#FFF4DC" stroke-width="2.2" stroke-linejoin="round"/></svg><b id="livesN" class="L">5</b><small id="livesT"></small></button>
    <button id="walletChip" data-i18n-aria="menu.wallet.aria" aria-label="Monedas, abrir tienda"><span data-ico="coin"></span><b id="mWallet" class="L">0</b><i class="plus"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></i></button>
    <button id="mGear" data-i18n-aria="menu.settings.aria" aria-label="Ajustes: música y ayuda" aria-expanded="false"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linejoin="round"><circle cx="12" cy="12" r="5.4" stroke-width="3.4"/><path d="M18.6 12L22 12" stroke-width="4.4" stroke-linecap="butt"/><path d="M16.67 16.67L19.07 19.07" stroke-width="4.4" stroke-linecap="butt"/><path d="M12 18.6L12 22" stroke-width="4.4" stroke-linecap="butt"/><path d="M7.33 16.67L4.93 19.07" stroke-width="4.4" stroke-linecap="butt"/><path d="M5.4 12L2 12" stroke-width="4.4" stroke-linecap="butt"/><path d="M7.33 7.33L4.93 4.93" stroke-width="4.4" stroke-linecap="butt"/><path d="M12 5.4L12 2" stroke-width="4.4" stroke-linecap="butt"/><path d="M16.67 7.33L19.07 4.93" stroke-width="4.4" stroke-linecap="butt"/></svg></button>
-   <div id="mSet" hidden><button id="mute" data-i18n-aria="menu.sound.aria" aria-label="Sonido"></button><button id="howHome" data-i18n-aria="menu.how" aria-label="Cómo se juega"><span class="ri">?</span><span data-i18n="menu.how">Cómo se juega</span></button><div class="lr"><span class="ri">文</span><label for="langSel" data-i18n="menu.language">Idioma</label><select id="langSel"></select></div></div>
+   <div id="mSet" hidden><button id="mute" data-i18n-aria="menu.sound.aria" aria-label="Sonido"></button><button id="howHome" data-i18n-aria="menu.how" aria-label="Cómo se juega"><span class="ri">?</span><span data-i18n="menu.how">Cómo se juega</span></button><div class="lr"><span class="ri">文</span><label for="langSel" data-i18n="menu.language">Idioma</label><select id="langSel"></select></div><div class="lk3"><a id="lkHelp" target="_blank" rel="noopener" data-i18n="menu.support">Soporte</a><a id="lkPriv" target="_blank" rel="noopener" data-i18n="legal.privacy">Privacidad</a><a id="lkTerms" target="_blank" rel="noopener" data-i18n="menu.terms">Términos</a></div></div>
   </div>
   <button id="worldChip"></button>
   <div id="mMid" style="position:relative"><button id="chestBtn" data-i18n-aria="chest.panel" aria-label="Cofres"></button></div>
@@ -1797,6 +1799,7 @@ const ctx={store,V,DESTINOS,SKINS,artFor,ITEMS,Iap,get wallet(){return wallet},g
 ctx.Ads=Ads;ctx.Vidas=Vidas;K.initCofres(ctx);
 // Vidas: chip en el inicio (corazón + cuántas quedan + cuánto falta para la próxima); viajero frecuente = ∞
 Vidas.setInfinito(()=>Iap.frecuente);
+{const L=Iap.legal||{};$('lkHelp').href=L.soporte||'#';$('lkPriv').href=L.privacidad||'#';$('lkTerms').href=(window.Capacitor?.getPlatform?.()==='ios'?L.eulaApple:L.terminos)||'#';}
 {const st=document.createElement('style');st.textContent=ICO_CSS;document.head.appendChild(st);$('livesChip').querySelector('svg').outerHTML=pIco('corazon',32);}
 autoGlyphs();
 // Gracia: vidas ilimitadas en los primeros GRACE_TRIPS viajes completos (que el primer día no choque contra el muro) o mientras dure el pack de inicio

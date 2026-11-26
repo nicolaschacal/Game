@@ -1381,5 +1381,7 @@
  "starter.skin": "Nilo Marinheiro",
  "starter.items": "Potencializadores: 3 reviver, 2 escudos, 2 dobros e 2 congelar",
  "legal.subs": "O pagamento é cobrado na sua conta da App Store ou do Google Play. A assinatura renova sozinha pelo mesmo preço, a menos que você cancele pelo menos 24 h antes do fim do período. Gerencie ou cancele quando quiser nas configurações de assinaturas da sua conta.",
- "vf.chestOdds": "O baú de ouro sempre traz 300–500 moedas e 2 potencializadores aleatórios, com 40% de chance de uma lembrança."
+ "vf.chestOdds": "O baú de ouro sempre traz 300–500 moedas e 2 potencializadores aleatórios, com 40% de chance de uma lembrança.",
+ "menu.support": "Suporte",
+ "menu.terms": "Termos"
 }

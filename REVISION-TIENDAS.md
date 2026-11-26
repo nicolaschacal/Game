@@ -1,5 +1,9 @@
 # Revisión para App Store y Google Play — Paper Voyager
 
+> **Segunda pasada (25/11/2026):** revisada otra vez contra las reglas de la skill
+> [`safaiyeh/app-store-review-skill`](https://github.com/safaiyeh/app-store-review-skill) (guías de Apple al 08/06/2026,
+> secciones 1 a 5 completas) y las políticas de Google Play. Cambios de esta pasada al final, en la sección 9.
+
 Revisión hecha sobre el repo (nov. 2026), siguiendo el checklist público de la skill
 [`app-store-review`](https://github.com/ElxMaj/app-store-review-skill) (guías de Apple verificadas a oct. 2026)
 y las políticas de Google Play. No se pudo correr su escáner automático ni compilar la app nativa desde la nube:
@@ -92,3 +96,35 @@ Leyenda: **BLOQUEA** = rechazo seguro si no se arregla · **RIESGO** = puede tra
 | Página del juego (marketing) | Opcional | Opcional |
 
 Ya existen `privacidad.html` y `terminos.html`; faltan la página de soporte y una portada simple del juego, en un dominio propio.
+
+## 9. Segunda pasada — qué se agregó o corrigió
+
+| Guía | Hallazgo | Estado |
+|---|---|---|
+| Apple 1.5 · Google contacto | La app tiene que tener una forma fácil de contactarte | **OK** Ajustes ahora tiene «Soporte · Privacidad · Términos»; nueva `soporte.html` (completar correo) |
+| Apple 5.1.1(i) | Política de privacidad accesible dentro de la app | **OK** en Ajustes y en la tienda (PRO) |
+| Apple 2.5.19 | Funciones ocultas: los modos de prueba por URL (`?rico`, `?debug`, `?vidas`, `?gratis`) | **OK** En la app nativa se borran los parámetros al abrir: no hay nada escondido para el revisor |
+| Apple 2.1 | Apple revisa también en iPad (iPad Air) aunque la app sea solo iPhone: la abre en modo compatibilidad | **A MANO** Abrirla una vez en un iPad o en el simulador y ver que se juega bien |
+| Apple 2.1(b) | Todas las compras visibles y funcionando para el revisor | **A MANO** Probar en sandbox: Pack de inicio, Sin anuncios, Mensual, Anual, Restaurar |
+| Apple 3.1.1 | Monedas compradas no pueden vencer | **OK** las monedas no vencen |
+| Apple 3.1.1 | Probabilidades de premios al azar | **OK** cofre de oro detallado |
+| Apple 3.1.2 | Mensual y anual en el mismo grupo para no suscribirse dos veces | **A MANO** al crear los productos |
+| Apple 2.5.18 | Los anuncios deben poder denunciarse | **OK** AdMob muestra su ícono de AdChoices para eso |
+| Apple 2.3.2 | La descripción de la tienda debe avisar que hay compras | **A MANO** al escribir la ficha |
+| Apple 4.2 | No ser «una web empaquetada» | **OK** juego completo empaquetado + funciones nativas (compras, anuncios, vibración, splash) |
+| Apple 4.7 | Juegos HTML5 descargados | **No aplica**: todo el juego viene dentro de la app |
+| Apple 1.3 / Google Familias | Público infantil | **Decisión** declarar 13+ y no categoría Niños |
+| Google Datos del usuario | Ya no se usa ubicación | **OK** formulario de Seguridad de datos: solo ID de publicidad (AdMob), compras (RevenueCat), diagnóstico de SDK |
+| Google Política de anuncios | Intersticiales solo en pausas naturales, nunca al abrir la app ni durante el juego | **OK** |
+| Google Pagos | Todo por Google Play Billing (RevenueCat) | **OK** |
+| Google Suscripciones | Oferta clara + cómo cancelar | **OK** |
+
+### Lista final, en orden
+
+1. Completar nombre y correo en `privacidad.html`, `terminos.html` y `soporte.html`; publicar el sitio en dominio propio y actualizar `CONFIG.legal`.
+2. Cuentas: Apple Developer y Google Play (si podés, de empresa: evita los 12 testers).
+3. AdMob: app + bloques reales → IDs en `Info.plist`, `AndroidManifest.xml` y `monetizacion.js`; `testing: false`; mensajes de privacidad (UMP y ATT) activos; lista completa de `SKAdNetworkItems`.
+4. Tiendas + RevenueCat: `pack_inicio`, `sin_anuncios`, `viajero_frecuente` (mensual y anual) → claves reales, `usarClaveDePrueba: false`.
+5. Build: Xcode 26 → Archive → informe de privacidad → TestFlight. Android: AAB → prueba cerrada.
+6. Probar compras en sandbox y abrir la app en iPad (modo compatibilidad).
+7. Fichas: capturas de iPhone 6,9", descripción que mencione las compras, clasificación por edad, etiquetas de privacidad / Seguridad de datos, notas para el revisor.
