@@ -16,3 +16,4 @@ __pycache__/
 qa/*
 !qa/galeria.png
 !qa/reporte.md
+site/
