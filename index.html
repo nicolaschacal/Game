@@ -29,7 +29,7 @@ svg[viewBox="-4 -8 128 128"]{filter:url(#pvGrainP)}#intro .lgsvg{filter:url(#pvG
 .pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
 /* selfies del álbum (fotos polaroid) */
 svg.pvsf,.pvs-big svg.pvsf{filter:url(#pvGrainL)!important}
-.pva-slot svg.pvsf{filter:url(#pvGrainL) drop-shadow(0 3px 0 rgba(27,23,48,.28))!important} /* grilla del álbum: grano leve + su sombra */
+/* grilla del álbum: sin filtros (con muchos, Safari pinta a medida que bajás) */.pva-slot svg.pvsf{filter:none!important} /* grilla del álbum: grano leve + su sombra */
 /* resto de los objetos dibujados: tienda, cofres, misiones, mapa, pasaportes, álbum, HUD */
 .art svg:not(svg svg),.th svg:not(svg svg),.chestRow svg:not(svg svg),.dph svg:not(svg svg),.dpi svg:not(svg svg),.pic svg:not(svg svg),.pvb-fly svg:not(svg svg),.pvc-hero svg:not(svg svg),.pvc-sk svg:not(svg svg),.pvc-ic svg:not(svg svg),.pvs-big svg:not(svg svg),.pvs-i svg:not(svg svg),.pw svg:not(svg svg),.seal svg:not(svg svg),.st svg:not(svg svg),.mrow svg:not(svg svg),.nudge svg:not(svg svg),#coinPill svg:not(svg svg),.hwa svg:not(svg svg),.pvp-sg svg:not(svg svg),.fr svg:not(svg svg),.gu svg:not(svg svg),.cl svg:not(svg svg),.bk svg:not(svg svg){filter:url(#pvGrain)}
 /* coreano: cortar líneas entre palabras, no dentro de ellas */
@@ -680,8 +680,8 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
 </filter><filter id="pvGrainS" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
  <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="11" stitchTiles="stitch" result="t"/>
  <feColorMatrix in="t" type="saturate" values="0" result="g"/>
- <feColorMatrix in="SourceGraphic" type="saturate" values="1.12" result="s"/>
- <feComposite in="s" in2="g" operator="arithmetic" k1="0" k2="1.04" k3=".36" k4="-.17" result="m"/>
+ <feColorMatrix in="SourceGraphic" type="saturate" values="1.2" result="s"/>
+ <feComposite in="s" in2="g" operator="arithmetic" k1="0" k2="1.12" k3=".3" k4="-.12" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainP" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
  <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
@@ -1617,7 +1617,7 @@ const dSlide=i=>{V.syncAlbum?.();const th=THEMES[i],s=pinState(i),R=V.REGIONS[s.
  // ruta especial: se ofrece además de jugar solo esta ciudad (si falta algún pasaporte de la ruta, solo se avisa)
  const rts=!startPick&&mechOn('routes')?V.routesOf(i):[],rtHtml=rts.length?`<div class="rts${rts.length>2?' many':''}">`+rts.map(rt=>{const rtHave=rt.cities.every(c=>V.hasPass(V.regionOf(c))),rtName=t(rt.name).toUpperCase();
   return rtHave?`<button class="btn green rt goRoute" data-route="${rt.id}" data-start="${i}" aria-label="${t('route.offer',{name:rtName,n:rt.cities.length})}">${rtName}<span class="stp">${rt.cities.map((c,k)=>'<i>'+(k+1)+'</i>').join('')}</span></button>`:`<div class="rtn">${t('route.needPass',{name:rtName,pass:V.routeRegions(rt).filter(r=>!V.hasPass(r)).map(r=>V.REGIONS[r].pass.toUpperCase()).join(' + ')})}</div>`;}).join('')+'</div>':'';
- return `<div class="dsl" data-i="${i}"><div class="th" style="background:${th.ground}">${th.art||''}</div><div class="k" style="color:${R.dark}">${i+1} · ${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${th.place}</b><div class="c">${th.country} · ${vis?t(vis>1?'map.visits':'map.visit',{n:vis}):t('map.unvisited')} · ${t('map.selfies',{n:sel})}</div>${cu}`+
+ return `<div class="dsl" data-i="${i}"><div class="th" style="background:${th.ground}">${th.art||''}</div><div class="k" style="color:${R.dark}">${passMini(s.r,12)} ${R.name.toUpperCase()} · ${tag}</div><b>${th.place}</b><div class="c">${th.country} · ${vis?t(vis>1?'map.visits':'map.visit',{n:vis}):t('map.unvisited')} · ${t('map.selfies',{n:sel})}</div>${cu}`+
   `<button class="btn goTrip ${s.st==='ok'||s.st==='cur'?'':'plain'}" data-i="${i}">${startPick?t('map.startHere'):s.st==='cur'?gtBtn(t('map.playHere'),0):gtBtn(s.st==='ok'?t('map.travelL'):s.st==='nopass'?passMini(s.r,16)+'<span>'+t('map.seePassL')+'</span>':t('map.moreCoinsL'),s.st==='nopass'?V.passPrice(s.r):s.cost)}</button>${rtHtml}</div>`;};
 // Botón de la ficha del mapa: texto a la izquierda y precio en su propia pastilla, siempre en una sola línea
 function gtBtn(label,n){return '<span class="gtL">'+label+'</span><span class="gtP">'+pIco('moneda',18)+'<b>'+n+'</b></span>';}
@@ -1676,7 +1676,7 @@ function dRender(){const card=$('dCard');let tr=card.firstElementChild;
  tr.innerHTML=[-2,-1,0,1,2].map(o=>dSlide((WI+(mKp+o+NW*2)%NW)%NW)).join('');tr._idx=2;
  tr.style.scrollSnapType='none';tr.scrollLeft=tr.clientWidth*2;requestAnimationFrame(()=>{tr.style.scrollSnapType='';});}
 function drawCard(){mKp=(mPick-WI+NW)%NW;dRender();mapSelect(false);}
-let mapKey='',mapSc=1,mapZ=1,mapNoTap=0;const ZMAX=4;
+let mapKey='',mapSc=1,mapZ=1,mapNoTap=0;const landPNG={};const ZMAX=4;
 // zoom del mapa: mapZ multiplica la escala base (mapSc); los pines se contra-escalan (--pk) para no crecer
 function applyZoom(){const M=mapData,w=$('mapWorld'),i=$('mapIn'),v=$('mapView');if(!M||!i)return;const s=mapSc*mapZ;
  w.style.width=M.W*3*s+'px';w.style.height=M.H*s+'px';w.style.setProperty('--pk',1/mapZ);i.style.transform=`scale(${s})`;
@@ -1720,14 +1720,17 @@ async function buildMap(){
  const arcAttr=GP?'stroke="#E14E34" stroke-width="3.4" stroke-dasharray="9 6"':'stroke="#E8452C" stroke-width="5" stroke-dasharray="1 11"';
  let gs='',pn='';for(let k=0;k<3;k++){gs+=`<g transform="translate(${k*M.W},0)">${segs}<path class="mapArc" d="" ${arcAttr} stroke-linecap="round" fill="none"/></g>`;
   pn+=M.pts.map((p,i)=>pins1(p,i,k*M.W)).join('');}
- w.innerHTML=`<div id="mapIn" style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;transform-origin:0 0"><div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;background:url('data:image/svg+xml,${encodeURIComponent(landSvg).replace(/'/g,'%27')}') repeat-x 0 0/${M.W}px ${M.H}px"></div><svg width="${W3}" height="${M.H}" style="position:absolute;left:0;top:0">${gs}</svg>${pn}</div>`;
+ if(!landPNG[GP])landPNG[GP]=await (async()=>{try{const im=new Image();im.src='data:image/svg+xml,'+encodeURIComponent(landSvg);await im.decode();const k=2,c=document.createElement('canvas');c.width=M.W*k;c.height=M.H*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+  const b=await new Promise(r=>c.toBlob(r,'image/png'));return URL.createObjectURL(b);}catch(e){return 'data:image/svg+xml,'+encodeURIComponent(landSvg).replace(/'/g,'%27');}})();
+ w.innerHTML=`<div id="mapIn" style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;transform-origin:0 0"><div style="position:absolute;left:0;top:0;width:${W3}px;height:${M.H}px;background:url('${landPNG[GP]}') repeat-x 0 0/${M.W}px ${M.H}px"></div><svg width="${W3}" height="${M.H}" style="position:absolute;left:0;top:0">${gs}</svg>${pn}</div>`;
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{if(mapNoTap)return;SFX.tap();mPick=+e.dataset.i;drawCard();mapSelect(true);routesIntro(mPick);}));
  applyZoom();
 }
 async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
  await buildMap();mapZoomInit();$('mapWallet').textContent=fmtW(wallet);mapZ=1;applyZoom();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;v.scrollTop=0;
  mPick=startPick?18:WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2; // primer arranque: Berlín (la ciudad de Nilo) ya viene marcada
- v.onscroll=()=>{const c=M.W*mapSc*mapZ;if(v.scrollLeft<c*.5)v.scrollLeft+=c;else if(v.scrollLeft>c*1.5)v.scrollLeft-=c;};}
+ let wt=0;const wrap=()=>{const c=M.W*mapSc*mapZ;if(v.scrollLeft<c*.5)v.scrollLeft+=c;else if(v.scrollLeft>c*1.5)v.scrollLeft-=c;};
+ v.onscroll=()=>{const c=M.W*mapSc*mapZ;clearTimeout(wt);if(v.scrollLeft<c*.12||v.scrollLeft>c*2.88-v.clientWidth)wrap();else wt=setTimeout(wrap,160);};}
 // prearma el mapa cuando el navegador está libre, así abre al instante
 (window.requestIdleCallback||(f=>setTimeout(f,1500)))(()=>setTimeout(()=>buildMap().catch(()=>{}),2500));
 $('worldChip').addEventListener('click',openMap);

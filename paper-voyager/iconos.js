@@ -34,7 +34,7 @@ const P = {
     x: '<path d="M12 7.5q0-1.8 4-1.8t4 1.8" stroke="#1C2352" stroke-width="1.8" fill="none"/><path d="M6 13.5q10 3 20 0v4q-10 3-20 0z" fill="#F2BC3E"/><rect x="10" y="20" width="12" height="5.5" rx="1.5" fill="#1C2352" opacity=".55"/><rect x="14.6" y="15.2" width="2.8" height="3.4" rx=".8" fill="#8C5A12"/>',
   },
   avion: { // avión de papel: ala de arriba clara, ala de abajo en sombra y la quilla doblada
-    d: 'M2.5 15.5L29.5 4 23 28 17.2 22.6 12.6 28.2 12.8 19.8z', o: '1.2 1.6', c: '#D3C39E', l: 'M2.5 15.5L29.5 4 12.8 19.8z', lc: '#FFF8E8',
+    d: 'M2.5 15.5L29.5 4 23 28 17.2 22.6 12.6 28.2 12.8 19.8z', o: '-0.7 -0.3', c: '#D3C39E', l: 'M2.5 15.5L29.5 4 12.8 19.8z', lc: '#FFF8E8',
     x: '<path d="M12.8 19.8L17.2 22.6 12.6 28.2z" fill="#A8977A"/>',
   },
   luna: {
