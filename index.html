@@ -24,7 +24,7 @@
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
 <style>
 /* grano de papel en todo lo dibujado a mano: personajes (svg del elenco, en inicio, diálogos, tienda, ropa, intro), logo y barra de carga */
-svg[viewBox="-4 -8 128 128"],#intro .ib svg{filter:url(#pvGrainP)}#intro .lgsvg{filter:url(#pvGrain)} /* la pantalla de carga (logo y barra) queda sin grano */
+svg[viewBox="-4 -8 128 128"],#intro .ib svg{filter:url(#pvGrainS)}#intro .lgsvg{filter:url(#pvGrain)} /* la pantalla de carga (logo y barra) queda sin grano */
 /* mochila: álbum, pasaportes, diario, ropa, souvenirs y adornos (sólo el svg/img de afuera, para no duplicar el grano) */
 .pvb-t svg:not(svg svg):not(.lgsvg),.pvb-t img{filter:url(#pvGrain)}
 /* selfies del álbum (fotos polaroid) */
@@ -627,7 +627,7 @@ body.gpapel .head .chip{padding:0 15px 0 47px}body.gpapel .head .chip svg{left:4
 
 /* intro primer arranque (composición del artboard "01 · Splash"; sol, montañas y nubes son los del juego) */
 #intro{position:fixed;inset:0;z-index:61;overflow:hidden;background-color:#D8CAB0;background-image:var(--nz),linear-gradient(#B9AE9C,#D6C8AE 52%,#E9DDC4);background-size:160px,auto;background-blend-mode:multiply,normal;cursor:pointer;transition:opacity .35s;-webkit-tap-highlight-color:transparent}#intro.out{opacity:0;pointer-events:none}
-#intro img,#intro .ibw,#intro .ilogo{position:absolute}#intro img{max-width:none;filter:drop-shadow(0 3px 3px rgba(40,28,50,.18))}#intro img.imt{filter:url(#pvGrainP) drop-shadow(0 3px 3px rgba(40,28,50,.18))}
+#intro img,#intro .ibw,#intro .ilogo{position:absolute}#intro img{max-width:none;filter:drop-shadow(0 3px 3px rgba(40,28,50,.18))}#intro img.imt{filter:url(#pvGrainS) drop-shadow(0 3px 3px rgba(40,28,50,.18))}
 #intro .isun{left:auto;right:-8vw;top:52px;width:68vw;max-width:300px;animation:isunIn .7s cubic-bezier(.2,1.6,.4,1) .05s both,isunSpin 60s linear .8s infinite;filter:none}
 @keyframes isunIn{from{transform:scale(0) rotate(-120deg)}to{transform:scale(1) rotate(0)}}@keyframes isunSpin{to{transform:rotate(360deg)}}
 #intro .igr{position:absolute;left:0;right:0;bottom:0;height:2%;background:#5E9446;animation:imtUp .75s cubic-bezier(.2,1.4,.4,1) .85s both}
@@ -642,7 +642,7 @@ body.gpapel .head .chip{padding:0 15px 0 47px}body.gpapel .head .chip svg{left:4
 @keyframes lgB{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}@keyframes lgSeal{from{transform:rotate(9deg) scale(2.6);opacity:0}to{transform:rotate(9deg) scale(1);opacity:1}}
 #intro .ilogo .lgsvg{--lgb:.35}
 #intro .ibw{left:0;right:0;top:27vh;display:flex;justify-content:center}
-#intro .ib{position:relative;animation:ibDrop 1.55s cubic-bezier(.45,0,.9,.5) .25s both}#intro .ib svg{display:block;height:min(400px,47vh);width:auto;overflow:visible;filter:url(#pvGrainP) drop-shadow(0 12px 7px rgba(27,26,58,.22));transform-origin:50% 12%;animation:ibSq 1.55s linear .25s both,ibFloat 3.4s ease-in-out 1.85s infinite}
+#intro .ib{position:relative;animation:ibDrop 1.55s cubic-bezier(.45,0,.9,.5) .25s both}#intro .ib svg{display:block;height:min(400px,47vh);width:auto;overflow:visible;filter:url(#pvGrainS) drop-shadow(0 12px 7px rgba(27,26,58,.22));transform-origin:50% 12%;animation:ibSq 1.55s linear .25s both,ibFloat 3.4s ease-in-out 1.85s infinite}
 @keyframes ibDrop{0%{transform:translateY(-120vh) rotate(-11deg)}34%{transform:translateY(0) rotate(6deg);animation-timing-function:cubic-bezier(.2,.6,.4,1)}48%{transform:translateY(-44px) rotate(-5deg);animation-timing-function:cubic-bezier(.6,0,.8,.4)}58%{transform:translateY(0) rotate(3deg);animation-timing-function:cubic-bezier(.2,.6,.4,1)}68%{transform:translateY(-16px) rotate(-2deg);animation-timing-function:ease-in}76%{transform:translateY(0) rotate(1.2deg)}88%{transform:translateY(-4px) rotate(-.6deg)}100%{transform:none}}
 @keyframes ibSq{0%,33%{transform:scale(1,1)}37%{transform:scale(1.07,.92)}44%{transform:scale(.97,1.04)}57%{transform:scale(1,1)}60%{transform:scale(1.03,.97)}66%,100%{transform:scale(1,1)}}
 @keyframes ibFloat{0%,100%{transform:translateY(0) rotate(-2.6deg)}50%{transform:translateY(-12px) rotate(2.6deg)}}
@@ -676,6 +676,12 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".18" intercept=".9"/><feFuncG type="linear" slope=".18" intercept=".9"/><feFuncB type="linear" slope=".18" intercept=".9"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
+ <feComposite in="m" in2="SourceAlpha" operator="in"/>
+</filter><filter id="pvGrainS" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="11" stitchTiles="stitch" result="t"/>
+ <feColorMatrix in="t" type="saturate" values="0" result="g"/>
+ <feColorMatrix in="SourceGraphic" type="saturate" values="1.12" result="s"/>
+ <feComposite in="s" in2="g" operator="arithmetic" k1="0" k2="1.04" k3=".36" k4="-.17" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainP" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
  <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
@@ -1780,8 +1786,7 @@ async function firstRunIntro(){introOn=true;const it=$('intro'),sp=$('splash');
   +mt(ri('peak',1,.62,'#C3D6E6',3,true),'24%',560,.3)+mt(ri('peak',1,.5,'#9DBBD3',7,true),'21%',620,.4)
   +mt(ri('dune',1,.42,'#B7D78E',11,false),'13%',640,.5).replace('class="imt"','class="imt" data-x="-150"')+mt(ri('dune',1,.4,'#B1D387',12,false),'12%',600,.55).replace('class="imt"','class="imt h2"')
   +mt(ri('dune',1,.36,'#98C46F',21,false),'5%',600,.65).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.34,'#93C06A',22,false),'4%',560,.7).replace('class="imt"','class="imt h2"')
-  +mt(ri('dune',1,.3,'#7DB65C',31,false),'-1%',560,.8).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.3,'#78B157',32,false),'-1%',520,.85).replace('class="imt"','class="imt h2"')
-  +mt(ri('dune',1,.3,'#6FA74F',41,false),'-9%',600,.9).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.28,'#6AA14B',42,false),'-10%',560,.95).replace('class="imt"','class="imt h2"')+mt(ri('dune',1,.26,'#62994A',51,false),'-12%',620,1).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.25,'#5E9446',52,false),'-13%',580,1.05).replace('class="imt"','class="imt h2"')+'<div class="igr"></div>'
+  +mt(ri('dune',1,.3,'#7DB65C',31,false),'-4%',560,.8).replace('class="imt"','class="imt h1"')+mt(ri('dune',1,.3,'#78B157',32,false),'-5%',520,.85).replace('class="imt"','class="imt h2"')
 +'<div class="ilogo">'+sp.querySelector('.logo').outerHTML+'</div><div class="ibw"><div class="ib">'+ball+'</div></div><div class="itap">'+t('intro.tap')+'</div>';
  const slot=it.querySelector('.inl');let fi=1;const put=()=>{slot.innerHTML=uniqIds(NIL[fi%NIL.length]).replace('<svg','<svg x="0" y="0" width="120" height="120" overflow="visible"');};put();
  const wv=setInterval(()=>{if(!it.isConnected){clearInterval(wv);return;}fi++;put();},130);
