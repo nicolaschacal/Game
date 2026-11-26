@@ -1811,7 +1811,12 @@ const GRACE_TRIPS=5,graceUntil=()=>+store.get('graceUntil',0)||0;
 ctx.graceTrips=()=>Math.max(0,GRACE_TRIPS-(V.T.trips||0));ctx.graceLeft=()=>Math.max(0,graceUntil()-Date.now());
 Vidas.setGracia(()=>graceUntil()>Date.now()||(!Q.has('vidas')&&(V.T.trips||0)<GRACE_TRIPS)); // ?vidas=N prueba sin la gracia de los primeros viajes
 // Pack de inicio (compra única): +1000 monedas, 3 revivir y 72 h de vidas ilimitadas. Se entrega una vez por dispositivo.
-function grantStarter(){if(!Iap.starter||store.get('starterGot',0))return;store.set('starterGot',1);wallet+=1000;store.set('wallet',wallet);stock.revive=(stock.revive||0)+3;store.set('items',stock);store.set('graceUntil',Math.max(graceUntil(),Date.now())+72*3600e3);confetti();SFX.prize?.();drawHome();}
+function grantStarter(){if(!Iap.starter||store.get('starterGot',0))return;store.set('starterGot',1);
+ // Pack de inicio: 1000 monedas, Mora, traje Marinero de Nilo, pack de potenciadores y 5 días de vidas ilimitadas. Si ya tenía a Mora o el traje, se le devuelve su precio en monedas.
+ let extra=0;const mora=SKINS.find(k=>k.id==='mora');if(owned.includes('mora'))extra+=mora?.price||1500;else{owned.push('mora');store.set('owned',owned);}
+ const mk='nilo:marinero';if(ownedV.includes(mk))extra+=800;else{ownedV.push(mk);store.set('ownedv',ownedV);}
+ wallet+=1000+extra;store.set('wallet',wallet);for(const[k,n]of[['revive',3],['shield',2],['double',2],['freeze',2]])stock[k]=(stock[k]||0)+n;store.set('items',stock);
+ store.set('graceUntil',Math.max(graceUntil(),Date.now())+5*864e5);confetti();SFX.prize?.();drawHome();}
 // Viajero frecuente: un cofre de oro por semana (al abrir el juego)
 function weeklyChest(){if(!Iap.frecuente)return;const wk=Math.floor(Date.now()/(7*864e5));if(store.get('vfWeek',-1)===wk)return;store.set('vfWeek',wk);K.addChest('oro');setTimeout(()=>{pop(t('vf.weekly'),'big');drawHome();},1500);}
 grantStarter();weeklyChest();Iap.onCambio(()=>{grantStarter();weeklyChest();});

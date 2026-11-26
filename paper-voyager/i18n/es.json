@@ -1363,10 +1363,10 @@
  "legal.adsPrivacy": "Privacidad de anuncios",
  "lives.reviveHint": "Si no seguís, perdés esta vida (te quedan {n})",
  "pack.starter": "Pack de inicio",
- "pack.starter.desc": "Solo una vez, el mejor precio",
+ "pack.starter.desc": "Una sola vez · más de 4000 monedas de valor",
  "starter.once": "OFERTA ÚNICA",
  "starter.coins": "1000 monedas",
- "starter.lives": "72 horas de vidas ilimitadas",
+ "starter.lives": "5 días de vidas ilimitadas",
  "starter.revives": "3 revivir",
  "toast.starter": "¡PACK DE INICIO!",
  "vf.weekly": "¡COFRE DE ORO SEMANAL!",
@@ -1376,5 +1376,9 @@
  "lives.lostOne": "Queda 1 vida",
  "map.travelL": "VIAJAR",
  "map.seePassL": "PASAPORTE",
- "map.moreCoinsL": "TE FALTAN MONEDAS"
+ "map.moreCoinsL": "TE FALTAN MONEDAS",
+ "starter.char": "Mora",
+ "starter.skin": "Nilo Marinero",
+ "starter.items": "Potenciadores: 3 revivir, 2 escudos, 2 dobles y 2 congelar",
+ "legal.subs": "El pago se cobra a tu cuenta de App Store o Google Play. La suscripción se renueva sola al mismo precio, salvo que la canceles al menos 24 h antes de que termine el período. Podés gestionarla o cancelarla cuando quieras en los ajustes de suscripciones de tu cuenta."
 }

@@ -1363,10 +1363,10 @@
  "legal.adsPrivacy": "広告のプライバシー",
  "lives.reviveHint": "あきらめるとこのライフを失うよ（残り{n}）",
  "pack.starter": "スターターパック",
- "pack.starter.desc": "一度きりの特別価格",
+ "pack.starter.desc": "一度きり・4000コイン以上の価値",
  "starter.once": "一度きり",
  "starter.coins": "コイン1000枚",
- "starter.lives": "72時間ライフ無制限",
+ "starter.lives": "5日間ライフ無制限",
  "starter.revives": "復活×3",
  "toast.starter": "スターターパック！",
  "vf.weekly": "毎週の金の宝箱！",
@@ -1376,5 +1376,9 @@
  "lives.lostOne": "残りライフ 1",
  "map.travelL": "移動",
  "map.seePassL": "パスポート",
- "map.moreCoinsL": "コインが足りない"
+ "map.moreCoinsL": "コインが足りない",
+ "starter.char": "モーラ",
+ "starter.skin": "セーラーのニロ",
+ "starter.items": "パワーアップ：復活×3、シールド×2、ダブル×2、フリーズ×2",
+ "legal.subs": "お支払いはApp StoreまたはGoogle Playのアカウントに請求されます。期間終了の24時間前までに解約しない限り、同じ価格で自動更新されます。管理・解約はアカウントのサブスクリプション設定からいつでもできます。"
 }

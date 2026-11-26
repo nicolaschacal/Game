@@ -1363,10 +1363,10 @@
  "legal.adsPrivacy": "Werbe-Datenschutz",
  "lives.reviveHint": "Gibst du auf, ist dieses Leben weg (noch {n})",
  "pack.starter": "Starterpaket",
- "pack.starter.desc": "Nur einmal, bester Preis",
+ "pack.starter.desc": "Nur einmal · über 4.000 Münzen wert",
  "starter.once": "EINMALIGES ANGEBOT",
  "starter.coins": "1000 Münzen",
- "starter.lives": "72 Stunden unbegrenzte Leben",
+ "starter.lives": "5 Tage unbegrenzte Leben",
  "starter.revives": "3× Wiederbeleben",
  "toast.starter": "STARTERPAKET!",
  "vf.weekly": "WÖCHENTLICHE GOLDTRUHE!",
@@ -1376,5 +1376,9 @@
  "lives.lostOne": "Noch 1 Leben",
  "map.travelL": "REISEN",
  "map.seePassL": "PASS",
- "map.moreCoinsL": "MEHR MÜNZEN NÖTIG"
+ "map.moreCoinsL": "MEHR MÜNZEN NÖTIG",
+ "starter.char": "Mora",
+ "starter.skin": "Matrosen-Nilo",
+ "starter.items": "Power-ups: 3× Wiederbeleben, 2 Schilde, 2× Doppelt, 2× Einfrieren",
+ "legal.subs": "Die Zahlung erfolgt über dein App‑Store‑ oder Google‑Play‑Konto. Das Abo verlängert sich automatisch zum gleichen Preis, außer du kündigst mindestens 24 Std. vor Ende des Zeitraums. Verwalten oder kündigen jederzeit in den Abo‑Einstellungen deines Kontos."
 }

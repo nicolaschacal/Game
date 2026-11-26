@@ -32,7 +32,7 @@ export const CONFIG = {
     // Identificadores de los paquetes dentro de la offering "default" (se arman en el panel de RevenueCat). El precio es orientativo (web).
     paquetes: [
       // Pack de inicio: compra única (no consumible, paquete personalizado «starter», entitlement pack_inicio). Se entrega una sola vez por dispositivo.
-      { id: 'starter', tipo: 'starter', nombre: tt('pack.starter'), desc: tt('pack.starter.desc'), precio: 'US$ 1,99' },
+      { id: 'starter', tipo: 'starter', nombre: tt('pack.starter'), desc: tt('pack.starter.desc'), precio: 'US$ 2,99' },
       { id: '$rc_lifetime', tipo: 'noads', nombre: tt('pack.noads'), desc: tt('pack.noads.desc'), precio: 'US$ 3,99' },
       { id: '$rc_monthly', tipo: 'vf', nombre: tt('pack.monthly'), desc: tt('pack.vf.monthly.desc'), precio: 'US$ 2,99' },
       { id: '$rc_annual', tipo: 'vf', nombre: tt('pack.annual'), desc: tt('pack.vf.annual.desc'), precio: 'US$ 19,99', destacado: true },

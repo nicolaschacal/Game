@@ -1363,10 +1363,10 @@
  "legal.adsPrivacy": "Privacy annunci",
  "lives.reviveHint": "Se ti arrendi, perdi questa vita (ne restano {n})",
  "pack.starter": "Pacchetto iniziale",
- "pack.starter.desc": "Solo una volta, miglior prezzo",
+ "pack.starter.desc": "Solo una volta · oltre 4000 monete di valore",
  "starter.once": "OFFERTA UNICA",
  "starter.coins": "1000 monete",
- "starter.lives": "72 ore di vite illimitate",
+ "starter.lives": "5 giorni di vite illimitate",
  "starter.revives": "3 rinascite",
  "toast.starter": "PACCHETTO INIZIALE!",
  "vf.weekly": "FORZIERE D’ORO SETTIMANALE!",
@@ -1376,5 +1376,9 @@
  "lives.lostOne": "Resta 1 vita",
  "map.travelL": "VIAGGIA",
  "map.seePassL": "PASSAPORTO",
- "map.moreCoinsL": "SERVONO MONETE"
+ "map.moreCoinsL": "SERVONO MONETE",
+ "starter.char": "Mora",
+ "starter.skin": "Nilo Marinaio",
+ "starter.items": "Potenziamenti: 3 rinascite, 2 scudi, 2 doppi e 2 congela",
+ "legal.subs": "Il pagamento viene addebitato sul tuo account App Store o Google Play. L’abbonamento si rinnova automaticamente allo stesso prezzo, salvo disdetta almeno 24 ore prima della fine del periodo. Gestiscilo o annullalo quando vuoi nelle impostazioni abbonamenti del tuo account."
 }

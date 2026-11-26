@@ -1363,10 +1363,10 @@
  "legal.adsPrivacy": "Ad privacy",
  "lives.reviveHint": "If you give up, you lose this life ({n} left)",
  "pack.starter": "Starter Pack",
- "pack.starter.desc": "One time only, best price",
+ "pack.starter.desc": "One time only · worth over 4,000 coins",
  "starter.once": "ONE-TIME OFFER",
  "starter.coins": "1000 coins",
- "starter.lives": "72 hours of unlimited lives",
+ "starter.lives": "5 days of unlimited lives",
  "starter.revives": "3 revives",
  "toast.starter": "STARTER PACK!",
  "vf.weekly": "WEEKLY GOLD CHEST!",
@@ -1376,5 +1376,9 @@
  "lives.lostOne": "1 life left",
  "map.travelL": "TRAVEL",
  "map.seePassL": "PASSPORT",
- "map.moreCoinsL": "NEED MORE COINS"
+ "map.moreCoinsL": "NEED MORE COINS",
+ "starter.char": "Mora",
+ "starter.skin": "Sailor Nilo",
+ "starter.items": "Power-ups: 3 revives, 2 shields, 2 doubles and 2 freezes",
+ "legal.subs": "Payment is charged to your App Store or Google Play account. The subscription renews automatically at the same price unless canceled at least 24 hours before the end of the period. Manage or cancel it anytime in your account’s subscription settings."
 }

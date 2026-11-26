@@ -95,7 +95,7 @@ function injectCSS() {
 .vfc .ok{font:400 17px 'Lilita One',sans-serif;color:#356F2E;text-align:center;margin:4px 0}
 .vfc .it{margin-top:8px;width:100%}
 .vleg{font:700 10.5px/1.4 Nunito;color:#7c7460;margin:10px 2px 0}.vleg a{color:#34437F;text-decoration:underline}
-.vfc.st{position:relative;margin-top:22px}.vfc .stb{position:absolute;right:14px;top:-11px;z-index:2;background:#E8452C;color:#FFF6E0;border-radius:99px;padding:3px 11px 2px;font:900 10px/1.3 Nunito;letter-spacing:1px;box-shadow:0 2px 0 rgba(27,23,48,.35)}
+.vfc.st{position:relative;margin-top:22px}.vfc .vstp{display:flex;gap:10px;margin:12px 0 2px}.vfc .stw{flex:1;text-align:center}.vfc .stw .stA{height:92px;border-radius:14px;background:radial-gradient(circle at 50% 60%,#fff 0,#DCE9F7 75%);display:flex;align-items:flex-end;justify-content:center;overflow:hidden}.vfc .stw .stA svg{width:100px;height:100px;margin-bottom:-6px}.vfc .stw b{display:block;font:400 15px 'Lilita One',sans-serif;margin-top:5px}.vfc .stb{position:absolute;right:14px;top:-11px;z-index:2;background:#E8452C;color:#FFF6E0;border-radius:99px;padding:3px 11px 2px;font:900 10px/1.3 Nunito;letter-spacing:1px;box-shadow:0 2px 0 rgba(27,23,48,.35)}
 .vfc.na h3{font-size:21px}.vfc.na p{font:700 12.5px/1.35 Nunito;color:#5d5546;margin:6px 0 10px}
 
 .vsub{display:flex;gap:6px;padding:12px 14px 2px;overflow-x:auto;scrollbar-width:none}.vsub::-webkit-scrollbar{display:none}
@@ -221,7 +221,7 @@ ${!full && !vid && Vidas.videosHoy() >= Vidas.VIDEOS_DIA ? `<small style="margin
 function legalHTML(c) {
   const L = c.Iap?.legal; if (!L) return '';
   const a = (u, k) => `<a href="${u}" target="_blank" rel="noopener">${tt(k)}</a>`;
-  return `<div class="vleg">${tt(esIOS() ? 'legal.subs.ios' : 'legal.subs.android')}<br>${a(esIOS() ? L.eulaApple : L.terminos, 'legal.terms')} · ${a(L.privacidad, 'legal.privacy')}${c.Ads?.privacidadAds ? ` · <a href="#" data-v="adsPriv">${tt('legal.adsPrivacy')}</a>` : ''}</div>`;
+  return `<div class="vleg">${tt('legal.subs')}<br>${a(esIOS() ? L.eulaApple : L.terminos, 'legal.terms')} · ${a(L.privacidad, 'legal.privacy')}${c.Ads?.privacidadAds ? ` · <a href="#" data-v="adsPriv">${tt('legal.adsPrivacy')}</a>` : ''}</div>`;
 }
 function vfCard(c) {
   const I = c.Iap, own = I?.frecuente, pk = (I?.paquetes || []).filter(p => p.tipo === 'vf');
@@ -231,8 +231,10 @@ function vfCard(c) {
 }
 function starterCard(c) {
   const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'starter'); if (!p || I.starter) return '';
-  const items = [['moneda', 'starter.coins'], ['corazon', 'starter.lives'], ['revivir', 'starter.revives']].map(([i, k]) => `<li><i>${ico(i, 22)}</i>${tt(k)}</li>`).join('');
-  return `<div class="card vfc st"><span class="stb">${tt('starter.once')}</span><h3>${ico('mochila', 32)}${tt('pack.starter')}</h3><ul>${items}</ul><button class="it pk" data-v="pk" data-id="${p.id}"><i>${ico('avion', 30)}</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button></div>`;
+  const items = [['moneda', 'starter.coins'], ['corazon', 'starter.lives'], ['revivir', 'starter.items']].map(([i, k]) => `<li><i>${ico(i, 22)}</i>${tt(k)}</li>`).join('');
+  const who = (id, sk, name) => `<div class="stw"><div class="stA">${thumb(c, id, sk)}</div><b>${esc(name)}</b></div>`;
+  const pics = `<div class="vstp">${who('mora', 'base', tt('starter.char'))}${who('nilo', 'marinero', tt('starter.skin'))}</div>`;
+  return `<div class="card vfc st"><span class="stb">${tt('starter.once')}</span><h3>${ico('mochila', 32)}${tt('pack.starter')}</h3>${pics}<ul>${items}</ul><button class="it pk" data-v="pk" data-id="${p.id}"><i>${ico('avion', 30)}</i><div><b>${tt('pack.once')}</b><small>${esc(p.desc)}</small></div><span class="price">${I.precio(p.id)}</span></button></div>`;
 }
 function naCard(c) {
   const I = c.Iap, p = (I?.paquetes || []).find(x => x.tipo === 'noads'); if (!p) return '';

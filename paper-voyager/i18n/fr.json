@@ -1363,10 +1363,10 @@
  "legal.adsPrivacy": "Confidentialité des pubs",
  "lives.reviveHint": "Si tu abandonnes, tu perds cette vie (il en reste {n})",
  "pack.starter": "Pack de départ",
- "pack.starter.desc": "Une seule fois, meilleur prix",
+ "pack.starter.desc": "Une seule fois · plus de 4000 pièces de valeur",
  "starter.once": "OFFRE UNIQUE",
  "starter.coins": "1000 pièces",
- "starter.lives": "72 heures de vies illimitées",
+ "starter.lives": "5 jours de vies illimitées",
  "starter.revives": "3 réanimations",
  "toast.starter": "PACK DE DÉPART !",
  "vf.weekly": "COFFRE D’OR HEBDO !",
@@ -1376,5 +1376,9 @@
  "lives.lostOne": "Il reste 1 vie",
  "map.travelL": "VOYAGER",
  "map.seePassL": "PASSEPORT",
- "map.moreCoinsL": "IL MANQUE DES PIÈCES"
+ "map.moreCoinsL": "IL MANQUE DES PIÈCES",
+ "starter.char": "Mora",
+ "starter.skin": "Nilo Marin",
+ "starter.items": "Bonus : 3 réanimations, 2 boucliers, 2 doubles et 2 gels",
+ "legal.subs": "Le paiement est facturé sur ton compte App Store ou Google Play. L’abonnement se renouvelle automatiquement au même prix, sauf résiliation au moins 24 h avant la fin de la période. Gère-le ou résilie-le à tout moment dans les réglages d’abonnements de ton compte."
 }
