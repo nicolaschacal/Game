@@ -346,7 +346,7 @@
  "menu.unlock": "잠금 해제 ◉ {n}",
  "menu.wallet.aria": "동전, 상점 열기",
  "menu.weather": "실시간 날씨",
- "menu.weather.aria": "실시간 날씨",
+ "menu.weather.aria": "야간 모드",
  "mission.chest.many": "상자 {n}개 찾기",
  "mission.chest.one": "상자 {n}개 찾기",
  "mission.coin": "동전 {n}개 모으기",

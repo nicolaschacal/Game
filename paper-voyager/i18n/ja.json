@@ -335,7 +335,7 @@
  "menu.unlock": "解放 ◉ {n}",
  "menu.wallet.aria": "コイン、ショップを開く",
  "menu.weather": "リアル天気",
- "menu.weather.aria": "リアル天気",
+ "menu.weather.aria": "夜モード",
  "mission.chest.many": "チェストを{n}個見つける",
  "mission.chest.one": "チェストを{n}個見つける",
  "mission.coin": "コインを{n}枚集める",

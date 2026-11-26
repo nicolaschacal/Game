@@ -155,7 +155,7 @@ body.home #routeBar.on{top:calc(var(--st) + 142px);right:auto;left:50%;transform
 #menu .chip,#menu .arrow,#menu .ribbon{position:static;transform:none}
 #climaChip{flex:none;min-width:0;height:44px;padding:0 8px 0 10px;border-radius:22px;border:3px solid var(--ink);background:#FFF6E0;box-shadow:inset 0 -4px 0 #EAD9B5,0 3px 0 var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:6px;font:900 11px/1 Nunito;letter-spacing:.2px;cursor:pointer}
 #climaChip.on{background:#DCEFF9}
-#climaChip .cl{display:flex;align-items:center;gap:4px;min-width:0}#climaChip .cl svg{position:static;width:18px;height:18px;flex:none}#climaChip .ct{display:none}
+#climaChip .dn{display:flex;align-items:center;margin-right:4px}#climaChip .ct{display:none}
 #climaChip .sw{flex:none;width:42px;height:24px;border-radius:12px;border:2px solid var(--ink);box-sizing:border-box;background:#CFC6AE;display:flex;align-items:center;justify-content:flex-start;padding:1px;transition:background .2s}
 #climaChip .sw i{width:18px;height:18px;border-radius:9px;background:var(--ink);transition:transform .2s}
 #climaChip.on .sw{background:var(--green)}#climaChip.on .sw i{transform:translateX(18px);background:#FFF6E0}
@@ -212,7 +212,7 @@ body.gpapel #livesChip:after{content:"";position:absolute;z-index:-1;inset:0 3px
 #mNav .dot{position:absolute;top:-4px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--red);border:2.5px solid var(--ink);color:#fff;font:900 10px/13px Nunito;display:none}
 /* sin espacio publicitario en el inicio (#adBanner sigue en el DOM porque Ads lo referencia) */
 #adBanner,#adBanner.on{display:none!important}
-@media(max-width:380px){#climaChip .cl svg{display:none}}
+
 @media(max-height:700px){#mCol{gap:7px;padding-bottom:calc(var(--sb) + 76px)}#mNav{height:calc(var(--sb) + 58px)}#mNav button{font-size:10px}#mission .mrow:nth-of-type(n+2){display:none}#mission .word{display:none}#mission>b{margin-bottom:1px}#worldChip{height:56px;font-size:21px}#mission{padding:6px 12px}.mrow{line-height:19px;font-size:12px}#playWrap .btn{height:56px;font-size:30px}#menu #skinName{font-size:22px}}
 .side{position:absolute;top:calc(var(--st) + 262px);width:66px;padding:8px 0 7px;border-radius:18px;background:var(--cream);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);color:var(--ink);font:900 9px Nunito;letter-spacing:.8px;text-align:center}
 .side i{display:block;font:400 26px/28px 'Lilita One',sans-serif;font-style:normal;color:var(--red)}
@@ -709,7 +709,7 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
  <div id="skinName" class="ribbon"></div>
  <div id="mCol">
   <div id="mTop">
-   <button class="chip" id="climaChip" role="switch" aria-checked="false" data-i18n-aria="menu.weather.aria" aria-label="Clima real"><span class="cl"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A4.5 4.5 0 0 1 17.5 18H7z"/></svg><span class="ct" data-i18n="menu.weather">CLIMA REAL</span></span><span class="sw"><i></i></span></button>
+   <button class="chip" id="climaChip" role="switch" aria-checked="false" data-i18n-aria="menu.weather.aria" aria-label="Modo noche"><span class="dn"></span><span class="ct"></span><span class="sw"><i></i></span></button>
    <button id="livesChip" data-i18n-aria="lives.aria" aria-label="Vidas"><svg viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21s-9.5-5.7-9.5-12.6A5.4 5.4 0 0 1 12 5.3a5.4 5.4 0 0 1 9.5 3.1C21.5 15.3 12 21 12 21z" fill="#E8452C" stroke="#FFF4DC" stroke-width="2.2" stroke-linejoin="round"/></svg><b id="livesN" class="L">5</b><small id="livesT"></small></button>
    <button id="walletChip" data-i18n-aria="menu.wallet.aria" aria-label="Monedas, abrir tienda"><span data-ico="coin"></span><b id="mWallet" class="L">0</b><i class="plus"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></i></button>
    <button id="mGear" data-i18n-aria="menu.settings.aria" aria-label="Ajustes: música y ayuda" aria-expanded="false"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linejoin="round"><circle cx="12" cy="12" r="5.4" stroke-width="3.4"/><path d="M18.6 12L22 12" stroke-width="4.4" stroke-linecap="butt"/><path d="M16.67 16.67L19.07 19.07" stroke-width="4.4" stroke-linecap="butt"/><path d="M12 18.6L12 22" stroke-width="4.4" stroke-linecap="butt"/><path d="M7.33 16.67L4.93 19.07" stroke-width="4.4" stroke-linecap="butt"/><path d="M5.4 12L2 12" stroke-width="4.4" stroke-linecap="butt"/><path d="M7.33 7.33L4.93 4.93" stroke-width="4.4" stroke-linecap="butt"/><path d="M12 5.4L12 2" stroke-width="4.4" stroke-linecap="butt"/><path d="M16.67 7.33L19.07 4.93" stroke-width="4.4" stroke-linecap="butt"/></svg></button>
@@ -1489,17 +1489,10 @@ function useItems(){for(const k of ['shield','double'])if(stock[k]>0&&!boost[k])
  if(boost.compass)markDecoys(decoyIds);
  store.set('items',stock);drawBoosts();}
 function buy(price,name){if(wallet<price){SFX.nope();buzz(40);showToast(t('toast.need',{n:price-wallet,name:name.toUpperCase()}));return false;}wallet-=price;store.set('wallet',wallet);SFX.buy();buzz([15,40,15]);return true;}
-function setClima(txt,on,load){const b=$('climaChip');b.querySelector('.ct').textContent=txt;b.classList.toggle('on',!!on);b.classList.toggle('load',!!load);b.setAttribute('aria-checked',on?'true':'false');}
-function drawClima(){
- const c=climaEstado();
- setHour(horaFija());
- const txt=c.estado!=='ok'?t('weather.'+c.estado):'';
- setClima(txt||(c.lluvia?'☂ ':'☀ ')+c.texto.toUpperCase()+' · '+c.temp+'°',c.estado==='ok',c.estado==='load');
-}
-$('climaChip').addEventListener('click',async()=>{SFX.tap();setClima(t('weather.load'),true,true);const r=await alternarClima();drawClima();
- if(r==='denied')showToast(t('toast.weatherDenied'));
- else if(r==='error')showToast(t('toast.weatherError'));});
-setHour(horaFija());refrescarSiHaceFalta().then(drawClima);setInterval(()=>refrescarSiHaceFalta().then(drawClima),10*60e3);
+// Interruptor día / noche (sin ubicación): sol de día, luna de noche
+function drawClima(){const n=climaEstado().estado==='noche',b=$('climaChip');setHour(horaFija());b.classList.toggle('on',n);b.setAttribute('aria-checked',n?'true':'false');b.querySelector('.dn').innerHTML=pIco(n?'luna':'sol',22);}
+$('climaChip').addEventListener('click',async()=>{SFX.tap();await alternarClima();drawClima();});
+setHour(horaFija());
 function drawHome(){
  const k=SKINS[browse],has=owned.includes(k.id);
  drawClima();heroSync();

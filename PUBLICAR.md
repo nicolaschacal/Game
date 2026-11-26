@@ -98,7 +98,7 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 1. Apple Developer Program (US$ 99/año). Si facturás menos de US$ 1M al año, inscribite en el **Small Business Program** (comisión 15 % en vez de 30 %).
 2. `cd ios/App && pod install`, abrí `App.xcworkspace`, elegí tu Team en Signing. Archive → Distribute → App Store Connect.
 3. Capabilities necesarias: In-App Purchase (se agrega sola con RevenueCat).
-4. App Store Connect: ficha, capturas 6.9" y 6.5" (y iPad si la dejás universal), categoría Juegos, clasificación por edades, **App Privacy** (anuncios → "Identifiers / Advertising data", compras → "Purchase history", ubicación aproximada opcional), URL de privacidad.
+4. App Store Connect: ficha, capturas 6.9" y 6.5" (solo iPhone: la app ya no es universal), categoría Juegos, clasificación por edades, **App Privacy** (anuncios → "Identifiers / Advertising data", compras → "Purchase history", ubicación aproximada opcional), URL de privacidad.
 5. Revisión: Apple pide que las suscripciones muestren precio, duración y un enlace a Términos y Privacidad en el paywall; el paywall de RevenueCat ya los incluye si cargás las URLs en el panel.
 
 ## 6. Política de privacidad
@@ -119,7 +119,7 @@ Qué da PRO en el juego: sin banner ni intersticiales y +25 % de monedas al guar
 - [ ] RevenueCat: entitlement `pack_inicio` (no consumible, paquete personalizado `starter`) y entitlements `sin_anuncios` (producto no consumible, paquete `$rc_lifetime`) y `viajero_frecuente` (suscripciones `$rc_monthly` y `$rc_annual`, mismo grupo de suscripción en App Store Connect).
 - [ ] `privacidad.html` y `terminos.html`: completar nombre y correo, publicarlas en el dominio propio y actualizar `CONFIG.legal`.
 - [ ] App Store Connect: URL de privacidad, enlace al EULA estándar de Apple en la descripción (o EULA propio), capturas del paywall para la revisión de las compras.
-- [ ] Clima real: Open-Meteo gratis es sólo para uso NO comercial; con anuncios/suscripción hace falta su plan comercial o cambiar de proveedor.
+- [x] Clima real eliminado: ahora es un interruptor día/noche, sin ubicación ni servicios externos.
 - [ ] AdMob: activar el mensaje de consentimiento (UMP/GDPR) y el de ATT en la consola de AdMob → «Privacidad y mensajes». El código ya los pide al iniciar.
 - [ ] Lista completa de `SKAdNetworkItems` de Google en Info.plist (hoy hay una sola).
 - [ ] Público objetivo: declarar 13+ (no «Familias»/«Kids»), o pasar AdMob a anuncios para niños.

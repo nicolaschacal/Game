@@ -18,22 +18,20 @@ Leyenda: **BLOQUEA** = rechazo seguro si no se arregla · **RIESGO** = puede tra
 | 3 | Ambas | Productos creados y con los mismos IDs: `pack_inicio` (paquete `starter`), `sin_anuncios` (`$rc_lifetime`), `viajero_frecuente` (`$rc_monthly`, `$rc_annual`, mismo grupo de suscripción) | **A MANO** |
 | 4 | Ambas | `privacidad.html` y `terminos.html` con nombre y correo reales, publicadas en un dominio propio, y `CONFIG.legal` apuntando ahí | **BLOQUEA** |
 | 5 | Apple | URL de **Soporte** obligatoria en App Store Connect (página con forma de contacto o correo) | **BLOQUEA** → hace falta el sitio |
-| 6 | Ambas | Clima real: Open-Meteo gratis prohíbe uso comercial (app con anuncios/suscripción) | **BLOQUEA (licencia)** → plan pago o cambiar proveedor |
+| 6 | Ambas | ~~Clima real con Open-Meteo~~ → reemplazado por un interruptor día/noche, sin ubicación ni servicios externos | **OK** |
 | 7 | Apple | Build con Xcode 26 y SDK de iOS 26 o superior (exigido desde abr. 2026). Capacitor 7 compila, pero conviene probar el archivo final | **A MANO** |
 | 8 | Google | Cuenta personal nueva: prueba cerrada con 12+ testers durante 14 días seguidos | **BLOQUEA** el pase a producción |
 
 ## 2. Privacidad y permisos (Apple 5.1 · Google Datos del usuario)
 
 - **OK** Permiso de seguimiento (ATT) y consentimiento de Google (UMP) se piden al iniciar, en ese orden; sin permiso el juego funciona igual.
-- **OK** Textos de permiso en `Info.plist` (seguimiento y ubicación) explican para qué y que es opcional.
-- **RIESGO** Esos textos están **solo en español**; el juego está en 8 idiomas. Agregar `InfoPlist.strings` por idioma (en, pt, fr, de, it, ja, ko).
-- **RIESGO** El clima usa `navigator.geolocation` dentro del WebView: en iOS puede salir un segundo cartel raro tipo «localhost quiere usar tu ubicación». Pasar al plugin `@capacitor/geolocation`.
-- **OK** El permiso de ubicación se pide solo cuando el jugador prende «clima real» (en contexto).
+- **OK** El texto del permiso de seguimiento explica para qué es y que es opcional.
+- **OK** El texto del permiso de seguimiento está traducido a los 8 idiomas (`InfoPlist.strings` en `es/en/pt/fr/de/it/ja/ko.lproj`).
+- **OK** El juego ya no usa ubicación: se quitaron el permiso de iOS y `ACCESS_COARSE_LOCATION` de Android.
 - **A MANO** Informe de privacidad de Xcode (Product › Archive › Generate Privacy Report): confirmar que AdMob, RevenueCat y Capacitor traen sus manifiestos `PrivacyInfo.xcprivacy`. La app en sí no usa APIs de «motivo requerido».
 - **RIESGO** `SKAdNetworkItems` tiene un solo identificador; Google pide la lista completa en Info.plist.
 - **A MANO** Etiquetas de privacidad (App Store) y formulario de Seguridad de los datos (Google), declarar:
   - Identificador de dispositivo / publicidad (AdMob) → seguimiento si el jugador acepta ATT.
-  - Ubicación aproximada (clima, opcional, no se guarda en servidor; se manda a Open-Meteo).
   - Historial de compras (RevenueCat).
   - Datos de diagnóstico de los SDK (AdMob/RevenueCat).
 - **OK** No hay cuentas ni login → no aplica borrar cuenta ni Sign in with Apple.
@@ -64,7 +62,7 @@ Leyenda: **BLOQUEA** = rechazo seguro si no se arregla · **RIESGO** = puede tra
 - **RIESGO** 4.3 «spam» en categorías saturadas (corredores): el arte papercut, los destinos reales y las historias lo diferencian. Mostrar eso en capturas y descripción.
 - **OK** No descarga código: todo el juego va dentro del paquete (`webDir: www`, sin `server.url`).
 - **OK** Modos de prueba (`?rico`, `?debug`, `?gratis`, `?vidas`) dependen de la URL; en la app nativa no se pueden activar.
-- **A MANO** iPad: el proyecto declara iPhone **y** iPad (`TARGETED_DEVICE_FAMILY = 1,2`). Apple lo va a probar en iPad y pide capturas de iPad. Opciones: probar bien en iPad o dejar solo iPhone (`= 1`).
+- **OK** Solo iPhone (`TARGETED_DEVICE_FAMILY = 1`): no hacen falta capturas de iPad. En iPad corre en modo compatibilidad.
 - **A MANO** Funciona sin internet / con red lenta (sin pantallas en blanco), en IPv6, y en el modelo más chico soportado.
 - **OK** Mínimo iOS 14 (Apple exige que apunte a iOS 13+).
 
