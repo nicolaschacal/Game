@@ -1380,5 +1380,6 @@
  "starter.char": "Mora",
  "starter.skin": "Nilo Marinero",
  "starter.items": "Potenciadores: 3 revivir, 2 escudos, 2 dobles y 2 congelar",
- "legal.subs": "El pago se cobra a tu cuenta de App Store o Google Play. La suscripción se renueva sola al mismo precio, salvo que la canceles al menos 24 h antes de que termine el período. Podés gestionarla o cancelarla cuando quieras en los ajustes de suscripciones de tu cuenta."
+ "legal.subs": "El pago se cobra a tu cuenta de App Store o Google Play. La suscripción se renueva sola al mismo precio, salvo que la canceles al menos 24 h antes de que termine el período. Podés gestionarla o cancelarla cuando quieras en los ajustes de suscripciones de tu cuenta.",
+ "vf.chestOdds": "El cofre de oro trae siempre 300–500 monedas y 2 potenciadores al azar, y tiene 40% de probabilidad de traer un souvenir."
 }

@@ -1380,5 +1380,6 @@
  "starter.char": "Mora",
  "starter.skin": "Nilo Marinaio",
  "starter.items": "Potenziamenti: 3 rinascite, 2 scudi, 2 doppi e 2 congela",
- "legal.subs": "Il pagamento viene addebitato sul tuo account App Store o Google Play. L’abbonamento si rinnova automaticamente allo stesso prezzo, salvo disdetta almeno 24 ore prima della fine del periodo. Gestiscilo o annullalo quando vuoi nelle impostazioni abbonamenti del tuo account."
+ "legal.subs": "Il pagamento viene addebitato sul tuo account App Store o Google Play. L’abbonamento si rinnova automaticamente allo stesso prezzo, salvo disdetta almeno 24 ore prima della fine del periodo. Gestiscilo o annullalo quando vuoi nelle impostazioni abbonamenti del tuo account.",
+ "vf.chestOdds": "Il forziere d’oro contiene sempre 300–500 monete e 2 potenziamenti a caso, con il 40% di probabilità di un souvenir."
 }
