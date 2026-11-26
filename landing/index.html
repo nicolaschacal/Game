@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Paper Voyager · Un viaje de papel alrededor del mundo</title>
-<meta name="description" content="Paper Voyager es un juego para iPhone y Android: corré por 72 ciudades reales hechas en papel recortado, con 8 viajeros y sus historias.">
+<title>Paper Voyager · A paper trip around the world</title>
+<meta name="description" content="A game for iPhone and Android: run through 72 real cities made of cut paper, with 8 travelers and their stories.">
 <meta name="theme-color" content="#1B1730">
 <meta property="og:title" content="Paper Voyager">
-<meta property="og:description" content="Un viaje de papel alrededor del mundo. 72 destinos, 8 viajeros, una historia para cada uno.">
+<meta property="og:description" content="A game for iPhone and Android: run through 72 real cities made of cut paper, with 8 travelers and their stories.">
 <meta property="og:image" content="img/icon.png">
 <link rel="icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -44,7 +44,7 @@ nav.links{margin-left:auto;display:flex;gap:22px;align-items:center}nav.links a{
 .cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}
 .cloud:before{width:55%;height:180%;left:12%;bottom:20%}.cloud:after{width:40%;height:140%;right:10%;bottom:25%}
 .hero .grid{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}
-.hero .logo{width:min(520px,100%);filter:drop-shadow(0 6px 10px rgba(27,23,48,.25))}
+.hero .logo{width:min(560px,100%);margin-left:-10px}
 .hero p.lead{font-size:clamp(18px,2.2vw,22px);max-width:30ch;margin:18px 0 26px;color:#2b2950}
 .cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
 .stores{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
@@ -83,17 +83,27 @@ h2{font-size:clamp(34px,5vw,52px);margin:14px 0 10px}
 .shots figcaption{margin-top:26px;font:400 20px 'Lilita One',sans-serif}
 @media(max-width:720px){.shots{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 20px 30px;margin:30px -20px 0;gap:18px}.shots figure{scroll-snap-align:center;flex:none}.shots .phone{width:200px}.brand{font-size:19px;white-space:nowrap}.brand img{width:36px;height:36px}nav.links{gap:14px}}
 .final{text-align:center}.final .paper{padding:46px 26px 50px;max-width:760px;margin:0 auto}
-footer{background:var(--ink);color:#C9C3E0;padding:40px 0 calc(40px + env(safe-area-inset-bottom));font-size:15px}
-footer .wrap{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:center;justify-content:space-between}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--ink);color:#C9C3E0;padding:12px 0 calc(12px + env(safe-area-inset-bottom));font-size:14px;box-shadow:0 -4px 14px rgba(27,23,48,.25)}body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+footer .wrap{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;justify-content:space-between}@media(max-width:620px){footer .wrap{justify-content:center;text-align:center}body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}}
 footer nav{display:flex;gap:22px;flex-wrap:wrap}footer a{color:var(--cream);text-decoration:none;font-weight:900}footer a:hover{text-decoration:underline}
+
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:34px 26px;justify-items:center}.shots .phone{width:min(230px,100%)}
+@media(max-width:960px){.shots{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.shots{display:flex}}
+.lsel{appearance:none;-webkit-appearance:none;background:rgba(255,246,224,.15);color:var(--cream);border:2px solid rgba(255,246,224,.55);border-radius:99px;padding:6px 28px 6px 12px;font:900 13px Nunito;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--cream) 50%),linear-gradient(135deg,var(--cream) 50%,transparent 50%);background-position:calc(100% - 14px) 52%,calc(100% - 9px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+.lsel option{color:#1B1730}
+nav.links a,.btn{white-space:nowrap}
+@media(max-width:560px){nav.links a:not(.btn){display:none}nav.links{gap:8px}.lsel{padding:5px 24px 5px 10px;font-size:12px}}
+@media(max-width:370px){.brand span{display:none}}nav.links a.btn{color:var(--ink);letter-spacing:.5px}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="pvGrainL" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/><feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/><feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".18" intercept=".9"/><feFuncG type="linear" slope=".18" intercept=".9"/><feFuncB type="linear" slope=".18" intercept=".9"/></feComponentTransfer><feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/><feComposite in="m" in2="SourceAlpha" operator="in"/></filter></svg>
 
 <header class="top"><div class="wrap">
- <a class="brand" href="#"><img src="img/icon.png" alt="">Paper Voyager</a>
- <nav class="links"><a class="opt" href="#juego">El juego</a><a class="opt" href="#viajeros">Viajeros</a><a href="soporte.html">Soporte</a><a class="btn small" href="game/">Jugar</a></nav>
+ <a class="brand" href="#"><img src="img/icon.png" alt=""><span>Paper Voyager</span></a>
+ <nav class="links"><a class="opt" href="#juego" data-t="nav.game">The game</a><a class="opt" href="#viajeros" data-t="nav.cast">Travelers</a><a href="soporte.html" data-t="nav.support">Support</a>
+  <select class="lsel" id="lang" aria-label="Language"></select><a class="btn small" href="game/" data-t="nav.play">Play</a></nav>
 </div></header>
 
 <main>
@@ -103,67 +113,77 @@ footer nav{display:flex;gap:22px;flex-wrap:wrap}footer a{color:var(--cream);text
  <div class="cloud" style="width:170px;height:48px;right:4%;top:150px"></div>
  <div class="wrap grid">
   <div>
-   <h1><img class="logo" src="img/logo.png" alt="Paper Voyager" width="800" height="367"></h1>
-   <p class="lead">Un viaje de papel alrededor del mundo. Corré por ciudades reales recortadas a mano, juntá selfies y descubrí la historia de cada viajero.</p>
-   <div class="cta"><a class="btn" href="game/">Jugar en el navegador</a></div>
-   <div class="stores"><span class="store">Muy pronto en<b>App Store</b></span><span class="store">Muy pronto en<b>Google Play</b></span></div>
+   <h1><img class="logo" src="img/logo.png" alt="Paper Voyager" width="760" height="425"></h1>
+   <p class="lead" data-t="hero.lead">A paper trip around the world. Run through real cities cut by hand, snap selfies and uncover every traveler’s story.</p>
+   <div class="cta"><a class="btn" href="game/" data-t="hero.cta">Play in your browser</a></div>
+   <div class="stores"><span class="store"><span data-t="soon">Coming soon on</span><b>App Store</b></span><span class="store"><span data-t="soon">Coming soon on</span><b>Google Play</b></span></div>
   </div>
   <div class="phones" aria-hidden="true">
-   <div class="phone a"><img src="img/shot-carrera.webp" alt="" width="540" height="1170"></div>
-   <div class="phone b"><img src="img/shot-inicio.webp" alt="" width="540" height="1170"></div>
+   <div class="phone a"><img src="img/s3-run.webp" alt="" width="540" height="1170"></div>
+   <div class="phone b"><img src="img/s1-home.webp" alt="" width="540" height="1170"></div>
   </div>
  </div>
  <div class="hills"><svg viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 Q180 10 360 60 T720 55 T1080 50 T1440 45 V120 H0z" fill="#9CCB7A"/><path d="M0 95 Q240 50 480 88 T960 80 T1440 78 V120 H0z" fill="#6FAE5B"/><path d="M0 110 Q300 92 600 108 T1200 104 T1440 102 V120 H0z" fill="#E7D5AE"/></svg></div>
 </section>
 
 <section id="juego"><div class="wrap">
- <span class="kicker">El juego</span>
- <h2>Construí tu camino, ciudad por ciudad</h2>
- <p class="sub">Paper Voyager es un juego de carreras por carriles: esquivás obstáculos, juntás monedas y llegás al aeropuerto para volar al siguiente destino. Todo está hecho como un libro de papel recortado.</p>
+ <span class="kicker" data-t="game.k">The game</span>
+ <h2 data-t="game.h">Build your way, city by city</h2>
+ <p class="sub" data-t="game.p">Paper Voyager is a lane runner: dodge obstacles, collect coins and reach the airport to fly to your next destination. Everything is crafted like a cut-paper storybook.</p>
  <div class="feats">
-  <div class="feat paper"><span class="ic" data-ico="avion"></span><h3>72 destinos reales</h3><p>De Kioto al Salto Ángel, en 46 países. Cada ciudad tiene sus monumentos, su clima y sus obstáculos.</p></div>
-  <div class="feat paper"><span class="ic" data-ico="libro"></span><h3>8 viajeros, 8 historias</h3><p>Cada personaje viaja por un motivo. Seguí sus postales y desbloqueá su traje secreto.</p></div>
-  <div class="feat paper"><span class="ic" data-ico="mochila"></span><h3>Tu mochila de viaje</h3><p>Selfies en cada destino, souvenirs, pasaportes por región y un álbum para decorar.</p></div>
-  <div class="feat paper"><span class="ic" data-ico="estrella"></span><h3>Partidas cortas</h3><p>Un viaje dura un par de minutos: ideal para el colectivo. En 8 idiomas.</p></div>
+  <div class="feat paper"><span class="ic" data-ico="avion"></span><h3 data-t="f1.h">72 real destinations</h3><p data-t="f1.p">From Osaka to Angel Falls, across 46 countries. Every city has its landmarks, weather and obstacles.</p></div>
+  <div class="feat paper"><span class="ic" data-ico="libro"></span><h3 data-t="f2.h">8 travelers, 8 stories</h3><p data-t="f2.p">Each one travels for a reason. Follow their postcards and unlock their secret outfit.</p></div>
+  <div class="feat paper"><span class="ic" data-ico="mochila"></span><h3 data-t="f3.h">Your travel backpack</h3><p data-t="f3.p">Selfies in every city, souvenirs, passports for each region and an album to decorate.</p></div>
+  <div class="feat paper"><span class="ic" data-ico="estrella"></span><h3 data-t="f4.h">Quick runs</h3><p data-t="f4.p">A trip takes a couple of minutes, perfect for the bus. In 8 languages.</p></div>
  </div>
 </div></section>
 
 <section class="band" id="viajeros"><div class="wrap">
- <span class="kicker">Viajeros</span>
- <h2>Elegí con quién viajar</h2>
- <p class="sub">Ocho viajeros de ocho rincones del mundo, cada uno con su frase, su historia y sus trajes.</p>
- <div class="cast"><article class="hero-card" style="--c:#3E5BA9"><div class="pic"><img src="img/nilo.svg" alt="Nilo" loading="lazy" width="160" height="160"></div><h3>Nilo</h3><small>Berlín, Alemania</small><p>«El cielo es el único país sin fronteras.»</p></article><article class="hero-card" style="--c:#C8382A"><div class="pic"><img src="img/mora.svg" alt="Mora" loading="lazy" width="160" height="160"></div><h3>Mora</h3><small>Buenos Aires, Argentina</small><p>«Si no sabés adónde vas, cualquier colectivo te sirve.»</p></article><article class="hero-card" style="--c:#D9961E"><div class="pic"><img src="img/sipho.svg" alt="Sipho" loading="lazy" width="160" height="160"></div><h3>Sipho</h3><small>Ciudad del Cabo, Sudáfrica</small><p>«Una luz no sirve si nadie la mira.»</p></article><article class="hero-card" style="--c:#8E5CD9"><div class="pic"><img src="img/minji.svg" alt="Minji" loading="lazy" width="160" height="160"></div><h3>Minji</h3><small>Seúl, Corea del Sur</small><p>«Si nadie mira, igual bailo.»</p></article><article class="hero-card" style="--c:#2F7FA8"><div class="pic"><img src="img/tuk.svg" alt="Tuk" loading="lazy" width="160" height="160"></div><h3>Tuk</h3><small>Reikiavik, Islandia</small><p>«Una carta que no llega es una pregunta sin respuesta.»</p></article><article class="hero-card" style="--c:#C47634"><div class="pic"><img src="img/layla.svg" alt="Layla" loading="lazy" width="160" height="160"></div><h3>Layla</h3><small>Amán, Jordania</small><p>«La luz buena siempre llega si sabés esperar.»</p></article><article class="hero-card" style="--c:#3F8F36"><div class="pic"><img src="img/cal.svg" alt="Cal" loading="lazy" width="160" height="160"></div><h3>Cal</h3><small>San Francisco, EE. UU.</small><p>«Un paso. Después otro.»</p></article><article class="hero-card" style="--c:#D94C8A"><div class="pic"><img src="img/anaya.svg" alt="Anaya" loading="lazy" width="160" height="160"></div><h3>Anaya</h3><small>Jaipur, India</small><p>«Todo lugar tiene un color que nadie nombró.»</p></article></div>
+ <span class="kicker" data-t="cast.k">Travelers</span>
+ <h2 data-t="cast.h">Pick your travel buddy</h2>
+ <p class="sub" data-t="cast.p">Eight travelers from eight corners of the world, each with a motto, a story and outfits.</p>
+ <div class="cast"><article class="hero-card" style="--c:#3E5BA9"><div class="pic"><img src="img/nilo.svg" alt="Nilo" loading="lazy" width="160" height="160"></div><h3>Nilo</h3><small data-t="home.nilo">Berlin, Germany</small><p>«<span data-t="quote.nilo">The sky is the only country without borders.</span>»</p></article><article class="hero-card" style="--c:#C8382A"><div class="pic"><img src="img/mora.svg" alt="Mora" loading="lazy" width="160" height="160"></div><h3>Mora</h3><small data-t="home.mora">Buenos Aires, Argentina</small><p>«<span data-t="quote.mora">If you don’t know where you’re going, any bus will do.</span>»</p></article><article class="hero-card" style="--c:#D9961E"><div class="pic"><img src="img/sipho.svg" alt="Sipho" loading="lazy" width="160" height="160"></div><h3>Sipho</h3><small data-t="home.sipho">Cape Town, South Africa</small><p>«<span data-t="quote.sipho">A light is useless if nobody looks at it.</span>»</p></article><article class="hero-card" style="--c:#8E5CD9"><div class="pic"><img src="img/minji.svg" alt="Minji" loading="lazy" width="160" height="160"></div><h3>Minji</h3><small data-t="home.minji">Seoul, South Korea</small><p>«<span data-t="quote.minji">Even if nobody’s watching, I dance.</span>»</p></article><article class="hero-card" style="--c:#2F7FA8"><div class="pic"><img src="img/tuk.svg" alt="Tuk" loading="lazy" width="160" height="160"></div><h3>Tuk</h3><small data-t="home.tuk">Reykjavík, Iceland</small><p>«<span data-t="quote.tuk">A letter that never arrives is a question with no answer.</span>»</p></article><article class="hero-card" style="--c:#C47634"><div class="pic"><img src="img/layla.svg" alt="Layla" loading="lazy" width="160" height="160"></div><h3>Layla</h3><small data-t="home.layla">Amman, Jordan</small><p>«<span data-t="quote.layla">The good light always comes if you know how to wait.</span>»</p></article><article class="hero-card" style="--c:#3F8F36"><div class="pic"><img src="img/cal.svg" alt="Cal" loading="lazy" width="160" height="160"></div><h3>Cal</h3><small data-t="home.cal">San Francisco, USA</small><p>«<span data-t="quote.cal">One step. Then another.</span>»</p></article><article class="hero-card" style="--c:#D94C8A"><div class="pic"><img src="img/anaya.svg" alt="Anaya" loading="lazy" width="160" height="160"></div><h3>Anaya</h3><small data-t="home.anaya">Jaipur, India</small><p>«<span data-t="quote.anaya">Every place has a color nobody has named.</span>»</p></article></div>
 </div></section>
 
 <section><div class="wrap" style="text-align:center">
- <span class="kicker">Así se ve</span>
- <h2>Un mundo de papel en tu bolsillo</h2>
- <div class="shots">
-  <figure><div class="phone"><img src="img/shot-inicio.webp" alt="Pantalla de inicio con Nilo en Kioto" loading="lazy" width="540" height="1170"></div><figcaption>Elegí tu viajero</figcaption></figure>
-  <figure><div class="phone"><img src="img/shot-carrera.webp" alt="Carrera en Kioto" loading="lazy" width="540" height="1170"></div><figcaption>Corré y esquivá</figcaption></figure>
-  <figure><div class="phone"><img src="img/shot-mapa.webp" alt="Mapa de destinos" loading="lazy" width="540" height="1170"></div><figcaption>Volá por el mapa</figcaption></figure>
-  <figure><div class="phone"><img src="img/shot-tienda.webp" alt="Tienda con los viajeros" loading="lazy" width="540" height="1170"></div><figcaption>Desbloqueá viajeros</figcaption></figure>
- </div>
+ <span class="kicker" data-t="shots.k">Take a look</span>
+ <h2 data-t="shots.h">A paper world in your pocket</h2>
+ <div class="shots"><figure><div class="phone"><img src="img/s1-home.webp" alt="" width="540" height="1170"></div><figcaption data-t="c1">Pick your traveler</figcaption></figure><figure><div class="phone"><img src="img/s2-balloon.webp" alt="" width="540" height="1170"></div><figcaption data-t="c2">Fly by balloon</figcaption></figure><figure><div class="phone"><img src="img/s3-run.webp" alt="" width="540" height="1170" loading="lazy"></div><figcaption data-t="c3">Run and dodge</figcaption></figure><figure><div class="phone"><img src="img/s4-map.webp" alt="" width="540" height="1170" loading="lazy"></div><figcaption data-t="c4">Travel the map</figcaption></figure><figure><div class="phone"><img src="img/s5-bag.webp" alt="" width="540" height="1170" loading="lazy"></div><figcaption data-t="c5">Fill your backpack</figcaption></figure><figure><div class="phone"><img src="img/s6-travelers.webp" alt="" width="540" height="1170" loading="lazy"></div><figcaption data-t="c6">Unlock travelers</figcaption></figure><figure><div class="phone"><img src="img/s7-mora.webp" alt="" width="540" height="1170" loading="lazy"></div><figcaption data-t="c7">Their stories</figcaption></figure><figure><div class="phone"><img src="img/s8-story.webp" alt="" width="540" height="1170" loading="lazy"></div><figcaption data-t="c8">Chat with Nilo</figcaption></figure></div>
 </div></section>
 
 <section class="final"><div class="wrap">
  <div class="paper">
-  <h2>¿Listo para despegar?</h2>
-  <p class="sub" style="margin:0 auto 24px">Probalo ahora en el navegador. Muy pronto también en iPhone y Android.</p>
-  <a class="btn" href="game/">Jugar ahora</a>
+  <h2 data-t="final.h">Ready for takeoff?</h2>
+  <p class="sub" style="margin:0 auto 24px" data-t="final.p">Try it now in your browser. Coming soon to iPhone and Android.</p>
+  <a class="btn" href="game/" data-t="final.cta">Play now</a>
  </div>
 </div></section>
 </main>
 
 <footer><div class="wrap">
  <div>© 2026 Paper Voyager · <a href="mailto:[tu correo]">[tu correo]</a></div>
- <nav><a href="soporte.html">Soporte</a><a href="privacidad.html">Privacidad</a><a href="terminos.html">Términos de uso</a></nav>
+ <nav><a href="soporte.html" data-t="nav.support">Support</a><a href="privacidad.html" data-t="foot.privacy">Privacy</a><a href="terminos.html" data-t="foot.terms">Terms of Use</a></nav>
 </div></footer>
 
 <script type="module">
-// Íconos de papel del juego
 import { ico } from './game/paper-voyager/iconos.js';
 document.querySelectorAll('[data-ico]').forEach(e => e.innerHTML = ico(e.dataset.ico, 54));
+// Idiomas: inglés por defecto; ?lang=xx o la elección guardada (misma clave que el juego, así el juego abre en ese idioma)
+const LANGS = [['en','English'],['es','Español'],['pt','Português'],['fr','Français'],['de','Deutsch'],['it','Italiano'],['ja','日本語'],['ko','한국어']];
+const KEY = 'pv.lang', codes = LANGS.map(l => l[0]);
+let saved = null; try { saved = JSON.parse(localStorage.getItem(KEY)); } catch {}
+const q = new URLSearchParams(location.search).get('lang');
+const lang = codes.includes(q) ? q : codes.includes(saved) ? saved : 'en';
+const sel = document.getElementById('lang');
+sel.innerHTML = LANGS.map(([c, n]) => `<option value="${c}"${c === lang ? ' selected' : ''}>${n}</option>`).join('');
+async function apply(code) {
+  const d = await (await fetch(`i18n/${code}.json`)).json();
+  document.documentElement.lang = code;
+  document.querySelectorAll('[data-t]').forEach(e => { const v = d[e.dataset.t]; if (v != null) e.textContent = v; });
+  document.title = d.title; document.querySelector('meta[name=description]').content = d.desc;
+}
+if (lang !== 'en') apply(lang);
+sel.addEventListener('change', () => { try { localStorage.setItem(KEY, JSON.stringify(sel.value)); } catch {} apply(sel.value); });
 </script>
 </body>
 </html>

@@ -1847,6 +1847,6 @@ if(V.needsPick()&&menuOpen)firstRunIntro();
 if(REFUND)setTimeout(()=>showToast(t('toast.refund',{n:REFUND})),1800); // reembolso único por los viajeros que salieron del elenco
 else if(menuOpen){let m=null;try{m=sessionStorage.getItem('pv.map');sessionStorage.removeItem('pv.map');}catch{}if(m)setTimeout(openMap,900);}
 (document.fonts?.ready||Promise.resolve()).then(()=>setTimeout(()=>{if(introOn)return;const sp=$('splash');sp.style.opacity=0;setTimeout(()=>sp.remove(),520);},700));
-if(DEBUG)window.__dbg={endGame,setWeather,qualityInfo,pop,cust,custClosed,custItems,spans,EQ,DELAYED,route,rollDelay,goRoute,blockSet,movers,prevExit,refreshHints,driftTramos,decoyIds,boost,stock,useItems,driftLand,Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,driftRows,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
+if(DEBUG)window.__dbg={endGame,heroWave,setWeather,qualityInfo,pop,cust,custClosed,custItems,spans,EQ,DELAYED,route,rollDelay,goRoute,blockSet,movers,prevExit,refreshHints,driftTramos,decoyIds,boost,stock,useItems,driftLand,Music,nextWorld,openMap,V,ctx,runner,zone,rides,blockers,coins,driftRows,stats:runnerStats,get score(){return score},get wallet(){return wallet},get chests(){return chests},get streak(){return streak},boostUntil,boost,prog,onGameOver,GOAL,RUNWAY,START,stage,buildToward,isRockCell,targetRow,railT,drift};
 </script>
 </body></html>
