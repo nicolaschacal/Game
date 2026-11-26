@@ -666,32 +666,32 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
 <script>if(!/[?&]gui=clasico/.test(location.search))document.body.classList.add('gpapel')</script>
 <!-- grano de cartulina suave para personajes, logo y barra de carga: el mismo ruido que --nz (chips y botones), aclarado para no oscurecer, sólo sobre la silueta -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="pvGrain" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
- <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
- <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
+ <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".34" intercept=".8"/><feFuncG type="linear" slope=".34" intercept=".8"/><feFuncB type="linear" slope=".34" intercept=".8"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainL" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
- <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
- <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
+ <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".18" intercept=".9"/><feFuncG type="linear" slope=".18" intercept=".9"/><feFuncB type="linear" slope=".18" intercept=".9"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainS" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
- <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="11" stitchTiles="stitch" result="t"/>
- <feColorMatrix in="t" type="saturate" values="0" result="g"/>
+ <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feColorMatrix in="SourceGraphic" type="saturate" values="1.2" result="s"/>
  <feComposite in="s" in2="g" operator="arithmetic" k1="0" k2="1.12" k3=".3" k4="-.12" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainP" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
- <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="7" stitchTiles="stitch" result="t"/>
- <feColorMatrix in="t" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1" result="g"/>
+ <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".2" intercept=".88"/><feFuncG type="linear" slope=".2" intercept=".88"/><feFuncB type="linear" slope=".2" intercept=".88"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feColorMatrix in="SourceGraphic" type="saturate" values="1.14" result="s"/>
  <feComponentTransfer in="s" result="b"><feFuncR type="linear" slope="1.05"/><feFuncG type="linear" slope="1.05"/><feFuncB type="linear" slope="1.05"/></feComponentTransfer>
  <feBlend in="b" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter></svg>
+<script>/* grano de papel horneado: una textura de ruido de 128 px generada una vez y repetida (feImage+feTile). Antes era feTurbulence de 3 octavas, que Safari recalcula en CPU cada vez que cambia el dibujo (el personaje cambia ~9 veces por segundo): con eso los diálogos y el inicio iban en cámara lenta */
+(()=>{try{const N=128,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d'),d=x.createImageData(N,N),a=d.data;let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+for(let i=0;i<N*N;i++){const v=Math.max(0,Math.min(255,Math.round((.5+(r()+r()+r()-1.5)*.2)*255)));a[i*4]=a[i*4+1]=a[i*4+2]=v;a[i*4+3]=255;}
+x.putImageData(d,0,0);const u=c.toDataURL('image/png');document.querySelectorAll('feImage.pvNz').forEach(e=>{e.setAttribute('href',u);e.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href',u);});}catch(e){}})();</script>
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="wx"></div><div id="frost"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
 <div id="splash"><div class="logo"><svg class="lgsvg" viewBox="0 0 320 112" role="img" aria-label="Paper Voyager"><use class="l1" href="#pvL1"/><use class="l2" href="#pvL2"/></svg><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div><div class="load"><i></i></div></div>
@@ -1191,7 +1191,7 @@ function onCoinMiss(id){const c=coins.find(x=>x.id===id);if(c?.prize||c?.side)re
 // ── Fin de partida y paso de mundo ──
 let ended=false;
 // el 3D no se dibuja tras un panel opaco y va a 30 fps en inicio y pausa (menos GPU = menos calor)
-renderPolicy(()=>document.body.classList.contains('pnlopen')?0:(menuOpen||paused)?30:60);
+renderPolicy(()=>document.body.classList.contains('pnlopen')||document.body.classList.contains('pvh-on')?0:(menuOpen||paused)?30:60);
 function endGame(title,reason){if(ended)return;ended=true;if(lifeTaken){lifeTaken=false;reason+=' · '+t(Vidas.n>1?'lives.lost':Vidas.n===1?'lives.lostOne':'lives.lostLast',{n:Vidas.n});}
  if(route){route=null;RT=null;store.set('route',null);drawRouteBar();reason+=' · '+t('route.lostToast');} // perder una partida cancela la ruta (sin premio de ruta)
  runner.gameOver=true;runner.hitPause=999;Music.mode='menu';Music.sync();const lost=coinCount-banked,keep=Math.floor(lost/2); // sin llegar te quedás con la mitad de las monedas; los cofres ya quedaron guardados
@@ -1543,12 +1543,13 @@ function heroFrame(){const h=$('mHero').querySelector('.hf');if(!hArt||document.
    if(k==='wave')heroWave(1500);else{hs.act=k;hs.actK=0;hs.actPh=hs.ph;}}
   else if(now>=hs.actAt)hs.actAt=now+700;
  }
- if(h._f!==f){h.innerHTML=f;h._f=f;}}
+ if(h._f!==f){let n=HFC.get(f);if(!n){const tp=document.createElement('template');tp.innerHTML=f;n=tp.content;if(HFC.size>160)HFC.clear();HFC.set(f,n=[...n.childNodes]);}h.replaceChildren(...n);h._f=f;}}
+var HFC=new Map(); // cuadros del héroe ya convertidos en nodos
 function heroSync(){const id=SKINS[browse].id,h=$('mHero'),wk=id+'|'+wornOf(id);heroLayout();h.classList.toggle('locked',!owned.includes(id));
  if(wk===hKey)return;const first=!hKey,n=SKINS.length,hk0=hKey.split('|')[0],dd=hKey?(SKINS.findIndex(k=>k.id===id)-SKINS.findIndex(k=>k.id===hk0)+n)%n:0,dir=dd&&dd<=n/2?1:-1;
  hKey=wk;hArt=artFor(id,wornOf(id)).HERO;hTick=0;hsReset();hWave=Date.now()+(first?1800:2300);
  h.className=owned.includes(id)?'':'locked';if(!first&&dd){h.classList.add(dir>0?'in-r':'in-l');}h.querySelector('.hf')._f=null;void h.offsetWidth;heroFrame();}
-setInterval(()=>{if(menuOpen&&!hBusy)heroFrame();},110); // ~9 fps (idle de 36 cuadros ≈ 4 s)addEventListener('resize',()=>{if(menuOpen)heroLayout();});
+setInterval(()=>{if(menuOpen&&!hBusy&&!document.body.classList.contains('pvh-on')&&!document.hidden)heroFrame();},110); // ~9 fps (idle de 36 cuadros ≈ 4 s)addEventListener('resize',()=>{if(menuOpen)heroLayout();});
 if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(menuOpen)heroLayout();});
 if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(menuOpen)heroLayout();});['mission','worldChip','menu'].forEach(i=>ro.observe($(i)));}
 {const m=$('menu');m.addEventListener('pointermove',hsPoint,{passive:true});m.addEventListener('pointerdown',hsPoint,{passive:true});m.addEventListener('pointerleave',()=>{hs.pt=Math.min(hs.pt,Date.now()-1500);});

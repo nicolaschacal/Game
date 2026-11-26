@@ -641,7 +641,9 @@ export function playScene(ctx, hero, id, opts = {}) {
     let k = -1, typing = null, full = '';
     // Gestos: respira y parpadea siempre; al hablar mueve la cabeza; en algunas líneas saluda, mira alrededor o se acomoda la gorra; cuando habla otro, lo mira
     const hf = ov.querySelector('.hhf'), UC = new Map(), G = { mood: null, ph: 0, lx: 0, ly: 0, tx: 0, ty: 0, blinkAt: Date.now() + 1500, bk: -1, clip: null, ck: 0, cph: 0, wave: 0, t: 0 };
-    const put = f => { if (!f || hf._f === f) return; let u = UC.get(f); if (!u) { u = uniq(f); if (UC.size > 80) UC.clear(); UC.set(f, u); } hf.innerHTML = u; hf._f = f; if (G.mood) applyMood(hf, G.mood); };
+    const put = f => { if (!f || hf._f === f) return; const mk = (G.mood || '') + '|' + f; let n = UC.get(mk); // cuadros ya parseados (y con su expresión aplicada): no se vuelve a parsear el SVG cada 110 ms
+      let nuevo = false; if (!n) { const tp = document.createElement('div'); tp.innerHTML = uniq(f); n = [...tp.childNodes]; if (UC.size > 120) UC.clear(); UC.set(mk, n); nuevo = true; }
+      hf.replaceChildren(...n); hf._f = f; if (nuevo && G.mood) applyMood(hf, G.mood); }; // la expresión se aplica ya montado (getBBox) y queda guardada en el cuadro
     const gesture = g => {
       G.clip = null; G.wave = 0;
       if (!HA || !HA.at) return;
