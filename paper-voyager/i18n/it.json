@@ -1385,7 +1385,11 @@
  "menu.support": "Assistenza",
  "menu.terms": "Termini",
  "route.unlock.no": "NOVITÀ NEL TUO VIAGGIO",
- "route.unlock.h": "ROTTE DI VIAGGIO!",
- "route.unlock.p": "Ora puoi visitare più città di fila. Paghi solo il primo biglietto e le altre tappe sono incluse, quindi costa meno. Completala senza perdere e ottieni un bonus di monete e un timbro nei tuoi passaporti. Cerca il pulsante verde sulla mappa e provane una!",
- "route.unlock.ok": "VOGLIO PROVARE!"
+ "route.unlock.ok": "VOGLIO PROVARE!",
+ "route.unlock.h1": "ROTTE DI VIAGGIO!",
+ "route.unlock.p1": "Ora puoi visitare più città di fila in un solo viaggio, come fanno i veri viaggiatori.",
+ "route.unlock.h2": "COSTA MENO",
+ "route.unlock.p2": "Paghi solo il primo biglietto: le altre tappe della rotta sono incluse.",
+ "route.unlock.h3": "BONUS E TIMBRO",
+ "route.unlock.p3": "Completala senza perdere e ottieni un bonus di monete e un timbro nei tuoi passaporti. Cerca il pulsante verde sulla mappa e provane una!"
 }

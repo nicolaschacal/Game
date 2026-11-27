@@ -1385,7 +1385,11 @@
  "menu.support": "Hilfe",
  "menu.terms": "AGB",
  "route.unlock.no": "NEU AUF DEINER REISE",
- "route.unlock.h": "REISEROUTEN!",
- "route.unlock.p": "Jetzt kannst du mehrere Städte hintereinander besuchen. Du zahlst nur das erste Ticket, die anderen Stopps sind inklusive – das ist günstiger. Schaff sie ohne zu verlieren und du bekommst einen Münzbonus und einen Stempel in deinen Pässen. Such den grünen Knopf auf der Karte und probier eine aus!",
- "route.unlock.ok": "AUSPROBIEREN!"
+ "route.unlock.ok": "AUSPROBIEREN!",
+ "route.unlock.h1": "REISEROUTEN!",
+ "route.unlock.p1": "Jetzt kannst du mehrere Städte hintereinander auf einer Reise besuchen – wie echte Reisende.",
+ "route.unlock.h2": "GÜNSTIGER",
+ "route.unlock.p2": "Du zahlst nur das erste Ticket: Die anderen Stopps der Route sind inklusive.",
+ "route.unlock.h3": "BONUS UND STEMPEL",
+ "route.unlock.p3": "Schaff sie ohne zu verlieren und du bekommst einen Münzbonus und einen Stempel in deinen Pässen. Such den grünen Knopf auf der Karte und probier eine aus!"
 }

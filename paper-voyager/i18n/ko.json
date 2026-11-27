@@ -1385,7 +1385,11 @@
  "menu.support": "고객 지원",
  "menu.terms": "약관",
  "route.unlock.no": "여행에 새로운 기능",
- "route.unlock.h": "여행 루트!",
- "route.unlock.p": "이제 여러 도시를 이어서 여행할 수 있어요. 첫 항공권만 내면 나머지 정류장은 포함이라 더 저렴해요. 지지 않고 완주하면 코인 보너스와 여권 도장을 받아요. 지도에서 초록 버튼을 찾아 한번 해 보세요!",
- "route.unlock.ok": "해 볼래요!"
+ "route.unlock.ok": "해 볼래요!",
+ "route.unlock.h1": "여행 루트!",
+ "route.unlock.p1": "이제 진짜 여행자처럼 한 번의 여행으로 여러 도시를 이어서 갈 수 있어요.",
+ "route.unlock.h2": "더 저렴해요",
+ "route.unlock.p2": "첫 항공권만 내면 루트의 나머지 정류장은 포함이에요.",
+ "route.unlock.h3": "보너스와 도장",
+ "route.unlock.p3": "지지 않고 완주하면 코인 보너스와 여권 도장을 받아요. 지도에서 초록 버튼을 찾아 한번 해 보세요!"
 }

@@ -1385,7 +1385,11 @@
  "menu.support": "Suporte",
  "menu.terms": "Termos",
  "route.unlock.no": "NOVIDADE NA SUA VIAGEM",
- "route.unlock.h": "ROTAS DE VIAGEM!",
- "route.unlock.p": "Agora você pode visitar várias cidades seguidas. Você paga só a primeira passagem e as outras paradas estão incluídas, então sai mais barato. Complete sem perder e ganhe um bônus de moedas e um carimbo nos seus passaportes. Procure o botão verde no mapa e experimente uma!",
- "route.unlock.ok": "QUERO TESTAR!"
+ "route.unlock.ok": "QUERO TESTAR!",
+ "route.unlock.h1": "ROTAS DE VIAGEM!",
+ "route.unlock.p1": "Agora você pode visitar várias cidades seguidas numa só viagem, como fazem os viajantes de verdade.",
+ "route.unlock.h2": "MAIS BARATO",
+ "route.unlock.p2": "Você paga só a primeira passagem: as outras paradas da rota estão incluídas.",
+ "route.unlock.h3": "BÔNUS E CARIMBO",
+ "route.unlock.p3": "Complete sem perder e ganhe um bônus de moedas e um carimbo nos seus passaportes. Procure o botão verde no mapa e experimente uma!"
 }

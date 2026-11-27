@@ -1385,7 +1385,11 @@
  "menu.support": "Support",
  "menu.terms": "Terms",
  "route.unlock.no": "NEW ON YOUR TRIP",
- "route.unlock.h": "TRAVEL ROUTES!",
- "route.unlock.p": "Now you can visit several cities in a row. You only pay the first ticket and the other stops are included, so it's cheaper. Finish it without losing and you get a coin bonus and a stamp in your passports. Look for the green button on the map and try one!",
- "route.unlock.ok": "LET'S TRY IT!"
+ "route.unlock.ok": "LET'S TRY IT!",
+ "route.unlock.h1": "TRAVEL ROUTES!",
+ "route.unlock.p1": "Now you can visit several cities in a row in a single trip, just like real travelers do.",
+ "route.unlock.h2": "CHEAPER",
+ "route.unlock.p2": "You only pay the first ticket: the other stops on the route are included.",
+ "route.unlock.h3": "BONUS AND STAMP",
+ "route.unlock.p3": "Finish it without losing and you get a coin bonus and a stamp in your passports. Look for the green button on the map and try one!"
 }
