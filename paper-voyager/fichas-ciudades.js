@@ -650,7 +650,8 @@ FICHAS['Machu Picchu'] = {
     // remate: tres cupulitas arriba y la punta central
     [[cx - 9, 24], [cx + 9, 24], [cx, 18]].forEach(([x, y], i) => { s += ` M${x - 3.4} ${y} Q${x} ${y - 7} ${x + 3.4} ${y}Z`; d += Ln(`M${x} ${y - 6} v-2.4`, blanco, .7); });
     s += ` M${cx - 4} 24 L${cx - 4} 18 L${cx + 4} 18 L${cx + 4} 24Z`;
-    d += R(cx + 10, 24, 38, 94, T.som, ' opacity=".2"');
+    // sombra del lado derecho SIGUIENDO los escalones (antes era un rectángulo fijo que asomaba fuera de la fachada)
+    d += P(pisos.map(([hw, y], i) => { const yb = i === 0 ? base : pisos[i - 1][1]; return hw > 12 ? `M${cx + 10} ${yb} L${cx + 10} ${y} L${cx + hw} ${y} L${cx + hw} ${yb}Z` : ''; }).join(' '), T.som, ' opacity=".2"');
     return { f: P(s, rosa), d, box: [cx - 49, 9, cx + 49, base] }; })();
   FICHAS['Jaipur'] = {
     mundo: 'CIUDAD ROSA', nombre: 'Jaipur', pais: 'India', color: '#E2A890', paisaje: 'ciudad', suelo: 'pueblo', hora: 16, clima: 'petals', horizonte: 'dune',

@@ -336,7 +336,7 @@ function engine() {
   renderer.info.autoReset = false; // la pasada del clima añade otro render(); se reinicia a mano una vez por cuadro
   renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.domElement.className = 'stage-canvas';
-  E = { renderer, ray: new THREE.Raycaster(), raf: 0, worlds: {}, active: null, t0: performance.now(), dprCap: 2, qi: 0, qSum: 0, qN: 0, qT: 0, qGood: 0, qHold: 0, next: 0 };
+  E = { renderer, ray: new THREE.Raycaster(), raf: 0, worlds: {}, active: null, t0: performance.now(), dprCap: 2, qi: 0, qSum: 0, qN: 0, qT: 0, qGood: 0, qBad: 0, qHold: 0, next: 0 };
   applyDpr();
   const el = renderer.domElement; let down = null; const pts = new Map(); let pinch0 = 0;
   const rayAt = e => { const r = el.getBoundingClientRect(); E.ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), E.W.camera); return E.ray; };
@@ -423,11 +423,13 @@ function loop() {
   renderWeather(t);
 }
 // Calidad adaptativa: promedio del tiempo entre cuadros dibujados en ventanas de ~2 s (sólo a 60 fps, no en menú/pausa).
-// > 20 ms → baja un escalón de pixelRatio (2 → 1.5 → 1.25 → 1). Si aguanta ~10 s sin pasarse de 17.5 ms (= vsync) sube uno,
-// y si al subir vuelve a pasarse se queda abajo 60 s. Mínimo 1 (legible).
-const DPR_STEPS = [2, 1.5, 1.25, 1];
+// Antes bajaba con > 20 ms (= 50 fps, y en el iPhone eso pasa por cualquier tirón suelto) hasta pixelRatio 1, que en una pantalla
+// 3x se ve pixelado, y casi nunca volvía a subir. Ahora: baja sólo si va de verdad lento (> 24 ms ≈ 42 fps) dos ventanas seguidas,
+// escalones más suaves y piso 1.5 en pantallas retina; sube tras ~6 s holgados (≤ 19 ms), y si al subir vuelve a ir lento espera 30 s.
+const DPR_STEPS = [2, 1.75, 1.5, 1.25, 1];
+const DPR_PISO = () => ((devicePixelRatio || 1) >= 2 ? 1.5 : 1); // en retina nunca por debajo de 1.5 (se ve pixelado)
 function applyDpr() {
-  const r = E.renderer, pr = Math.max(1, Math.min(devicePixelRatio || 1, E.dprCap, DPR_STEPS[E.qi]));
+  const r = E.renderer, pr = Math.max(Math.min(DPR_PISO(), devicePixelRatio || 1, E.dprCap), Math.min(devicePixelRatio || 1, E.dprCap, DPR_STEPS[E.qi]));
   if (Math.abs(r.getPixelRatio() - pr) > .01) { r.setPixelRatio(pr); }
 }
 export function qualityInfo() { return { dpr: E.renderer.getPixelRatio(), step: E.qi, avg: E.qLast }; }
@@ -437,10 +439,10 @@ function adaptQuality(cap, now, dtf) {
   E.qSum += dtf; E.qN++;
   if (now - E.qT < 2000 || E.qN < 20) return;
   const avg = E.qSum / E.qN; E.qLast = avg; E.qSum = E.qN = 0; E.qT = now;
-  const eff = i => Math.min(devicePixelRatio || 1, E.dprCap, DPR_STEPS[i]);
-  if (avg > 20) { let j = E.qi + 1; while (j < DPR_STEPS.length && eff(j) > eff(E.qi) - .001) j++; if (j < DPR_STEPS.length) { if (E.qUp) E.qHold = now + 60000; E.qi = j; E.qUp = false; E.qGood = 0; applyDpr(); } else E.qGood = 0; }
-  else if (avg <= 17.5) { if (++E.qGood >= 5 && E.qi > 0 && now > E.qHold) { E.qi--; E.qUp = true; E.qGood = 0; applyDpr(); } }
-  else E.qGood = 0;
+  const eff = i => Math.max(Math.min(DPR_PISO(), devicePixelRatio || 1, E.dprCap), Math.min(devicePixelRatio || 1, E.dprCap, DPR_STEPS[i]));
+  if (avg > 24) { E.qGood = 0; if (++E.qBad < 2) return; E.qBad = 0; // dos ventanas lentas seguidas: un tirón suelto no baja la calidad
+    let j = E.qi + 1; while (j < DPR_STEPS.length && eff(j) > eff(E.qi) - .001) j++; if (j < DPR_STEPS.length) { if (E.qUp) E.qHold = now + 30000; E.qi = j; E.qUp = false; applyDpr(); } }
+  else { E.qBad = 0; if (avg <= 19) { if (++E.qGood >= 3 && E.qi > 0 && now > E.qHold) { E.qi--; E.qUp = true; E.qGood = 0; applyDpr(); } } else E.qGood = 0; }
 }
 // ---------- Clima de pantalla (nieve, hojas, pétalos, burbujas, brasas, farolillos, viento de arena) ----------
 // Antes eran <i> con animaciones CSS sobre el lienzo; ahora es UN InstancedMesh en una pasada 2D tras la escena. Toda la animación vive en el vertex shader
