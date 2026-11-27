@@ -669,34 +669,33 @@ body.gpapel #playWrap{padding-bottom:2px}body.gpapel #playWrap #play{height:58px
 <script>if(!/[?&]gui=clasico/.test(location.search))document.body.classList.add('gpapel')</script>
 <!-- grano de cartulina suave para personajes, logo y barra de carga: el mismo ruido que --nz (chips y botones), aclarado para no oscurecer, sólo sobre la silueta -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="pvGrain" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
- <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
+ <feImage class="pvNz" width="160" height="160" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".34" intercept=".8"/><feFuncG type="linear" slope=".34" intercept=".8"/><feFuncB type="linear" slope=".34" intercept=".8"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainL" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
- <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
+ <feImage class="pvNz" width="160" height="160" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".18" intercept=".9"/><feFuncG type="linear" slope=".18" intercept=".9"/><feFuncB type="linear" slope=".18" intercept=".9"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feBlend in="SourceGraphic" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainS" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
- <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
+ <feImage class="pvNz" width="160" height="160" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feColorMatrix in="SourceGraphic" type="saturate" values="1.2" result="s"/>
  <feComposite in="s" in2="g" operator="arithmetic" k1="0" k2="1.12" k3=".3" k4="-.12" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter><filter id="pvGrainP" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
- <feImage class="pvNz" width="128" height="128" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
+ <feImage class="pvNz" width="160" height="160" preserveAspectRatio="none" result="nz"/><feTile in="nz" result="g"/>
  <feComponentTransfer in="g" result="n"><feFuncR type="linear" slope=".2" intercept=".88"/><feFuncG type="linear" slope=".2" intercept=".88"/><feFuncB type="linear" slope=".2" intercept=".88"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer>
  <feColorMatrix in="SourceGraphic" type="saturate" values="1.14" result="s"/>
  <feComponentTransfer in="s" result="b"><feFuncR type="linear" slope="1.05"/><feFuncG type="linear" slope="1.05"/><feFuncB type="linear" slope="1.05"/></feComponentTransfer>
  <feBlend in="b" in2="n" mode="multiply" result="m"/>
  <feComposite in="m" in2="SourceAlpha" operator="in"/>
 </filter></svg>
-<script>/* grano de papel horneado: una textura de ruido de 128 px generada una vez y repetida (feImage+feTile). Antes era feTurbulence de 3 octavas, que Safari recalcula en CPU cada vez que cambia el dibujo (el personaje cambia ~9 veces por segundo): con eso los diálogos y el inicio iban en cámara lenta */
-(()=>{try{const N=128,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d'),d=x.createImageData(N,N),a=d.data;let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;
-for(let i=0;i<N*N;i++){const v=Math.max(0,Math.min(255,Math.round((.5+(r()+r()+r()-1.5)*.2)*255)));a[i*4]=a[i*4+1]=a[i*4+2]=v;a[i*4+3]=255;}
-x.putImageData(d,0,0);const u=c.toDataURL('image/png');
-const c2=document.createElement('canvas');c2.width=c2.height=160;const x2=c2.getContext('2d'),d2=x2.createImageData(160,160),a2=d2.data;for(let i=0;i<160*160;i++){const g=.5+(r()+r()+r()-1.5)*.2,v=Math.max(0,Math.min(255,Math.round((.65+.46*g)*255)));a2[i*4]=a2[i*4+1]=a2[i*4+2]=v;a2[i*4+3]=255;}
-x2.putImageData(d2,0,0);const u2=c2.toDataURL('image/png');document.documentElement.style.setProperty('--nz','url("'+u2+'")');document.body&&document.body.style.setProperty('--nz','url("'+u2+'")');document.querySelectorAll('feImage.pvNz').forEach(e=>{e.setAttribute('href',u);e.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href',u);});}catch(e){}})();</script>
+<script>/* grano de papel horneado: el MISMO ruido de antes (feTurbulence, mismas semillas), pre-renderizado a 2x en paper-voyager/img/grano-*.jpg.
+ Los filtros pvGrain* lo usan con feImage+feTile en vez de calcular feTurbulence (Safari lo recalculaba en cada cambio del personaje: cámara lenta),
+ y --nz (botones, fichas, pines) lo usa como imagen fija en vez de un SVG con filtro. Se ve igual que antes, sin el costo. */
+(()=>{const G='./paper-voyager/img/';document.querySelectorAll('feImage.pvNz').forEach(e=>{const u=G+(e.closest('#pvGrainS')?'grano-b.jpg':'grano-a.jpg');e.setAttribute('href',u);e.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href',u);});
+ const nz='-webkit-image-set(url("'+G+'grano-nz.jpg") 2x)';document.documentElement.style.setProperty('--nz',nz);document.body&&document.body.style.setProperty('--nz',nz);})();</script>
 <div id="stage"><div class="stage-ov"></div></div>
 <div id="wx"></div><div id="frost"></div><div id="vig"></div><div id="speed"></div><div id="flash"></div>
 <div id="splash"><div class="logo"><svg class="lgsvg" viewBox="0 0 320 112" role="img" aria-label="Paper Voyager"><use class="l1" href="#pvL1"/><use class="l2" href="#pvL2"/></svg><div class="slogan">BUILD YOUR WAY</div><div class="seal"><svg class="ico" viewBox="0 0 120 120"><g stroke="#FFF4DC" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/></g><path d="M60 6 C92 6 104 30 100 50 C97 66 82 76 72 84 L48 84 C38 76 23 66 20 50 C16 30 28 6 60 6Z" fill="#E8452C"/><path d="M46 98 L74 98 L71 114 Q60 117 49 114Z" fill="#A9794D"/><path d="M60 81.2 L72.75 93.1 Q60 98.2 47.25 93.1Z" fill="#EFC76A" stroke="#FFF4DC" stroke-width="3" stroke-linejoin="round"/><path d="M47.25 93.1 Q60 98.2 72.75 93.1 Q60 100.75 47.25 93.1Z" fill="#C99A3C"/><path d="M60 6 C74 22 76 62 68 84 L52 84 C44 62 46 22 60 6Z" fill="#FFF0D2"/><path d="M60 6 C36 14 26 50 40 76 C30 68 22 60 20 50 C16 30 28 6 60 6Z" fill="#B93322" opacity=".55"/><path d="M22 40 Q60 52 98 40 L99 48 Q60 60 21 48Z" fill="#F2B937"/><path d="M48 84 L72 84 L70 90 L50 90Z" fill="#704332"/><path d="M50 90 L48 99 M70 90 L72 99" stroke="#704332" stroke-width="2.2" stroke-linecap="round"/><path d="M46 98 L74 98 L73.2 103 Q60 106 46.8 103Z" fill="#E2B987"/><path d="M49 114 L48 109 Q60 112 72 109 L71 114 Q60 117 49 114Z" fill="#6B4A2E"/></svg></div></div><div class="load"><i></i></div></div>
@@ -1724,6 +1723,7 @@ function mapZoomInit(){const v=$('mapView');if(v._zi)return;v._zi=1;
  addEventListener('pointermove',e=>{if(!dr)return;const dx=e.clientX-dr.x,dy=e.clientY-dr.y;if(!dr.m&&Math.hypot(dx,dy)>5){dr.m=1;mapNoTap=1;v.classList.add('drag');}
   if(dr.m){v.scrollLeft=dr.l-dx;if(mapZ>1.001)v.scrollTop=dr.t-dy;}});
  addEventListener('pointerup',()=>{if(dr&&dr.m)setTimeout(()=>{mapNoTap=0;},0);dr=null;v.classList.remove('drag');});}
+let nzD=null;const nzData=async()=>nzD??=await fetch('./paper-voyager/img/grano-nz.jpg').then(r=>r.blob()).then(b=>new Promise(ok=>{const f=new FileReader();f.onload=()=>ok(f.result);f.readAsDataURL(b);})).catch(()=>'');
 async function buildMap(){
  if(!mapData)mapData=await (await fetch('./paper-voyager/world-map.json')).json();
  const M=mapData,v=$('mapView'),GP=document.body.classList.contains('gpapel'),sc=Math.max(.55,Math.min(1,((v.clientHeight||innerHeight-100)-250)/560));
@@ -1735,7 +1735,7 @@ async function buildMap(){
  const hNext=H.nextChapter(V.heroId?.()||'nilo'),hCity=hNext&&hNext.at?IDX[hNext.at]:-1; // la pista del diario: el próximo destino de la historia lleva una postal en el pin
  const pins1=(p,i,ox)=>{const s=pinState(i),ic=s.st==='cur'?BALLOON.idle[0]:s.st==='nopass'?passMini(s.r,15):(startPick?'<b class="fare">✈</b>':'<b class="fare">'+s.cost+'</b>');const vs=V.T.visits[i]>0;return `<button class="mpin ${pinCls[s.st]}${vs?' vis':''}" data-i="${i}" style="left:${p[0]+ox}px;top:${p[1]}px;--rc:${V.REGIONS[s.r].color}"><div class="t">${ic}</div>${vs?'<i class="stk">✓</i>':''}${i===hCity?'<i class="hst" aria-label="'+t('diary.mapHint')+'"></i>':''}<div class="n">${THEMES[i].place}${s.st==='cur'||startPick?'':'<em>◉ '+s.cost+'</em>'}</div></button>`;};
  const w=$('mapWorld'),W3=M.W*3;w.style.cssText='margin-top:58px';
- const nz=(getComputedStyle(document.body).getPropertyValue('--nz').match(/url\("?(.*?)"?\)$/)||[])[1]||'';
+ const nz=await nzData(); // grano como data URL: dentro de una imagen SVG no se cargan archivos externos
  // tierra: se rasteriza una sola vez como imagen SVG (sombra, cartulina y grano) y se repite 3 veces como background: sin filtros ni 3 copias de un path enorme
  const landSvg=GP?`<svg xmlns="http://www.w3.org/2000/svg" width="${M.W}" height="${M.H}"><defs><pattern id="n" width="160" height="160" patternUnits="userSpaceOnUse"><image href="${nz}" width="160" height="160"/></pattern></defs><path d="${M.land}" transform="translate(0,2.5)" fill="#1B1730" opacity=".2"/><path d="${M.land}" fill="#F0E2BE" stroke="#FFF6E0" stroke-width="6" stroke-linejoin="round"/><path d="${M.land}" fill="url(#n)" opacity=".5"/></svg>`:`<svg xmlns="http://www.w3.org/2000/svg" width="${M.W}" height="${M.H}"><path d="${M.land}" transform="translate(0,7)" fill="#1B1730"/><path d="${M.land}" fill="#FFF4DC" stroke="#1B1730" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
  const arcAttr=GP?'stroke="#E14E34" stroke-width="3.4" stroke-dasharray="9 6"':'stroke="#E8452C" stroke-width="5" stroke-dasharray="1 11"';
