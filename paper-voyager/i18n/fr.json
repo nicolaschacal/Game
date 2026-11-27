@@ -1383,5 +1383,9 @@
  "legal.subs": "Le paiement est facturé sur ton compte App Store ou Google Play. L’abonnement se renouvelle automatiquement au même prix, sauf résiliation au moins 24 h avant la fin de la période. Gère-le ou résilie-le à tout moment dans les réglages d’abonnements de ton compte.",
  "vf.chestOdds": "Le coffre d’or contient toujours 300 à 500 pièces et 2 bonus au hasard, avec 40 % de chances d’un souvenir.",
  "menu.support": "Assistance",
- "menu.terms": "Conditions"
+ "menu.terms": "Conditions",
+ "route.unlock.no": "NOUVEAU DANS TON VOYAGE",
+ "route.unlock.h": "ITINÉRAIRES DE VOYAGE !",
+ "route.unlock.p": "Tu peux maintenant visiter plusieurs villes à la suite. Tu ne paies que le premier billet et les autres étapes sont incluses : c'est moins cher. Termine-le sans perdre et gagne un bonus de pièces et un tampon dans tes passeports. Cherche le bouton vert sur la carte et essaie-en un !",
+ "route.unlock.ok": "J'ESSAIE !"
 }

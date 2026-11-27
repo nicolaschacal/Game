@@ -1383,5 +1383,9 @@
  "legal.subs": "El pago se cobra a tu cuenta de App Store o Google Play. La suscripción se renueva sola al mismo precio, salvo que la canceles al menos 24 h antes de que termine el período. Podés gestionarla o cancelarla cuando quieras en los ajustes de suscripciones de tu cuenta.",
  "vf.chestOdds": "El cofre de oro trae siempre 300–500 monedas y 2 potenciadores al azar, y tiene 40% de probabilidad de traer un souvenir.",
  "menu.support": "Soporte",
- "menu.terms": "Términos"
+ "menu.terms": "Términos",
+ "route.unlock.no": "NUEVO EN TU VIAJE",
+ "route.unlock.h": "¡RUTAS DE VIAJE!",
+ "route.unlock.p": "Ahora puedes recorrer varias ciudades seguidas. Pagas solo el primer pasaje y las demás paradas van incluidas, así que sale más barato. Complétala sin perder y ganas un bono de monedas y un sello en tus pasaportes. ¡Busca el botón verde en el mapa y prueba una!",
+ "route.unlock.ok": "¡QUIERO PROBAR!"
 }

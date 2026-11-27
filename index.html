@@ -867,7 +867,7 @@ const DKINDS=['sea','rail','sky'],QD=DKINDS.includes(Q.get('delay'))?Q.get('dela
 const DELAYED=route?null:QD||(dlSt&&dlSt.at===WI&&DKINDS.includes(dlSt.k)?dlSt.k:null); // medio único de punta a punta, o null // destino actual · la dificultad sale de las rondas completadas, no de la ciudad
 // ── Mecánicas por mundo (mundo que se juega = mundos completados + 1). Una sola tabla para el generador, las tarjetas (MECH_INTRO) y la tienda. ──
 // mov = obstáculos móviles · tide = MAREA (mar) · wind = VIENTO (cielo) · rail = DESVÍO (vía) · customs = ADUANA por color (pasaporte equipado).
-const MECH={mov:6,tide:20,wind:30,rail:40,customs:50,routes:5};
+const MECH={mov:6,tide:20,wind:30,rail:40,customs:50,routes:2}; // rutas: desde que terminás el primer destino (se presentan al volver al mapa)
 // ?mech=all activa todo desde el mundo 1 (marea en el primer mar, viento en el primer cielo, desvío en la primera vía, aduanas) y vuelve a mostrar las tarjetas; también fuerza el vuelo demorado la primera vez (?delay=sea|rail|sky lo fuerza siempre). Sin parámetro: niveles definitivos.
 const MECH_ALL=Q.get('mech')==='all';
 const mechOn=k=>MECH_ALL||DIF.P>=MECH[k]-1,mechFirst=k=>MECH_ALL?DIF.P===0:DIF.P===MECH[k]-1; // first = primer mundo con la mecánica (tramo de aprendizaje)
@@ -1648,6 +1648,19 @@ function showDelay(i,k){const bd=$('delayBd'),ic={sea:art.BOAT,rail:art.TRAIN,sk
  bd.classList.add('on');SFX.nope();buzz([30,60,30]);$('mapPanel').style.display='none';
  $('delayOk').onclick=()=>{SFX.whoosh();bd.classList.remove('on');setTimeout(()=>location.reload(),350);};}
 // Anuncio de las rutas: la primera vez que se abre la ficha de una ciudad con ruta (misma tarjeta de papel que el vuelo demorado). ?mech=all lo repite.
+// Rutas desbloqueadas: al terminar el primer destino el juego vuelve al mapa (y quizás cuenta la historia de Nilo); cuando no hay
+// ninguna escena en pantalla sale una tarjeta como las de mecánicas nuevas que presenta las rutas. Una sola vez (misma clave que routesIntro)
+const ROUTE_PIC=()=>{const pin=(x,y,c)=>`<path d="M${x} ${y-24}a10 10 0 0 0-10 10c0 7 10 18 10 18s10-11 10-18a10 10 0 0 0-10-10z" fill="${c}" stroke="#1B1730" stroke-width="2.2"/><circle cx="${x}" cy="${y-14}" r="3.6" fill="#F6EBD0" stroke="#1B1730" stroke-width="1.6"/>`;
+ return `<svg viewBox="0 0 300 176" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><rect width="300" height="176" fill="#7FB4CC"/>
+ <path d="M-10 120Q40 70 92 86T190 70T310 92V190H-10Z" fill="#F0E2BE" stroke="#FFF6E0" stroke-width="5"/><path d="M60 118Q100 64 150 92T238 78" fill="none" stroke="#7A4A2B" stroke-width="3" stroke-dasharray="8 6" stroke-linecap="round"/>
+ ${pin(60,124,'#6FB24F')}${pin(150,98,'#6FB24F')}${pin(238,84,'#E14E34')}
+ <g transform="rotate(-8 252 140)"><circle cx="252" cy="140" r="21" fill="#F2B937" stroke="#1B1730" stroke-width="2.4"/><rect x="245" y="133" width="14" height="14" fill="none" stroke="#9A6A12" stroke-width="2.4"/></g>
+ <g transform="rotate(10 44 46)"><circle cx="44" cy="46" r="24" fill="none" stroke="#D8462F" stroke-width="3"/><circle cx="44" cy="46" r="17" fill="none" stroke="#D8462F" stroke-width="1.6" stroke-dasharray="3 3"/><path d="M36 46l6 6 10-12" fill="none" stroke="#D8462F" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g></svg>`;};
+function routesUnlock(){if(startPick||!mechOn('routes')||MECH_ALL||store.get('routesIntro',0))return;
+ const tryShow=n=>{if($('mapPanel').style.display!=='block')return; // si cerró el mapa, se presenta la próxima vez que lo abra
+  if(document.body.classList.contains('pvh-on')||$('tuto').style.display==='flex'||$('delayBd').classList.contains('on')){if(n<240)setTimeout(()=>tryShow(n+1),500);return;} // espera a que termine la historia
+  showTuto(null,1,[{no:t('route.unlock.no'),h:t('route.unlock.h'),p:t('route.unlock.p'),pic:ROUTE_PIC}],'routesIntro');$('tutoNext').textContent=t('route.unlock.ok');SFX.tap();};
+ setTimeout(()=>tryShow(0),1600);}
 function routesIntro(i){if(startPick||!mechOn('routes')||!V.routesOf(i).length||(!MECH_ALL&&store.get('routesIntro',0)))return;
  const bd=$('delayBd'),st=(x,y)=>`<circle cx="${x}" cy="${y}" r="6" fill="#EDB63B" stroke="#3A2410" stroke-width="1.6"/><path d="M${x-2.6} ${y}l2 2.2 3.4-4.4" fill="none" stroke="#3A2410" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>`;
  const pic='<svg viewBox="0 0 140 100" aria-hidden="true"><g transform="rotate(-5 84 56)"><rect x="40" y="30" width="92" height="52" rx="6" fill="#F6EBD0" stroke="#1B1730" stroke-width="2.4"/><path d="M52 30v52" stroke="#1B1730" stroke-width="2" stroke-dasharray="3 4"/>'+st(70,56)+st(92,56)+st(114,56)+'</g><path d="M24 10a15 15 0 0 0-15 15c0 11 15 30 15 30s15-19 15-30a15 15 0 0 0-15-15z" fill="#D8462F" stroke="#1B1730" stroke-width="2.4"/><circle cx="24" cy="25" r="5.5" fill="#F6EBD0" stroke="#1B1730" stroke-width="2"/></svg>';
@@ -1732,7 +1745,7 @@ async function buildMap(){
  w.querySelectorAll('.mpin').forEach(e=>e.addEventListener('click',()=>{if(mapNoTap)return;SFX.tap();mPick=+e.dataset.i;drawCard();mapSelect(true);routesIntro(mPick);}));
  applyZoom();
 }
-async function openMap(){audio();SFX.tap();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
+async function openMap(){audio();SFX.tap();routesUnlock();$('mapSub').innerHTML=startPick?t('map.pickFirst'):t('map.youAreIn',{place:theme.place.toUpperCase()})+' · '+V.T.passports.map(r=>passMini(r,11)).join(' ');$('mapPanel').querySelector('h2').textContent=startPick?t('map.whereStart'):t('map.title');$('mapPanel').style.display='block';fitText($('mapPanel').querySelector('h2'),18);fitText($('mapSub'),7);
  await buildMap();mapZoomInit();$('mapWallet').textContent=fmtW(wallet);mapZ=1;applyZoom();const M=mapData,v=$('mapView'),sc=mapSc,cw=M.W*sc;v.scrollTop=0;
  mPick=startPick?18:WI;drawCard();v.scrollLeft=cw+M.pts[mPick][0]*sc-v.clientWidth/2; // primer arranque: Berlín (la ciudad de Nilo) ya viene marcada
  let wt=0;const wrap=()=>{const c=M.W*mapSc*mapZ;if(v.scrollLeft<c*.5)v.scrollLeft+=c;else if(v.scrollLeft>c*1.5)v.scrollLeft-=c;};

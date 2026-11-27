@@ -1383,5 +1383,9 @@
  "legal.subs": "Die Zahlung erfolgt über dein App‑Store‑ oder Google‑Play‑Konto. Das Abo verlängert sich automatisch zum gleichen Preis, außer du kündigst mindestens 24 Std. vor Ende des Zeitraums. Verwalten oder kündigen jederzeit in den Abo‑Einstellungen deines Kontos.",
  "vf.chestOdds": "Die Goldtruhe enthält immer 300–500 Münzen und 2 zufällige Power-ups, mit 40 % Chance auf ein Souvenir.",
  "menu.support": "Hilfe",
- "menu.terms": "AGB"
+ "menu.terms": "AGB",
+ "route.unlock.no": "NEU AUF DEINER REISE",
+ "route.unlock.h": "REISEROUTEN!",
+ "route.unlock.p": "Jetzt kannst du mehrere Städte hintereinander besuchen. Du zahlst nur das erste Ticket, die anderen Stopps sind inklusive – das ist günstiger. Schaff sie ohne zu verlieren und du bekommst einen Münzbonus und einen Stempel in deinen Pässen. Such den grünen Knopf auf der Karte und probier eine aus!",
+ "route.unlock.ok": "AUSPROBIEREN!"
 }

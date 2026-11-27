@@ -1383,5 +1383,9 @@
  "legal.subs": "Il pagamento viene addebitato sul tuo account App Store o Google Play. L’abbonamento si rinnova automaticamente allo stesso prezzo, salvo disdetta almeno 24 ore prima della fine del periodo. Gestiscilo o annullalo quando vuoi nelle impostazioni abbonamenti del tuo account.",
  "vf.chestOdds": "Il forziere d’oro contiene sempre 300–500 monete e 2 potenziamenti a caso, con il 40% di probabilità di un souvenir.",
  "menu.support": "Assistenza",
- "menu.terms": "Termini"
+ "menu.terms": "Termini",
+ "route.unlock.no": "NOVITÀ NEL TUO VIAGGIO",
+ "route.unlock.h": "ROTTE DI VIAGGIO!",
+ "route.unlock.p": "Ora puoi visitare più città di fila. Paghi solo il primo biglietto e le altre tappe sono incluse, quindi costa meno. Completala senza perdere e ottieni un bonus di monete e un timbro nei tuoi passaporti. Cerca il pulsante verde sulla mappa e provane una!",
+ "route.unlock.ok": "VOGLIO PROVARE!"
 }

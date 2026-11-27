@@ -1383,5 +1383,9 @@
  "legal.subs": "Payment is charged to your App Store or Google Play account. The subscription renews automatically at the same price unless canceled at least 24 hours before the end of the period. Manage or cancel it anytime in your account’s subscription settings.",
  "vf.chestOdds": "The gold chest always contains 300–500 coins and 2 random power-ups, with a 40% chance of a souvenir.",
  "menu.support": "Support",
- "menu.terms": "Terms"
+ "menu.terms": "Terms",
+ "route.unlock.no": "NEW ON YOUR TRIP",
+ "route.unlock.h": "TRAVEL ROUTES!",
+ "route.unlock.p": "Now you can visit several cities in a row. You only pay the first ticket and the other stops are included, so it's cheaper. Finish it without losing and you get a coin bonus and a stamp in your passports. Look for the green button on the map and try one!",
+ "route.unlock.ok": "LET'S TRY IT!"
 }
