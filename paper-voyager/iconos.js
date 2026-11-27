@@ -65,7 +65,7 @@ const P = {
 export function ico(name, size = 24, cls = '') {
   const p = P[name]; if (!p) return '';
   // El grano va en un <g> adentro del SVG: en Safari un filter CSS sobre el <svg> raíz lo corre de lugar.
-  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" style="width:${typeof size === 'number' ? size + 'px' : size}!important;height:${typeof size === 'number' ? size + 'px' : size}!important;position:static!important;transform:none!important;margin:0!important;max-width:none!important" aria-hidden="true"><g filter="url(#pvGrainL)"${p.o ? ` transform="translate(${p.o})"` : ''}>` +
+  return `<svg class="pvi${cls ? ' ' + cls : ''}" viewBox="0 0 32 32" width="${size}" height="${size}" style="width:${typeof size === 'number' ? size + 'px' : size}!important;height:${typeof size === 'number' ? size + 'px' : size}!important;position:static!important;transform:none!important;margin:0!important;max-width:none!important" aria-hidden="true"><g ${p.o ? ` transform="translate(${p.o})"` : ''}>` +
     `<path d="${p.d}" transform="translate(0 1.4)" fill="${RIM_C}" stroke="${RIM_C}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${RIM}" stroke="${RIM}" stroke-width="4.2" stroke-linejoin="round"/>` +
     `<path d="${p.d}" fill="${p.c}"/>` + (p.l ? `<path d="${p.l}" fill="${p.lc}"/>` : '') + (p.x || '') + '</g></svg>';
